@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUpDown, ArrowUp, ArrowDown, Search, Edit, FileText, Trash2 } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown, Search, Edit, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { DataPoint } from '@/types/base';
 
 interface TableHeaderProps {
@@ -231,7 +231,7 @@ export const TableRow: React.FC<RowProps> = ({
           }}
           title={data.excluded ? "Include in analysis" : "Exclude from analysis"}
         >
-          <FileText size={18} />
+          {data.excluded ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
 
         <button 

@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Filter, X, Calendar, ChevronDown, Check, Sliders } from 'lucide-react';
 import { DataPoint } from '@/types/base';
 import { FrequencySlider } from '../controls/FrequencyControl/FrequencySlider';
 import { Switch } from '../../ui/Switch/Switch';
 import { useFilterContextSafe } from '../context/FilterContext';
+import { getRelevantDatePresets, getDateRangeDescription, parseDateString } from '../../../utils/dateFilterUtils';
 import './FilterPanel.css';
 
 // Types for filter state
@@ -46,20 +47,11 @@ interface FilterPanelProps {
   };
   // Reset trigger
   resetTrigger?: number;
+  // Notification callback
+  onShowNotification?: (notification: { title: string; message: string; type: 'success' | 'error' | 'info' | 'warning' }) => void;
 }
 
-const DATE_PRESETS = [
-  { label: 'All Time', key: 'all' },
-  { label: 'Today', key: 'today' },
-  { label: 'Yesterday', key: 'yesterday' },
-  { label: 'Last 7 Days', key: 'last7days' },
-  { label: 'Last 30 Days', key: 'last30days' },
-  { label: 'This Month', key: 'thisMonth' },
-  { label: 'Last Month', key: 'lastMonth' },
-  { label: 'This Year', key: 'thisYear' },
-  { label: 'Last Year', key: 'lastYear' },
-  { label: 'Custom Range', key: 'custom' },
-];
+// DATE_PRESETS is now imported from dateFilterUtils
 
 const FilterPanel: React.FC<FilterPanelProps> = ({
   data,
@@ -75,8 +67,10 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   onFrequencyFilterEnabledChange,
   onFrequencyThresholdChange,
   frequencyData,
-  resetTrigger
+  resetTrigger,
+  onShowNotification
 }) => {
+  console.log('🎛️ FilterPanel component mounted/rendered');
   // Try to access filter context if available
   const filterContext = useFilterContextSafe();
   
@@ -90,7 +84,51 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     attributes: [],
     isActive: false,
   });
-  
+
+  // Calculate relevant date presets based on actual data
+  const relevantDatePresets = useMemo(() => {
+    return getRelevantDatePresets(data);
+  }, [data]);
+
+  // Get date range description for display
+  const dateRangeDescription = useMemo(() => {
+    return getDateRangeDescription(data);
+  }, [data]);
+
+  // Check if we have any date data
+  const hasDateData = useMemo(() => {
+    return data.some(item => !item.excluded && item.date);
+  }, [data]);
+
+  // Get available fields for attribute filtering (excluding excluded items)
+  const availableFields = useMemo(() => {
+    const activeData = data.filter(item => !item.excluded);
+    
+    if (activeData.length === 0) return [];
+    
+    const fields = new Set<string>();
+    const counts: Record<string, Record<string | number, number>> = {};
+    
+    activeData.forEach(item => {
+      Object.keys(item).forEach(key => {
+        if (key !== 'id' && key !== 'excluded') {
+          fields.add(key);
+          const value = (item as any)[key];
+          if (value !== null && value !== undefined && value !== '') {
+            if (!counts[key]) counts[key] = {};
+            counts[key][value] = (counts[key][value] || 0) + 1;
+          }
+        }
+      });
+    });
+    
+    return Array.from(fields).map(field => ({
+      field,
+      values: Object.keys(counts[field] || {}),
+      counts: counts[field] || {}
+    }));
+  }, [data]);
+
   const filterState = filterContext?.filterState || localFilterState;
   
   // Create type-safe setter functions
@@ -105,92 +143,276 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       setLocalFilterState(newState);
     }
   };
+
+  // Apply filters with a specific state (for reactive updates)
+  const applyFiltersWithState = useCallback((stateToUse: FilterState) => {
+    const { dateRange, attributes } = stateToUse;
+    
+    const filteredData = data.filter(item => {
+      // Don't include excluded items
+      if (item.excluded) return false;
+      
+      // Check date range if applicable
+      if (dateRange.startDate || dateRange.endDate) {
+        if (!isDateInRange(item.date, dateRange)) return false;
+      }
+      
+      // Check attribute filters
+      for (const attr of attributes) {
+        // Skip if no values selected (include all)
+        if (attr.values.size === 0) continue;
+        
+        // Check if this item matches any selected value for this attribute
+        const itemValue = (item as any)[attr.field];
+        
+        // Convert both values to strings for comparison to handle type mismatches
+        const itemValueStr = String(itemValue);
+        const hasMatch = Array.from(attr.values).some(selectedValue => 
+          String(selectedValue) === itemValueStr
+        );
+        
+        if (!hasMatch) return false;
+      }
+      
+      return true;
+    });
+    
+    // Check if filters are active
+    const isActive = (
+      (dateRange.startDate !== null || dateRange.endDate !== null) ||
+      attributes.some(attr => attr.values.size > 0)
+    );
+    
+    // Extract active filters for callback
+    const activeFilters: Array<{type: string, label: string, value: any}> = [];
+    
+    // Add date filter if active
+    if (dateRange.startDate || dateRange.endDate) {
+      activeFilters.push({
+        type: 'date',
+        label: 'Date Range',
+        value: `${dateRange.startDate ? formatDateForDisplay(dateRange.startDate) : 'All past'} - ${dateRange.endDate ? formatDateForDisplay(dateRange.endDate) : 'All future'}`
+      });
+    }
+    
+    // Add attribute filters
+    attributes.forEach(attr => {
+      if (attr.values.size > 0) {
+        activeFilters.push({
+          type: 'attribute',
+          label: attr.field,
+          value: Array.from(attr.values).join(', ')
+        });
+      }
+    });
+    
+    // No longer need to call onFilterChange - the context handles this automatically
+    // Just update the filter state in the context
+    if (filterContext) {
+      filterContext.setFilterState(stateToUse);
+    } else {
+      // Fallback for when context is not available
+      setFilterState(stateToUse);
+    }
+  }, [filterContext]);
+
+  // Reactive filtering: validate and reset filters when data changes
+  const validateAndResetFilters = useCallback(() => {
+    const currentState = filterState;
+    let needsReset = false;
+    let notificationShown = false;
+    const newFilterState = { ...currentState };
+
+    // Check if current date preset is still available AND has matching data
+    if (currentState.dateRange.preset && currentState.dateRange.preset !== 'all' && currentState.dateRange.preset !== 'custom') {
+      const isPresetAvailable = relevantDatePresets.some(preset => preset.key === currentState.dateRange.preset);
+      
+      if (!isPresetAvailable) {
+        // Preset is no longer available, reset to 'all'
+        newFilterState.dateRange = {
+          startDate: null,
+          endDate: null,
+          preset: 'all'
+        };
+        needsReset = true;
+        
+        // Show notification to user (only once per reset)
+        if (onShowNotification && !notificationShown) {
+          const presetLabel = relevantDatePresets.find(p => p.key === currentState.dateRange.preset)?.label || 'filter';
+          onShowNotification({
+            title: 'Filter Reset',
+            message: `"${presetLabel}" filter was automatically reset because this option is no longer available.`,
+            type: 'info'
+          });
+          notificationShown = true;
+        }
+      } else {
+        // Preset is available, but check if it actually has matching data
+        const tempDateRange = { ...currentState.dateRange };
+        
+        // Apply the preset to get the actual date range
+        const now = new Date();
+        let startDate: Date | null = null;
+        let endDate: Date | null = null;
+        
+        switch (currentState.dateRange.preset) {
+          case 'today':
+            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            break;
+          case 'yesterday':
+            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+            endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            break;
+          case 'last7days':
+            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+            endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            break;
+          case 'last30days':
+            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
+            endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            break;
+          case 'thisMonth':
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            endDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+            break;
+          case 'lastMonth':
+            startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            endDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            break;
+          case 'thisYear':
+            startDate = new Date(now.getFullYear(), 0, 1);
+            endDate = new Date(now.getFullYear() + 1, 0, 1);
+            break;
+          case 'lastYear':
+            startDate = new Date(now.getFullYear() - 1, 0, 1);
+            endDate = new Date(now.getFullYear(), 0, 1);
+            break;
+        }
+        
+        // Check if there's any data in this date range
+        const hasMatchingData = data.some(item => {
+          if (item.excluded) return false;
+          if (!item.date) return false;
+          
+          const itemDate = parseDateString(item.date);
+          if (!itemDate) return false;
+          
+          if (startDate && itemDate < startDate) return false;
+          if (endDate && itemDate >= endDate) return false;
+          
+          return true;
+        });
+        
+        if (!hasMatchingData) {
+          // No data matches this preset, reset to 'all'
+          newFilterState.dateRange = {
+            startDate: null,
+            endDate: null,
+            preset: 'all'
+          };
+          needsReset = true;
+          
+          // Show notification to user (only once per reset)
+          if (onShowNotification && !notificationShown) {
+            const presetLabel = relevantDatePresets.find(p => p.key === currentState.dateRange.preset)?.label || 'filter';
+            onShowNotification({
+              title: 'Filter Reset',
+              message: `"${presetLabel}" filter was automatically reset because no data matches this criteria.`,
+              type: 'info'
+            });
+            notificationShown = true;
+          }
+        }
+      }
+    }
+
+    // Check if selected attribute values are still available
+    const updatedAttributes = currentState.attributes.map(attr => {
+      const fieldData = availableFields.find(f => f.field === attr.field);
+      if (!fieldData) {
+        return { ...attr, values: new Set() };
+      }
+
+      const validValues = new Set<string | number>();
+      attr.values.forEach(value => {
+        if (fieldData.values.includes(String(value))) {
+          validValues.add(value as string | number);
+        }
+      });
+
+      if (validValues.size !== attr.values.size) {
+        needsReset = true;
+        return { ...attr, values: validValues };
+      }
+
+      return attr;
+    });
+
+    newFilterState.attributes = updatedAttributes as AttributeFilter[];
+
+    if (needsReset) {
+      setFilterState(newFilterState);
+      // Apply the new filters immediately
+      setTimeout(() => {
+        applyFiltersWithState(newFilterState);
+      }, 0);
+    }
+  }, [filterState, relevantDatePresets, availableFields, setFilterState, applyFiltersWithState]);
+
+  // Create a data signature to detect changes
+  const dataSignature = useMemo(() => {
+    return data.map(item => `${item.id}-${item.date}-${item.excluded}`).join('|');
+  }, [data]);
+
+  // Watch for data changes and validate filters
+  useEffect(() => {
+    // Only validate if we have an active filter that might need resetting
+    if (filterState.dateRange.preset && filterState.dateRange.preset !== 'all') {
+      validateAndResetFilters();
+    }
+  }, [dataSignature, relevantDatePresets, availableFields, validateAndResetFilters, filterState.dateRange.preset]);
+
+  // Listen for manual filter validation triggers (from delete/exclude actions)
+  useEffect(() => {
+    console.log('🎧 FilterPanel: Setting up event listener for reset-filters-if-needed');
+    
+    const handleResetFilters = () => {
+      console.log('🎯 FilterPanel: Reset filters event received!', { 
+        currentPreset: filterState.dateRange.preset,
+        hasActiveFilter: filterState.dateRange.preset && filterState.dateRange.preset !== 'all'
+      });
+      // Only validate if we have an active filter that might need resetting
+      if (filterState.dateRange.preset && filterState.dateRange.preset !== 'all') {
+        console.log('✅ FilterPanel: Running filter validation...');
+        validateAndResetFilters();
+      } else {
+        console.log('⏭️ FilterPanel: Skipping validation - no active filter');
+      }
+    };
+
+    const handleForceReset = () => {
+      console.log('🎯 FilterPanel: Force reset event received!');
+      console.log('✅ FilterPanel: Running filter validation...');
+      validateAndResetFilters();
+    };
+
+    document.addEventListener('reset-filters-if-needed', handleResetFilters);
+    document.addEventListener('force-reset-filters', handleForceReset);
+    console.log('🎧 FilterPanel: Event listeners added successfully');
+    
+    return () => {
+      console.log('🎧 FilterPanel: Removing event listeners');
+      document.removeEventListener('reset-filters-if-needed', handleResetFilters);
+      document.removeEventListener('force-reset-filters', handleForceReset);
+    };
+  }, [filterState.dateRange.preset, validateAndResetFilters]);
   
   const [datePickerVisible, setDatePickerVisible] = useState(false);
   const [customStartDate, setCustomStartDate] = useState<string>('');
   const [customEndDate, setCustomEndDate] = useState<string>('');
 
-  // Extract all available fields and their unique values
-  const availableFields = useMemo(() => {
-    const fields = new Map<string, Set<string | number>>();
-    
-    // Add standard fields
-    fields.set('group', new Set());
-    
-    // Add satisfaction and loyalty as first fields for filtering
-    fields.set('satisfaction', new Set());
-    fields.set('loyalty', new Set());
-    
-    // Check for dates
-    const hasDate = data.some(item => item.date);
-    
-    data.forEach(item => {
-      // Add group values
-      if (item.group) {
-        fields.get('group')?.add(item.group);
-      }
-      
-      // Add satisfaction and loyalty values
-      if (item.satisfaction) {
-        fields.get('satisfaction')?.add(item.satisfaction);
-      }
-      
-      if (item.loyalty) {
-        fields.get('loyalty')?.add(item.loyalty);
-      }
-      
-      // Collect unique values for each field
-      Object.entries(item).forEach(([key, value]) => {
-        if (
-          // Skip base fields
-          !['id', 'name', 'satisfaction', 'loyalty', 'excluded', 'date', 'dateFormat'].includes(key) &&
-          // Skip empty values
-          value !== undefined && value !== null && value !== '' &&
-          // Skip function values
-          typeof value !== 'function'
-        ) {
-          if (!fields.has(key)) {
-            fields.set(key, new Set());
-          }
-          fields.get(key)?.add(value);
-        }
-      });
-    });
-    
-    // Convert to array format with counts
-    return Array.from(fields.entries())
-      .filter(([_, values]) => values.size > 1) // Only include fields with multiple values
-      .map(([field, values]) => {
-        const valueArray = Array.from(values);
-        return {
-          field,
-          values: valueArray,
-          counts: valueArray.map(value => ({
-            value,
-            count: data.filter(item => (item as any)[field] === value).length
-          }))
-        };
-      })
-      .sort((a, b) => {
-        // Custom sort order: satisfaction, loyalty, group, then others alphabetically
-        const priorityFields = ['satisfaction', 'loyalty', 'group', 'name', 'email'];
-        
-        const aIndex = priorityFields.indexOf(a.field);
-        const bIndex = priorityFields.indexOf(b.field);
-        
-        // If both fields are in priority list, sort by priority
-        if (aIndex !== -1 && bIndex !== -1) {
-          return aIndex - bIndex;
-        }
-        
-        // If only one field is in priority list, it goes first
-        if (aIndex !== -1) return -1;
-        if (bIndex !== -1) return 1;
-        
-        // Otherwise sort alphabetically
-        return a.field.localeCompare(b.field);
-      });
-  }, [data]);
+  // availableFields is already defined above
 
   // Initialize attributes on first render
   useEffect(() => {
@@ -200,7 +422,10 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
         attributes: availableFields.map(field => ({
           field: field.field,
           values: new Set(),
-          availableValues: field.counts,
+          availableValues: Object.entries(field.counts).map(([value, count]) => ({
+            value,
+            count
+          })),
           expanded: false
         }))
       }));
@@ -262,76 +487,14 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
   // Apply current filters to data
   const applyFilters = () => {
-    const { dateRange, attributes } = filterState;
-    
-    const filteredData = data.filter(item => {
-      // Don't include excluded items
-      if (item.excluded) return false;
-      
-      // Check date range if applicable
-      if (dateRange.startDate || dateRange.endDate) {
-        if (!isDateInRange(item.date, dateRange)) return false;
-      }
-      
-      // Check attribute filters
-      for (const attr of attributes) {
-        // Skip if no values selected (include all)
-        if (attr.values.size === 0) continue;
-        
-        // Check if this item matches any selected value for this attribute
-        const itemValue = (item as any)[attr.field];
-        
-        // Convert both values to strings for comparison to handle type mismatches
-        const itemValueStr = String(itemValue);
-        const hasMatch = Array.from(attr.values).some(selectedValue => 
-          String(selectedValue) === itemValueStr
-        );
-        
-        // Debug logging for Additional Attributes filter issues
-        if (attr.field !== 'group' && attr.field !== 'satisfaction' && attr.field !== 'loyalty') {
-          console.log('🔍 Additional Attribute Filter Debug:', {
-            field: attr.field,
-            itemValue,
-            itemValueStr,
-            selectedValues: Array.from(attr.values),
-            hasMatch,
-            itemId: item.id
-          });
-        }
-        
-        if (!hasMatch) return false;
-      }
-      
-      return true;
-    });
-    
-    // Check if filters are active
-    const isActive = (
-      (dateRange.startDate !== null || dateRange.endDate !== null) ||
-      attributes.some(attr => attr.values.size > 0)
-    );
-    
-    // Extract active filters for callback
-const activeFilters = attributes
-.filter(attr => attr.values.size > 0)
-.map(attr => ({
-  field: attr.field,
-  operator: 'equals', // Default operator
-  value: Array.from(attr.values).join(',') // Join multiple values
-}));
-
-// Add date filter if active
-if (dateRange.startDate || dateRange.endDate) {
-activeFilters.push({
-  field: 'date',
-  operator: 'between',
-  value: `${dateRange.startDate?.toISOString() || ''}:${dateRange.endDate?.toISOString() || ''}`
-});
-}
-
-// Update state and notify parent
-setFilterState(prev => ({ ...prev, isActive }));
-onFilterChange(filteredData, activeFilters);
+    // No longer need to manually apply filters - the context handles this automatically
+    // Just update the filter state in the context
+    if (filterContext) {
+      filterContext.setFilterState(filterState);
+    } else {
+      // Fallback for when context is not available
+      applyFiltersWithState(filterState);
+    }
   };
 
   // Convert preset to date range
@@ -389,15 +552,25 @@ onFilterChange(filteredData, activeFilters);
       setDatePickerVisible(false);
     }
     
-    setFilterState(prev => ({
-      ...prev,
-      dateRange: {
-        ...prev.dateRange,
+    // Use context's updateDateRange method if available
+    if (filterContext) {
+      filterContext.updateDateRange({
         startDate,
         endDate,
         preset
-      }
-    }));
+      });
+    } else {
+      // Fallback for when context is not available
+      setFilterState(prev => ({
+        ...prev,
+        dateRange: {
+          ...prev.dateRange,
+          startDate,
+          endDate,
+          preset
+        }
+      }));
+    }
     
     // Update custom date inputs
     if (startDate) {
@@ -551,10 +724,7 @@ onFilterChange(filteredData, activeFilters);
     });
   };
 
-  // Check if we have date data
-  const hasDateData = useMemo(() => {
-    return data.some(item => item.date);
-  }, [data]);
+  // hasDateData is already defined above
 
   const content = (
     <>
@@ -592,20 +762,13 @@ onFilterChange(filteredData, activeFilters);
                 )}
               </div>
               
-              <div className="date-preset-buttons">
-                {DATE_PRESETS.slice(0, 5).map(preset => (
-                  <button
-                    key={preset.key}
-                    className={`date-preset-button ${filterState.dateRange.preset === preset.key ? 'active' : ''}`}
-                    onClick={() => applyDatePreset(preset.key)}
-                  >
-                    {preset.label}
-                  </button>
-                ))}
+              {/* Date range information */}
+              <div className="date-range-info">
+                <div className="date-range-description">{dateRangeDescription}</div>
               </div>
               
               <div className="date-preset-buttons">
-                {DATE_PRESETS.slice(5).map(preset => (
+                {relevantDatePresets.map(preset => (
                   <button
                     key={preset.key}
                     className={`date-preset-button ${filterState.dateRange.preset === preset.key ? 'active' : ''}`}

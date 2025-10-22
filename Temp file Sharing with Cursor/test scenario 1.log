@@ -1,0 +1,1743 @@
+Error: Not allowed to define cross-origin object as property on [Object] or [Array] XrayWrapper 3 content-script.js:376:604
+Feature Policy: Skipping unsupported feature name “clipboard-read”. content-script.js:39:3880
+Feature Policy: Skipping unsupported feature name “clipboard-write”. content-script.js:39:3880
+Feature Policy: Skipping unsupported feature name “clipboard-read”. content-script.js:39:89374
+Feature Policy: Skipping unsupported feature name “clipboard-write”. content-script.js:39:89374
+Error: Not allowed to define cross-origin object as property on [Object] or [Array] XrayWrapper 3 content-script.js:376:604
+***DEBUG*** Report mostCommonCombos: 
+Array [ {…}, {…} ]
+bundle.js:18551:11
+***DEBUG*** Settings frequencyThreshold: 2 bundle.js:18552:11
+***DEBUG*** Settings showTiers: true bundle.js:18553:11
+***DEBUG*** Settings maxTiers: 3 bundle.js:18554:11
+***DEBUG*** getFilteredCombinations result: 
+Array [ {…}, {…} ]
+bundle.js:18672:13
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🎯 DistributionSection initialized: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false }
+bundle.js:12942:11
+🔍 DISTRIBUTION SECTION - Customer quadrant assignments: bundle.js:12983:11
+  Customer ABC123 (2,5) → loyalists bundle.js:12985:13
+  Customer ABC124 (1,6) → hostages bundle.js:12985:13
+  Customer ABC125 (1,4) → hostages bundle.js:12985:13
+  Customer ABC126 (2,3) → mercenaries bundle.js:12985:13
+  Customer ABC127 (2,3) → mercenaries bundle.js:12985:13
+  Customer ABC128 (3,7) → apostles bundle.js:12985:13
+  Customer ABC129 (3,2) → mercenaries bundle.js:12985:13
+  Customer ABC130 (3,5) → loyalists bundle.js:12985:13
+  Customer ABC131 (1,6) → hostages bundle.js:12985:13
+  Customer ABC132 (2,1) → terrorists bundle.js:12985:13
+🚨🚨🚨 DISTRIBUTION SECTION COMPONENT LOADED - THIS SHOULD APPEAR bundle.js:12989:11
+🔥🔥🔥 FORCING PROXIMITY ANALYSIS CALCULATION WITHOUT USEMEMO bundle.js:12991:11
+🚨🚨🚨🚨🚨 USEMEMO START - THIS MUST APPEAR - TIMESTAMP: 1761055311261 bundle.js:12994:13
+🚨🚨🚨 USEMEMO EXECUTING - COMPONENT IS RUNNING bundle.js:12995:13
+🚨🚨🚨 DISTRIBUTION SECTION USEMEMO TRIGGERED - THIS SHOULD APPEAR IN LOGS: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false, mode: "MAIN_AREAS", timestamp: 1761055311261 }
+bundle.js:12996:13
+🚨🚨🚨 FORCING FRESH PROXIMITY ANALYSIS CALCULATION bundle.js:13010:13
+🔍 USEMEMO DEPENDENCIES DEBUG: 
+Object { data: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpointSat: 2, midpointLoy: 4, getQuadrantForPoint: "function", isPremium: false, showSpecialZones: true, showNearApostles: false, apostlesZoneSize: 1, … }
+bundle.js:13013:13
+🔍 DISTRIBUTION SECTION: Creating EnhancedProximityClassifier with: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false }
+bundle.js:13028:15
+🔥🔥🔥 DISTRIBUTION SECTION: About to call analyzeProximity... bundle.js:13039:15
+🔥 THIS LOG SHOULD APPEAR BEFORE CALLING ENHANCED CLASSIFIER bundle.js:13040:15
+🔥 USEMEMO IS DEFINITELY EXECUTING - TESTING bundle.js:13041:15
+🔍 EnhancedProximityClassifier: Starting proximity analysis bundle.js:21390:13
+   - Data points: 10, Midpoint: (2, 4) bundle.js:21391:13
+🎯 EnhancedProximityClassifier.analyzeProximity called with: 
+Object { dataLength: 10, isPremium: false, userThreshold: undefined, showSpecialZones: true, showNearApostles: false }
+bundle.js:21392:13
+❌ Proximity unavailable: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:21404:15
+🚨 CREATING EMPTY RESULT - Should be 0 customers, 0 positions. Reason: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:22439:13
+🔍 DISTRIBUTION SECTION: EnhancedProximityClassifier result: 
+Object { loyalists_close_to_apostles: 0, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 0, showSpecialZones: false, mode: "MAIN_AREAS" }
+bundle.js:13043:15
+🚨 DISTRIBUTION SECTION RETURNING RESULT: 
+Object { analysis: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:13050:15
+🔍 DISTRIBUTION SECTION proximityAnalysis result: 
+Object { loyalists_close_to_mercenaries: 0, isAvailable: false, totalCustomers: 10 }
+bundle.js:13157:11
+🚨 DISTRIBUTION SECTION PROXIMITY CALCULATIONS: 
+Object { loyalists_near_mercenaries: 0, loyalists_near_hostages: 0, hostages_near_loyalists: 0, hostages_near_defectors: 0 }
+bundle.js:13221:11
+🔍 DISTRIBUTION USING CONTEXT DIRECTLY: 
+Object { showSpecialZones: true, showNearApostles: false, contextDistribution: {…}, finalDistribution: {…} }
+bundle.js:13242:11
+🔍 Special Groups Debug: 
+Object { showNearApostles: false, apostles: 1, near_apostles: 0, terrorists: 1, totalSpecial: 2 }
+bundle.js:13373:11
+🔍 Full Distribution Object: 
+Object { loyalists: 2, defectors: 1, mercenaries: 1, hostages: 6, apostles: 0, nearApostles: 2, terrorists: 0 }
+bundle.js:13380:11
+🔍 Effective Distribution: 
+Object { loyalists: 2, mercenaries: 3, hostages: 3, defectors: 0, apostles: 1, terrorists: 1, nearApostles: 0 }
+bundle.js:13381:11
+🎯 DistributionSection initialized: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false }
+bundle.js:12942:11
+🔍 DISTRIBUTION SECTION - Customer quadrant assignments: bundle.js:12983:11
+  Customer ABC123 (2,5) → loyalists bundle.js:12985:13
+  Customer ABC124 (1,6) → hostages bundle.js:12985:13
+  Customer ABC125 (1,4) → hostages bundle.js:12985:13
+  Customer ABC126 (2,3) → mercenaries bundle.js:12985:13
+  Customer ABC127 (2,3) → mercenaries bundle.js:12985:13
+  Customer ABC128 (3,7) → apostles bundle.js:12985:13
+  Customer ABC129 (3,2) → mercenaries bundle.js:12985:13
+  Customer ABC130 (3,5) → loyalists bundle.js:12985:13
+  Customer ABC131 (1,6) → hostages bundle.js:12985:13
+  Customer ABC132 (2,1) → terrorists bundle.js:12985:13
+🚨🚨🚨 DISTRIBUTION SECTION COMPONENT LOADED - THIS SHOULD APPEAR bundle.js:12989:11
+🔥🔥🔥 FORCING PROXIMITY ANALYSIS CALCULATION WITHOUT USEMEMO bundle.js:12991:11
+🚨🚨🚨🚨🚨 USEMEMO START - THIS MUST APPEAR - TIMESTAMP: 1761055311262 bundle.js:12994:13
+🚨🚨🚨 USEMEMO EXECUTING - COMPONENT IS RUNNING bundle.js:12995:13
+🚨🚨🚨 DISTRIBUTION SECTION USEMEMO TRIGGERED - THIS SHOULD APPEAR IN LOGS: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false, mode: "MAIN_AREAS", timestamp: 1761055311262 }
+bundle.js:12996:13
+🚨🚨🚨 FORCING FRESH PROXIMITY ANALYSIS CALCULATION bundle.js:13010:13
+🔍 USEMEMO DEPENDENCIES DEBUG: 
+Object { data: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpointSat: 2, midpointLoy: 4, getQuadrantForPoint: "function", isPremium: false, showSpecialZones: true, showNearApostles: false, apostlesZoneSize: 1, … }
+bundle.js:13013:13
+🔍 DISTRIBUTION SECTION: Creating EnhancedProximityClassifier with: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false }
+bundle.js:13028:15
+🔥🔥🔥 DISTRIBUTION SECTION: About to call analyzeProximity... bundle.js:13039:15
+🔥 THIS LOG SHOULD APPEAR BEFORE CALLING ENHANCED CLASSIFIER bundle.js:13040:15
+🔥 USEMEMO IS DEFINITELY EXECUTING - TESTING bundle.js:13041:15
+🔍 EnhancedProximityClassifier: Starting proximity analysis bundle.js:21390:13
+   - Data points: 10, Midpoint: (2, 4) bundle.js:21391:13
+🎯 EnhancedProximityClassifier.analyzeProximity called with: 
+Object { dataLength: 10, isPremium: false, userThreshold: undefined, showSpecialZones: true, showNearApostles: false }
+bundle.js:21392:13
+❌ Proximity unavailable: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:21404:15
+🚨 CREATING EMPTY RESULT - Should be 0 customers, 0 positions. Reason: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:22439:13
+🔍 DISTRIBUTION SECTION: EnhancedProximityClassifier result: 
+Object { loyalists_close_to_apostles: 0, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 0, showSpecialZones: false, mode: "MAIN_AREAS" }
+bundle.js:13043:15
+🚨 DISTRIBUTION SECTION RETURNING RESULT: 
+Object { analysis: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:13050:15
+🔍 DISTRIBUTION SECTION proximityAnalysis result: 
+Object { loyalists_close_to_mercenaries: 0, isAvailable: false, totalCustomers: 10 }
+bundle.js:13157:11
+🚨 DISTRIBUTION SECTION PROXIMITY CALCULATIONS: 
+Object { loyalists_near_mercenaries: 0, loyalists_near_hostages: 0, hostages_near_loyalists: 0, hostages_near_defectors: 0 }
+bundle.js:13221:11
+🔍 DISTRIBUTION USING CONTEXT DIRECTLY: 
+Object { showSpecialZones: true, showNearApostles: false, contextDistribution: {…}, finalDistribution: {…} }
+bundle.js:13242:11
+🔍 Special Groups Debug: 
+Object { showNearApostles: false, apostles: 1, near_apostles: 0, terrorists: 1, totalSpecial: 2 }
+bundle.js:13373:11
+🔍 Full Distribution Object: 
+Object { loyalists: 2, defectors: 1, mercenaries: 1, hostages: 6, apostles: 0, nearApostles: 2, terrorists: 0 }
+bundle.js:13380:11
+🔍 Effective Distribution: 
+Object { loyalists: 2, mercenaries: 3, hostages: 3, defectors: 0, apostles: 1, terrorists: 1, nearApostles: 0 }
+bundle.js:13381:11
+🎯 ProximitySection: Using context distribution: 
+Object { loyalists: 2, mercenaries: 3, hostages: 3, defectors: 0, apostles: 1, terrorists: 1, near_apostles: 0, neutral: 0 }
+bundle.js:17054:11
+🔍 Context distribution totals: 
+Object { loyalists: 2, apostles: 1, total_loyalist_area: 3, totalFromContext: 10 }
+bundle.js:17058:11
+🎯 ProximitySection: Using context distribution: 
+Object { loyalists: 2, mercenaries: 3, hostages: 3, defectors: 0, apostles: 1, terrorists: 1, near_apostles: 0, neutral: 0 }
+bundle.js:17054:11
+🔍 Context distribution totals: 
+Object { loyalists: 2, apostles: 1, total_loyalist_area: 3, totalFromContext: 10 }
+bundle.js:17058:11
+🎧 FilterPanel: Removing event listeners bundle.js:31543:15
+🎧 FilterPanel: Setting up event listener for reset-filters-if-needed bundle.js:31520:13
+🎧 FilterPanel: Event listeners added successfully bundle.js:31541:13
+Document click: 
+<div class="filter-panel-content">
+bundle.js:10787:15
+Document click: 
+<div class="filter-panel-content">
+bundle.js:10787:15
+Document click: 
+<h4>
+bundle.js:10787:15
+Document click: 
+<h4>
+bundle.js:10787:15
+🔄 FilterContext: Filter state updated, recalculating... 
+Object { newFilterState: {…}, dataLength: 10 }
+bundle.js:28157:13
+🔄 FilterContext: Applying filters to data... 
+Object { dataLength: 10, hasDateFilter: false, hasAttributeFilters: false }
+bundle.js:27912:13
+🔄 FilterContext: Filter applied 
+Object { originalLength: 10, filteredLength: 10, filterSignature: '{"datePreset":"all","attributes":[{"field":"satisf...' }
+bundle.js:27965:13
+🔄 FilterContext: Filter state update complete 
+Object { filteredDataLength: 10, activeFilterCount: 0 }
+bundle.js:28172:13
+🎛️ FilterPanel component mounted/rendered 2 bundle.js:31224:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 ChartControls received labelPositioning: above-dots 2 bundle.js:28677:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔧 ResizeHandle: Not adjustable, not rendering 2 bundle.js:29864:13
+🎧 FilterPanel: Removing event listeners bundle.js:31543:15
+🎧 FilterPanel: Setting up event listener for reset-filters-if-needed bundle.js:31520:13
+🎧 FilterPanel: Event listeners added successfully bundle.js:31541:13
+Document click: 
+<div class="attribute-label">
+bundle.js:10787:15
+Document click: 
+<div class="attribute-label">
+bundle.js:10787:15
+🔄 FilterContext: Filter state updated, recalculating... 
+Object { newFilterState: {…}, dataLength: 10 }
+bundle.js:28157:13
+🔄 FilterContext: Applying filters to data... 
+Object { dataLength: 10, hasDateFilter: false, hasAttributeFilters: true }
+bundle.js:27912:13
+🔄 FilterContext: Filter applied 
+Object { originalLength: 10, filteredLength: 1, filterSignature: '{"datePreset":"all","attributes":[{"field":"satisf...' }
+bundle.js:27965:13
+🔄 FilterContext: Filter state update complete 
+Object { filteredDataLength: 1, activeFilterCount: 1 }
+bundle.js:28172:13
+🎛️ FilterPanel component mounted/rendered 2 bundle.js:31224:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 ChartControls received labelPositioning: above-dots 2 bundle.js:28677:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔧 ResizeHandle: Not adjustable, not rendering 2 bundle.js:29864:13
+🎧 FilterPanel: Removing event listeners bundle.js:31543:15
+🎧 FilterPanel: Setting up event listener for reset-filters-if-needed bundle.js:31520:13
+🎧 FilterPanel: Event listeners added successfully bundle.js:31541:13
+🔄 FilterContext: Filter state updated, recalculating... 
+Object { newFilterState: {…}, dataLength: 10 }
+bundle.js:28157:13
+🔄 FilterContext: Applying filters to data... 
+Object { dataLength: 10, hasDateFilter: false, hasAttributeFilters: true }
+bundle.js:27912:13
+🔄 FilterContext: Filter applied 
+Object { originalLength: 10, filteredLength: 1, filterSignature: '{"datePreset":"all","attributes":[{"field":"satisf...' }
+bundle.js:27965:13
+🔄 FilterContext: Filter state update complete 
+Object { filteredDataLength: 1, activeFilterCount: 1 }
+bundle.js:28172:13
+🎛️ FilterPanel component mounted/rendered 2 bundle.js:31224:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 ChartControls received labelPositioning: above-dots 2 bundle.js:28677:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔧 ResizeHandle: Not adjustable, not rendering 2 bundle.js:29864:13
+🎧 FilterPanel: Removing event listeners bundle.js:31543:15
+🎧 FilterPanel: Setting up event listener for reset-filters-if-needed bundle.js:31520:13
+🎧 FilterPanel: Event listeners added successfully bundle.js:31541:13
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 ChartControls received labelPositioning: above-dots 2 bundle.js:28677:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔧 ResizeHandle: Not adjustable, not rendering 2 bundle.js:29864:13
+🎧 FilterPanel: Removing event listeners bundle.js:31543:15
+Document click: 
+<svg class="lucide lucide-square-pen" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+bundle.js:10787:15
+Document click: 
+<svg class="lucide lucide-square-pen" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+bundle.js:10787:15
+Editing data changed, updating form state: 
+Object { id: "ABC125", name: "Bob Green", satisfaction: 1, loyalty: 4, group: "Undefined", date: "10/02/2024", email: "bob@example.com", country: "Germany", trueloyalist: "No", numpurchases: "2", … }
+bundle.js:6245:15
+Updating dateFormat from dd/MM/yyyy to dd/MM/yyyy bundle.js:6259:17
+handleInputChange: dateFormat changed to dd/MM/yyyy bundle.js:6277:15
+Editing data changed, updating form state: 
+Object { id: "ABC125", name: "Bob Green", satisfaction: 1, loyalty: 4, group: "Undefined", date: "10/02/2024", email: "bob@example.com", country: "Germany", trueloyalist: "No", numpurchases: "2", … }
+bundle.js:6245:15
+Updating dateFormat from dd/MM/yyyy to dd/MM/yyyy bundle.js:6259:17
+handleInputChange: dateFormat changed to dd/MM/yyyy bundle.js:6277:15
+Document click: 
+<option value="3">
+bundle.js:10787:15
+Document click: 
+<option value="3">
+bundle.js:10787:15
+Document click: 
+<select class="input-field " required="">
+bundle.js:10787:15
+Document click: 
+<select class="input-field " required="">
+bundle.js:10787:15
+Document click: 
+<option value="7">
+bundle.js:10787:15
+Document click: 
+<option value="7">
+bundle.js:10787:15
+Document click: 
+<button class="data-input__button data-input__button--primary" type="submit">
+bundle.js:10787:15
+Document click: 
+<button class="data-input__button data-input__button--primary" type="submit">
+bundle.js:10787:15
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 ChartControls received labelPositioning: above-dots 2 bundle.js:28677:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔧 ResizeHandle: Not adjustable, not rendering 2 bundle.js:29864:13
+🔍 ReportingSection Premium Check: bundle.js:10358:11
+  activeEffects: 
+Array []
+bundle.js:10359:11
+  activeEffects.has("premium"): false bundle.js:10360:11
+  isPremium result: false bundle.js:10361:11
+🚨🚨🚨 REPORTING SECTION RENDERING - THIS SHOULD APPEAR bundle.js:10362:11
+🚨🚨🚨 About to render DistributionSection with: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false, dataReportExists: true, distributionExists: true }
+bundle.js:10363:11
+🔍 ReportingSection Premium Check: bundle.js:10358:11
+  activeEffects: 
+Array []
+bundle.js:10359:11
+  activeEffects.has("premium"): false bundle.js:10360:11
+  isPremium result: false bundle.js:10361:11
+🚨🚨🚨 REPORTING SECTION RENDERING - THIS SHOULD APPEAR bundle.js:10362:11
+🚨🚨🚨 About to render DistributionSection with: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false, dataReportExists: true, distributionExists: true }
+bundle.js:10363:11
+🚨 COMPONENT START - ResponseConcentrationSection is rendering! bundle.js:18483:11
+🔥 ResponseConcentrationSection ENTRY - originalData length: 10 bundle.js:18484:11
+🔥 Component is rendering with settings: 
+Object { useQuadrantColors: true, customColors: {}, showAverageDot: true, frequencyThreshold: 2, showTiers: true, maxTiers: 3, applyMainChartFrequencyFilter: false }
+bundle.js:18485:11
+🔥 MANUAL ASSIGNMENTS DEBUG: 
+Array []
+bundle.js:18492:11
+🔥 MANUAL ASSIGNMENTS STRING: <empty string> bundle.js:18493:11
+🔥 CONTEXT CONNECTED - midpoint: 
+Object { sat: 2, loy: 4 }
+ manualAssignments size: 0 bundle.js:18494:11
+***DEBUG*** isPremium result: false bundle.js:18495:11
+***DEBUG*** Initial filteredData: 
+Array [ {…}, {…} ]
+bundle.js:18550:11
+***DEBUG*** Report mostCommonCombos: 
+Array [ {…}, {…} ]
+bundle.js:18551:11
+***DEBUG*** Settings frequencyThreshold: 2 bundle.js:18552:11
+***DEBUG*** Settings showTiers: true bundle.js:18553:11
+***DEBUG*** Settings maxTiers: 3 bundle.js:18554:11
+***DEBUG*** getFilteredCombinations result: 
+Array [ {…}, {…} ]
+bundle.js:18672:13
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🚨 COMPONENT START - ResponseConcentrationSection is rendering! bundle.js:18483:11
+🔥 ResponseConcentrationSection ENTRY - originalData length: 10 bundle.js:18484:11
+🔥 Component is rendering with settings: 
+Object { useQuadrantColors: true, customColors: {}, showAverageDot: true, frequencyThreshold: 2, showTiers: true, maxTiers: 3, applyMainChartFrequencyFilter: false }
+bundle.js:18485:11
+🔥 MANUAL ASSIGNMENTS DEBUG: 
+Array []
+bundle.js:18492:11
+🔥 MANUAL ASSIGNMENTS STRING: <empty string> bundle.js:18493:11
+🔥 CONTEXT CONNECTED - midpoint: 
+Object { sat: 2, loy: 4 }
+ manualAssignments size: 0 bundle.js:18494:11
+***DEBUG*** isPremium result: false bundle.js:18495:11
+***DEBUG*** Initial filteredData: 
+Array [ {…}, {…} ]
+bundle.js:18550:11
+***DEBUG*** Report mostCommonCombos: 
+Array [ {…}, {…} ]
+bundle.js:18551:11
+***DEBUG*** Settings frequencyThreshold: 2 bundle.js:18552:11
+***DEBUG*** Settings showTiers: true bundle.js:18553:11
+***DEBUG*** Settings maxTiers: 3 bundle.js:18554:11
+***DEBUG*** getFilteredCombinations result: 
+Array [ {…}, {…} ]
+bundle.js:18672:13
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🎯 DistributionSection initialized: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false }
+bundle.js:12942:11
+🔍 DISTRIBUTION SECTION - Customer quadrant assignments: bundle.js:12983:11
+  Customer ABC123 (2,5) → loyalists bundle.js:12985:13
+  Customer ABC124 (1,6) → hostages bundle.js:12985:13
+  Customer ABC125 (3,7) → apostles bundle.js:12985:13
+  Customer ABC126 (2,3) → mercenaries bundle.js:12985:13
+  Customer ABC127 (2,3) → mercenaries bundle.js:12985:13
+  Customer ABC128 (3,7) → apostles bundle.js:12985:13
+  Customer ABC129 (3,2) → mercenaries bundle.js:12985:13
+  Customer ABC130 (3,5) → loyalists bundle.js:12985:13
+  Customer ABC131 (1,6) → hostages bundle.js:12985:13
+  Customer ABC132 (2,1) → terrorists bundle.js:12985:13
+🚨🚨🚨 DISTRIBUTION SECTION COMPONENT LOADED - THIS SHOULD APPEAR bundle.js:12989:11
+🔥🔥🔥 FORCING PROXIMITY ANALYSIS CALCULATION WITHOUT USEMEMO bundle.js:12991:11
+🚨🚨🚨🚨🚨 USEMEMO START - THIS MUST APPEAR - TIMESTAMP: 1761055325192 bundle.js:12994:13
+🚨🚨🚨 USEMEMO EXECUTING - COMPONENT IS RUNNING bundle.js:12995:13
+🚨🚨🚨 DISTRIBUTION SECTION USEMEMO TRIGGERED - THIS SHOULD APPEAR IN LOGS: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false, mode: "MAIN_AREAS", timestamp: 1761055325192 }
+bundle.js:12996:13
+🚨🚨🚨 FORCING FRESH PROXIMITY ANALYSIS CALCULATION bundle.js:13010:13
+🔍 USEMEMO DEPENDENCIES DEBUG: 
+Object { data: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpointSat: 2, midpointLoy: 4, getQuadrantForPoint: "function", isPremium: false, showSpecialZones: true, showNearApostles: false, apostlesZoneSize: 1, … }
+bundle.js:13013:13
+🔍 DISTRIBUTION SECTION: Creating EnhancedProximityClassifier with: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false }
+bundle.js:13028:15
+🔥🔥🔥 DISTRIBUTION SECTION: About to call analyzeProximity... bundle.js:13039:15
+🔥 THIS LOG SHOULD APPEAR BEFORE CALLING ENHANCED CLASSIFIER bundle.js:13040:15
+🔥 USEMEMO IS DEFINITELY EXECUTING - TESTING bundle.js:13041:15
+🔍 EnhancedProximityClassifier: Starting proximity analysis bundle.js:21390:13
+   - Data points: 10, Midpoint: (2, 4) bundle.js:21391:13
+🎯 EnhancedProximityClassifier.analyzeProximity called with: 
+Object { dataLength: 10, isPremium: false, userThreshold: undefined, showSpecialZones: true, showNearApostles: false }
+bundle.js:21392:13
+❌ Proximity unavailable: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:21404:15
+🚨 CREATING EMPTY RESULT - Should be 0 customers, 0 positions. Reason: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:22439:13
+🔍 DISTRIBUTION SECTION: EnhancedProximityClassifier result: 
+Object { loyalists_close_to_apostles: 0, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 0, showSpecialZones: false, mode: "MAIN_AREAS" }
+bundle.js:13043:15
+🚨 DISTRIBUTION SECTION RETURNING RESULT: 
+Object { analysis: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:13050:15
+🔍 DISTRIBUTION SECTION proximityAnalysis result: 
+Object { loyalists_close_to_mercenaries: 0, isAvailable: false, totalCustomers: 10 }
+bundle.js:13157:11
+🚨 DISTRIBUTION SECTION PROXIMITY CALCULATIONS: 
+Object { loyalists_near_mercenaries: 0, loyalists_near_hostages: 0, hostages_near_loyalists: 0, hostages_near_defectors: 0 }
+bundle.js:13221:11
+🔍 DISTRIBUTION USING CONTEXT DIRECTLY: 
+Object { showSpecialZones: true, showNearApostles: false, contextDistribution: {…}, finalDistribution: {…} }
+bundle.js:13242:11
+🔍 Special Groups Debug: 
+Object { showNearApostles: false, apostles: 2, near_apostles: 0, terrorists: 1, totalSpecial: 3 }
+bundle.js:13373:11
+🔍 Full Distribution Object: 
+Object { loyalists: 2, defectors: 1, mercenaries: 1, hostages: 6, apostles: 0, nearApostles: 2, terrorists: 0 }
+bundle.js:13380:11
+🔍 Effective Distribution: 
+Object { loyalists: 2, mercenaries: 3, hostages: 2, defectors: 0, apostles: 2, terrorists: 1, nearApostles: 0 }
+bundle.js:13381:11
+🎯 DistributionSection initialized: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false }
+bundle.js:12942:11
+🔍 DISTRIBUTION SECTION - Customer quadrant assignments: bundle.js:12983:11
+  Customer ABC123 (2,5) → loyalists bundle.js:12985:13
+  Customer ABC124 (1,6) → hostages bundle.js:12985:13
+  Customer ABC125 (3,7) → apostles bundle.js:12985:13
+  Customer ABC126 (2,3) → mercenaries bundle.js:12985:13
+  Customer ABC127 (2,3) → mercenaries bundle.js:12985:13
+  Customer ABC128 (3,7) → apostles bundle.js:12985:13
+  Customer ABC129 (3,2) → mercenaries bundle.js:12985:13
+  Customer ABC130 (3,5) → loyalists bundle.js:12985:13
+  Customer ABC131 (1,6) → hostages bundle.js:12985:13
+  Customer ABC132 (2,1) → terrorists bundle.js:12985:13
+🚨🚨🚨 DISTRIBUTION SECTION COMPONENT LOADED - THIS SHOULD APPEAR bundle.js:12989:11
+🔥🔥🔥 FORCING PROXIMITY ANALYSIS CALCULATION WITHOUT USEMEMO bundle.js:12991:11
+🚨🚨🚨🚨🚨 USEMEMO START - THIS MUST APPEAR - TIMESTAMP: 1761055325193 bundle.js:12994:13
+🚨🚨🚨 USEMEMO EXECUTING - COMPONENT IS RUNNING bundle.js:12995:13
+🚨🚨🚨 DISTRIBUTION SECTION USEMEMO TRIGGERED - THIS SHOULD APPEAR IN LOGS: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false, mode: "MAIN_AREAS", timestamp: 1761055325193 }
+bundle.js:12996:13
+🚨🚨🚨 FORCING FRESH PROXIMITY ANALYSIS CALCULATION bundle.js:13010:13
+🔍 USEMEMO DEPENDENCIES DEBUG: 
+Object { data: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpointSat: 2, midpointLoy: 4, getQuadrantForPoint: "function", isPremium: false, showSpecialZones: true, showNearApostles: false, apostlesZoneSize: 1, … }
+bundle.js:13013:13
+🔍 DISTRIBUTION SECTION: Creating EnhancedProximityClassifier with: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false }
+bundle.js:13028:15
+🔥🔥🔥 DISTRIBUTION SECTION: About to call analyzeProximity... bundle.js:13039:15
+🔥 THIS LOG SHOULD APPEAR BEFORE CALLING ENHANCED CLASSIFIER bundle.js:13040:15
+🔥 USEMEMO IS DEFINITELY EXECUTING - TESTING bundle.js:13041:15
+🔍 EnhancedProximityClassifier: Starting proximity analysis bundle.js:21390:13
+   - Data points: 10, Midpoint: (2, 4) bundle.js:21391:13
+🎯 EnhancedProximityClassifier.analyzeProximity called with: 
+Object { dataLength: 10, isPremium: false, userThreshold: undefined, showSpecialZones: true, showNearApostles: false }
+bundle.js:21392:13
+❌ Proximity unavailable: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:21404:15
+🚨 CREATING EMPTY RESULT - Should be 0 customers, 0 positions. Reason: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:22439:13
+🔍 DISTRIBUTION SECTION: EnhancedProximityClassifier result: 
+Object { loyalists_close_to_apostles: 0, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 0, showSpecialZones: false, mode: "MAIN_AREAS" }
+bundle.js:13043:15
+🚨 DISTRIBUTION SECTION RETURNING RESULT: 
+Object { analysis: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:13050:15
+🔍 DISTRIBUTION SECTION proximityAnalysis result: 
+Object { loyalists_close_to_mercenaries: 0, isAvailable: false, totalCustomers: 10 }
+bundle.js:13157:11
+🚨 DISTRIBUTION SECTION PROXIMITY CALCULATIONS: 
+Object { loyalists_near_mercenaries: 0, loyalists_near_hostages: 0, hostages_near_loyalists: 0, hostages_near_defectors: 0 }
+bundle.js:13221:11
+🔍 DISTRIBUTION USING CONTEXT DIRECTLY: 
+Object { showSpecialZones: true, showNearApostles: false, contextDistribution: {…}, finalDistribution: {…} }
+bundle.js:13242:11
+🔍 Special Groups Debug: 
+Object { showNearApostles: false, apostles: 2, near_apostles: 0, terrorists: 1, totalSpecial: 3 }
+bundle.js:13373:11
+🔍 Full Distribution Object: 
+Object { loyalists: 2, defectors: 1, mercenaries: 1, hostages: 6, apostles: 0, nearApostles: 2, terrorists: 0 }
+bundle.js:13380:11
+🔍 Effective Distribution: 
+Object { loyalists: 2, mercenaries: 3, hostages: 2, defectors: 0, apostles: 2, terrorists: 1, nearApostles: 0 }
+bundle.js:13381:11
+🎯 ProximitySection: Using context distribution: 
+Object { loyalists: 2, mercenaries: 3, hostages: 2, defectors: 0, apostles: 2, terrorists: 1, near_apostles: 0, neutral: 0 }
+bundle.js:17054:11
+🔍 Context distribution totals: 
+Object { loyalists: 2, apostles: 2, total_loyalist_area: 4, totalFromContext: 10 }
+bundle.js:17058:11
+🔍 MANUAL COUNT from getQuadrantForPoint: 
+Object { loyalists: 2, hostages: 2, apostles: 2, mercenaries: 3, terrorists: 1 }
+bundle.js:17073:13
+🔍 DISCREPANCY ANALYSIS: 
+Object { contextSaysLoyalists: 2, manualCountLoyalists: 2, contextSaysApostles: 2, manualCountApostles: 2, contextTotal: 10, manualTotal: 10, difference: "Context: 10, Manual: 10" }
+bundle.js:17074:13
+🔄 PROXIMITY ANALYSIS USEMEMO RECALCULATING with dependencies: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpointSat: 2, midpointLoy: 4, contextDistributionTotal: 10, manualAssignmentsSize: 0, apostlesZoneSize: 1, terroristsZoneSize: 1, isPremium: false, … }
+bundle.js:17088:13
+🔍 Proximity analysis recalculating with: 
+Object { dataLength: 10, midpoint: {…}, contextDistribution: {…}, manualAssignments: 0 }
+bundle.js:17103:13
+🔍 Creating EnhancedProximityClassifier with: 
+Object { satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…} }
+bundle.js:17111:13
+🔍 EnhancedProximityClassifier: Starting proximity analysis bundle.js:21390:13
+   - Data points: 10, Midpoint: (2, 4) bundle.js:21391:13
+🎯 EnhancedProximityClassifier.analyzeProximity called with: 
+Object { dataLength: 10, isPremium: false, userThreshold: undefined, showSpecialZones: true, showNearApostles: false }
+bundle.js:21392:13
+❌ Proximity unavailable: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:21404:15
+🚨 CREATING EMPTY RESULT - Should be 0 customers, 0 positions. Reason: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:22439:13
+📊 Proximity analysis result: 
+Object { analysis: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:17124:13
+🔍 DETAILED RESULT INSPECTION FROM ENHANCEDPROXIMITY: 
+Object { resultType: "object", isAvailable: false, totalCustomersInResult: 0, unavailabilityReason: "Proximity analysis unavailable: 3-point scale too small (requires more than 3 points)", fullSummary: {…} }
+bundle.js:17125:13
+🔍 DETAILED RESULT INSPECTION: 
+Object { isAvailable: false, totalCustomersInResult: 0, unavailabilityReason: "Proximity analysis unavailable: 3-point scale too small (requires more than 3 points)" }
+bundle.js:17132:13
+🔍 FINAL RESULT BEING RETURNED FROM USEMEMO: 
+Object { totalProximityCustomers: 0, isAvailable: false, objectReference: {…} }
+bundle.js:17137:13
+🎯 ProximitySection: Using context distribution: 
+Object { loyalists: 2, mercenaries: 3, hostages: 2, defectors: 0, apostles: 2, terrorists: 1, near_apostles: 0, neutral: 0 }
+bundle.js:17054:11
+🔍 Context distribution totals: 
+Object { loyalists: 2, apostles: 2, total_loyalist_area: 4, totalFromContext: 10 }
+bundle.js:17058:11
+🔍 MANUAL COUNT from getQuadrantForPoint: 
+Object { loyalists: 2, hostages: 2, apostles: 2, mercenaries: 3, terrorists: 1 }
+bundle.js:17073:13
+🔍 DISCREPANCY ANALYSIS: 
+Object { contextSaysLoyalists: 2, manualCountLoyalists: 2, contextSaysApostles: 2, manualCountApostles: 2, contextTotal: 10, manualTotal: 10, difference: "Context: 10, Manual: 10" }
+bundle.js:17074:13
+🔄 PROXIMITY ANALYSIS USEMEMO RECALCULATING with dependencies: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpointSat: 2, midpointLoy: 4, contextDistributionTotal: 10, manualAssignmentsSize: 0, apostlesZoneSize: 1, terroristsZoneSize: 1, isPremium: false, … }
+bundle.js:17088:13
+🔍 Proximity analysis recalculating with: 
+Object { dataLength: 10, midpoint: {…}, contextDistribution: {…}, manualAssignments: 0 }
+bundle.js:17103:13
+🔍 Creating EnhancedProximityClassifier with: 
+Object { satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…} }
+bundle.js:17111:13
+🔍 EnhancedProximityClassifier: Starting proximity analysis bundle.js:21390:13
+   - Data points: 10, Midpoint: (2, 4) bundle.js:21391:13
+🎯 EnhancedProximityClassifier.analyzeProximity called with: 
+Object { dataLength: 10, isPremium: false, userThreshold: undefined, showSpecialZones: true, showNearApostles: false }
+bundle.js:21392:13
+❌ Proximity unavailable: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:21404:15
+🚨 CREATING EMPTY RESULT - Should be 0 customers, 0 positions. Reason: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:22439:13
+📊 Proximity analysis result: 
+Object { analysis: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:17124:13
+🔍 DETAILED RESULT INSPECTION FROM ENHANCEDPROXIMITY: 
+Object { resultType: "object", isAvailable: false, totalCustomersInResult: 0, unavailabilityReason: "Proximity analysis unavailable: 3-point scale too small (requires more than 3 points)", fullSummary: {…} }
+bundle.js:17125:13
+🔍 DETAILED RESULT INSPECTION: 
+Object { isAvailable: false, totalCustomersInResult: 0, unavailabilityReason: "Proximity analysis unavailable: 3-point scale too small (requires more than 3 points)" }
+bundle.js:17132:13
+🔍 FINAL RESULT BEING RETURNED FROM USEMEMO: 
+Object { totalProximityCustomers: 0, isAvailable: false, objectReference: {…} }
+bundle.js:17137:13
+🔥 useEffect TRIGGERED - dependency changed! bundle.js:18558:13
+🔥 useEffect TRIGGERED - rebuilding combinations due to dependency change bundle.js:18562:15
+🔥 Current context values - midpoint: 
+Object { sat: 2, loy: 4 }
+ manualAssignments: 0 bundle.js:18563:15
+🔥 New combinations built: 3 bundle.js:18565:15
+***DEBUG*** Prepared filterable data: 4 bundle.js:18612:15
+***DEBUG*** Prepared filterable data: 4 bundle.js:18614:15
+***DEBUG*** Prepared filterable data sample: 
+Object { id: "ABC124", name: "Alice Brown", satisfaction: 1, loyalty: 6, group: "Undefined", date: "05/01/2024", email: "alice@example.com", country: "UK", trueloyalist: "No", numpurchases: "3", … }
+bundle.js:18615:15
+🔄 useReportGenerator: About to generate reports bundle.js:20807:15
+🔄 Data length: 10 bundle.js:20808:15
+🔄 First 3 data points: 
+Array(3) [ {…}, {…}, {…} ]
+bundle.js:20809:15
+🔄 Current state hash: {"dataLength":10,"excluded":0,"scales":"1-3-1-7","effects":""} bundle.js:20810:15
+🔄 generateDataReport called with: 10 points bundle.js:23081:11
+🔄 First 3 points: 
+Array(3) [ {…}, {…}, {…} ]
+bundle.js:23082:11
+=== DEBUG: Combination Analysis === bundle.js:23107:11
+Total active data points: 10 bundle.js:23108:11
+Combination map size: 7 bundle.js:23109:11
+All combinations found: bundle.js:23112:11
+  2-5: 1 occurrences bundle.js:23114:13
+  1-6: 2 occurrences bundle.js:23114:13
+  3-7: 2 occurrences bundle.js:23114:13
+  2-3: 2 occurrences bundle.js:23114:13
+  3-2: 1 occurrences bundle.js:23114:13
+  3-5: 1 occurrences bundle.js:23114:13
+  2-1: 1 occurrences bundle.js:23114:13
+Maximum count found: 2 bundle.js:23119:11
+Combinations with max count: 3 bundle.js:23121:11
+  Max combo: 1-6 with 2 occurrences bundle.js:23123:13
+  Max combo: 3-7 with 2 occurrences bundle.js:23123:13
+  Max combo: 2-3 with 2 occurrences bundle.js:23123:13
+🔍 ReportingSection Premium Check: bundle.js:10358:11
+  activeEffects: 
+Array []
+bundle.js:10359:11
+  activeEffects.has("premium"): false bundle.js:10360:11
+  isPremium result: false bundle.js:10361:11
+🚨🚨🚨 REPORTING SECTION RENDERING - THIS SHOULD APPEAR bundle.js:10362:11
+🚨🚨🚨 About to render DistributionSection with: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false, dataReportExists: true, distributionExists: true }
+bundle.js:10363:11
+🔍 ReportingSection Premium Check: bundle.js:10358:11
+  activeEffects: 
+Array []
+bundle.js:10359:11
+  activeEffects.has("premium"): false bundle.js:10360:11
+  isPremium result: false bundle.js:10361:11
+🚨🚨🚨 REPORTING SECTION RENDERING - THIS SHOULD APPEAR bundle.js:10362:11
+🚨🚨🚨 About to render DistributionSection with: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false, dataReportExists: true, distributionExists: true }
+bundle.js:10363:11
+🚨 COMPONENT START - ResponseConcentrationSection is rendering! bundle.js:18483:11
+🔥 ResponseConcentrationSection ENTRY - originalData length: 10 bundle.js:18484:11
+🔥 Component is rendering with settings: 
+Object { useQuadrantColors: true, customColors: {}, showAverageDot: true, frequencyThreshold: 2, showTiers: true, maxTiers: 3, applyMainChartFrequencyFilter: false }
+bundle.js:18485:11
+🔥 MANUAL ASSIGNMENTS DEBUG: 
+Array []
+bundle.js:18492:11
+🔥 MANUAL ASSIGNMENTS STRING: <empty string> bundle.js:18493:11
+🔥 CONTEXT CONNECTED - midpoint: 
+Object { sat: 2, loy: 4 }
+ manualAssignments size: 0 bundle.js:18494:11
+***DEBUG*** isPremium result: false bundle.js:18495:11
+***DEBUG*** Initial filteredData: 
+Array [ {…}, {…} ]
+bundle.js:18550:11
+***DEBUG*** Report mostCommonCombos: 
+Array(3) [ {…}, {…}, {…} ]
+bundle.js:18551:11
+***DEBUG*** Settings frequencyThreshold: 2 bundle.js:18552:11
+***DEBUG*** Settings showTiers: true bundle.js:18553:11
+***DEBUG*** Settings maxTiers: 3 bundle.js:18554:11
+***DEBUG*** getFilteredCombinations result: 
+Array [ {…}, {…} ]
+bundle.js:18672:13
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🚨 COMPONENT START - ResponseConcentrationSection is rendering! bundle.js:18483:11
+🔥 ResponseConcentrationSection ENTRY - originalData length: 10 bundle.js:18484:11
+🔥 Component is rendering with settings: 
+Object { useQuadrantColors: true, customColors: {}, showAverageDot: true, frequencyThreshold: 2, showTiers: true, maxTiers: 3, applyMainChartFrequencyFilter: false }
+bundle.js:18485:11
+🔥 MANUAL ASSIGNMENTS DEBUG: 
+Array []
+bundle.js:18492:11
+🔥 MANUAL ASSIGNMENTS STRING: <empty string> bundle.js:18493:11
+🔥 CONTEXT CONNECTED - midpoint: 
+Object { sat: 2, loy: 4 }
+ manualAssignments size: 0 bundle.js:18494:11
+***DEBUG*** isPremium result: false bundle.js:18495:11
+***DEBUG*** Initial filteredData: 
+Array [ {…}, {…} ]
+bundle.js:18550:11
+***DEBUG*** Report mostCommonCombos: 
+Array(3) [ {…}, {…}, {…} ]
+bundle.js:18551:11
+***DEBUG*** Settings frequencyThreshold: 2 bundle.js:18552:11
+***DEBUG*** Settings showTiers: true bundle.js:18553:11
+***DEBUG*** Settings maxTiers: 3 bundle.js:18554:11
+***DEBUG*** getFilteredCombinations result: 
+Array [ {…}, {…} ]
+bundle.js:18672:13
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🎯 DistributionSection initialized: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false }
+bundle.js:12942:11
+🔍 DISTRIBUTION SECTION - Customer quadrant assignments: bundle.js:12983:11
+  Customer ABC123 (2,5) → loyalists bundle.js:12985:13
+  Customer ABC124 (1,6) → hostages bundle.js:12985:13
+  Customer ABC125 (3,7) → apostles bundle.js:12985:13
+  Customer ABC126 (2,3) → mercenaries bundle.js:12985:13
+  Customer ABC127 (2,3) → mercenaries bundle.js:12985:13
+  Customer ABC128 (3,7) → apostles bundle.js:12985:13
+  Customer ABC129 (3,2) → mercenaries bundle.js:12985:13
+  Customer ABC130 (3,5) → loyalists bundle.js:12985:13
+  Customer ABC131 (1,6) → hostages bundle.js:12985:13
+  Customer ABC132 (2,1) → terrorists bundle.js:12985:13
+🚨🚨🚨 DISTRIBUTION SECTION COMPONENT LOADED - THIS SHOULD APPEAR bundle.js:12989:11
+🔥🔥🔥 FORCING PROXIMITY ANALYSIS CALCULATION WITHOUT USEMEMO bundle.js:12991:11
+🚨🚨🚨🚨🚨 USEMEMO START - THIS MUST APPEAR - TIMESTAMP: 1761055325216 bundle.js:12994:13
+🚨🚨🚨 USEMEMO EXECUTING - COMPONENT IS RUNNING bundle.js:12995:13
+🚨🚨🚨 DISTRIBUTION SECTION USEMEMO TRIGGERED - THIS SHOULD APPEAR IN LOGS: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false, mode: "MAIN_AREAS", timestamp: 1761055325216 }
+bundle.js:12996:13
+🚨🚨🚨 FORCING FRESH PROXIMITY ANALYSIS CALCULATION bundle.js:13010:13
+🔍 USEMEMO DEPENDENCIES DEBUG: 
+Object { data: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpointSat: 2, midpointLoy: 4, getQuadrantForPoint: "function", isPremium: false, showSpecialZones: true, showNearApostles: false, apostlesZoneSize: 1, … }
+bundle.js:13013:13
+🔍 DISTRIBUTION SECTION: Creating EnhancedProximityClassifier with: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false }
+bundle.js:13028:15
+🔥🔥🔥 DISTRIBUTION SECTION: About to call analyzeProximity... bundle.js:13039:15
+🔥 THIS LOG SHOULD APPEAR BEFORE CALLING ENHANCED CLASSIFIER bundle.js:13040:15
+🔥 USEMEMO IS DEFINITELY EXECUTING - TESTING bundle.js:13041:15
+🔍 EnhancedProximityClassifier: Starting proximity analysis bundle.js:21390:13
+   - Data points: 10, Midpoint: (2, 4) bundle.js:21391:13
+🎯 EnhancedProximityClassifier.analyzeProximity called with: 
+Object { dataLength: 10, isPremium: false, userThreshold: undefined, showSpecialZones: true, showNearApostles: false }
+bundle.js:21392:13
+❌ Proximity unavailable: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:21404:15
+🚨 CREATING EMPTY RESULT - Should be 0 customers, 0 positions. Reason: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:22439:13
+🔍 DISTRIBUTION SECTION: EnhancedProximityClassifier result: 
+Object { loyalists_close_to_apostles: 0, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 0, showSpecialZones: false, mode: "MAIN_AREAS" }
+bundle.js:13043:15
+🚨 DISTRIBUTION SECTION RETURNING RESULT: 
+Object { analysis: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:13050:15
+🔍 DISTRIBUTION SECTION proximityAnalysis result: 
+Object { loyalists_close_to_mercenaries: 0, isAvailable: false, totalCustomers: 10 }
+bundle.js:13157:11
+🚨 DISTRIBUTION SECTION PROXIMITY CALCULATIONS: 
+Object { loyalists_near_mercenaries: 0, loyalists_near_hostages: 0, hostages_near_loyalists: 0, hostages_near_defectors: 0 }
+bundle.js:13221:11
+🔍 DISTRIBUTION USING CONTEXT DIRECTLY: 
+Object { showSpecialZones: true, showNearApostles: false, contextDistribution: {…}, finalDistribution: {…} }
+bundle.js:13242:11
+🔍 Special Groups Debug: 
+Object { showNearApostles: false, apostles: 2, near_apostles: 0, terrorists: 1, totalSpecial: 3 }
+bundle.js:13373:11
+🔍 Full Distribution Object: 
+Object { loyalists: 3, defectors: 1, mercenaries: 1, hostages: 5, apostles: 0, nearApostles: 3, terrorists: 0 }
+bundle.js:13380:11
+🔍 Effective Distribution: 
+Object { loyalists: 2, mercenaries: 3, hostages: 2, defectors: 0, apostles: 2, terrorists: 1, nearApostles: 0 }
+bundle.js:13381:11
+🎯 DistributionSection initialized: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false }
+bundle.js:12942:11
+🔍 DISTRIBUTION SECTION - Customer quadrant assignments: bundle.js:12983:11
+  Customer ABC123 (2,5) → loyalists bundle.js:12985:13
+  Customer ABC124 (1,6) → hostages bundle.js:12985:13
+  Customer ABC125 (3,7) → apostles bundle.js:12985:13
+  Customer ABC126 (2,3) → mercenaries bundle.js:12985:13
+  Customer ABC127 (2,3) → mercenaries bundle.js:12985:13
+  Customer ABC128 (3,7) → apostles bundle.js:12985:13
+  Customer ABC129 (3,2) → mercenaries bundle.js:12985:13
+  Customer ABC130 (3,5) → loyalists bundle.js:12985:13
+  Customer ABC131 (1,6) → hostages bundle.js:12985:13
+  Customer ABC132 (2,1) → terrorists bundle.js:12985:13
+🚨🚨🚨 DISTRIBUTION SECTION COMPONENT LOADED - THIS SHOULD APPEAR bundle.js:12989:11
+🔥🔥🔥 FORCING PROXIMITY ANALYSIS CALCULATION WITHOUT USEMEMO bundle.js:12991:11
+🚨🚨🚨🚨🚨 USEMEMO START - THIS MUST APPEAR - TIMESTAMP: 1761055325217 bundle.js:12994:13
+🚨🚨🚨 USEMEMO EXECUTING - COMPONENT IS RUNNING bundle.js:12995:13
+🚨🚨🚨 DISTRIBUTION SECTION USEMEMO TRIGGERED - THIS SHOULD APPEAR IN LOGS: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false, mode: "MAIN_AREAS", timestamp: 1761055325217 }
+bundle.js:12996:13
+🚨🚨🚨 FORCING FRESH PROXIMITY ANALYSIS CALCULATION bundle.js:13010:13
+🔍 USEMEMO DEPENDENCIES DEBUG: 
+Object { data: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpointSat: 2, midpointLoy: 4, getQuadrantForPoint: "function", isPremium: false, showSpecialZones: true, showNearApostles: false, apostlesZoneSize: 1, … }
+bundle.js:13013:13
+🔍 DISTRIBUTION SECTION: Creating EnhancedProximityClassifier with: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false }
+bundle.js:13028:15
+🔥🔥🔥 DISTRIBUTION SECTION: About to call analyzeProximity... bundle.js:13039:15
+🔥 THIS LOG SHOULD APPEAR BEFORE CALLING ENHANCED CLASSIFIER bundle.js:13040:15
+🔥 USEMEMO IS DEFINITELY EXECUTING - TESTING bundle.js:13041:15
+🔍 EnhancedProximityClassifier: Starting proximity analysis bundle.js:21390:13
+   - Data points: 10, Midpoint: (2, 4) bundle.js:21391:13
+🎯 EnhancedProximityClassifier.analyzeProximity called with: 
+Object { dataLength: 10, isPremium: false, userThreshold: undefined, showSpecialZones: true, showNearApostles: false }
+bundle.js:21392:13
+❌ Proximity unavailable: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:21404:15
+🚨 CREATING EMPTY RESULT - Should be 0 customers, 0 positions. Reason: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:22439:13
+🔍 DISTRIBUTION SECTION: EnhancedProximityClassifier result: 
+Object { loyalists_close_to_apostles: 0, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 0, showSpecialZones: false, mode: "MAIN_AREAS" }
+bundle.js:13043:15
+🚨 DISTRIBUTION SECTION RETURNING RESULT: 
+Object { analysis: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:13050:15
+🔍 DISTRIBUTION SECTION proximityAnalysis result: 
+Object { loyalists_close_to_mercenaries: 0, isAvailable: false, totalCustomers: 10 }
+bundle.js:13157:11
+🚨 DISTRIBUTION SECTION PROXIMITY CALCULATIONS: 
+Object { loyalists_near_mercenaries: 0, loyalists_near_hostages: 0, hostages_near_loyalists: 0, hostages_near_defectors: 0 }
+bundle.js:13221:11
+🔍 DISTRIBUTION USING CONTEXT DIRECTLY: 
+Object { showSpecialZones: true, showNearApostles: false, contextDistribution: {…}, finalDistribution: {…} }
+bundle.js:13242:11
+🔍 Special Groups Debug: 
+Object { showNearApostles: false, apostles: 2, near_apostles: 0, terrorists: 1, totalSpecial: 3 }
+bundle.js:13373:11
+🔍 Full Distribution Object: 
+Object { loyalists: 3, defectors: 1, mercenaries: 1, hostages: 5, apostles: 0, nearApostles: 3, terrorists: 0 }
+bundle.js:13380:11
+🔍 Effective Distribution: 
+Object { loyalists: 2, mercenaries: 3, hostages: 2, defectors: 0, apostles: 2, terrorists: 1, nearApostles: 0 }
+bundle.js:13381:11
+🎯 ProximitySection: Using context distribution: 
+Object { loyalists: 2, mercenaries: 3, hostages: 2, defectors: 0, apostles: 2, terrorists: 1, near_apostles: 0, neutral: 0 }
+bundle.js:17054:11
+🔍 Context distribution totals: 
+Object { loyalists: 2, apostles: 2, total_loyalist_area: 4, totalFromContext: 10 }
+bundle.js:17058:11
+🎯 ProximitySection: Using context distribution: 
+Object { loyalists: 2, mercenaries: 3, hostages: 2, defectors: 0, apostles: 2, terrorists: 1, near_apostles: 0, neutral: 0 }
+bundle.js:17054:11
+🔍 Context distribution totals: 
+Object { loyalists: 2, apostles: 2, total_loyalist_area: 4, totalFromContext: 10 }
+bundle.js:17058:11
+***DEBUG*** Prepared filterable data: 6 bundle.js:18612:15
+***DEBUG*** Prepared filterable data: 6 bundle.js:18614:15
+***DEBUG*** Prepared filterable data sample: 
+Object { id: "ABC124", name: "Alice Brown", satisfaction: 1, loyalty: 6, group: "Undefined", date: "05/01/2024", email: "alice@example.com", country: "UK", trueloyalist: "No", numpurchases: "3", … }
+bundle.js:18615:15
+🔍 ReportingSection Premium Check: bundle.js:10358:11
+  activeEffects: 
+Array []
+bundle.js:10359:11
+  activeEffects.has("premium"): false bundle.js:10360:11
+  isPremium result: false bundle.js:10361:11
+🚨🚨🚨 REPORTING SECTION RENDERING - THIS SHOULD APPEAR bundle.js:10362:11
+🚨🚨🚨 About to render DistributionSection with: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false, dataReportExists: true, distributionExists: true }
+bundle.js:10363:11
+🔍 ReportingSection Premium Check: bundle.js:10358:11
+  activeEffects: 
+Array []
+bundle.js:10359:11
+  activeEffects.has("premium"): false bundle.js:10360:11
+  isPremium result: false bundle.js:10361:11
+🚨🚨🚨 REPORTING SECTION RENDERING - THIS SHOULD APPEAR bundle.js:10362:11
+🚨🚨🚨 About to render DistributionSection with: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false, dataReportExists: true, distributionExists: true }
+bundle.js:10363:11
+🚨 COMPONENT START - ResponseConcentrationSection is rendering! bundle.js:18483:11
+🔥 ResponseConcentrationSection ENTRY - originalData length: 10 bundle.js:18484:11
+🔥 Component is rendering with settings: 
+Object { useQuadrantColors: true, customColors: {}, showAverageDot: true, frequencyThreshold: 2, showTiers: true, maxTiers: 3, applyMainChartFrequencyFilter: false }
+bundle.js:18485:11
+🔥 MANUAL ASSIGNMENTS DEBUG: 
+Array []
+bundle.js:18492:11
+🔥 MANUAL ASSIGNMENTS STRING: <empty string> bundle.js:18493:11
+🔥 CONTEXT CONNECTED - midpoint: 
+Object { sat: 2, loy: 4 }
+ manualAssignments size: 0 bundle.js:18494:11
+***DEBUG*** isPremium result: false bundle.js:18495:11
+***DEBUG*** Initial filteredData: 
+Array(3) [ {…}, {…}, {…} ]
+bundle.js:18550:11
+***DEBUG*** Report mostCommonCombos: 
+Array(3) [ {…}, {…}, {…} ]
+bundle.js:18551:11
+***DEBUG*** Settings frequencyThreshold: 2 bundle.js:18552:11
+***DEBUG*** Settings showTiers: true bundle.js:18553:11
+***DEBUG*** Settings maxTiers: 3 bundle.js:18554:11
+***DEBUG*** getFilteredCombinations result: 
+Array(3) [ {…}, {…}, {…} ]
+bundle.js:18672:13
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 3 7 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: apostles for point: ABC125 bundle.js:18720:15
+🔥 Mapping quadrant to color: apostles bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🚨 COMPONENT START - ResponseConcentrationSection is rendering! bundle.js:18483:11
+🔥 ResponseConcentrationSection ENTRY - originalData length: 10 bundle.js:18484:11
+🔥 Component is rendering with settings: 
+Object { useQuadrantColors: true, customColors: {}, showAverageDot: true, frequencyThreshold: 2, showTiers: true, maxTiers: 3, applyMainChartFrequencyFilter: false }
+bundle.js:18485:11
+🔥 MANUAL ASSIGNMENTS DEBUG: 
+Array []
+bundle.js:18492:11
+🔥 MANUAL ASSIGNMENTS STRING: <empty string> bundle.js:18493:11
+🔥 CONTEXT CONNECTED - midpoint: 
+Object { sat: 2, loy: 4 }
+ manualAssignments size: 0 bundle.js:18494:11
+***DEBUG*** isPremium result: false bundle.js:18495:11
+***DEBUG*** Initial filteredData: 
+Array(3) [ {…}, {…}, {…} ]
+bundle.js:18550:11
+***DEBUG*** Report mostCommonCombos: 
+Array(3) [ {…}, {…}, {…} ]
+bundle.js:18551:11
+***DEBUG*** Settings frequencyThreshold: 2 bundle.js:18552:11
+***DEBUG*** Settings showTiers: true bundle.js:18553:11
+***DEBUG*** Settings maxTiers: 3 bundle.js:18554:11
+***DEBUG*** getFilteredCombinations result: 
+Array(3) [ {…}, {…}, {…} ]
+bundle.js:18672:13
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 3 7 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: apostles for point: ABC125 bundle.js:18720:15
+🔥 Mapping quadrant to color: apostles bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 3 7 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: apostles for point: ABC125 bundle.js:18720:15
+🔥 Mapping quadrant to color: apostles bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 3 7 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: apostles for point: ABC125 bundle.js:18720:15
+🔥 Mapping quadrant to color: apostles bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 ChartControls received labelPositioning: above-dots 2 bundle.js:28677:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔧 ResizeHandle: Not adjustable, not rendering 2 bundle.js:29864:13
+🔍 ReportingSection Premium Check: bundle.js:10358:11
+  activeEffects: 
+Array []
+bundle.js:10359:11
+  activeEffects.has("premium"): false bundle.js:10360:11
+  isPremium result: false bundle.js:10361:11
+🚨🚨🚨 REPORTING SECTION RENDERING - THIS SHOULD APPEAR bundle.js:10362:11
+🚨🚨🚨 About to render DistributionSection with: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false, dataReportExists: true, distributionExists: true }
+bundle.js:10363:11
+🔍 ReportingSection Premium Check: bundle.js:10358:11
+  activeEffects: 
+Array []
+bundle.js:10359:11
+  activeEffects.has("premium"): false bundle.js:10360:11
+  isPremium result: false bundle.js:10361:11
+🚨🚨🚨 REPORTING SECTION RENDERING - THIS SHOULD APPEAR bundle.js:10362:11
+🚨🚨🚨 About to render DistributionSection with: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false, dataReportExists: true, distributionExists: true }
+bundle.js:10363:11
+🚨 COMPONENT START - ResponseConcentrationSection is rendering! bundle.js:18483:11
+🔥 ResponseConcentrationSection ENTRY - originalData length: 10 bundle.js:18484:11
+🔥 Component is rendering with settings: 
+Object { useQuadrantColors: true, customColors: {}, showAverageDot: true, frequencyThreshold: 2, showTiers: true, maxTiers: 3, applyMainChartFrequencyFilter: false }
+bundle.js:18485:11
+🔥 MANUAL ASSIGNMENTS DEBUG: 
+Array []
+bundle.js:18492:11
+🔥 MANUAL ASSIGNMENTS STRING: <empty string> bundle.js:18493:11
+🔥 CONTEXT CONNECTED - midpoint: 
+Object { sat: 2, loy: 4 }
+ manualAssignments size: 0 bundle.js:18494:11
+***DEBUG*** isPremium result: false bundle.js:18495:11
+***DEBUG*** Initial filteredData: 
+Array(3) [ {…}, {…}, {…} ]
+bundle.js:18550:11
+***DEBUG*** Report mostCommonCombos: 
+Array(3) [ {…}, {…}, {…} ]
+bundle.js:18551:11
+***DEBUG*** Settings frequencyThreshold: 2 bundle.js:18552:11
+***DEBUG*** Settings showTiers: true bundle.js:18553:11
+***DEBUG*** Settings maxTiers: 3 bundle.js:18554:11
+***DEBUG*** getFilteredCombinations result: 
+Array(3) [ {…}, {…}, {…} ]
+bundle.js:18672:13
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 3 7 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: apostles for point: ABC125 bundle.js:18720:15
+🔥 Mapping quadrant to color: apostles bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🚨 COMPONENT START - ResponseConcentrationSection is rendering! bundle.js:18483:11
+🔥 ResponseConcentrationSection ENTRY - originalData length: 10 bundle.js:18484:11
+🔥 Component is rendering with settings: 
+Object { useQuadrantColors: true, customColors: {}, showAverageDot: true, frequencyThreshold: 2, showTiers: true, maxTiers: 3, applyMainChartFrequencyFilter: false }
+bundle.js:18485:11
+🔥 MANUAL ASSIGNMENTS DEBUG: 
+Array []
+bundle.js:18492:11
+🔥 MANUAL ASSIGNMENTS STRING: <empty string> bundle.js:18493:11
+🔥 CONTEXT CONNECTED - midpoint: 
+Object { sat: 2, loy: 4 }
+ manualAssignments size: 0 bundle.js:18494:11
+***DEBUG*** isPremium result: false bundle.js:18495:11
+***DEBUG*** Initial filteredData: 
+Array(3) [ {…}, {…}, {…} ]
+bundle.js:18550:11
+***DEBUG*** Report mostCommonCombos: 
+Array(3) [ {…}, {…}, {…} ]
+bundle.js:18551:11
+***DEBUG*** Settings frequencyThreshold: 2 bundle.js:18552:11
+***DEBUG*** Settings showTiers: true bundle.js:18553:11
+***DEBUG*** Settings maxTiers: 3 bundle.js:18554:11
+***DEBUG*** getFilteredCombinations result: 
+Array(3) [ {…}, {…}, {…} ]
+bundle.js:18672:13
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 3 7 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: apostles for point: ABC125 bundle.js:18720:15
+🔥 Mapping quadrant to color: apostles bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 3 7 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: apostles for point: ABC125 bundle.js:18720:15
+🔥 Mapping quadrant to color: apostles bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🔥 getPointColor CALLED for point: 1 6 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: hostages for point: ABC124 bundle.js:18720:15
+🔥 Mapping quadrant to color: hostages bundle.js:18723:15
+🔥 getPointColor CALLED for point: 3 7 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: apostles for point: ABC125 bundle.js:18720:15
+🔥 Mapping quadrant to color: apostles bundle.js:18723:15
+🔥 getPointColor CALLED for point: 2 3 bundle.js:18694:13
+🔥 Using quadrant colors - creating temp point bundle.js:18696:15
+🔥 Context returned quadrant: mercenaries for point: ABC126 bundle.js:18720:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:18723:15
+🎯 DistributionSection initialized: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false }
+bundle.js:12942:11
+🔍 DISTRIBUTION SECTION - Customer quadrant assignments: bundle.js:12983:11
+  Customer ABC123 (2,5) → loyalists bundle.js:12985:13
+  Customer ABC124 (1,6) → hostages bundle.js:12985:13
+  Customer ABC125 (3,7) → apostles bundle.js:12985:13
+  Customer ABC126 (2,3) → mercenaries bundle.js:12985:13
+  Customer ABC127 (2,3) → mercenaries bundle.js:12985:13
+  Customer ABC128 (3,7) → apostles bundle.js:12985:13
+  Customer ABC129 (3,2) → mercenaries bundle.js:12985:13
+  Customer ABC130 (3,5) → loyalists bundle.js:12985:13
+  Customer ABC131 (1,6) → hostages bundle.js:12985:13
+  Customer ABC132 (2,1) → terrorists bundle.js:12985:13
+🚨🚨🚨 DISTRIBUTION SECTION COMPONENT LOADED - THIS SHOULD APPEAR bundle.js:12989:11
+🔥🔥🔥 FORCING PROXIMITY ANALYSIS CALCULATION WITHOUT USEMEMO bundle.js:12991:11
+🚨🚨🚨🚨🚨 USEMEMO START - THIS MUST APPEAR - TIMESTAMP: 1761055330201 bundle.js:12994:13
+🚨🚨🚨 USEMEMO EXECUTING - COMPONENT IS RUNNING bundle.js:12995:13
+🚨🚨🚨 DISTRIBUTION SECTION USEMEMO TRIGGERED - THIS SHOULD APPEAR IN LOGS: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false, mode: "MAIN_AREAS", timestamp: 1761055330201 }
+bundle.js:12996:13
+🚨🚨🚨 FORCING FRESH PROXIMITY ANALYSIS CALCULATION bundle.js:13010:13
+🔍 USEMEMO DEPENDENCIES DEBUG: 
+Object { data: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpointSat: 2, midpointLoy: 4, getQuadrantForPoint: "function", isPremium: false, showSpecialZones: true, showNearApostles: false, apostlesZoneSize: 1, … }
+bundle.js:13013:13
+🔍 DISTRIBUTION SECTION: Creating EnhancedProximityClassifier with: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false }
+bundle.js:13028:15
+🔥🔥🔥 DISTRIBUTION SECTION: About to call analyzeProximity... bundle.js:13039:15
+🔥 THIS LOG SHOULD APPEAR BEFORE CALLING ENHANCED CLASSIFIER bundle.js:13040:15
+🔥 USEMEMO IS DEFINITELY EXECUTING - TESTING bundle.js:13041:15
+🔍 EnhancedProximityClassifier: Starting proximity analysis bundle.js:21390:13
+   - Data points: 10, Midpoint: (2, 4) bundle.js:21391:13
+🎯 EnhancedProximityClassifier.analyzeProximity called with: 
+Object { dataLength: 10, isPremium: false, userThreshold: undefined, showSpecialZones: true, showNearApostles: false }
+bundle.js:21392:13
+❌ Proximity unavailable: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:21404:15
+🚨 CREATING EMPTY RESULT - Should be 0 customers, 0 positions. Reason: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:22439:13
+🔍 DISTRIBUTION SECTION: EnhancedProximityClassifier result: 
+Object { loyalists_close_to_apostles: 0, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 0, showSpecialZones: false, mode: "MAIN_AREAS" }
+bundle.js:13043:15
+🚨 DISTRIBUTION SECTION RETURNING RESULT: 
+Object { analysis: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:13050:15
+🔍 DISTRIBUTION SECTION proximityAnalysis result: 
+Object { loyalists_close_to_mercenaries: 0, isAvailable: false, totalCustomers: 10 }
+bundle.js:13157:11
+🚨 DISTRIBUTION SECTION PROXIMITY CALCULATIONS: 
+Object { loyalists_near_mercenaries: 0, loyalists_near_hostages: 0, hostages_near_loyalists: 0, hostages_near_defectors: 0 }
+bundle.js:13221:11
+🔍 DISTRIBUTION USING CONTEXT DIRECTLY: 
+Object { showSpecialZones: true, showNearApostles: false, contextDistribution: {…}, finalDistribution: {…} }
+bundle.js:13242:11
+🔍 Special Groups Debug: 
+Object { showNearApostles: false, apostles: 2, near_apostles: 0, terrorists: 1, totalSpecial: 3 }
+bundle.js:13373:11
+🔍 Full Distribution Object: 
+Object { loyalists: 3, defectors: 1, mercenaries: 1, hostages: 5, apostles: 0, nearApostles: 3, terrorists: 0 }
+bundle.js:13380:11
+🔍 Effective Distribution: 
+Object { loyalists: 2, mercenaries: 3, hostages: 2, defectors: 0, apostles: 2, terrorists: 1, nearApostles: 0 }
+bundle.js:13381:11
+🎯 DistributionSection initialized: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false }
+bundle.js:12942:11
+🔍 DISTRIBUTION SECTION - Customer quadrant assignments: bundle.js:12983:11
+  Customer ABC123 (2,5) → loyalists bundle.js:12985:13
+  Customer ABC124 (1,6) → hostages bundle.js:12985:13
+  Customer ABC125 (3,7) → apostles bundle.js:12985:13
+  Customer ABC126 (2,3) → mercenaries bundle.js:12985:13
+  Customer ABC127 (2,3) → mercenaries bundle.js:12985:13
+  Customer ABC128 (3,7) → apostles bundle.js:12985:13
+  Customer ABC129 (3,2) → mercenaries bundle.js:12985:13
+  Customer ABC130 (3,5) → loyalists bundle.js:12985:13
+  Customer ABC131 (1,6) → hostages bundle.js:12985:13
+  Customer ABC132 (2,1) → terrorists bundle.js:12985:13
+🚨🚨🚨 DISTRIBUTION SECTION COMPONENT LOADED - THIS SHOULD APPEAR bundle.js:12989:11
+🔥🔥🔥 FORCING PROXIMITY ANALYSIS CALCULATION WITHOUT USEMEMO bundle.js:12991:11
+🚨🚨🚨🚨🚨 USEMEMO START - THIS MUST APPEAR - TIMESTAMP: 1761055330202 bundle.js:12994:13
+🚨🚨🚨 USEMEMO EXECUTING - COMPONENT IS RUNNING bundle.js:12995:13
+🚨🚨🚨 DISTRIBUTION SECTION USEMEMO TRIGGERED - THIS SHOULD APPEAR IN LOGS: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false, mode: "MAIN_AREAS", timestamp: 1761055330202 }
+bundle.js:12996:13
+🚨🚨🚨 FORCING FRESH PROXIMITY ANALYSIS CALCULATION bundle.js:13010:13
+🔍 USEMEMO DEPENDENCIES DEBUG: 
+Object { data: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpointSat: 2, midpointLoy: 4, getQuadrantForPoint: "function", isPremium: false, showSpecialZones: true, showNearApostles: false, apostlesZoneSize: 1, … }
+bundle.js:13013:13
+🔍 DISTRIBUTION SECTION: Creating EnhancedProximityClassifier with: 
+Object { dataLength: 10, satisfactionScale: "1-3", loyaltyScale: "1-7", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false }
+bundle.js:13028:15
+🔥🔥🔥 DISTRIBUTION SECTION: About to call analyzeProximity... bundle.js:13039:15
+🔥 THIS LOG SHOULD APPEAR BEFORE CALLING ENHANCED CLASSIFIER bundle.js:13040:15
+🔥 USEMEMO IS DEFINITELY EXECUTING - TESTING bundle.js:13041:15
+🔍 EnhancedProximityClassifier: Starting proximity analysis bundle.js:21390:13
+   - Data points: 10, Midpoint: (2, 4) bundle.js:21391:13
+🎯 EnhancedProximityClassifier.analyzeProximity called with: 
+Object { dataLength: 10, isPremium: false, userThreshold: undefined, showSpecialZones: true, showNearApostles: false }
+bundle.js:21392:13
+❌ Proximity unavailable: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:21404:15
+🚨 CREATING EMPTY RESULT - Should be 0 customers, 0 positions. Reason: Proximity analysis unavailable: 3-point scale too small (requires more than 3 points) bundle.js:22439:13
+🔍 DISTRIBUTION SECTION: EnhancedProximityClassifier result: 
+Object { loyalists_close_to_apostles: 0, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 0, showSpecialZones: false, mode: "MAIN_AREAS" }
+bundle.js:13043:15
+🚨 DISTRIBUTION SECTION RETURNING RESULT: 
+Object { analysis: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:13050:15
+🔍 DISTRIBUTION SECTION proximityAnalysis result: 
+Object { loyalists_close_to_mercenaries: 0, isAvailable: false, totalCustomers: 10 }
+bundle.js:13157:11
+🚨 DISTRIBUTION SECTION PROXIMITY CALCULATIONS: 
+Object { loyalists_near_mercenaries: 0, loyalists_near_hostages: 0, hostages_near_loyalists: 0, hostages_near_defectors: 0 }
+bundle.js:13221:11
+🔍 DISTRIBUTION USING CONTEXT DIRECTLY: 
+Object { showSpecialZones: true, showNearApostles: false, contextDistribution: {…}, finalDistribution: {…} }
+bundle.js:13242:11
+🔍 Special Groups Debug: 
+Object { showNearApostles: false, apostles: 2, near_apostles: 0, terrorists: 1, totalSpecial: 3 }
+bundle.js:13373:11
+🔍 Full Distribution Object: 
+Object { loyalists: 3, defectors: 1, mercenaries: 1, hostages: 5, apostles: 0, nearApostles: 3, terrorists: 0 }
+bundle.js:13380:11
+🔍 Effective Distribution: 
+Object { loyalists: 2, mercenaries: 3, hostages: 2, defectors: 0, apostles: 2, terrorists: 1, nearApostles: 0 }
+bundle.js:13381:11
+🎯 ProximitySection: Using context distribution: 
+Object { loyalists: 2, mercenaries: 3, hostages: 2, defectors: 0, apostles: 2, terrorists: 1, near_apostles: 0, neutral: 0 }
+bundle.js:17054:11
+🔍 Context distribution totals: 
+Object { loyalists: 2, apostles: 2, total_loyalist_area: 4, totalFromContext: 10 }
+bundle.js:17058:11
+🎯 ProximitySection: Using context distribution: 
+Object { loyalists: 2, mercenaries: 3, hostages: 2, defectors: 0, apostles: 2, terrorists: 1, near_apostles: 0, neutral: 0 }
+bundle.js:17054:11
+🔍 Context distribution totals: 
+Object { loyalists: 2, apostles: 2, total_loyalist_area: 4, totalFromContext: 10 }
+bundle.js:17058:11
+Document click: 
+<svg class="lucide lucide-filter" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+bundle.js:10787:15
+Document click: 
+<svg class="lucide lucide-filter" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+bundle.js:10787:15
+🎛️ FilterPanel component mounted/rendered 2 bundle.js:31224:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 ChartControls received labelPositioning: above-dots 2 bundle.js:28677:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔧 ResizeHandle: Not adjustable, not rendering 2 bundle.js:29864:13
+🎧 FilterPanel: Setting up event listener for reset-filters-if-needed bundle.js:31520:13
+🎧 FilterPanel: Event listeners added successfully bundle.js:31541:13
+🔄 FilterContext: Filter state updated, recalculating... 
+Object { newFilterState: {…}, dataLength: 10 }
+bundle.js:28157:13
+🔄 FilterContext: Applying filters to data... 
+Object { dataLength: 10, hasDateFilter: false, hasAttributeFilters: true }
+bundle.js:27912:13
+🔄 FilterContext: Filter applied 
+Object { originalLength: 10, filteredLength: 1, filterSignature: '{"datePreset":"all","attributes":[{"field":"satisf...' }
+bundle.js:27965:13
+🔄 FilterContext: Filter state update complete 
+Object { filteredDataLength: 1, activeFilterCount: 1 }
+bundle.js:28172:13
+🔍 UnifiedChartControls: Tab selection logic 
+Object { hasFilterableData: true, isPremium: false, currentTab: "filters" }
+bundle.js:30226:15
+🎧 FilterPanel: Removing event listeners bundle.js:31543:15
+🎧 FilterPanel: Setting up event listener for reset-filters-if-needed bundle.js:31520:13
+🎧 FilterPanel: Event listeners added successfully bundle.js:31541:13
+🔄 FilterContext: Filter state updated, recalculating... 
+Object { newFilterState: {…}, dataLength: 10 }
+bundle.js:28157:13
+🔄 FilterContext: Applying filters to data... 
+Object { dataLength: 10, hasDateFilter: false, hasAttributeFilters: true }
+bundle.js:27912:13
+🔄 FilterContext: Filter applied 
+Object { originalLength: 10, filteredLength: 1, filterSignature: '{"datePreset":"all","attributes":[{"field":"satisf...' }
+bundle.js:27965:13
+🔄 FilterContext: Filter state update complete 
+Object { filteredDataLength: 1, activeFilterCount: 1 }
+bundle.js:28172:13
+🎛️ FilterPanel component mounted/rendered 2 bundle.js:31224:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 ChartControls received labelPositioning: above-dots 2 bundle.js:28677:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔧 ResizeHandle: Not adjustable, not rendering 2 bundle.js:29864:13
+🎧 FilterPanel: Removing event listeners bundle.js:31543:15
+🎧 FilterPanel: Setting up event listener for reset-filters-if-needed bundle.js:31520:13
+🎧 FilterPanel: Event listeners added successfully bundle.js:31541:13
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27162:11
+🔍 Label positioning: above-dots bundle.js:27163:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27164:11
+🔍 ChartControls received labelPositioning: above-dots 2 bundle.js:28677:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37180:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37181:11
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36750:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 3, loyMin: 1, loyMax: 7, midpointSat: 2, midpointLoy: 4, satisfactionScale: "1-3", loyaltyScale: "1-7" }
+bundle.js:36775:13
+🔧 ResizeHandle: Not adjustable, not rendering 2 bundle.js:29864:13
+🎧 FilterPanel: Removing event listeners bundle.js:31543:15
+Document click: 
+<div class="app">
+bundle.js:10787:15
+Document click: 
+<div class="app">
+bundle.js:10787:15

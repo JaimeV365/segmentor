@@ -219,7 +219,7 @@ const DataDisplay: React.FC<DataDisplayProps> = ({
             }}
           >
             <Trash2 size={16} />
-            Delete All Rows
+            Delete All Data
           </button>
         </div>
       )}

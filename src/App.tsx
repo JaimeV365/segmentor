@@ -5,6 +5,7 @@ import { DataPoint, ScaleFormat, ScaleState } from './types/base';
 import { QuadrantAssignmentProvider } from './components/visualization/context/QuadrantAssignmentContext';
 import { FilterProvider } from './components/visualization/context/FilterContext';
 import { useNotification } from './components/data-entry/NotificationSystem';
+// No longer need date filter utils - context handles this automatically
 import FilteredChart from './components/visualization/components/FilteredChart';
 import { ReportingSection } from './components/reporting/ReportingSection';
 import LeftDrawer from './components/ui/LeftDrawer/LeftDrawer';
@@ -351,6 +352,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
   };
 
   const handleDeleteDataPoint = (id: string) => {
+    console.log('🗑️ Deleting data point:', id);
     const newData = data.filter(item => item.id !== id);
     setData(newData);
     if (newData.length === 0) {
@@ -360,6 +362,10 @@ const handleTerroristsZoneSizeChange = (size: number) => {
         isLocked: false
       });
     }
+    // Clear filters when data is deleted
+    console.log('🗑️ Data deleted, clearing filters...');
+    const clearFiltersEvent = new CustomEvent('clear-filters-due-to-data-change');
+    document.dispatchEvent(clearFiltersEvent);
   };
 
   const handleEditDataPoint = (id: string) => {
@@ -389,10 +395,17 @@ const handleTerroristsZoneSizeChange = (size: number) => {
   };
 
   const handleToggleExclude = (id: string) => {
+    console.log('🚫 Toggling exclude for data point:', id);
     setData(data.map(item => 
       item.id === id ? { ...item, excluded: !item.excluded } : item
     ));
+    // Clear filters when data is excluded
+    console.log('🚫 Data excluded, clearing filters...');
+    const clearFiltersEvent = new CustomEvent('clear-filters-due-to-data-change');
+    document.dispatchEvent(clearFiltersEvent);
   };
+
+  // No longer need manual filter validation - the context handles automatic recalculation
 
   
 
@@ -403,6 +416,25 @@ const handleTerroristsZoneSizeChange = (size: number) => {
       {/* App Header - Removed redundant header, mode indicator moved to welcome banner */}
       
       <main className="app-content">
+            {/* Temporary Premium Toggle Button for Testing */}
+            <div style={{
+              position: 'fixed',
+              top: '80px',
+              right: '20px',
+              zIndex: 1000,
+              background: isPremium ? '#3a863e' : '#6b7280',
+              color: 'white',
+              padding: '8px 16px',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '500',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              transition: 'all 0.2s ease'
+            }} onClick={() => setIsPremium(!isPremium)}>
+              {isPremium ? '⭐ Premium Mode' : '🔒 Standard Mode'}
+            </div>
+            
             {/* Demo Banner */}
         {showWelcomeBanner && data.length === 0 && !isDemoMode && (
           <WelcomeBanner
@@ -446,7 +478,12 @@ const handleTerroristsZoneSizeChange = (size: number) => {
             )}
 
             {data.length > 0 && (
-              <FilterProvider initialData={data} initialFilterState={filterState || undefined}>
+              <FilterProvider 
+                initialData={data} 
+                data={data} 
+                initialFilterState={filterState || undefined}
+                onShowNotification={notification.showNotification}
+              >
                 <QuadrantAssignmentProvider
                   data={data}
                   satisfactionScale={scales.satisfactionScale}
@@ -489,6 +526,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
                       onShowGridChange={setShowGrid}
                       onEffectsChange={setActiveEffects}
                       isPremium={isPremium}
+                      onShowNotification={notification.showNotification}
                     />
                     
                     

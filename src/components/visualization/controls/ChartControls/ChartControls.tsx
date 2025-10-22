@@ -292,7 +292,23 @@ useEffect(() => {
               borderRadius: '4px',
               border: '1px solid #e5e7eb'
             }}>
-              {filteredData ? filteredData.length : (data ? data.filter(p => !p.excluded).length : 0)} of {totalData ? totalData.length : (data ? data.length : 0)} points
+              {(() => {
+                const activeData = data ? data.filter(p => !p.excluded) : [];
+                // Now that FilterContext properly excludes items, filteredData should be correct
+                const filteredCount = filteredData ? filteredData.length : activeData.length;
+                const totalCount = activeData.length;
+                console.log('🔍 Counter debug:', { 
+                  filteredCount, 
+                  totalCount, 
+                  filteredDataLength: filteredData?.length, 
+                  dataLength: data?.length,
+                  excludedCount: data ? data.filter(p => p.excluded).length : 0,
+                  hasFilters: !!filteredData,
+                  filteredDataIsSameAsData: filteredData === data,
+                  activeDataLength: activeData.length
+                });
+                return `${filteredCount} of ${totalCount} points`;
+              })()}
             </div>
             
             {/* Filter button */}

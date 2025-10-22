@@ -52,13 +52,17 @@ const FilterContext = createContext<FilterContextType | undefined>(undefined);
 interface FilterProviderProps {
   children: ReactNode;
   initialData?: DataPoint[];
+  data?: DataPoint[]; // Current data that gets updated
   initialFilterState?: FilterState;
+  onShowNotification?: (notification: { title: string; message: string; type: 'success' | 'error' | 'info' | 'warning' }) => void;
 }
 
 export const FilterProvider: React.FC<FilterProviderProps> = ({ 
   children, 
   initialData = [],
-  initialFilterState
+  data: currentData,
+  initialFilterState,
+  onShowNotification
 }) => {
   const [data, setData] = useState<DataPoint[]>(initialData);
   const [filteredData, setFilteredData] = useState<DataPoint[]>(initialData);
@@ -76,32 +80,127 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     }
   );
 
+  // Apply filters to data with memoization
+  const applyFilters = useCallback((dataToFilter: DataPoint[], currentFilterState: FilterState) => {
+    console.log('🔄 FilterContext: Applying filters to data...', { 
+      dataLength: dataToFilter.length, 
+      hasDateFilter: currentFilterState.dateRange.preset !== 'all',
+      hasAttributeFilters: currentFilterState.attributes.some(attr => attr.values.size > 0)
+    });
+
+    // Create a signature for the filter state to enable memoization
+    const filterSignature = JSON.stringify({
+      datePreset: currentFilterState.dateRange.preset,
+      startDate: currentFilterState.dateRange.startDate?.toISOString(),
+      endDate: currentFilterState.dateRange.endDate?.toISOString(),
+      attributes: currentFilterState.attributes.map(attr => ({
+        field: attr.field,
+        values: Array.from(attr.values).sort()
+      }))
+    });
+
+    // Create a signature for the data
+    const dataSignature = dataToFilter.map(item => `${item.id}-${item.excluded}-${item.date}`).join('|');
+
+    // Check if we can use cached result (this is a simple optimization)
+    // In a real app, you might want to use a proper memoization library
+    let filtered = [...dataToFilter];
+
+    // FIRST: Always exclude items marked as excluded
+    filtered = filtered.filter(item => !item.excluded);
+
+    // Apply date filter
+    if (currentFilterState.dateRange.preset && currentFilterState.dateRange.preset !== 'all') {
+      const { startDate, endDate } = currentFilterState.dateRange;
+      if (startDate || endDate) {
+        filtered = filtered.filter(item => {
+          if (!item.date) return false;
+          
+          // Parse the date
+          const itemDate = new Date(item.date);
+          if (isNaN(itemDate.getTime())) return false;
+          
+          if (startDate && itemDate < startDate) return false;
+          if (endDate && itemDate > endDate) return false;
+          
+          return true;
+        });
+      }
+    }
+
+    // Apply attribute filters
+    currentFilterState.attributes.forEach(attr => {
+      if (attr.values.size > 0) {
+        filtered = filtered.filter(item => {
+          const value = (item as any)[attr.field];
+          return attr.values.has(value);
+        });
+      }
+    });
+
+    console.log('🔄 FilterContext: Filter applied', { 
+      originalLength: dataToFilter.length, 
+      filteredLength: filtered.length,
+      filterSignature: filterSignature.substring(0, 50) + '...'
+    });
+
+    return filtered;
+  }, []);
+
   // Update date range
   const updateDateRange = useCallback((dateRangeUpdate: Partial<DateRange>) => {
-    setFilterState(prev => ({
-      ...prev,
-      dateRange: {
-        ...prev.dateRange,
-        ...dateRangeUpdate
-      }
-    }));
-  }, []);
+    setFilterState(prev => {
+      const newState = {
+        ...prev,
+        dateRange: {
+          ...prev.dateRange,
+          ...dateRangeUpdate
+        }
+      };
+      
+      // Automatically recalculate filtered data when date range changes
+      const newFilteredData = applyFilters(data, newState);
+      setFilteredData(newFilteredData);
+      
+      // Update active filter count
+      const hasDateFilter = newState.dateRange.preset && newState.dateRange.preset !== 'all';
+      const hasAttributeFilters = newState.attributes.some(attr => attr.values.size > 0);
+      const newActiveFilterCount = (hasDateFilter ? 1 : 0) + newState.attributes.filter(attr => attr.values.size > 0).length;
+      setActiveFilterCount(newActiveFilterCount);
+      
+      return newState;
+    });
+  }, [data, applyFilters]);
 
   // Update attribute filter
   const updateAttributeFilter = useCallback((field: string, values: Set<string | number>) => {
-    setFilterState(prev => ({
-      ...prev,
-      attributes: prev.attributes.map(attr => 
-        attr.field === field 
-          ? { ...attr, values }
-          : attr
-      )
-    }));
-  }, []);
+    setFilterState(prev => {
+      const newState = {
+        ...prev,
+        attributes: prev.attributes.map(attr => 
+          attr.field === field 
+            ? { ...attr, values }
+            : attr
+        )
+      };
+      
+      // Automatically recalculate filtered data when attribute filter changes
+      const newFilteredData = applyFilters(data, newState);
+      setFilteredData(newFilteredData);
+      
+      // Update active filter count
+      const hasDateFilter = newState.dateRange.preset && newState.dateRange.preset !== 'all';
+      const hasAttributeFilters = newState.attributes.some(attr => attr.values.size > 0);
+      const newActiveFilterCount = (hasDateFilter ? 1 : 0) + newState.attributes.filter(attr => attr.values.size > 0).length;
+      setActiveFilterCount(newActiveFilterCount);
+      
+      return newState;
+    });
+  }, [data, applyFilters]);
 
   // Reset all filters
   const resetFilters = useCallback(() => {
-    setFilterState({
+    const newState = {
       dateRange: {
         startDate: null,
         endDate: null,
@@ -109,13 +208,76 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       },
       attributes: filterState.attributes.map(attr => ({
         ...attr,
-        values: new Set()
+        values: new Set<string | number>()
       })),
       isActive: false
-    });
-    setFilteredData(data);
+    };
+    
+    setFilterState(newState);
+    
+    // Automatically recalculate filtered data (should be all data since filters are reset)
+    const newFilteredData = applyFilters(data, newState);
+    setFilteredData(newFilteredData);
     setActiveFilterCount(0);
-  }, [data, filterState.attributes]);
+    
+    console.log('🔄 FilterContext: Filters reset, showing all data', { 
+      dataLength: data.length,
+      filteredDataLength: newFilteredData.length
+    });
+  }, [data, filterState.attributes, applyFilters]);
+
+  // Update data and recalculate using existing filters (do not clear)
+  const handleSetData = useCallback((newData: DataPoint[]) => {
+    console.log('🔄 FilterContext: Data updated, recalculating with existing filters...', { 
+      newDataLength: newData.length,
+      currentFilterState: filterState
+    });
+    
+    setData(newData);
+
+    const newFilteredData = applyFilters(newData, filterState);
+    setFilteredData(newFilteredData);
+
+    const hasDateFilter = filterState.dateRange.preset && filterState.dateRange.preset !== 'all';
+    const newActiveFilterCount = (hasDateFilter ? 1 : 0) + filterState.attributes.filter(attr => attr.values.size > 0).length;
+    setActiveFilterCount(newActiveFilterCount);
+  }, [filterState, applyFilters]);
+
+  // Watch for changes in currentData prop and update context data
+  useEffect(() => {
+    if (currentData && (currentData.length !== data.length || 
+        currentData.some((item, index) => !data[index] || item.id !== data[index].id || 
+        item.satisfaction !== data[index].satisfaction || item.loyalty !== data[index].loyalty ||
+        item.excluded !== data[index].excluded))) {
+      console.log('🔄 FilterContext: Current data changed, updating context data...', {
+        currentDataLength: currentData.length,
+        contextDataLength: data.length
+      });
+      handleSetData(currentData);
+    }
+  }, [currentData, data, handleSetData]);
+
+  // Listen for explicit clear-filters requests (from delete/exclude actions)
+  useEffect(() => {
+    const handler = () => {
+      // Check if there were active filters before clearing
+      const hadActiveFilters = (filterState.dateRange.preset && filterState.dateRange.preset !== 'all') || 
+                              filterState.attributes.some(attr => attr.values.size > 0);
+      
+      resetFilters();
+      
+      // Only show notification if there were actually active filters
+      if (hadActiveFilters && onShowNotification) {
+        onShowNotification({
+          title: 'Filters Cleared',
+          message: 'All filters were cleared due to data deletion/exclusion.',
+          type: 'success'
+        });
+      }
+    };
+    document.addEventListener('clear-filters-due-to-data-change', handler);
+    return () => document.removeEventListener('clear-filters-due-to-data-change', handler);
+  }, [resetFilters, onShowNotification, filterState]);
 
   // Initialize attributes based on data
   useEffect(() => {
@@ -127,7 +289,10 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       fields.set('satisfaction', new Set());
       fields.set('loyalty', new Set());
       
-      data.forEach(item => {
+      // Only process active data (exclude deleted and excluded items)
+      const activeData = data.filter(item => !item.excluded);
+      
+      activeData.forEach(item => {
         // Add group values
         if (item.group) {
           fields.get('group')?.add(item.group);
@@ -166,7 +331,7 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
           field,
           counts: Array.from(valuesSet).map(value => ({
             value,
-            count: data.filter(item => (item as any)[field] === value || ((item as any).additionalAttributes && (item as any).additionalAttributes[field] === value)).length
+            count: activeData.filter(item => (item as any)[field] === value || ((item as any).additionalAttributes && (item as any).additionalAttributes[field] === value)).length
           }))
         }))
         .sort((a, b) => {
@@ -179,28 +344,51 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
           return a.field.localeCompare(b.field);
         });
       
-      // Initialize attributes if they're empty
+      // Update attributes with new available values
       setFilterState(prev => ({
         ...prev,
-        attributes: prev.attributes.length === 0 ? availableFields.map(field => ({
-          field: field.field,
-          values: new Set(),
-          availableValues: field.counts,
-          expanded: false
-        })) : prev.attributes
+        attributes: availableFields.map(field => {
+          // Find existing attribute to preserve selected values
+          const existingAttr = prev.attributes.find(attr => attr.field === field.field);
+          return {
+            field: field.field,
+            values: existingAttr ? existingAttr.values : new Set(),
+            availableValues: field.counts,
+            expanded: existingAttr ? existingAttr.expanded : false
+          };
+        })
       }));
     }
   }, [data]);
 
-  // Update data and reset filtered data
-  const handleSetData = useCallback((newData: DataPoint[]) => {
-    setData(newData);
-    setFilteredData(newData);
-  }, []);
+  // Enhanced setFilterState that automatically recalculates
+  const handleSetFilterState = useCallback((newFilterState: FilterState) => {
+    console.log('🔄 FilterContext: Filter state updated, recalculating...', { 
+      newFilterState,
+      dataLength: data.length
+    });
+    
+    setFilterState(newFilterState);
+    
+    // Automatically recalculate filtered data
+    const newFilteredData = applyFilters(data, newFilterState);
+    setFilteredData(newFilteredData);
+    
+    // Update active filter count
+    const hasDateFilter = newFilterState.dateRange.preset && newFilterState.dateRange.preset !== 'all';
+    const hasAttributeFilters = newFilterState.attributes.some(attr => attr.values.size > 0);
+    const newActiveFilterCount = (hasDateFilter ? 1 : 0) + newFilterState.attributes.filter(attr => attr.values.size > 0).length;
+    setActiveFilterCount(newActiveFilterCount);
+    
+    console.log('🔄 FilterContext: Filter state update complete', { 
+      filteredDataLength: newFilteredData.length,
+      activeFilterCount: newActiveFilterCount
+    });
+  }, [data, applyFilters]);
 
   const contextValue: FilterContextType = {
     filterState,
-    setFilterState,
+    setFilterState: handleSetFilterState,
     updateDateRange,
     updateAttributeFilter,
     resetFilters,

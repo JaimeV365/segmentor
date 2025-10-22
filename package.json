@@ -30,7 +30,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && node scripts/cleanup-old-nav.js && node scripts/build-navigation.js",
+    "build:nav": "node scripts/build-navigation.js",
+    "cleanup:nav": "node scripts/cleanup-old-nav.js",
     "build:deploy": "npm run build && npm run deploy:prepare",
     "deploy:prepare": "mkdir -p public/tool && cp -r build/* public/tool/",
     "deploy": "npm run build:deploy && git add . && git commit -m 'Deploy to GitHub Pages' && git push",

@@ -31,6 +31,9 @@ interface UnifiedChartControlsProps {
   // Panel state
   isOpen: boolean;
   onClose: () => void;
+  
+  // Notification callback
+  onShowNotification?: (notification: { title: string; message: string; type: 'success' | 'error' | 'info' | 'warning' }) => void;
 }
 
 type TabType = 'filters' | 'watermark';
@@ -50,7 +53,8 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
   onFrequencyThresholdChange,
   frequencyData,
   isOpen,
-  onClose
+  onClose,
+  onShowNotification
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('filters');
   const [filterResetTrigger, setFilterResetTrigger] = useState(0);
@@ -128,7 +132,7 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
       <div className="unified-tab-body">
         <FilterPanel
           data={data}
-          onFilterChange={onFilterChange}
+          onFilterChange={() => {}} // No longer needed - using context data directly
           onClose={() => {}} // We handle closing at the panel level
           isOpen={true}
           contentOnly={true} // Render only content without panel wrapper
@@ -138,6 +142,7 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
           onFrequencyThresholdChange={onFrequencyThresholdChange}
           frequencyData={frequencyData}
           resetTrigger={filterResetTrigger}
+          onShowNotification={onShowNotification}
         />
       </div>
       

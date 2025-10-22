@@ -10,6 +10,7 @@ import './FilteredChart.css';
 interface FilteredChartProps extends QuadrantChartProps {
   onEffectsChange?: (effects: Set<string>) => void;
   isPremium?: boolean;
+  onShowNotification?: (notification: { title: string; message: string; type: 'success' | 'error' | 'info' | 'warning' }) => void;
 }
 
 const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
@@ -38,12 +39,11 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
   onShowLabelsChange,
   onShowGridChange,
   onEffectsChange,
-  isPremium
+  isPremium,
+  onShowNotification
 }) => {
   const [isUnifiedControlsOpen, setIsUnifiedControlsOpen] = useState(false);
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
-  const [filteredData, setFilteredData] = useState<DataPoint[]>(data);
-  const [activeFilterCount, setActiveFilterCount] = useState(0);
   
   const filterPanelRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<HTMLDivElement>(null);
@@ -51,9 +51,9 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
   // Try to access filter context if available
   const filterContext = useFilterContextSafe();
   
-  // Use filter context data if available, otherwise use local state
-  const effectiveFilteredData = filterContext?.filteredData || filteredData;
-  const effectiveActiveFilterCount = filterContext?.activeFilterCount || activeFilterCount;
+  // Use filter context data directly - no local state caching
+  const effectiveFilteredData = filterContext?.filteredData || data;
+  const effectiveActiveFilterCount = filterContext?.activeFilterCount || 0;
 
   // Determine if we have filterable data
   const hasFilterableData = useMemo(() => {
@@ -77,11 +77,7 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
     return hasDate || hasCustomFields || hasMultipleGroups || hasSatisfactionDistribution || hasLoyaltyDistribution;
   }, [data]);
 
-  // Update filtered data when main data changes - optimized for large datasets
-  useEffect(() => {
-    const excludedIds = new Set(data.filter(p => p.excluded).map(p => p.id));
-    setFilteredData(data.filter(point => !excludedIds.has(point.id)));
-  }, [data]);
+  // No need to update local filtered data - using context data directly
 
   // Handle click outside to close filter panel
   useEffect(() => {
@@ -118,16 +114,7 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
 
 
   /// Handle filter changes
-const handleFilterChange = (newFilteredData: DataPoint[], newFilters: any[] = []) => {
-  // Use filter context if available, otherwise use local state
-  if (filterContext) {
-    filterContext.setFilteredData(newFilteredData);
-    filterContext.setActiveFilterCount(newFilters.length);
-  } else {
-    setFilteredData(newFilteredData);
-    setActiveFilterCount(newFilters.length);
-  }
-};
+  // No need for handleFilterChange - using context data directly
 
 
   // Calculate grid dimensions for watermark controls
@@ -161,7 +148,7 @@ const handleFilterChange = (newFilteredData: DataPoint[], newFilters: any[] = []
         hasFilterableData={hasFilterableData}
         activeFilterCount={effectiveActiveFilterCount}
         data={data}
-        onFilterChange={handleFilterChange}
+        onFilterChange={() => {}} // No longer needed - using context data directly
         effects={activeEffects}
         onEffectsChange={onEffectsChange || (() => {})}
         dimensions={gridDimensions}
@@ -176,12 +163,13 @@ const handleFilterChange = (newFilteredData: DataPoint[], newFilters: any[] = []
         }}
         isOpen={isUnifiedControlsOpen}
         onClose={() => setIsUnifiedControlsOpen(false)}
+        onShowNotification={onShowNotification}
       />
       
       
       {/* Chart with Filtered Data */}
       <QuadrantChart
-  data={effectiveFilteredData}
+  data={data}
   satisfactionScale={satisfactionScale}
   loyaltyScale={loyaltyScale}
   isClassicModel={isClassicModel}

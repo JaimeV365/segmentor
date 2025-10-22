@@ -1,0 +1,1372 @@
+Error: Not allowed to define cross-origin object as property on [Object] or [Array] XrayWrapper 3 content-script.js:376:604
+Feature Policy: Skipping unsupported feature name “clipboard-read”. content-script.js:39:3880
+Feature Policy: Skipping unsupported feature name “clipboard-write”. content-script.js:39:3880
+Feature Policy: Skipping unsupported feature name “clipboard-read”. content-script.js:39:89374
+Feature Policy: Skipping unsupported feature name “clipboard-write”. content-script.js:39:89374
+Error: Not allowed to define cross-origin object as property on [Object] or [Array] XrayWrapper 3 content-script.js:376:604
+🔍 analyzeSpecialZoneProximity: defectors -> terrorists | customers: 1 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for defectors -> terrorists: true bundle.js:22219:13
+📊 After target zone exclusion: 1 customers (excluded 0 already in terrorists zone) bundle.js:22245:13
+📊 After boundary conflict exclusion: 1 customers (excluded 0 on quadrant boundaries) bundle.js:22255:13
+📊 Special zone proximity result: defectors -> terrorists: 0 customers, 0 positions, avg distance: 0.00 bundle.js:22304:13
+🔍 analyzeSpecialZoneProximity: apostles -> loyalists | customers: 2 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for apostles -> loyalists: true bundle.js:22219:13
+❌ No boundaries found for target zone: loyalists bundle.js:22233:15
+🔍 analyzeSpecialZoneProximity: near_apostles -> loyalists | customers: 0 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for near_apostles -> loyalists: false bundle.js:22219:13
+🔍 analyzeSpecialZoneProximity: terrorists -> defectors | customers: 0 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for terrorists -> defectors: true bundle.js:22219:13
+🔍 DEBUGGING SUMMARY CALCULATION - About to call calculateSummaryMetrics bundle.js:21620:13
+🔍 Analysis details: 
+Object { loyalists_close_to_mercenaries: 1, loyalists_close_to_hostages: 0, mercenaries_close_to_loyalists: 1, mercenaries_close_to_defectors: 1, hostages_close_to_loyalists: 0, hostages_close_to_defectors: 0, defectors_close_to_mercenaries: 0, defectors_close_to_hostages: 0 }
+bundle.js:21621:13
+🔍 Special zones details: 
+Object { apostles_close_to_loyalists: 0, near_apostles_close_to_loyalists: 0, terrorists_close_to_defectors: 0 }
+bundle.js:21633:15
+🚨 SUMMARY CALCULATION RESULT: 
+Object { totalProximityCustomers: 5, totalProximityPositions: 5 }
+bundle.js:21642:13
+🔍 Detecting crossroads customers... bundle.js:22601:13
+🎯 Crossroads customer ABC125 appears in 3 relationships: mercenaries_close_to_loyalists_defectors, mercenaries_close_to_loyalists_defectors, mercenaries_close_to_hostages bundle.js:22633:17
+📊 Crossroads detection complete: 1 total, 1 high-value bundle.js:22663:13
+🚨 CROSSROADS DETECTION RESULT: 
+Object { totalCrossroads: 1, highValueCrossroads: 1 }
+bundle.js:21649:13
+🚨 ENHANCED PROXIMITY CLASSIFIER FINAL RESULT: 
+Object { loyalists_close_to_apostles: 1, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 0, showSpecialZones: true, showNearApostles: false }
+bundle.js:21665:13
+🚀🚀🚀 ENHANCED PROXIMITY CLASSIFIER - analyzeProximity COMPLETE bundle.js:21672:13
+🚀 FINAL RESULTS: bundle.js:21673:13
+   - Total proximity customers: 5 bundle.js:21674:13
+   - Total proximity positions: 5 bundle.js:21675:13
+   - Average risk score: 40 bundle.js:21676:13
+   - Defectors close to loyalists: 0 customers bundle.js:21677:13
+   - Defectors close to loyalists positions: 
+Array []
+bundle.js:21678:13
+🎯 Proximity Analysis Result: 
+Object { analysis: {…}, specialZones: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:21679:13
+🔍 DISTRIBUTION SECTION: EnhancedProximityClassifier result: 
+Object { loyalists_close_to_apostles: 1, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 0, showSpecialZones: true, mode: "MAIN_AREAS" }
+bundle.js:13156:15
+🚨 DISTRIBUTION SECTION RETURNING RESULT: 
+Object { analysis: {…}, specialZones: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:13163:15
+🔍 DISTRIBUTION SECTION proximityAnalysis result: 
+Object { loyalists_close_to_mercenaries: 1, isAvailable: true, totalCustomers: 10 }
+bundle.js:13270:11
+🚨 DISTRIBUTION SECTION PROXIMITY CALCULATIONS: 
+Object { loyalists_near_mercenaries: 1, loyalists_near_hostages: 0, hostages_near_loyalists: 0, hostages_near_defectors: 0 }
+bundle.js:13334:11
+🔍 DISTRIBUTION USING CONTEXT DIRECTLY: 
+Object { showSpecialZones: true, showNearApostles: false, contextDistribution: {…}, finalDistribution: {…} }
+bundle.js:13355:11
+🔍 Special Groups Debug: 
+Object { showNearApostles: false, apostles: 2, near_apostles: 0, terrorists: 0, totalSpecial: 2 }
+bundle.js:13486:11
+🔍 Full Distribution Object: 
+Object { loyalists: 7, defectors: 0, mercenaries: 1, hostages: 2, apostles: 5, nearApostles: 2, terrorists: 0 }
+bundle.js:13493:11
+🔍 Effective Distribution: 
+Object { loyalists: 3, mercenaries: 2, hostages: 1, defectors: 1, apostles: 2, terrorists: 0, nearApostles: 0 }
+bundle.js:13494:11
+🎯 ProximitySection: Using context distribution: 
+Object { loyalists: 3, mercenaries: 2, hostages: 1, defectors: 1, apostles: 2, terrorists: 0, near_apostles: 0, neutral: 0 }
+bundle.js:17167:11
+🔍 Context distribution totals: 
+Object { loyalists: 3, apostles: 2, total_loyalist_area: 5, totalFromContext: 9 }
+bundle.js:17171:11
+🔍 ABOUT TO USE proximityAnalysis.summary: 
+Object { totalProximityCustomers: 5, isAvailable: true, source: "proximityAnalysis.summary" }
+bundle.js:17317:11
+🎯 ProximitySection: Using context distribution: 
+Object { loyalists: 3, mercenaries: 2, hostages: 1, defectors: 1, apostles: 2, terrorists: 0, near_apostles: 0, neutral: 0 }
+bundle.js:17167:11
+🔍 Context distribution totals: 
+Object { loyalists: 3, apostles: 2, total_loyalist_area: 5, totalFromContext: 9 }
+bundle.js:17171:11
+🔍 ABOUT TO USE proximityAnalysis.summary: 
+Object { totalProximityCustomers: 5, isAvailable: true, source: "proximityAnalysis.summary" }
+bundle.js:17317:11
+***DEBUG*** Prepared filterable data: 10 bundle.js:18725:15
+***DEBUG*** Prepared filterable data: 10 bundle.js:18727:15
+***DEBUG*** Prepared filterable data sample: 
+Object { id: "ABC123", name: "John Smith", satisfaction: 5, loyalty: 5, group: "Undefined", date: "01/01/2024", email: "john@example.com", country: "France", trueloyalist: "Yes", numpurchases: "5", … }
+bundle.js:18728:15
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27289:11
+🔍 Label positioning: above-dots bundle.js:27290:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27291:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27289:11
+🔍 Label positioning: above-dots bundle.js:27290:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27291:11
+🔍 ChartControls received labelPositioning: above-dots 2 bundle.js:28655:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37131:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37132:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37131:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37132:11
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36701:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36701:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔧 ResizeHandle: Not adjustable, not rendering 2 bundle.js:29842:13
+🔍 ReportingSection Premium Check: bundle.js:10471:11
+  activeEffects: 
+Array []
+bundle.js:10472:11
+  activeEffects.has("premium"): false bundle.js:10473:11
+  isPremium result: false bundle.js:10474:11
+🚨🚨🚨 REPORTING SECTION RENDERING - THIS SHOULD APPEAR bundle.js:10475:11
+🚨🚨🚨 About to render DistributionSection with: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false, dataReportExists: true, distributionExists: true }
+bundle.js:10476:11
+🔍 ReportingSection Premium Check: bundle.js:10471:11
+  activeEffects: 
+Array []
+bundle.js:10472:11
+  activeEffects.has("premium"): false bundle.js:10473:11
+  isPremium result: false bundle.js:10474:11
+🚨🚨🚨 REPORTING SECTION RENDERING - THIS SHOULD APPEAR bundle.js:10475:11
+🚨🚨🚨 About to render DistributionSection with: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false, dataReportExists: true, distributionExists: true }
+bundle.js:10476:11
+🚨 COMPONENT START - ResponseConcentrationSection is rendering! bundle.js:18596:11
+🔥 ResponseConcentrationSection ENTRY - originalData length: 10 bundle.js:18597:11
+🔥 Component is rendering with settings: 
+Object { useQuadrantColors: true, customColors: {}, showAverageDot: true, frequencyThreshold: 2, showTiers: true, maxTiers: 3, applyMainChartFrequencyFilter: false }
+bundle.js:18598:11
+🔥 MANUAL ASSIGNMENTS DEBUG: 
+Array []
+bundle.js:18605:11
+🔥 MANUAL ASSIGNMENTS STRING: <empty string> bundle.js:18606:11
+🔥 CONTEXT CONNECTED - midpoint: 
+Object { sat: 3, loy: 5 }
+ manualAssignments size: 0 bundle.js:18607:11
+***DEBUG*** isPremium result: false bundle.js:18608:11
+***DEBUG*** Initial filteredData: 
+Array []
+bundle.js:18663:11
+***DEBUG*** Report mostCommonCombos: 
+Array(10) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…} ]
+bundle.js:18664:11
+***DEBUG*** Settings frequencyThreshold: 2 bundle.js:18665:11
+***DEBUG*** Settings showTiers: true bundle.js:18666:11
+***DEBUG*** Settings maxTiers: 3 bundle.js:18667:11
+***DEBUG*** getFilteredCombinations result: 
+Array []
+bundle.js:18785:13
+🚨 COMPONENT START - ResponseConcentrationSection is rendering! bundle.js:18596:11
+🔥 ResponseConcentrationSection ENTRY - originalData length: 10 bundle.js:18597:11
+🔥 Component is rendering with settings: 
+Object { useQuadrantColors: true, customColors: {}, showAverageDot: true, frequencyThreshold: 2, showTiers: true, maxTiers: 3, applyMainChartFrequencyFilter: false }
+bundle.js:18598:11
+🔥 MANUAL ASSIGNMENTS DEBUG: 
+Array []
+bundle.js:18605:11
+🔥 MANUAL ASSIGNMENTS STRING: <empty string> bundle.js:18606:11
+🔥 CONTEXT CONNECTED - midpoint: 
+Object { sat: 3, loy: 5 }
+ manualAssignments size: 0 bundle.js:18607:11
+***DEBUG*** isPremium result: false bundle.js:18608:11
+***DEBUG*** Initial filteredData: 
+Array []
+bundle.js:18663:11
+***DEBUG*** Report mostCommonCombos: 
+Array(10) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…} ]
+bundle.js:18664:11
+***DEBUG*** Settings frequencyThreshold: 2 bundle.js:18665:11
+***DEBUG*** Settings showTiers: true bundle.js:18666:11
+***DEBUG*** Settings maxTiers: 3 bundle.js:18667:11
+***DEBUG*** getFilteredCombinations result: 
+Array []
+bundle.js:18785:13
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27289:11
+🔍 Label positioning: above-dots bundle.js:27290:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27291:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27289:11
+🔍 Label positioning: above-dots bundle.js:27290:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27291:11
+🔍 ChartControls received labelPositioning: above-dots 2 bundle.js:28655:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37131:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37132:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37131:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37132:11
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36701:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36701:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔧 ResizeHandle: Not adjustable, not rendering 2 bundle.js:29842:13
+🔍 ReportingSection Premium Check: bundle.js:10471:11
+  activeEffects: 
+Array []
+bundle.js:10472:11
+  activeEffects.has("premium"): false bundle.js:10473:11
+  isPremium result: false bundle.js:10474:11
+🚨🚨🚨 REPORTING SECTION RENDERING - THIS SHOULD APPEAR bundle.js:10475:11
+🚨🚨🚨 About to render DistributionSection with: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false, dataReportExists: true, distributionExists: true }
+bundle.js:10476:11
+🔍 ReportingSection Premium Check: bundle.js:10471:11
+  activeEffects: 
+Array []
+bundle.js:10472:11
+  activeEffects.has("premium"): false bundle.js:10473:11
+  isPremium result: false bundle.js:10474:11
+🚨🚨🚨 REPORTING SECTION RENDERING - THIS SHOULD APPEAR bundle.js:10475:11
+🚨🚨🚨 About to render DistributionSection with: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false, dataReportExists: true, distributionExists: true }
+bundle.js:10476:11
+🚨 COMPONENT START - ResponseConcentrationSection is rendering! bundle.js:18596:11
+🔥 ResponseConcentrationSection ENTRY - originalData length: 10 bundle.js:18597:11
+🔥 Component is rendering with settings: 
+Object { useQuadrantColors: true, customColors: {}, showAverageDot: true, frequencyThreshold: 2, showTiers: true, maxTiers: 3, applyMainChartFrequencyFilter: false }
+bundle.js:18598:11
+🔥 MANUAL ASSIGNMENTS DEBUG: 
+Array []
+bundle.js:18605:11
+🔥 MANUAL ASSIGNMENTS STRING: <empty string> bundle.js:18606:11
+🔥 CONTEXT CONNECTED - midpoint: 
+Object { sat: 3, loy: 5 }
+ manualAssignments size: 0 bundle.js:18607:11
+***DEBUG*** isPremium result: false bundle.js:18608:11
+***DEBUG*** Initial filteredData: 
+Array []
+bundle.js:18663:11
+***DEBUG*** Report mostCommonCombos: 
+Array(10) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…} ]
+bundle.js:18664:11
+***DEBUG*** Settings frequencyThreshold: 2 bundle.js:18665:11
+***DEBUG*** Settings showTiers: true bundle.js:18666:11
+***DEBUG*** Settings maxTiers: 3 bundle.js:18667:11
+***DEBUG*** getFilteredCombinations result: 
+Array []
+bundle.js:18785:13
+🚨 COMPONENT START - ResponseConcentrationSection is rendering! bundle.js:18596:11
+🔥 ResponseConcentrationSection ENTRY - originalData length: 10 bundle.js:18597:11
+🔥 Component is rendering with settings: 
+Object { useQuadrantColors: true, customColors: {}, showAverageDot: true, frequencyThreshold: 2, showTiers: true, maxTiers: 3, applyMainChartFrequencyFilter: false }
+bundle.js:18598:11
+🔥 MANUAL ASSIGNMENTS DEBUG: 
+Array []
+bundle.js:18605:11
+🔥 MANUAL ASSIGNMENTS STRING: <empty string> bundle.js:18606:11
+🔥 CONTEXT CONNECTED - midpoint: 
+Object { sat: 3, loy: 5 }
+ manualAssignments size: 0 bundle.js:18607:11
+***DEBUG*** isPremium result: false bundle.js:18608:11
+***DEBUG*** Initial filteredData: 
+Array []
+bundle.js:18663:11
+***DEBUG*** Report mostCommonCombos: 
+Array(10) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…} ]
+bundle.js:18664:11
+***DEBUG*** Settings frequencyThreshold: 2 bundle.js:18665:11
+***DEBUG*** Settings showTiers: true bundle.js:18666:11
+***DEBUG*** Settings maxTiers: 3 bundle.js:18667:11
+***DEBUG*** getFilteredCombinations result: 
+Array []
+bundle.js:18785:13
+🎯 DistributionSection initialized: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false }
+bundle.js:13055:11
+🔍 DISTRIBUTION SECTION - Customer quadrant assignments: bundle.js:13096:11
+  Customer ABC123 (5,5) → loyalists bundle.js:13098:13
+  Customer ABC124 (1,10) → hostages bundle.js:13098:13
+  Customer ABC125 (3,4) → mercenaries bundle.js:13098:13
+  Customer ABC126 (5,8) → loyalists bundle.js:13098:13
+  Customer ABC127 (2,3) → defectors bundle.js:13098:13
+  Customer ABC128 (4,7) → loyalists bundle.js:13098:13
+  Customer ABC129 (5,9) → apostles bundle.js:13098:13
+  Customer ABC130 (3,5) → neutral bundle.js:13098:13
+  Customer ABC131 (4,0) → mercenaries bundle.js:13098:13
+  Customer ABC132 (5,10) → apostles bundle.js:13098:13
+🚨🚨🚨 DISTRIBUTION SECTION COMPONENT LOADED - THIS SHOULD APPEAR bundle.js:13102:11
+🔥🔥🔥 FORCING PROXIMITY ANALYSIS CALCULATION WITHOUT USEMEMO bundle.js:13104:11
+🚨🚨🚨🚨🚨 USEMEMO START - THIS MUST APPEAR - TIMESTAMP: 1761054469769 bundle.js:13107:13
+🚨🚨🚨 USEMEMO EXECUTING - COMPONENT IS RUNNING bundle.js:13108:13
+🚨🚨🚨 DISTRIBUTION SECTION USEMEMO TRIGGERED - THIS SHOULD APPEAR IN LOGS: 
+Object { dataLength: 10, satisfactionScale: "1-5", loyaltyScale: "0-10", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false, mode: "MAIN_AREAS", timestamp: 1761054469769 }
+bundle.js:13109:13
+🚨🚨🚨 FORCING FRESH PROXIMITY ANALYSIS CALCULATION bundle.js:13123:13
+🔍 USEMEMO DEPENDENCIES DEBUG: 
+Object { data: 10, satisfactionScale: "1-5", loyaltyScale: "0-10", midpointSat: 3, midpointLoy: 5, getQuadrantForPoint: "function", isPremium: false, showSpecialZones: true, showNearApostles: false, apostlesZoneSize: 1, … }
+bundle.js:13126:13
+🔍 DISTRIBUTION SECTION: Creating EnhancedProximityClassifier with: 
+Object { dataLength: 10, satisfactionScale: "1-5", loyaltyScale: "0-10", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false }
+bundle.js:13141:15
+🔥🔥🔥 DISTRIBUTION SECTION: About to call analyzeProximity... bundle.js:13152:15
+🔥 THIS LOG SHOULD APPEAR BEFORE CALLING ENHANCED CLASSIFIER bundle.js:13153:15
+🔥 USEMEMO IS DEFINITELY EXECUTING - TESTING bundle.js:13154:15
+🔍 EnhancedProximityClassifier: Starting proximity analysis bundle.js:21503:13
+   - Data points: 10, Midpoint: (3, 5) bundle.js:21504:13
+🎯 EnhancedProximityClassifier.analyzeProximity called with: 
+Object { dataLength: 10, isPremium: false, userThreshold: undefined, showSpecialZones: true, showNearApostles: false }
+bundle.js:21505:13
+🔍 THRESHOLD CALCULATION: 
+Object { userThreshold: undefined, defaultThreshold: 2, directionalThresholds: {…}, midpoint: {…} }
+bundle.js:21523:13
+🔍 EnhancedProximityClassifier.groupCustomersByQuadrant - Starting grouping by context assignments (EXCLUDING midpoint customers) bundle.js:21698:13
+🎯 Point ABC123 at (5,5) assigned to: loyalists bundle.js:21709:15
+🎯 Point ABC124 at (1,10) assigned to: hostages bundle.js:21709:15
+🎯 Point ABC125 at (3,4) assigned to: mercenaries bundle.js:21709:15
+🎯 Point ABC126 at (5,8) assigned to: loyalists bundle.js:21709:15
+🎯 Point ABC127 at (2,3) assigned to: defectors bundle.js:21709:15
+🎯 Point ABC128 at (4,7) assigned to: loyalists bundle.js:21709:15
+🎯 Point ABC129 at (5,9) assigned to: apostles bundle.js:21709:15
+🚫 EXCLUDING midpoint customer ABC130 at (3,5) from analytical counting bundle.js:21705:17
+🎯 Point ABC131 at (4,0) assigned to: mercenaries bundle.js:21709:15
+🎯 Point ABC132 at (5,10) assigned to: apostles bundle.js:21709:15
+📊 Final context-based grouping (EXCLUDES midpoint customers from analytical counting): 
+Object { loyalists: 3, mercenaries: 2, hostages: 1, defectors: 1, apostles: 2, near_apostles: 0, terrorists: 0 }
+bundle.js:21716:13
+📊 Grouped customers: 
+Object { loyalists: 3, mercenaries: 2, hostages: 1, defectors: 1, apostles: 2, near_apostles: 0, terrorists: 0 }
+bundle.js:21532:13
+🚨 About to call analyzeQuadrantProximity methods - threshold: 2 bundle.js:21541:13
+🚨 Grouped customers available: 
+Object { loyalists: 3, mercenaries: 2 }
+bundle.js:21542:13
+🔍 analyzeQuadrantProximity: loyalists -> mercenaries | customers: 3 | threshold: 2 bundle.js:21732:13
+🔍 DEBUGGING loyalists -> mercenaries: bundle.js:21739:13
+   Customer 1: ABC123 at (5, 5) bundle.js:21741:15
+   Customer 2: ABC126 at (5, 8) bundle.js:21741:15
+   Customer 3: ABC128 at (4, 7) bundle.js:21741:15
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=mercenaries, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,6], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,6] bundle.js:22920:13
+   📏 LATERAL DISTANCE: Customer ABC123 at (5,5) to mercenaries boundary = 2 bundle.js:23031:17
+   ✅ LATERAL PROXIMITY: Customer ABC123 qualifies for mercenaries (distance: 2) bundle.js:23037:19
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=hostages, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[5,6,7] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[5,6,7] bundle.js:22920:13
+   📏 Lateral search area check: ABC123 at (5,5) - sat: false (5 in [3]), loy: true (5 in [5,6,7]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC123 not in potential search area for hostages bundle.js:23042:17
+   🔍 Customer ABC123: isProximity=true, targets=[mercenaries], looking for mercenaries bundle.js:21750:15
+   ✅ Customer ABC123 matches proximity criteria for mercenaries bundle.js:21754:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=mercenaries, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,6], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,6] bundle.js:22920:13
+   📏 Lateral search area check: ABC126 at (5,8) - sat: true (5 in [3,4,5]), loy: false (8 in [5,6]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC126 not in potential search area for mercenaries bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=hostages, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[5,6,7] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[5,6,7] bundle.js:22920:13
+   📏 Lateral search area check: ABC126 at (5,8) - sat: false (5 in [3]), loy: false (8 in [5,6,7]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC126 not in potential search area for hostages bundle.js:23042:17
+   🔍 Customer ABC126: isProximity=false, targets=[], looking for mercenaries bundle.js:21750:15
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=mercenaries, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,6], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,6] bundle.js:22920:13
+   📏 Lateral search area check: ABC128 at (4,7) - sat: true (4 in [3,4,5]), loy: false (7 in [5,6]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC128 not in potential search area for mercenaries bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=hostages, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[5,6,7] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[5,6,7] bundle.js:22920:13
+   📏 Lateral search area check: ABC128 at (4,7) - sat: false (4 in [3]), loy: true (7 in [5,6,7]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC128 not in potential search area for hostages bundle.js:23042:17
+   🔍 Customer ABC128: isProximity=false, targets=[], looking for mercenaries bundle.js:21750:15
+📊 FINAL RESULT for loyalists -> mercenaries: 1 customers, 1 positions bundle.js:21775:13
+🔍 analyzeQuadrantProximity: loyalists -> hostages | customers: 3 | threshold: 2 bundle.js:21732:13
+🔍 DEBUGGING loyalists -> hostages: bundle.js:21739:13
+   Customer 1: ABC123 at (5, 5) bundle.js:21741:15
+   Customer 2: ABC126 at (5, 8) bundle.js:21741:15
+   Customer 3: ABC128 at (4, 7) bundle.js:21741:15
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=mercenaries, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,6], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,6] bundle.js:22920:13
+   📏 LATERAL DISTANCE: Customer ABC123 at (5,5) to mercenaries boundary = 2 bundle.js:23031:17
+   ✅ LATERAL PROXIMITY: Customer ABC123 qualifies for mercenaries (distance: 2) bundle.js:23037:19
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=hostages, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[5,6,7] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[5,6,7] bundle.js:22920:13
+   📏 Lateral search area check: ABC123 at (5,5) - sat: false (5 in [3]), loy: true (5 in [5,6,7]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC123 not in potential search area for hostages bundle.js:23042:17
+   🔍 Customer ABC123: isProximity=true, targets=[mercenaries], looking for hostages bundle.js:21750:15
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=mercenaries, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,6], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,6] bundle.js:22920:13
+   📏 Lateral search area check: ABC126 at (5,8) - sat: true (5 in [3,4,5]), loy: false (8 in [5,6]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC126 not in potential search area for mercenaries bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=hostages, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[5,6,7] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[5,6,7] bundle.js:22920:13
+   📏 Lateral search area check: ABC126 at (5,8) - sat: false (5 in [3]), loy: false (8 in [5,6,7]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC126 not in potential search area for hostages bundle.js:23042:17
+   🔍 Customer ABC126: isProximity=false, targets=[], looking for hostages bundle.js:21750:15
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=mercenaries, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,6], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,6] bundle.js:22920:13
+   📏 Lateral search area check: ABC128 at (4,7) - sat: true (4 in [3,4,5]), loy: false (7 in [5,6]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC128 not in potential search area for mercenaries bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=hostages, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[5,6,7] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[5,6,7] bundle.js:22920:13
+   📏 Lateral search area check: ABC128 at (4,7) - sat: false (4 in [3]), loy: true (7 in [5,6,7]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC128 not in potential search area for hostages bundle.js:23042:17
+   🔍 Customer ABC128: isProximity=false, targets=[], looking for hostages bundle.js:21750:15
+📊 FINAL RESULT for loyalists -> hostages: 0 customers, 0 positions bundle.js:21775:13
+🔍 analyzeQuadrantProximity: mercenaries -> loyalists | customers: 2 | threshold: 2 bundle.js:21732:13
+🔍 DEBUGGING mercenaries -> loyalists: bundle.js:21739:13
+   Customer 1: ABC125 at (3, 4) bundle.js:21741:15
+   Customer 2: ABC131 at (4, 0) bundle.js:21741:15
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=mercenaries, toQuadrant=loyalists, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,4] bundle.js:22920:13
+   📏 LATERAL DISTANCE: Customer ABC125 at (3,4) to loyalists boundary = 1 bundle.js:23031:17
+   ✅ LATERAL PROXIMITY: Customer ABC125 qualifies for loyalists (distance: 1) bundle.js:23037:19
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=mercenaries, toQuadrant=defectors, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[3,4,5] bundle.js:22920:13
+   📏 LATERAL DISTANCE: Customer ABC125 at (3,4) to defectors boundary = 1 bundle.js:23031:17
+   ✅ LATERAL PROXIMITY: Customer ABC125 qualifies for defectors (distance: 1) bundle.js:23037:19
+   🔍 Customer ABC125: isProximity=true, targets=[loyalists, defectors], looking for loyalists bundle.js:21750:15
+   ✅ Customer ABC125 matches proximity criteria for loyalists bundle.js:21754:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=mercenaries, toQuadrant=loyalists, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,4] bundle.js:22920:13
+   📏 Lateral search area check: ABC131 at (4,0) - sat: true (4 in [3,4,5]), loy: false (0 in [5,4]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC131 not in potential search area for loyalists bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=mercenaries, toQuadrant=defectors, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[3,4,5] bundle.js:22920:13
+   📏 Lateral search area check: ABC131 at (4,0) - sat: false (4 in [3]), loy: false (0 in [3,4,5]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC131 not in potential search area for defectors bundle.js:23042:17
+   🔍 Customer ABC131: isProximity=false, targets=[], looking for loyalists bundle.js:21750:15
+📊 FINAL RESULT for mercenaries -> loyalists: 1 customers, 1 positions bundle.js:21775:13
+🔍 analyzeQuadrantProximity: mercenaries -> defectors | customers: 2 | threshold: 2 bundle.js:21732:13
+🔍 DEBUGGING mercenaries -> defectors: bundle.js:21739:13
+   Customer 1: ABC125 at (3, 4) bundle.js:21741:15
+   Customer 2: ABC131 at (4, 0) bundle.js:21741:15
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=mercenaries, toQuadrant=loyalists, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,4] bundle.js:22920:13
+   📏 LATERAL DISTANCE: Customer ABC125 at (3,4) to loyalists boundary = 1 bundle.js:23031:17
+   ✅ LATERAL PROXIMITY: Customer ABC125 qualifies for loyalists (distance: 1) bundle.js:23037:19
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=mercenaries, toQuadrant=defectors, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[3,4,5] bundle.js:22920:13
+   📏 LATERAL DISTANCE: Customer ABC125 at (3,4) to defectors boundary = 1 bundle.js:23031:17
+   ✅ LATERAL PROXIMITY: Customer ABC125 qualifies for defectors (distance: 1) bundle.js:23037:19
+   🔍 Customer ABC125: isProximity=true, targets=[loyalists, defectors], looking for defectors bundle.js:21750:15
+   ✅ Customer ABC125 matches proximity criteria for defectors bundle.js:21754:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=mercenaries, toQuadrant=loyalists, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,4] bundle.js:22920:13
+   📏 Lateral search area check: ABC131 at (4,0) - sat: true (4 in [3,4,5]), loy: false (0 in [5,4]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC131 not in potential search area for loyalists bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=mercenaries, toQuadrant=defectors, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[3,4,5] bundle.js:22920:13
+   📏 Lateral search area check: ABC131 at (4,0) - sat: false (4 in [3]), loy: false (0 in [3,4,5]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC131 not in potential search area for defectors bundle.js:23042:17
+   🔍 Customer ABC131: isProximity=false, targets=[], looking for defectors bundle.js:21750:15
+📊 FINAL RESULT for mercenaries -> defectors: 1 customers, 1 positions bundle.js:21775:13
+🔍 analyzeQuadrantProximity: hostages -> loyalists | customers: 1 | threshold: 2 bundle.js:21732:13
+🔍 DEBUGGING hostages -> loyalists: bundle.js:21739:13
+   Customer 1: ABC124 at (1, 10) bundle.js:21741:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=hostages, toQuadrant=loyalists, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[5,6,7] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[5,6,7] bundle.js:22920:13
+   📏 Lateral search area check: ABC124 at (1,10) - sat: false (1 in [3]), loy: false (10 in [5,6,7]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC124 not in potential search area for loyalists bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=hostages, toQuadrant=defectors, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,6], irrelevantPositions=[1,2,3] bundle.js:22919:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,6] bundle.js:22920:13
+   📏 Lateral search area check: ABC124 at (1,10) - sat: true (1 in [1,2,3]), loy: false (10 in [5,6]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC124 not in potential search area for defectors bundle.js:23042:17
+   🔍 Customer ABC124: isProximity=false, targets=[], looking for loyalists bundle.js:21750:15
+📊 FINAL RESULT for hostages -> loyalists: 0 customers, 0 positions bundle.js:21775:13
+🔍 analyzeQuadrantProximity: hostages -> defectors | customers: 1 | threshold: 2 bundle.js:21732:13
+🔍 DEBUGGING hostages -> defectors: bundle.js:21739:13
+   Customer 1: ABC124 at (1, 10) bundle.js:21741:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=hostages, toQuadrant=loyalists, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[5,6,7] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[5,6,7] bundle.js:22920:13
+   📏 Lateral search area check: ABC124 at (1,10) - sat: false (1 in [3]), loy: false (10 in [5,6,7]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC124 not in potential search area for loyalists bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=hostages, toQuadrant=defectors, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,6], irrelevantPositions=[1,2,3] bundle.js:22919:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,6] bundle.js:22920:13
+   📏 Lateral search area check: ABC124 at (1,10) - sat: true (1 in [1,2,3]), loy: false (10 in [5,6]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC124 not in potential search area for defectors bundle.js:23042:17
+   🔍 Customer ABC124: isProximity=false, targets=[], looking for defectors bundle.js:21750:15
+📊 FINAL RESULT for hostages -> defectors: 0 customers, 0 positions bundle.js:21775:13
+🔍 analyzeQuadrantProximity: defectors -> mercenaries | customers: 1 | threshold: 2 bundle.js:21732:13
+🔍 DEBUGGING defectors -> mercenaries: bundle.js:21739:13
+   Customer 1: ABC127 at (2, 3) bundle.js:21741:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[3,4,5] bundle.js:22920:13
+   📏 Lateral search area check: ABC127 at (2,3) - sat: false (2 in [3]), loy: true (3 in [3,4,5]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC127 not in potential search area for mercenaries bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:22919:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:22920:13
+   📏 Lateral search area check: ABC127 at (2,3) - sat: true (2 in [1,2,3]), loy: false (3 in [5,4]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC127 not in potential search area for hostages bundle.js:23042:17
+   🔍 Customer ABC127: isProximity=false, targets=[], looking for mercenaries bundle.js:21750:15
+📊 FINAL RESULT for defectors -> mercenaries: 0 customers, 0 positions bundle.js:21775:13
+🔍 analyzeQuadrantProximity: defectors -> hostages | customers: 1 | threshold: 2 bundle.js:21732:13
+🔍 DEBUGGING defectors -> hostages: bundle.js:21739:13
+   Customer 1: ABC127 at (2, 3) bundle.js:21741:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[3,4,5] bundle.js:22920:13
+   📏 Lateral search area check: ABC127 at (2,3) - sat: false (2 in [3]), loy: true (3 in [3,4,5]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC127 not in potential search area for mercenaries bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:22919:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:22920:13
+   📏 Lateral search area check: ABC127 at (2,3) - sat: true (2 in [1,2,3]), loy: false (3 in [5,4]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC127 not in potential search area for hostages bundle.js:23042:17
+   🔍 Customer ABC127: isProximity=false, targets=[], looking for hostages bundle.js:21750:15
+📊 FINAL RESULT for defectors -> hostages: 0 customers, 0 positions bundle.js:21775:13
+🔥🔥🔥 CALLING analyzeDiagonalProximity: loyalists -> defectors bundle.js:21559:17
+🔍 Diagonal analysis: loyalists -> defectors (3 customers) bundle.js:21802:13
+✅ DIAGONAL: Customer ABC123 at (5,5) belongs to loyalists (context assignment) bundle.js:21973:17
+✅ DIAGONAL: Customer ABC126 at (5,8) belongs to loyalists (context assignment) bundle.js:21973:17
+✅ DIAGONAL: Customer ABC128 at (4,7) belongs to loyalists (context assignment) bundle.js:21973:17
+   📐 DIAGONAL DISTANCE: Customer ABC123 at (5,5) to defectors boundary (3,5) = 2 bundle.js:21895:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22118:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:22119:13
+   📏 Search area check: ABC123 at (5,5) - sat: false (5 in [3]), loy: true (5 in [5,6]) bundle.js:22125:15
+   🔍 Customer ABC123 at (5,5) meets distance (2) but fails search area bundle.js:21843:17
+   📐 DIAGONAL DISTANCE: Customer ABC126 at (5,8) to defectors boundary (3,5) = 3 bundle.js:21895:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22118:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:22119:13
+   📏 Search area check: ABC126 at (5,8) - sat: false (5 in [3]), loy: false (8 in [5,6]) bundle.js:22125:15
+   📐 DIAGONAL DISTANCE: Customer ABC128 at (4,7) to defectors boundary (3,5) = 2 bundle.js:21895:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22118:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:22119:13
+   📏 Search area check: ABC128 at (4,7) - sat: false (4 in [3]), loy: false (7 in [5,6]) bundle.js:22125:15
+   🔍 Customer ABC128 at (4,7) meets distance (2) but fails search area bundle.js:21843:17
+   - Qualifying customers: 0 bundle.js:21873:13
+🔥🔥🔥 CALLING analyzeDiagonalProximity: mercenaries -> hostages bundle.js:21563:17
+🔍 Diagonal analysis: mercenaries -> hostages (2 customers) bundle.js:21802:13
+✅ DIAGONAL: Customer ABC125 at (3,4) belongs to mercenaries (context assignment) bundle.js:21973:17
+✅ DIAGONAL: Customer ABC131 at (4,0) belongs to mercenaries (context assignment) bundle.js:21973:17
+   📐 DIAGONAL DISTANCE: Customer ABC125 at (3,4) to hostages boundary (3,5) = 1 bundle.js:21895:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22118:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:22119:13
+   📐 DIAGONAL DISTANCE: Customer ABC131 at (4,0) to hostages boundary (3,5) = 5 bundle.js:21895:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22118:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:22119:13
+   📏 Search area check: ABC131 at (4,0) - sat: false (4 in [3]), loy: false (0 in [5,4]) bundle.js:22125:15
+   - Qualifying customers: 1 bundle.js:21873:13
+🔥🔥🔥 CALLING analyzeDiagonalProximity: hostages -> mercenaries bundle.js:21567:17
+🔍 Diagonal analysis: hostages -> mercenaries (1 customers) bundle.js:21802:13
+✅ DIAGONAL: Customer ABC124 at (1,10) belongs to hostages (context assignment) bundle.js:21973:17
+   📐 DIAGONAL DISTANCE: Customer ABC124 at (1,10) to mercenaries boundary (3,5) = 5 bundle.js:21895:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:22118:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:22119:13
+   📏 Search area check: ABC124 at (1,10) - sat: false (1 in [3]), loy: false (10 in [5,6]) bundle.js:22125:15
+   - Qualifying customers: 0 bundle.js:21873:13
+🔥🔥🔥 CALLING analyzeDiagonalProximity: defectors -> loyalists bundle.js:21571:17
+🔍 Diagonal analysis: defectors -> loyalists (1 customers) bundle.js:21802:13
+✅ DIAGONAL: Customer ABC127 at (2,3) belongs to defectors (context assignment) bundle.js:21973:17
+   📐 DIAGONAL DISTANCE: Customer ABC127 at (2,3) to loyalists boundary (3,5) = 2 bundle.js:21895:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:22118:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:22119:13
+   📏 Search area check: ABC127 at (2,3) - sat: false (2 in [3]), loy: false (3 in [5,4]) bundle.js:22125:15
+   🔍 Customer ABC127 at (2,3) meets distance (2) but fails search area bundle.js:21843:17
+   - Qualifying customers: 0 bundle.js:21873:13
+🔍 CALCULATING loyalists_close_to_apostles: 
+Object { loyalistsCount: 3, showSpecialZones: true, showNearApostles: false }
+bundle.js:21576:17
+🔍 analyzeSpecialZoneProximity: loyalists -> apostles | customers: 3 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for loyalists -> apostles: true bundle.js:22219:13
+📊 After target zone exclusion: 3 customers (excluded 0 already in apostles zone) bundle.js:22245:13
+🔍 Customer ABC123 at (5,5) is on quadrant boundary: hostages=false, mercenaries=true bundle.js:22484:15
+🚫 EXCLUDING customer ABC123 at (5,5) - on quadrant boundary (Rule 8) bundle.js:22251:17
+📊 After boundary conflict exclusion: 2 customers (excluded 1 on quadrant boundaries) bundle.js:22255:13
+🎯 loyalists customer ABC126 at (5,8) is 1 positions from apostles zone bundle.js:22285:17
+📊 Special zone proximity result: loyalists -> apostles: 1 customers, 1 positions, avg distance: 1.00 bundle.js:22304:13
+🔍 CALCULATING loyalists_close_to_near_apostles: 
+Object { loyalistsCount: 3, showSpecialZones: true, showNearApostles: false }
+bundle.js:21584:17
+🔍 analyzeSpecialZoneProximity: loyalists -> near_apostles | customers: 3 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for loyalists -> near_apostles: false bundle.js:22219:13
+❌ Special zone proximity analysis skipped for loyalists -> near_apostles (conditions not met) bundle.js:22226:15
+🔍 CALCULATING near_apostles_close_to_apostles: 
+Object { near_apostlesCount: 0, showSpecialZones: true, showNearApostles: false }
+bundle.js:21592:17
+🔍 analyzeSpecialZoneProximity: near_apostles -> apostles | customers: 0 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for near_apostles -> apostles: false bundle.js:22219:13
+🔍 CALCULATING defectors_close_to_terrorists: 
+Object { defectorsCount: 1, showSpecialZones: true, showNearApostles: false }
+bundle.js:21600:17
+🔍 analyzeSpecialZoneProximity: defectors -> terrorists | customers: 1 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for defectors -> terrorists: true bundle.js:22219:13
+📊 After target zone exclusion: 1 customers (excluded 0 already in terrorists zone) bundle.js:22245:13
+📊 After boundary conflict exclusion: 1 customers (excluded 0 on quadrant boundaries) bundle.js:22255:13
+📊 Special zone proximity result: defectors -> terrorists: 0 customers, 0 positions, avg distance: 0.00 bundle.js:22304:13
+🔍 analyzeSpecialZoneProximity: apostles -> loyalists | customers: 2 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for apostles -> loyalists: true bundle.js:22219:13
+❌ No boundaries found for target zone: loyalists bundle.js:22233:15
+🔍 analyzeSpecialZoneProximity: near_apostles -> loyalists | customers: 0 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for near_apostles -> loyalists: false bundle.js:22219:13
+🔍 analyzeSpecialZoneProximity: terrorists -> defectors | customers: 0 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for terrorists -> defectors: true bundle.js:22219:13
+🔍 DEBUGGING SUMMARY CALCULATION - About to call calculateSummaryMetrics bundle.js:21620:13
+🔍 Analysis details: 
+Object { loyalists_close_to_mercenaries: 1, loyalists_close_to_hostages: 0, mercenaries_close_to_loyalists: 1, mercenaries_close_to_defectors: 1, hostages_close_to_loyalists: 0, hostages_close_to_defectors: 0, defectors_close_to_mercenaries: 0, defectors_close_to_hostages: 0 }
+bundle.js:21621:13
+🔍 Special zones details: 
+Object { apostles_close_to_loyalists: 0, near_apostles_close_to_loyalists: 0, terrorists_close_to_defectors: 0 }
+bundle.js:21633:15
+🚨 SUMMARY CALCULATION RESULT: 
+Object { totalProximityCustomers: 5, totalProximityPositions: 5 }
+bundle.js:21642:13
+🔍 Detecting crossroads customers... bundle.js:22601:13
+🎯 Crossroads customer ABC125 appears in 3 relationships: mercenaries_close_to_loyalists_defectors, mercenaries_close_to_loyalists_defectors, mercenaries_close_to_hostages bundle.js:22633:17
+📊 Crossroads detection complete: 1 total, 1 high-value bundle.js:22663:13
+🚨 CROSSROADS DETECTION RESULT: 
+Object { totalCrossroads: 1, highValueCrossroads: 1 }
+bundle.js:21649:13
+🚨 ENHANCED PROXIMITY CLASSIFIER FINAL RESULT: 
+Object { loyalists_close_to_apostles: 1, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 0, showSpecialZones: true, showNearApostles: false }
+bundle.js:21665:13
+🚀🚀🚀 ENHANCED PROXIMITY CLASSIFIER - analyzeProximity COMPLETE bundle.js:21672:13
+🚀 FINAL RESULTS: bundle.js:21673:13
+   - Total proximity customers: 5 bundle.js:21674:13
+   - Total proximity positions: 5 bundle.js:21675:13
+   - Average risk score: 40 bundle.js:21676:13
+   - Defectors close to loyalists: 0 customers bundle.js:21677:13
+   - Defectors close to loyalists positions: 
+Array []
+bundle.js:21678:13
+🎯 Proximity Analysis Result: 
+Object { analysis: {…}, specialZones: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:21679:13
+🔍 DISTRIBUTION SECTION: EnhancedProximityClassifier result: 
+Object { loyalists_close_to_apostles: 1, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 0, showSpecialZones: true, mode: "MAIN_AREAS" }
+bundle.js:13156:15
+🚨 DISTRIBUTION SECTION RETURNING RESULT: 
+Object { analysis: {…}, specialZones: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:13163:15
+🔍 DISTRIBUTION SECTION proximityAnalysis result: 
+Object { loyalists_close_to_mercenaries: 1, isAvailable: true, totalCustomers: 10 }
+bundle.js:13270:11
+🚨 DISTRIBUTION SECTION PROXIMITY CALCULATIONS: 
+Object { loyalists_near_mercenaries: 1, loyalists_near_hostages: 0, hostages_near_loyalists: 0, hostages_near_defectors: 0 }
+bundle.js:13334:11
+🔍 DISTRIBUTION USING CONTEXT DIRECTLY: 
+Object { showSpecialZones: true, showNearApostles: false, contextDistribution: {…}, finalDistribution: {…} }
+bundle.js:13355:11
+🔍 Special Groups Debug: 
+Object { showNearApostles: false, apostles: 2, near_apostles: 0, terrorists: 0, totalSpecial: 2 }
+bundle.js:13486:11
+🔍 Full Distribution Object: 
+Object { loyalists: 7, defectors: 0, mercenaries: 1, hostages: 2, apostles: 5, nearApostles: 2, terrorists: 0 }
+bundle.js:13493:11
+🔍 Effective Distribution: 
+Object { loyalists: 3, mercenaries: 2, hostages: 1, defectors: 1, apostles: 2, terrorists: 0, nearApostles: 0 }
+bundle.js:13494:11
+🎯 DistributionSection initialized: 
+Object { dataLength: 10, showSpecialZones: true, showNearApostles: false }
+bundle.js:13055:11
+🔍 DISTRIBUTION SECTION - Customer quadrant assignments: bundle.js:13096:11
+  Customer ABC123 (5,5) → loyalists bundle.js:13098:13
+  Customer ABC124 (1,10) → hostages bundle.js:13098:13
+  Customer ABC125 (3,4) → mercenaries bundle.js:13098:13
+  Customer ABC126 (5,8) → loyalists bundle.js:13098:13
+  Customer ABC127 (2,3) → defectors bundle.js:13098:13
+  Customer ABC128 (4,7) → loyalists bundle.js:13098:13
+  Customer ABC129 (5,9) → apostles bundle.js:13098:13
+  Customer ABC130 (3,5) → neutral bundle.js:13098:13
+  Customer ABC131 (4,0) → mercenaries bundle.js:13098:13
+  Customer ABC132 (5,10) → apostles bundle.js:13098:13
+🚨🚨🚨 DISTRIBUTION SECTION COMPONENT LOADED - THIS SHOULD APPEAR bundle.js:13102:11
+🔥🔥🔥 FORCING PROXIMITY ANALYSIS CALCULATION WITHOUT USEMEMO bundle.js:13104:11
+🚨🚨🚨🚨🚨 USEMEMO START - THIS MUST APPEAR - TIMESTAMP: 1761054469773 bundle.js:13107:13
+🚨🚨🚨 USEMEMO EXECUTING - COMPONENT IS RUNNING bundle.js:13108:13
+🚨🚨🚨 DISTRIBUTION SECTION USEMEMO TRIGGERED - THIS SHOULD APPEAR IN LOGS: 
+Object { dataLength: 10, satisfactionScale: "1-5", loyaltyScale: "0-10", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false, mode: "MAIN_AREAS", timestamp: 1761054469773 }
+bundle.js:13109:13
+🚨🚨🚨 FORCING FRESH PROXIMITY ANALYSIS CALCULATION bundle.js:13123:13
+🔍 USEMEMO DEPENDENCIES DEBUG: 
+Object { data: 10, satisfactionScale: "1-5", loyaltyScale: "0-10", midpointSat: 3, midpointLoy: 5, getQuadrantForPoint: "function", isPremium: false, showSpecialZones: true, showNearApostles: false, apostlesZoneSize: 1, … }
+bundle.js:13126:13
+🔍 DISTRIBUTION SECTION: Creating EnhancedProximityClassifier with: 
+Object { dataLength: 10, satisfactionScale: "1-5", loyaltyScale: "0-10", midpoint: {…}, apostlesZoneSize: 1, terroristsZoneSize: 1, showSpecialZones: true, showNearApostles: false }
+bundle.js:13141:15
+🔥🔥🔥 DISTRIBUTION SECTION: About to call analyzeProximity... bundle.js:13152:15
+🔥 THIS LOG SHOULD APPEAR BEFORE CALLING ENHANCED CLASSIFIER bundle.js:13153:15
+🔥 USEMEMO IS DEFINITELY EXECUTING - TESTING bundle.js:13154:15
+🔍 EnhancedProximityClassifier: Starting proximity analysis bundle.js:21503:13
+   - Data points: 10, Midpoint: (3, 5) bundle.js:21504:13
+🎯 EnhancedProximityClassifier.analyzeProximity called with: 
+Object { dataLength: 10, isPremium: false, userThreshold: undefined, showSpecialZones: true, showNearApostles: false }
+bundle.js:21505:13
+🔍 THRESHOLD CALCULATION: 
+Object { userThreshold: undefined, defaultThreshold: 2, directionalThresholds: {…}, midpoint: {…} }
+bundle.js:21523:13
+🔍 EnhancedProximityClassifier.groupCustomersByQuadrant - Starting grouping by context assignments (EXCLUDING midpoint customers) bundle.js:21698:13
+🎯 Point ABC123 at (5,5) assigned to: loyalists bundle.js:21709:15
+🎯 Point ABC124 at (1,10) assigned to: hostages bundle.js:21709:15
+🎯 Point ABC125 at (3,4) assigned to: mercenaries bundle.js:21709:15
+🎯 Point ABC126 at (5,8) assigned to: loyalists bundle.js:21709:15
+🎯 Point ABC127 at (2,3) assigned to: defectors bundle.js:21709:15
+🎯 Point ABC128 at (4,7) assigned to: loyalists bundle.js:21709:15
+🎯 Point ABC129 at (5,9) assigned to: apostles bundle.js:21709:15
+🚫 EXCLUDING midpoint customer ABC130 at (3,5) from analytical counting bundle.js:21705:17
+🎯 Point ABC131 at (4,0) assigned to: mercenaries bundle.js:21709:15
+🎯 Point ABC132 at (5,10) assigned to: apostles bundle.js:21709:15
+📊 Final context-based grouping (EXCLUDES midpoint customers from analytical counting): 
+Object { loyalists: 3, mercenaries: 2, hostages: 1, defectors: 1, apostles: 2, near_apostles: 0, terrorists: 0 }
+bundle.js:21716:13
+📊 Grouped customers: 
+Object { loyalists: 3, mercenaries: 2, hostages: 1, defectors: 1, apostles: 2, near_apostles: 0, terrorists: 0 }
+bundle.js:21532:13
+🚨 About to call analyzeQuadrantProximity methods - threshold: 2 bundle.js:21541:13
+🚨 Grouped customers available: 
+Object { loyalists: 3, mercenaries: 2 }
+bundle.js:21542:13
+🔍 analyzeQuadrantProximity: loyalists -> mercenaries | customers: 3 | threshold: 2 bundle.js:21732:13
+🔍 DEBUGGING loyalists -> mercenaries: bundle.js:21739:13
+   Customer 1: ABC123 at (5, 5) bundle.js:21741:15
+   Customer 2: ABC126 at (5, 8) bundle.js:21741:15
+   Customer 3: ABC128 at (4, 7) bundle.js:21741:15
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=mercenaries, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,6], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,6] bundle.js:22920:13
+   📏 LATERAL DISTANCE: Customer ABC123 at (5,5) to mercenaries boundary = 2 bundle.js:23031:17
+   ✅ LATERAL PROXIMITY: Customer ABC123 qualifies for mercenaries (distance: 2) bundle.js:23037:19
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=hostages, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[5,6,7] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[5,6,7] bundle.js:22920:13
+   📏 Lateral search area check: ABC123 at (5,5) - sat: false (5 in [3]), loy: true (5 in [5,6,7]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC123 not in potential search area for hostages bundle.js:23042:17
+   🔍 Customer ABC123: isProximity=true, targets=[mercenaries], looking for mercenaries bundle.js:21750:15
+   ✅ Customer ABC123 matches proximity criteria for mercenaries bundle.js:21754:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=mercenaries, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,6], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,6] bundle.js:22920:13
+   📏 Lateral search area check: ABC126 at (5,8) - sat: true (5 in [3,4,5]), loy: false (8 in [5,6]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC126 not in potential search area for mercenaries bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=hostages, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[5,6,7] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[5,6,7] bundle.js:22920:13
+   📏 Lateral search area check: ABC126 at (5,8) - sat: false (5 in [3]), loy: false (8 in [5,6,7]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC126 not in potential search area for hostages bundle.js:23042:17
+   🔍 Customer ABC126: isProximity=false, targets=[], looking for mercenaries bundle.js:21750:15
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=mercenaries, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,6], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,6] bundle.js:22920:13
+   📏 Lateral search area check: ABC128 at (4,7) - sat: true (4 in [3,4,5]), loy: false (7 in [5,6]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC128 not in potential search area for mercenaries bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=hostages, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[5,6,7] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[5,6,7] bundle.js:22920:13
+   📏 Lateral search area check: ABC128 at (4,7) - sat: false (4 in [3]), loy: true (7 in [5,6,7]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC128 not in potential search area for hostages bundle.js:23042:17
+   🔍 Customer ABC128: isProximity=false, targets=[], looking for mercenaries bundle.js:21750:15
+📊 FINAL RESULT for loyalists -> mercenaries: 1 customers, 1 positions bundle.js:21775:13
+🔍 analyzeQuadrantProximity: loyalists -> hostages | customers: 3 | threshold: 2 bundle.js:21732:13
+🔍 DEBUGGING loyalists -> hostages: bundle.js:21739:13
+   Customer 1: ABC123 at (5, 5) bundle.js:21741:15
+   Customer 2: ABC126 at (5, 8) bundle.js:21741:15
+   Customer 3: ABC128 at (4, 7) bundle.js:21741:15
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=mercenaries, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,6], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,6] bundle.js:22920:13
+   📏 LATERAL DISTANCE: Customer ABC123 at (5,5) to mercenaries boundary = 2 bundle.js:23031:17
+   ✅ LATERAL PROXIMITY: Customer ABC123 qualifies for mercenaries (distance: 2) bundle.js:23037:19
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=hostages, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[5,6,7] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[5,6,7] bundle.js:22920:13
+   📏 Lateral search area check: ABC123 at (5,5) - sat: false (5 in [3]), loy: true (5 in [5,6,7]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC123 not in potential search area for hostages bundle.js:23042:17
+   🔍 Customer ABC123: isProximity=true, targets=[mercenaries], looking for hostages bundle.js:21750:15
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=mercenaries, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,6], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,6] bundle.js:22920:13
+   📏 Lateral search area check: ABC126 at (5,8) - sat: true (5 in [3,4,5]), loy: false (8 in [5,6]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC126 not in potential search area for mercenaries bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=hostages, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[5,6,7] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[5,6,7] bundle.js:22920:13
+   📏 Lateral search area check: ABC126 at (5,8) - sat: false (5 in [3]), loy: false (8 in [5,6,7]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC126 not in potential search area for hostages bundle.js:23042:17
+   🔍 Customer ABC126: isProximity=false, targets=[], looking for hostages bundle.js:21750:15
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=mercenaries, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,6], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,6] bundle.js:22920:13
+   📏 Lateral search area check: ABC128 at (4,7) - sat: true (4 in [3,4,5]), loy: false (7 in [5,6]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC128 not in potential search area for mercenaries bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=loyalists, toQuadrant=hostages, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[5,6,7] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[5,6,7] bundle.js:22920:13
+   📏 Lateral search area check: ABC128 at (4,7) - sat: false (4 in [3]), loy: true (7 in [5,6,7]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC128 not in potential search area for hostages bundle.js:23042:17
+   🔍 Customer ABC128: isProximity=false, targets=[], looking for hostages bundle.js:21750:15
+📊 FINAL RESULT for loyalists -> hostages: 0 customers, 0 positions bundle.js:21775:13
+🔍 analyzeQuadrantProximity: mercenaries -> loyalists | customers: 2 | threshold: 2 bundle.js:21732:13
+🔍 DEBUGGING mercenaries -> loyalists: bundle.js:21739:13
+   Customer 1: ABC125 at (3, 4) bundle.js:21741:15
+   Customer 2: ABC131 at (4, 0) bundle.js:21741:15
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=mercenaries, toQuadrant=loyalists, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,4] bundle.js:22920:13
+   📏 LATERAL DISTANCE: Customer ABC125 at (3,4) to loyalists boundary = 1 bundle.js:23031:17
+   ✅ LATERAL PROXIMITY: Customer ABC125 qualifies for loyalists (distance: 1) bundle.js:23037:19
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=mercenaries, toQuadrant=defectors, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[3,4,5] bundle.js:22920:13
+   📏 LATERAL DISTANCE: Customer ABC125 at (3,4) to defectors boundary = 1 bundle.js:23031:17
+   ✅ LATERAL PROXIMITY: Customer ABC125 qualifies for defectors (distance: 1) bundle.js:23037:19
+   🔍 Customer ABC125: isProximity=true, targets=[loyalists, defectors], looking for loyalists bundle.js:21750:15
+   ✅ Customer ABC125 matches proximity criteria for loyalists bundle.js:21754:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=mercenaries, toQuadrant=loyalists, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,4] bundle.js:22920:13
+   📏 Lateral search area check: ABC131 at (4,0) - sat: true (4 in [3,4,5]), loy: false (0 in [5,4]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC131 not in potential search area for loyalists bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=mercenaries, toQuadrant=defectors, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[3,4,5] bundle.js:22920:13
+   📏 Lateral search area check: ABC131 at (4,0) - sat: false (4 in [3]), loy: false (0 in [3,4,5]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC131 not in potential search area for defectors bundle.js:23042:17
+   🔍 Customer ABC131: isProximity=false, targets=[], looking for loyalists bundle.js:21750:15
+📊 FINAL RESULT for mercenaries -> loyalists: 1 customers, 1 positions bundle.js:21775:13
+🔍 analyzeQuadrantProximity: mercenaries -> defectors | customers: 2 | threshold: 2 bundle.js:21732:13
+🔍 DEBUGGING mercenaries -> defectors: bundle.js:21739:13
+   Customer 1: ABC125 at (3, 4) bundle.js:21741:15
+   Customer 2: ABC131 at (4, 0) bundle.js:21741:15
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=mercenaries, toQuadrant=loyalists, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,4] bundle.js:22920:13
+   📏 LATERAL DISTANCE: Customer ABC125 at (3,4) to loyalists boundary = 1 bundle.js:23031:17
+   ✅ LATERAL PROXIMITY: Customer ABC125 qualifies for loyalists (distance: 1) bundle.js:23037:19
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=mercenaries, toQuadrant=defectors, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[3,4,5] bundle.js:22920:13
+   📏 LATERAL DISTANCE: Customer ABC125 at (3,4) to defectors boundary = 1 bundle.js:23031:17
+   ✅ LATERAL PROXIMITY: Customer ABC125 qualifies for defectors (distance: 1) bundle.js:23037:19
+   🔍 Customer ABC125: isProximity=true, targets=[loyalists, defectors], looking for defectors bundle.js:21750:15
+   ✅ Customer ABC125 matches proximity criteria for defectors bundle.js:21754:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=mercenaries, toQuadrant=loyalists, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3,4,5], loy=[5,4] bundle.js:22920:13
+   📏 Lateral search area check: ABC131 at (4,0) - sat: true (4 in [3,4,5]), loy: false (0 in [5,4]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC131 not in potential search area for loyalists bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=mercenaries, toQuadrant=defectors, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[3,4,5] bundle.js:22920:13
+   📏 Lateral search area check: ABC131 at (4,0) - sat: false (4 in [3]), loy: false (0 in [3,4,5]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC131 not in potential search area for defectors bundle.js:23042:17
+   🔍 Customer ABC131: isProximity=false, targets=[], looking for defectors bundle.js:21750:15
+📊 FINAL RESULT for mercenaries -> defectors: 1 customers, 1 positions bundle.js:21775:13
+🔍 analyzeQuadrantProximity: hostages -> loyalists | customers: 1 | threshold: 2 bundle.js:21732:13
+🔍 DEBUGGING hostages -> loyalists: bundle.js:21739:13
+   Customer 1: ABC124 at (1, 10) bundle.js:21741:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=hostages, toQuadrant=loyalists, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[5,6,7] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[5,6,7] bundle.js:22920:13
+   📏 Lateral search area check: ABC124 at (1,10) - sat: false (1 in [3]), loy: false (10 in [5,6,7]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC124 not in potential search area for loyalists bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=hostages, toQuadrant=defectors, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,6], irrelevantPositions=[1,2,3] bundle.js:22919:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,6] bundle.js:22920:13
+   📏 Lateral search area check: ABC124 at (1,10) - sat: true (1 in [1,2,3]), loy: false (10 in [5,6]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC124 not in potential search area for defectors bundle.js:23042:17
+   🔍 Customer ABC124: isProximity=false, targets=[], looking for loyalists bundle.js:21750:15
+📊 FINAL RESULT for hostages -> loyalists: 0 customers, 0 positions bundle.js:21775:13
+🔍 analyzeQuadrantProximity: hostages -> defectors | customers: 1 | threshold: 2 bundle.js:21732:13
+🔍 DEBUGGING hostages -> defectors: bundle.js:21739:13
+   Customer 1: ABC124 at (1, 10) bundle.js:21741:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=hostages, toQuadrant=loyalists, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[5,6,7] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[5,6,7] bundle.js:22920:13
+   📏 Lateral search area check: ABC124 at (1,10) - sat: false (1 in [3]), loy: false (10 in [5,6,7]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC124 not in potential search area for loyalists bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=hostages, toQuadrant=defectors, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,6], irrelevantPositions=[1,2,3] bundle.js:22919:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,6] bundle.js:22920:13
+   📏 Lateral search area check: ABC124 at (1,10) - sat: true (1 in [1,2,3]), loy: false (10 in [5,6]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC124 not in potential search area for defectors bundle.js:23042:17
+   🔍 Customer ABC124: isProximity=false, targets=[], looking for defectors bundle.js:21750:15
+📊 FINAL RESULT for hostages -> defectors: 0 customers, 0 positions bundle.js:21775:13
+🔍 analyzeQuadrantProximity: defectors -> mercenaries | customers: 1 | threshold: 2 bundle.js:21732:13
+🔍 DEBUGGING defectors -> mercenaries: bundle.js:21739:13
+   Customer 1: ABC127 at (2, 3) bundle.js:21741:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[3,4,5] bundle.js:22920:13
+   📏 Lateral search area check: ABC127 at (2,3) - sat: false (2 in [3]), loy: true (3 in [3,4,5]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC127 not in potential search area for mercenaries bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:22919:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:22920:13
+   📏 Lateral search area check: ABC127 at (2,3) - sat: true (2 in [1,2,3]), loy: false (3 in [5,4]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC127 not in potential search area for hostages bundle.js:23042:17
+   🔍 Customer ABC127: isProximity=false, targets=[], looking for mercenaries bundle.js:21750:15
+📊 FINAL RESULT for defectors -> mercenaries: 0 customers, 0 positions bundle.js:21775:13
+🔍 analyzeQuadrantProximity: defectors -> hostages | customers: 1 | threshold: 2 bundle.js:21732:13
+🔍 DEBUGGING defectors -> hostages: bundle.js:21739:13
+   Customer 1: ABC127 at (2, 3) bundle.js:21741:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[3,4,5] bundle.js:22919:13
+   📏 Lateral search area: sat=[3], loy=[3,4,5] bundle.js:22920:13
+   📏 Lateral search area check: ABC127 at (2,3) - sat: false (2 in [3]), loy: true (3 in [3,4,5]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC127 not in potential search area for mercenaries bundle.js:23042:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:22917:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:22918:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:22919:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:22920:13
+   📏 Lateral search area check: ABC127 at (2,3) - sat: true (2 in [1,2,3]), loy: false (3 in [5,4]) bundle.js:22989:15
+   ❌ LATERAL SEARCH AREA: Customer ABC127 not in potential search area for hostages bundle.js:23042:17
+   🔍 Customer ABC127: isProximity=false, targets=[], looking for hostages bundle.js:21750:15
+📊 FINAL RESULT for defectors -> hostages: 0 customers, 0 positions bundle.js:21775:13
+🔥🔥🔥 CALLING analyzeDiagonalProximity: loyalists -> defectors bundle.js:21559:17
+🔍 Diagonal analysis: loyalists -> defectors (3 customers) bundle.js:21802:13
+✅ DIAGONAL: Customer ABC123 at (5,5) belongs to loyalists (context assignment) bundle.js:21973:17
+✅ DIAGONAL: Customer ABC126 at (5,8) belongs to loyalists (context assignment) bundle.js:21973:17
+✅ DIAGONAL: Customer ABC128 at (4,7) belongs to loyalists (context assignment) bundle.js:21973:17
+   📐 DIAGONAL DISTANCE: Customer ABC123 at (5,5) to defectors boundary (3,5) = 2 bundle.js:21895:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22118:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:22119:13
+   📏 Search area check: ABC123 at (5,5) - sat: false (5 in [3]), loy: true (5 in [5,6]) bundle.js:22125:15
+   🔍 Customer ABC123 at (5,5) meets distance (2) but fails search area bundle.js:21843:17
+   📐 DIAGONAL DISTANCE: Customer ABC126 at (5,8) to defectors boundary (3,5) = 3 bundle.js:21895:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22118:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:22119:13
+   📏 Search area check: ABC126 at (5,8) - sat: false (5 in [3]), loy: false (8 in [5,6]) bundle.js:22125:15
+   📐 DIAGONAL DISTANCE: Customer ABC128 at (4,7) to defectors boundary (3,5) = 2 bundle.js:21895:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:22118:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:22119:13
+   📏 Search area check: ABC128 at (4,7) - sat: false (4 in [3]), loy: false (7 in [5,6]) bundle.js:22125:15
+   🔍 Customer ABC128 at (4,7) meets distance (2) but fails search area bundle.js:21843:17
+   - Qualifying customers: 0 bundle.js:21873:13
+🔥🔥🔥 CALLING analyzeDiagonalProximity: mercenaries -> hostages bundle.js:21563:17
+🔍 Diagonal analysis: mercenaries -> hostages (2 customers) bundle.js:21802:13
+✅ DIAGONAL: Customer ABC125 at (3,4) belongs to mercenaries (context assignment) bundle.js:21973:17
+✅ DIAGONAL: Customer ABC131 at (4,0) belongs to mercenaries (context assignment) bundle.js:21973:17
+   📐 DIAGONAL DISTANCE: Customer ABC125 at (3,4) to hostages boundary (3,5) = 1 bundle.js:21895:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22118:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:22119:13
+   📐 DIAGONAL DISTANCE: Customer ABC131 at (4,0) to hostages boundary (3,5) = 5 bundle.js:21895:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:22118:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:22119:13
+   📏 Search area check: ABC131 at (4,0) - sat: false (4 in [3]), loy: false (0 in [5,4]) bundle.js:22125:15
+   - Qualifying customers: 1 bundle.js:21873:13
+🔥🔥🔥 CALLING analyzeDiagonalProximity: hostages -> mercenaries bundle.js:21567:17
+🔍 Diagonal analysis: hostages -> mercenaries (1 customers) bundle.js:21802:13
+✅ DIAGONAL: Customer ABC124 at (1,10) belongs to hostages (context assignment) bundle.js:21973:17
+   📐 DIAGONAL DISTANCE: Customer ABC124 at (1,10) to mercenaries boundary (3,5) = 5 bundle.js:21895:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:22118:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:22119:13
+   📏 Search area check: ABC124 at (1,10) - sat: false (1 in [3]), loy: false (10 in [5,6]) bundle.js:22125:15
+   - Qualifying customers: 0 bundle.js:21873:13
+🔥🔥🔥 CALLING analyzeDiagonalProximity: defectors -> loyalists bundle.js:21571:17
+🔍 Diagonal analysis: defectors -> loyalists (1 customers) bundle.js:21802:13
+✅ DIAGONAL: Customer ABC127 at (2,3) belongs to defectors (context assignment) bundle.js:21973:17
+   📐 DIAGONAL DISTANCE: Customer ABC127 at (2,3) to loyalists boundary (3,5) = 2 bundle.js:21895:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:22118:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:22119:13
+   📏 Search area check: ABC127 at (2,3) - sat: false (2 in [3]), loy: false (3 in [5,4]) bundle.js:22125:15
+   🔍 Customer ABC127 at (2,3) meets distance (2) but fails search area bundle.js:21843:17
+   - Qualifying customers: 0 bundle.js:21873:13
+🔍 CALCULATING loyalists_close_to_apostles: 
+Object { loyalistsCount: 3, showSpecialZones: true, showNearApostles: false }
+bundle.js:21576:17
+🔍 analyzeSpecialZoneProximity: loyalists -> apostles | customers: 3 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for loyalists -> apostles: true bundle.js:22219:13
+📊 After target zone exclusion: 3 customers (excluded 0 already in apostles zone) bundle.js:22245:13
+🔍 Customer ABC123 at (5,5) is on quadrant boundary: hostages=false, mercenaries=true bundle.js:22484:15
+🚫 EXCLUDING customer ABC123 at (5,5) - on quadrant boundary (Rule 8) bundle.js:22251:17
+📊 After boundary conflict exclusion: 2 customers (excluded 1 on quadrant boundaries) bundle.js:22255:13
+🎯 loyalists customer ABC126 at (5,8) is 1 positions from apostles zone bundle.js:22285:17
+📊 Special zone proximity result: loyalists -> apostles: 1 customers, 1 positions, avg distance: 1.00 bundle.js:22304:13
+🔍 CALCULATING loyalists_close_to_near_apostles: 
+Object { loyalistsCount: 3, showSpecialZones: true, showNearApostles: false }
+bundle.js:21584:17
+🔍 analyzeSpecialZoneProximity: loyalists -> near_apostles | customers: 3 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for loyalists -> near_apostles: false bundle.js:22219:13
+❌ Special zone proximity analysis skipped for loyalists -> near_apostles (conditions not met) bundle.js:22226:15
+🔍 CALCULATING near_apostles_close_to_apostles: 
+Object { near_apostlesCount: 0, showSpecialZones: true, showNearApostles: false }
+bundle.js:21592:17
+🔍 analyzeSpecialZoneProximity: near_apostles -> apostles | customers: 0 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for near_apostles -> apostles: false bundle.js:22219:13
+🔍 CALCULATING defectors_close_to_terrorists: 
+Object { defectorsCount: 1, showSpecialZones: true, showNearApostles: false }
+bundle.js:21600:17
+🔍 analyzeSpecialZoneProximity: defectors -> terrorists | customers: 1 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for defectors -> terrorists: true bundle.js:22219:13
+📊 After target zone exclusion: 1 customers (excluded 0 already in terrorists zone) bundle.js:22245:13
+📊 After boundary conflict exclusion: 1 customers (excluded 0 on quadrant boundaries) bundle.js:22255:13
+📊 Special zone proximity result: defectors -> terrorists: 0 customers, 0 positions, avg distance: 0.00 bundle.js:22304:13
+🔍 analyzeSpecialZoneProximity: apostles -> loyalists | customers: 2 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for apostles -> loyalists: true bundle.js:22219:13
+❌ No boundaries found for target zone: loyalists bundle.js:22233:15
+🔍 analyzeSpecialZoneProximity: near_apostles -> loyalists | customers: 0 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for near_apostles -> loyalists: false bundle.js:22219:13
+🔍 analyzeSpecialZoneProximity: terrorists -> defectors | customers: 0 | showSpecialZones: true | showNearApostles: false bundle.js:22215:13
+🔍 shouldAnalyzeSpecialZoneProximity result for terrorists -> defectors: true bundle.js:22219:13
+🔍 DEBUGGING SUMMARY CALCULATION - About to call calculateSummaryMetrics bundle.js:21620:13
+🔍 Analysis details: 
+Object { loyalists_close_to_mercenaries: 1, loyalists_close_to_hostages: 0, mercenaries_close_to_loyalists: 1, mercenaries_close_to_defectors: 1, hostages_close_to_loyalists: 0, hostages_close_to_defectors: 0, defectors_close_to_mercenaries: 0, defectors_close_to_hostages: 0 }
+bundle.js:21621:13
+🔍 Special zones details: 
+Object { apostles_close_to_loyalists: 0, near_apostles_close_to_loyalists: 0, terrorists_close_to_defectors: 0 }
+bundle.js:21633:15
+🚨 SUMMARY CALCULATION RESULT: 
+Object { totalProximityCustomers: 5, totalProximityPositions: 5 }
+bundle.js:21642:13
+🔍 Detecting crossroads customers... bundle.js:22601:13
+🎯 Crossroads customer ABC125 appears in 3 relationships: mercenaries_close_to_loyalists_defectors, mercenaries_close_to_loyalists_defectors, mercenaries_close_to_hostages bundle.js:22633:17
+📊 Crossroads detection complete: 1 total, 1 high-value bundle.js:22663:13
+🚨 CROSSROADS DETECTION RESULT: 
+Object { totalCrossroads: 1, highValueCrossroads: 1 }
+bundle.js:21649:13
+🚨 ENHANCED PROXIMITY CLASSIFIER FINAL RESULT: 
+Object { loyalists_close_to_apostles: 1, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 0, showSpecialZones: true, showNearApostles: false }
+bundle.js:21665:13
+🚀🚀🚀 ENHANCED PROXIMITY CLASSIFIER - analyzeProximity COMPLETE bundle.js:21672:13
+🚀 FINAL RESULTS: bundle.js:21673:13
+   - Total proximity customers: 5 bundle.js:21674:13
+   - Total proximity positions: 5 bundle.js:21675:13
+   - Average risk score: 40 bundle.js:21676:13
+   - Defectors close to loyalists: 0 customers bundle.js:21677:13
+   - Defectors close to loyalists positions: 
+Array []
+bundle.js:21678:13
+🎯 Proximity Analysis Result: 
+Object { analysis: {…}, specialZones: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:21679:13
+🔍 DISTRIBUTION SECTION: EnhancedProximityClassifier result: 
+Object { loyalists_close_to_apostles: 1, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 0, showSpecialZones: true, mode: "MAIN_AREAS" }
+bundle.js:13156:15
+🚨 DISTRIBUTION SECTION RETURNING RESULT: 
+Object { analysis: {…}, specialZones: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:13163:15
+🔍 DISTRIBUTION SECTION proximityAnalysis result: 
+Object { loyalists_close_to_mercenaries: 1, isAvailable: true, totalCustomers: 10 }
+bundle.js:13270:11
+🚨 DISTRIBUTION SECTION PROXIMITY CALCULATIONS: 
+Object { loyalists_near_mercenaries: 1, loyalists_near_hostages: 0, hostages_near_loyalists: 0, hostages_near_defectors: 0 }
+bundle.js:13334:11
+🔍 DISTRIBUTION USING CONTEXT DIRECTLY: 
+Object { showSpecialZones: true, showNearApostles: false, contextDistribution: {…}, finalDistribution: {…} }
+bundle.js:13355:11
+🔍 Special Groups Debug: 
+Object { showNearApostles: false, apostles: 2, near_apostles: 0, terrorists: 0, totalSpecial: 2 }
+bundle.js:13486:11
+🔍 Full Distribution Object: 
+Object { loyalists: 7, defectors: 0, mercenaries: 1, hostages: 2, apostles: 5, nearApostles: 2, terrorists: 0 }
+bundle.js:13493:11
+🔍 Effective Distribution: 
+Object { loyalists: 3, mercenaries: 2, hostages: 1, defectors: 1, apostles: 2, terrorists: 0, nearApostles: 0 }
+bundle.js:13494:11
+🎯 ProximitySection: Using context distribution: 
+Object { loyalists: 3, mercenaries: 2, hostages: 1, defectors: 1, apostles: 2, terrorists: 0, near_apostles: 0, neutral: 0 }
+bundle.js:17167:11
+🔍 Context distribution totals: 
+Object { loyalists: 3, apostles: 2, total_loyalist_area: 5, totalFromContext: 9 }
+bundle.js:17171:11
+🔍 ABOUT TO USE proximityAnalysis.summary: 
+Object { totalProximityCustomers: 5, isAvailable: true, source: "proximityAnalysis.summary" }
+bundle.js:17317:11
+🎯 ProximitySection: Using context distribution: 
+Object { loyalists: 3, mercenaries: 2, hostages: 1, defectors: 1, apostles: 2, terrorists: 0, near_apostles: 0, neutral: 0 }
+bundle.js:17167:11
+🔍 Context distribution totals: 
+Object { loyalists: 3, apostles: 2, total_loyalist_area: 5, totalFromContext: 9 }
+bundle.js:17171:11
+🔍 ABOUT TO USE proximityAnalysis.summary: 
+Object { totalProximityCustomers: 5, isAvailable: true, source: "proximityAnalysis.summary" }
+bundle.js:17317:11
+Document click: 
+<button class="chart-controls-filter-button  has-filters" title="Unified Controls" aria-label="Toggle unified controls panel" style="width: 32px; height: 32p…olor: rgb(58, 134, 62);">
+bundle.js:10900:15
+Document click: 
+<button class="chart-controls-filter-button  has-filters" title="Unified Controls" aria-label="Toggle unified controls panel" style="width: 32px; height: 32p…olor: rgb(58, 134, 62);">
+bundle.js:10900:15
+🎛️ FilterPanel component mounted/rendered 2 bundle.js:31201:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27289:11
+🔍 Label positioning: above-dots bundle.js:27290:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27291:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27289:11
+🔍 Label positioning: above-dots bundle.js:27290:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27291:11
+🔍 ChartControls received labelPositioning: above-dots 2 bundle.js:28655:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37131:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37132:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37131:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37132:11
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36701:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36701:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔧 ResizeHandle: Not adjustable, not rendering 2 bundle.js:29842:13
+🎧 FilterPanel: Setting up event listener for reset-filters-if-needed bundle.js:31489:13
+🎧 FilterPanel: Event listeners added successfully bundle.js:31510:13
+🔍 UnifiedChartControls: Tab selection logic 
+Object { hasFilterableData: true, isPremium: false, currentTab: "filters" }
+bundle.js:30204:15
+🎧 FilterPanel: Removing event listeners bundle.js:31512:15
+🎧 FilterPanel: Setting up event listener for reset-filters-if-needed bundle.js:31489:13
+🎧 FilterPanel: Event listeners added successfully bundle.js:31510:13
+🎛️ FilterPanel component mounted/rendered 2 bundle.js:31201:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27289:11
+🔍 Label positioning: above-dots bundle.js:27290:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27291:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27289:11
+🔍 Label positioning: above-dots bundle.js:27290:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27291:11
+🔍 ChartControls received labelPositioning: above-dots 2 bundle.js:28655:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37131:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37132:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37131:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37132:11
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36701:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36701:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔧 ResizeHandle: Not adjustable, not rendering 2 bundle.js:29842:13
+🎧 FilterPanel: Removing event listeners bundle.js:31512:15
+🎧 FilterPanel: Setting up event listener for reset-filters-if-needed bundle.js:31489:13
+🎧 FilterPanel: Event listeners added successfully bundle.js:31510:13
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27289:11
+🔍 Label positioning: above-dots bundle.js:27290:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27291:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:27289:11
+🔍 Label positioning: above-dots bundle.js:27290:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:27291:11
+🔍 ChartControls received labelPositioning: above-dots 2 bundle.js:28655:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37131:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37132:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:37131:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:37132:11
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36701:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:36701:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:36726:13
+🔧 ResizeHandle: Not adjustable, not rendering 2 bundle.js:29842:13
+🎧 FilterPanel: Removing event listeners bundle.js:31512:15
