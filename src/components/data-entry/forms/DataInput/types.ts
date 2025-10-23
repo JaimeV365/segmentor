@@ -80,6 +80,7 @@ export interface DataInputProps {
   showScales: boolean;
   lockReason?: string;
   onDataSubmitted?: () => void;
+  isDemoMode?: boolean;
   
   onScaleUpdate: (value: ScaleFormat, type: 'satisfaction' | 'loyalty') => void;
 }

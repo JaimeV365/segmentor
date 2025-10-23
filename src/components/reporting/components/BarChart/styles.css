@@ -228,7 +228,7 @@
   width: 100%;
   max-width: 30px;
   background-color: #3a863e;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   min-height: 1px;
   position: absolute;
   bottom: 0;
@@ -245,8 +245,9 @@
 }
 
 .bar-chart-bar.selected-bar {
-  border: 2px solid #3a863e;
-  box-shadow: 0 0 0 2px rgba(58, 134, 62, 0.3);
+  border: 3px solid #3a863e;
+  box-shadow: 0 0 0 3px rgba(58, 134, 62, 0.4), 0 0 8px rgba(58, 134, 62, 0.3);
+  transform: translateX(-50%) scale(1.05);
 }
 
 .bar-chart-value {
@@ -362,41 +363,44 @@
    5. PANELS AND FILTERS
    -------------------- */
 
-/* Filter Panel */
-.filter-panel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 100vh;
-  width: 350px;
-  background-color: white;
-  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  transform: translateX(100%);
-  transition: transform 0.3s ease;
+/* Filter Panel - More specific selector to override other CSS files */
+.bar-chart-container .filter-panel {
+  position: fixed !important;
+  top: 100px !important; /* Lower the panel well below the main ribbon */
+  right: 0 !important;
+  height: calc(100vh - 100px) !important; /* Adjust height to account for top offset */
+  width: 350px !important;
+  background-color: white !important;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1) !important;
+  z-index: 999 !important; /* Lower than main ribbon (1000) */
+  display: flex !important;
+  flex-direction: column !important;
+  transform: translateX(100%) !important;
+  transition: transform 0.3s ease !important;
+  pointer-events: auto; /* Allow panel to receive clicks */
 }
 
-.filter-panel.open {
-  transform: translateX(0);
+.bar-chart-container .filter-panel.open {
+  transform: translateX(0) !important;
   animation: slideInFromRight 0.3s ease-out forwards;
 }
 
-.filter-overlay {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1000;
+.bar-chart-container .filter-overlay {
+  position: fixed !important;
+  top: 100px !important; /* Lower the overlay well below the main ribbon */
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 998 !important; /* Lower than main ribbon (1000) */
+  pointer-events: none; /* Allow clicks to pass through to chart */
+  background: transparent !important; /* Remove the dark overlay */
 }
 
 /* Make sure the filter panel header stays on top */
 .filter-panel-header {
-  position: sticky !important;
-  top: 0 !important;
+  position: relative !important; /* Changed from sticky to relative */
+  top: auto !important; /* Changed from 0 to auto */
   background-color: #f9fafb !important;
-  z-index: 1002 !important;
+  z-index: 1001 !important; /* Standard z-index since panel is positioned below ribbon */
   display: flex !important;
   flex-direction: row !important;
   justify-content: space-between !important;
@@ -416,7 +420,7 @@
   opacity: 1 !important;
   pointer-events: auto !important;
   position: relative;
-  z-index: 1002 !important; /* Ensure tabs are above other elements */
+  z-index: 1001 !important; /* Standard z-index since panel is positioned below ribbon */
 }
 
 .filter-tab {
@@ -515,12 +519,64 @@
   margin-top: 0 !important;
   padding-top: 16px !important;
   position: relative !important;
-  z-index: 1001 !important;
+  z-index: 1000 !important; /* Same level as panel content */
 }
 
 /* Settings styles */
 .settings-group {
   margin-bottom: 1.25rem;
+}
+
+/* Selected bars analysis */
+.selected-bars-summary {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+/* Floating selected bars analysis */
+.selected-bars-analysis-floating {
+  position: absolute;
+  top: 50px;
+  left: 10px;
+  right: 10px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.selected-bars-analysis-floating .selected-bars-summary {
+  background-color: rgba(248, 250, 252, 0.95);
+  border: 1px solid #3a863e;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(4px);
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.summary-item:last-child {
+  margin-bottom: 0;
+}
+
+.summary-label {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.summary-value {
+  font-size: 13px;
+  color: #1e293b;
+  font-weight: 600;
 }
 
 .settings-title {
@@ -594,6 +650,51 @@
   grid-template-columns: 1fr;
   gap: 8px;
 }
+
+/* Premium Feature Placeholder - Following Watermark button pattern */
+.premium-feature-placeholder {
+  padding: 12px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  text-align: center;
+  margin: 8px 0;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.premium-placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.premium-placeholder-title-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.premium-placeholder-title {
+  font-weight: 500;
+  color: #3a863e; /* Green "Premium Feature" like Watermark Controls */
+  font-size: 12px;
+}
+
+.premium-crown {
+  color: #f7b731; /* Yellow crown like Watermark Controls */
+  opacity: 0.8;
+  transform: translateY(1px); /* Slight downward adjustment for better alignment */
+}
+
+.premium-placeholder-description {
+  font-size: 11px;
+  color: #9ca3af;
+  line-height: 1.3;
+  text-align: center;
+}
+
 
 .report-filter-panel.embedded .report-filter-panel-header,
 .report-filter-panel.embedded .report-filter-panel-footer {

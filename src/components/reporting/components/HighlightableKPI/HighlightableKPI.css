@@ -73,9 +73,24 @@
   transition: all 0.2s ease;
 }
 
-.color-option:hover {
+.color-option:hover:not(:disabled) {
   transform: scale(1.1);
   border-color: #e5e7eb;
+}
+
+.color-option.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.color-option.disabled:hover {
+  transform: none;
+  border-color: transparent;
+}
+
+.color-option:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .color-option.green {

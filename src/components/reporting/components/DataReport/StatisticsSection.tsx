@@ -143,7 +143,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
             )}
             showGrid={true}
             showLabels={true}
-            interactive={isPremium}
+            interactive={true}
             customColors={satisfactionColors}
             onColorChange={(value, color) => {
               setSatisfactionColors(prev => ({
@@ -170,7 +170,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
             )}
             showGrid={true}
             showLabels={true}
-            interactive={isPremium}
+            interactive={true}
             customColors={loyaltyColors}
             onColorChange={(value, color) => {
               setLoyaltyColors(prev => ({

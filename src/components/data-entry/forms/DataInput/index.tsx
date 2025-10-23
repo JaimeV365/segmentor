@@ -206,6 +206,9 @@ const DataInput: React.FC<DataInputProps> = (props) => {
             <FormActions
               isEditing={!!props.editingData}
               onCancel={props.onCancelEdit}
+              isAtDemoLimit={props.isDemoMode && !props.editingData && dataPoints.length >= 100}
+              currentCount={dataPoints.length}
+              maxCount={100}
             />
           </div>
         </CardLayout>

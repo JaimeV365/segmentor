@@ -20,6 +20,9 @@ import { HeaderScales } from './types';
 import { UnifiedLoadingPopup } from '../../../ui/UnifiedLoadingPopup';
 import './styles/index.css';
 
+// Demo limitation constants
+const DEMO_MAX_ENTRIES = 100;
+
 
 interface CSVImportProps {
   onImport: (
@@ -44,6 +47,7 @@ interface CSVImportProps {
   onUploadSuccess: (fileName: string, count: number, ids: string[], wasOverwrite?: boolean) => void;
   lastManualEntryTimestamp?: number; // New prop to track manual entries
   onSegFileLoad?: (file: File) => Promise<void>;
+  isDemoMode?: boolean; // New prop to detect demo mode
 }
 
 export const CSVImport: React.FC<CSVImportProps> = ({ 
@@ -56,7 +60,8 @@ export const CSVImport: React.FC<CSVImportProps> = ({
   uploadHistory,
   onUploadSuccess,
   lastManualEntryTimestamp = 0,
-  onSegFileLoad
+  onSegFileLoad,
+  isDemoMode = false
 }) => {
   const { showNotification } = useNotification();
   
@@ -216,15 +221,56 @@ export const CSVImport: React.FC<CSVImportProps> = ({
     
     try {
       console.log("All checks passed, calling onImport");
+      
+      // Apply demo limitation if in demo mode
+      let dataToImport = validatedData;
+      let truncatedCount = 0;
+      
+      if (isDemoMode) {
+        if (forceOverwrite) {
+          // For overwrite mode, limit to demo max entries
+          if (validatedData.length > DEMO_MAX_ENTRIES) {
+            dataToImport = validatedData.slice(0, DEMO_MAX_ENTRIES);
+            truncatedCount = validatedData.length - DEMO_MAX_ENTRIES;
+          }
+        } else {
+          // For add mode, check if adding would exceed limit
+          const currentCount = existingData.length;
+          const availableSlots = DEMO_MAX_ENTRIES - currentCount;
+          
+          if (availableSlots <= 0) {
+            showNotification({
+              title: 'Demo Limitation',
+              message: `Demo limited to ${DEMO_MAX_ENTRIES} entries. You have reached the limit.`,
+              type: 'warning'
+            });
+            setProgress(null);
+            return false;
+          }
+          
+          if (validatedData.length > availableSlots) {
+            dataToImport = validatedData.slice(0, availableSlots);
+            truncatedCount = validatedData.length - availableSlots;
+          }
+        }
+      }
+      
       // Process the import
-      const importedIds = onImport(validatedData, headerScales, forceOverwrite);
+      const importedIds = onImport(dataToImport, headerScales, forceOverwrite);
       console.log("Import successful, got IDs:", importedIds.length);
       
-      onUploadSuccess(fileName, validatedData.length, importedIds, forceOverwrite);
+      onUploadSuccess(fileName, dataToImport.length, importedIds, forceOverwrite);
+      
+      // Show appropriate success message
+      let successMessage = `Successfully ${forceOverwrite ? 'replaced all data' : 'imported'} ${dataToImport.length} entries from ${fileName}`;
+      
+      if (isDemoMode && truncatedCount > 0) {
+        successMessage += `. Demo limited to ${DEMO_MAX_ENTRIES} entries. ${truncatedCount} entries were not imported.`;
+      }
       
       showNotification({
         title: 'Success',
-        message: `Successfully ${forceOverwrite ? 'replaced all data' : 'imported'} ${validatedData.length} entries from ${fileName}`,
+        message: successMessage,
         type: 'success'
       });
       

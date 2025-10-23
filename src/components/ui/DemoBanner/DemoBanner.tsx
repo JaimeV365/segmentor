@@ -25,7 +25,7 @@ export const DemoBanner: React.FC<DemoBannerProps> = ({ onDismiss, onLoadRealDat
             onClick={onLoadRealData}
             className="demo-banner__load-button"
           >
-            Load Your Data
+            Exit Demo
           </button>
           <button
             onClick={onDismiss}

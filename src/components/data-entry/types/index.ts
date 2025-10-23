@@ -56,6 +56,7 @@ export interface DataEntryModuleProps {
   data: DataPoint[];
   onSegFileLoad?: (file: File) => Promise<void>;
   onDemoDataLoad?: () => void;
+  isDemoMode?: boolean;
 }
 
 export interface HeaderScales {

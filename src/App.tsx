@@ -58,7 +58,7 @@ const visualizationRef = useRef<HTMLDivElement>(null);
       const headers = lines[0].split(',');
       const dataRows = lines.slice(1).filter(line => line.trim());
       
-      const demoData: DataPoint[] = dataRows.map((row, index) => {
+      const demoData: DataPoint[] = dataRows.slice(0, 90).map((row, index) => {
         const values = row.split(',');
         return {
           id: `DEMO_${index + 1}`,
@@ -85,7 +85,7 @@ const visualizationRef = useRef<HTMLDivElement>(null);
       
       notification.showNotification({
         title: 'Demo Data Loaded',
-        message: 'Explore the full potential of the tool with sample data!',
+        message: '90 sample entries loaded. You can add up to 10 more entries manually.',
         type: 'success'
       });
     } catch (error) {
@@ -217,8 +217,19 @@ useEffect(() => {
           return point;
         });
         
+        // Apply demo limitation if in demo mode
+        let finalDataPoints = dataPoints;
+        if (isDemoMode && dataPoints.length > 100) {
+          finalDataPoints = dataPoints.slice(0, 100);
+          notification.showNotification({
+            title: 'Demo Limitation',
+            message: `Demo limited to 100 entries. Showing first 100 of ${dataPoints.length} entries from ${file.name}.`,
+            type: 'info'
+          });
+        }
+        
         // Load the data with proper scales from headers
-        handleDataChange(dataPoints, {
+        handleDataChange(finalDataPoints, {
           satisfaction: saveData.dataTable.headers.satisfaction as ScaleFormat,
           loyalty: saveData.dataTable.headers.loyalty as ScaleFormat
         });
@@ -273,7 +284,18 @@ useEffect(() => {
           group: point.group || 'Default'
         })) || [];
         
-        handleDataChange(dataPoints, {
+        // Apply demo limitation if in demo mode
+        let finalDataPoints = dataPoints;
+        if (isDemoMode && dataPoints.length > 100) {
+          finalDataPoints = dataPoints.slice(0, 100);
+          notification.showNotification({
+            title: 'Demo Limitation',
+            message: `Demo limited to 100 entries. Showing first 100 of ${dataPoints.length} entries from ${file.name}.`,
+            type: 'info'
+          });
+        }
+        
+        handleDataChange(finalDataPoints, {
           satisfaction: (saveData as any).data?.scales?.satisfaction as ScaleFormat || '1-5',
           loyalty: (saveData as any).data?.scales?.loyalty as ScaleFormat || '1-5'
         });
@@ -460,6 +482,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
                 data={data}
                 onSegFileLoad={handleLoadProgress}
                 onDemoDataLoad={handleDemoDataLoad}
+                isDemoMode={isDemoMode}
               />
             </div>
 
@@ -473,6 +496,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
                   onEdit={handleEditDataPoint}
                   onDeleteAll={handleDeleteAll}
                   onToggleExclude={handleToggleExclude}
+                  isDemoMode={isDemoMode}
                 />
               </div>
             )}

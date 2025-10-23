@@ -1,37 +1,76 @@
 import React, { useState, useEffect } from 'react';
 import { Lock } from 'lucide-react';
-
+import { PREMIUM_CONFIG, type PremiumFeature as PremiumFeatureType } from '../../../constants/premium';
+import './PremiumFeature.css';
 
 interface PremiumFeatureProps {
   children: React.ReactNode;
   isPremium: boolean;
+  featureType?: PremiumFeatureType;
   onPreview?: () => void;
   description?: string;
   previewDuration?: number;
   feature?: string;
+  onUpgrade?: () => void;
+  showPreview?: boolean;
+  disabledMessage?: string;
 }
 
 const PremiumFeature: React.FC<PremiumFeatureProps> = ({
   children,
   isPremium,
+  featureType,
   onPreview,
   description = "Premium feature",
   previewDuration = 2,
-  feature
+  feature,
+  onUpgrade,
+  showPreview = true,
+  disabledMessage
 }) => {
   const [isPreview, setIsPreview] = useState(false);
-  const [isEnabled, setIsEnabled] = useState(isPremium);
+  
+  // Determine if feature should be enabled based on type
+  const isAnalysisFeature = featureType && PREMIUM_CONFIG.FEATURES.ANALYSIS.includes(featureType as any);
+  const isPersonalizationFeature = featureType && PREMIUM_CONFIG.FEATURES.PERSONALIZATION.includes(featureType as any);
+  const isEnabled = isPremium || isAnalysisFeature;
   
   
 
   const handleClick = () => {
-    if (!isEnabled && onPreview && !isPreview) {
+    if (!isEnabled && onPreview && !isPreview && showPreview) {
       setIsPreview(true);
       onPreview();
       setTimeout(() => setIsPreview(false), previewDuration * 1000);
     }
   };
 
+  // For analysis features, always show enabled
+  if (isAnalysisFeature) {
+    return <>{children}</>;
+  }
+
+  // For personalization features, show with premium overlay if not premium
+  if (isPersonalizationFeature && !isPremium) {
+    return (
+      <div className="premium-feature-wrapper">
+        <div className="premium-feature-disabled">
+          {children}
+          <div className="premium-overlay">
+            <Lock size={16} />
+            <span>{disabledMessage || 'Premium Feature'}</span>
+            {onUpgrade && (
+              <button onClick={onUpgrade} className="upgrade-button">
+                Upgrade
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Legacy behavior for backward compatibility
   return (
     <div 
       className={`relative ${!isEnabled && !isPreview ? 'opacity-50' : ''} 

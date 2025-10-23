@@ -5,6 +5,9 @@ import { Settings, X, Filter, Menu } from 'lucide-react';
 import { scaleLinear } from 'd3-scale';
 import FilterPanel from '../../../visualization/filters/FilterPanel';
 import FilterToggle from '../../../visualization/filters/FilterToggle';
+import PremiumFeature from '../../../ui/PremiumFeature';
+import { ColorPalette } from '../../../ui/ColorPalette';
+import { useZIndex } from '../../../../hooks/useZIndex';
 import './styles.css';
 
 export interface BarChartData {
@@ -64,6 +67,12 @@ const BarChart: React.FC<BarChartProps> = ({
   const [showSidePanel, setShowSidePanel] = useState(false);
   const [activePanelTab, setActivePanelTab] = useState<'settings' | 'filters'>('settings');
   
+  // Use centralized z-index management
+  const filterPanelZIndex = useZIndex('FILTER_PANEL');
+  const filterOverlayZIndex = useZIndex('FILTER_OVERLAY');
+  const filterHeaderZIndex = useZIndex('FILTER_HEADER');
+  const filterTabsZIndex = useZIndex('FILTER_TABS');
+  
   // Update ref to point to the side panel
   const sidePanelRef = useRef<HTMLDivElement>(null);
 const cogwheelRef = useRef<HTMLButtonElement>(null);
@@ -90,13 +99,13 @@ const handleClickOutside = useCallback((event: MouseEvent) => {
   console.log('Target classList:', targetElement.classList);
   console.log('Current panel tab:', activePanelTab);
   
-  // Close side panel when clicking outside (but not on tabs)
-  if (!isPanelClick && !isControlButtonClick && !isTabClick && !isFilterPanelClick) {
+  // Close side panel when clicking outside (but not on tabs or bars)
+  if (!isPanelClick && !isControlButtonClick && !isTabClick && !isFilterPanelClick && !isBarClick) {
     console.log('Closing panel!');
     setShowSidePanel(false);
   }
   
-  // Clear selection only if clicking outside bars and not in panel
+  // Clear selection only if clicking outside bars and panel
   if (!isBarClick && !isPanelClick && !isFilterPanelClick && !isTabClick) {
     setSelectedBars(new Set());
     setApplyToAll(false);
@@ -180,27 +189,31 @@ useEffect(() => {
   const handleBarClick = (value: number, event: React.MouseEvent) => {
     if (!interactive) return;
   
+    let newSelection: Set<number>;
+    
     if (event.ctrlKey) {
       // Multi-selection with Ctrl key
-      setSelectedBars(prev => {
-        const newSelection = new Set(prev);
-        if (newSelection.has(value)) {
-          newSelection.delete(value);
-        } else {
-          newSelection.add(value);
-        }
-        return newSelection;
-      });
+      newSelection = new Set(selectedBars);
+      if (newSelection.has(value)) {
+        newSelection.delete(value);
+      } else {
+        newSelection.add(value);
+      }
     } else {
       // Single selection/deselection
-      setSelectedBars(prev => {
-        // If clicking already selected bar, deselect it
-        if (prev.has(value) && prev.size === 1) {
-          return new Set();
-        }
-        // Otherwise, select only this bar
-        return new Set([value]);
-      });
+      if (selectedBars.has(value) && selectedBars.size === 1) {
+        newSelection = new Set();
+      } else {
+        newSelection = new Set([value]);
+      }
+    }
+    
+    setSelectedBars(newSelection);
+    
+    // Auto-open contextual menu when bars are selected (but not when deselecting all)
+    if (newSelection.size > 0) {
+      setShowSidePanel(true);
+      setActivePanelTab('settings');
     }
   };
   
@@ -237,74 +250,86 @@ useEffect(() => {
         </div>
       )}
       
-      {/* Updated controls section */}
-      {interactive && (
-  <div className="bar-chart-controls">
-    <button
-      ref={cogwheelRef}
-      className={`bar-chart-control-button ${showSidePanel ? 'active' : ''} ${activeFilters && activeFilters.length > 0 ? 'has-filters' : ''}`}
-      onClick={() => {
-        setShowSidePanel(!showSidePanel);
-        // Start with filters tab if there are active filters, otherwise settings
-        setActivePanelTab(activeFilters && activeFilters.length > 0 ? 'filters' : 'settings');
-      }}
-      title="Chart settings and filters"
-    >
-      <Menu size={22} />
-{activeFilters && activeFilters.length > 0 && (
-  <span className="filter-badge small">{activeFilters.length}</span>
-)}
-    </button>
-  </div>
-)}
+      {/* Always show hamburger menu - analysis feature */}
+      <PremiumFeature isPremium={true} featureType="hamburgerMenu">
+        <div className="bar-chart-controls">
+          <button
+            ref={cogwheelRef}
+            className={`bar-chart-control-button ${showSidePanel ? 'active' : ''} ${activeFilters && activeFilters.length > 0 ? 'has-filters' : ''}`}
+            onClick={() => {
+              setShowSidePanel(!showSidePanel);
+              // Start with filters tab if there are active filters, otherwise settings
+              setActivePanelTab(activeFilters && activeFilters.length > 0 ? 'filters' : 'settings');
+            }}
+            title="Chart settings and filters"
+          >
+            <Menu size={22} />
+            {activeFilters && activeFilters.length > 0 && (
+              <span className="filter-badge small">{activeFilters.length}</span>
+            )}
+          </button>
+        </div>
+      </PremiumFeature>
+
 
       {/* Unified side panel using ReportFilterPanel */}
-      {showSidePanel && interactive && (
-  <div className="filter-overlay" onMouseDown={() => console.log("Overlay mousedown")}>
-    <div 
-      className="filter-panel open"
-      onClick={(e) => e.stopPropagation()} // Prevent clicks from bubbling up
-    >
-      <div className="filter-panel-header">
-        <div className="filter-panel-tabs">
-        <button 
-  ref={settingsTabRef}
-  className={`filter-tab ${activePanelTab === 'settings' ? 'active' : ''}`}
-  onClick={(e) => {
-    console.log("Settings tab clicked");
-    e.stopPropagation();
-    setActivePanelTab('settings');
-  }}
->
-  Settings
-</button>
-{isPremium && (
-  <button 
-  ref={filtersTabRef}
-  className={`filter-tab ${activePanelTab === 'filters' ? 'active' : ''}`}
-  onClick={(e) => {
-    console.log("Filters tab clicked");
-    e.stopPropagation();
-    setLastTabClicked('filters');
-    setActivePanelTab('filters');
-  }}
-  onMouseDown={(e) => {
-    console.log("Filters tab mousedown");
-    e.preventDefault(); 
-    e.stopPropagation();
-  }}
->
-    Filters
-    {activeFilters && activeFilters.length > 0 && (
-      <span className="filter-badge small">{activeFilters.length}</span>
-    )}
-  </button>
-)}
-        </div>
-        <button className="filter-panel-close" onClick={() => setShowSidePanel(false)}>
-          <X size={20} />
-        </button>
-      </div>
+      {showSidePanel && (
+        <div 
+          className="filter-overlay" 
+          style={{ zIndex: filterOverlayZIndex }}
+          onMouseDown={() => console.log("Overlay mousedown")}
+        >
+          <div 
+            className="filter-panel open"
+            style={{ zIndex: filterPanelZIndex }}
+            onClick={(e) => e.stopPropagation()} // Prevent clicks from bubbling up
+          >
+            <div 
+              className="filter-panel-header"
+              style={{ zIndex: filterHeaderZIndex }}
+            >
+              <div 
+                className="filter-panel-tabs"
+                style={{ zIndex: filterTabsZIndex }}
+              >
+                <button 
+                  ref={settingsTabRef}
+                  className={`filter-tab ${activePanelTab === 'settings' ? 'active' : ''}`}
+                  onClick={(e) => {
+                    console.log("Settings tab clicked");
+                    e.stopPropagation();
+                    setActivePanelTab('settings');
+                  }}
+                >
+                  Settings
+                </button>
+                <PremiumFeature isPremium={isPremium} featureType="filtering">
+                  <button 
+                    ref={filtersTabRef}
+                    className={`filter-tab ${activePanelTab === 'filters' ? 'active' : ''}`}
+                    onClick={(e) => {
+                      console.log("Filters tab clicked");
+                      e.stopPropagation();
+                      setLastTabClicked('filters');
+                      setActivePanelTab('filters');
+                    }}
+                    onMouseDown={(e) => {
+                      console.log("Filters tab mousedown");
+                      e.preventDefault(); 
+                      e.stopPropagation();
+                    }}
+                  >
+                    Filters
+                    {activeFilters && activeFilters.length > 0 && (
+                      <span className="filter-badge small">{activeFilters.length}</span>
+                    )}
+                  </button>
+                </PremiumFeature>
+              </div>
+              <button className="filter-panel-close" onClick={() => setShowSidePanel(false)}>
+                <X size={20} />
+              </button>
+            </div>
       
       {activePanelTab === 'settings' ? (
         <div className="filter-panel-content">
@@ -369,76 +394,117 @@ useEffect(() => {
               <div className="divider"></div>
             </>
           )}
+          {/* Selected Bars Analysis - Available to all users */}
+          {selectedBars.size > 0 && (
+            <div className="settings-group">
+              <div className="settings-title">Selected Bars Analysis</div>
+              <div className="selected-bars-summary">
+                <div className="summary-item">
+                  <span className="summary-label">Selected:</span>
+                  <span className="summary-value">{selectedBars.size} bar{selectedBars.size > 1 ? 's' : ''}</span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">Total Count:</span>
+                  <span className="summary-value">
+                    {Array.from(selectedBars).reduce((sum, value) => {
+                      const barData = data.find(d => d.value === value);
+                      return sum + (barData?.count || 0);
+                    }, 0)}
+                  </span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">Percentage:</span>
+                  <span className="summary-value">
+                    {((Array.from(selectedBars).reduce((sum, value) => {
+                      const barData = data.find(d => d.value === value);
+                      return sum + (barData?.count || 0);
+                    }, 0) / data.reduce((sum, d) => sum + d.count, 0)) * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">Values:</span>
+                  <span className="summary-value">
+                    {Array.from(selectedBars).sort((a, b) => a - b).join(', ')}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="settings-group">
             <div className="settings-title">Bar Colours</div>
-            <div className="color-palette">
-              {[
-                '#3a863e', // Brand green
-                '#CC0000', // Red
-                '#F7B731', // Yellow
-                '#3A6494', // Blue
-                '#8b5cf6', // Purple
-                '#ec4899', // Pink
-                '#78716c', // Warm gray
-              ].map((color) => (
-                <div
-                  key={color}
-                  className={`color-swatch ${
-                    customColors[selectedBar || 0] === color ? 'selected' : ''
-                  } ${selectedBars.size === 0 ? 'disabled' : ''}`}
-                  style={{ 
-                    backgroundColor: color,
-                    pointerEvents: selectedBars.size === 0 ? 'none' : 'auto'
-                  }}
-                  onClick={() => {
+            {isPremium ? (
+              <>
+                <ColorPalette
+                  selectedColor={customColors[selectedBar || 0]}
+                  onColorSelect={(color: string) => {
                     if (selectedBars.size === 0) return;
                     selectedBars.forEach(barValue => {
                       onColorChange?.(barValue, color);
                     });
                     setCustomHexInput(color.replace('#', ''));
                   }}
+                  isPremium={isPremium}
+                  disabled={selectedBars.size === 0}
+                  showCustomInput={true}
+                  customHexValue={customHexInput}
+                  onCustomHexChange={(value: string) => {
+                    setCustomHexInput(value);
+                    if (value.length === 6) {
+                      onColorChange?.(selectedBar || 0, '#' + value);
+                    }
+                  }}
                 />
-              ))}
-            </div>
-            <div className="custom-color-input">
-              <span className="custom-color-label">Custom hex:</span>
-              <span>#</span>
-              <input
-                type="text"
-                value={customHexInput}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/[^0-9A-Fa-f]/g, '');
-                  setCustomHexInput(value);
-                  if (value.length === 6) {
-                    onColorChange?.(selectedBar || 0, '#' + value);
-                  }
-                }}
-                placeholder="3a863e"
-                maxLength={6}
-              />
-            </div>
-            <div className="settings-option">
-              <input
-                type="checkbox"
-                id={`apply-all-${chartId}`}
-                checked={applyToAll}
-                style={{ 
-                  cursor: 'pointer',
-                  opacity: selectedBars.size === 0 ? 0.5 : 1
-                }}
-                onChange={(e) => {
-                  setApplyToAll(e.target.checked);
-                  if (e.target.checked) {
-                    setSelectedBars(new Set(data.map(d => d.value)));
-                  } else {
-                    setSelectedBars(new Set());
-                  }
-                }}
-              />
-              <label htmlFor={`apply-all-${chartId}`}>
-                Apply to all bars
-              </label>
-            </div>
+                <div className="settings-option">
+                  <input
+                    type="checkbox"
+                    id={`apply-all-${chartId}`}
+                    checked={applyToAll}
+                    style={{ 
+                      cursor: 'pointer',
+                      opacity: selectedBars.size === 0 ? 0.5 : 1
+                    }}
+                    onChange={(e) => {
+                      setApplyToAll(e.target.checked);
+                      if (e.target.checked) {
+                        setSelectedBars(new Set(data.map(d => d.value)));
+                      } else {
+                        setSelectedBars(new Set());
+                      }
+                    }}
+                  />
+                  <label htmlFor={`apply-all-${chartId}`}>
+                    Apply to all bars
+                  </label>
+                </div>
+              </>
+            ) : (
+              <div className="premium-feature-placeholder">
+                <div className="premium-placeholder-content">
+                  <div className="premium-placeholder-title-row">
+                    <span className="premium-placeholder-title">Premium Feature</span>
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      width="12" 
+                      height="12" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      className="lucide lucide-crown-icon lucide-crown premium-crown"
+                    >
+                      <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/>
+                      <path d="M5 21h14"/>
+                    </svg>
+                  </div>
+                  <div className="premium-placeholder-description">
+                    Customise bar colours to match your brand
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       ) : (
@@ -506,27 +572,29 @@ useEffect(() => {
                 key={value} 
                 className={`bar-chart-bar-container ${showValueForBar ? 'show-value' : ''}`}
               >
-                <div
-                  className={`bar-chart-bar ${interactive ? 'premium' : ''} ${
-                    selectedBars.has(value) ? 'selected-bar' : ''
-                  }`}
-                  style={{
-                    height: `${heightPercent}%`,
-                    backgroundColor: customColors[value] || '#3a863e'
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleBarClick(value, e);
-                  }}
-                  onMouseEnter={() => setHoveredBar(value)}
-                  onMouseLeave={() => setHoveredBar(null)}
-                >
-                  {count > 0 && showValues && (
-                    <div className="bar-chart-value">
-                      {count}
-                    </div>
-                  )}
-                </div>
+                <PremiumFeature isPremium={true} featureType="barSelection">
+                  <div
+                    className={`bar-chart-bar premium ${
+                      selectedBars.has(value) ? 'selected-bar' : ''
+                    }`}
+                    style={{
+                      height: `${heightPercent}%`,
+                      backgroundColor: customColors[value] || '#3a863e'
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleBarClick(value, e);
+                    }}
+                    onMouseEnter={() => setHoveredBar(value)}
+                    onMouseLeave={() => setHoveredBar(null)}
+                  >
+                    {count > 0 && showValues && (
+                      <div className="bar-chart-value">
+                        {count}
+                      </div>
+                    )}
+                  </div>
+                </PremiumFeature>
 
                 {showLabels && (
                   <div className="bar-chart-label">
@@ -542,13 +610,11 @@ useEffect(() => {
                     <div className="bar-chart-tooltip-count">
                       Count: {count}
                     </div>
-                    {interactive && (
-                      <div className="bar-chart-tooltip-hint">
-                        {selectedBars.size > 0 ? 
-                          'Ctrl+Click to select multiple bars' : 
-                          'Click to select bar'}
-                      </div>
-                    )}
+                    <div className="bar-chart-tooltip-hint">
+                      {selectedBars.size > 0 ? 
+                        'Ctrl+Click to select multiple bars' : 
+                        'Click to select bar for analysis'}
+                    </div>
                   </div>
                 )}
               </div>

@@ -15,6 +15,7 @@ interface DataDisplayProps {
   onToggleExclude: (id: string) => void;  
   satisfactionScale: string;
   loyaltyScale: string;
+  isDemoMode?: boolean;
 }
 
 interface Size {
@@ -32,7 +33,8 @@ const DataDisplay: React.FC<DataDisplayProps> = ({
   onDeleteAll,
   onToggleExclude,
   satisfactionScale,
-  loyaltyScale 
+  loyaltyScale,
+  isDemoMode = false
 }) => {
   const ROW_HEIGHT = 50;
   const HEADER_HEIGHT = 40;
@@ -156,6 +158,22 @@ const DataDisplay: React.FC<DataDisplayProps> = ({
       <div style={{ textAlign: 'center', marginBottom: '16px' }}>
   <h1 className="data-table-title">Data Table</h1>
 </div>
+
+      {/* Demo progress indicator */}
+      {isDemoMode && (
+        <div className="demo-progress-indicator">
+          <div className="progress-bar">
+            <div 
+              className="progress-fill" 
+              style={{ width: `${Math.min((data.length / 100) * 100, 100)}%` }}
+            />
+          </div>
+          <div className="progress-text">
+            {data.length} of 100 entries used
+            {data.length >= 100 && <span className="limit-reached"> (Limit reached)</span>}
+          </div>
+        </div>
+      )}
 
       {sortedData.length > 0 ? (
         <div style={{ 

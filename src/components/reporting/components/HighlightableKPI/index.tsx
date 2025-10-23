@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { PREMIUM_CONFIG } from '../../../../constants/premium';
 import './HighlightableKPI.css';
 
 type HighlightColor = 'green' | 'yellow' | 'red';
@@ -48,13 +49,14 @@ export const HighlightableKPI: React.FC<HighlightableKPIProps> = ({
         </div>
       )}
 
-      {showColorPicker && isPremium && (
+      {showColorPicker && (
         <div className="color-picker-popup" onClick={e => e.stopPropagation()}>
           <div className="color-options">
             <button
-              className="color-option green"
-              onClick={() => handleColorSelect('green')}
-              title="Highlight positive metric"
+              className={`color-option green ${!isPremium ? 'disabled' : ''}`}
+              onClick={() => isPremium && handleColorSelect('green')}
+              title={isPremium ? "Highlight positive metric" : "Premium feature"}
+              disabled={!isPremium}
             />
             <button
               className="color-option yellow"
@@ -62,9 +64,10 @@ export const HighlightableKPI: React.FC<HighlightableKPIProps> = ({
               title="Standard highlight"
             />
             <button
-              className="color-option red"
-              onClick={() => handleColorSelect('red')}
-              title="Highlight area for improvement"
+              className={`color-option red ${!isPremium ? 'disabled' : ''}`}
+              onClick={() => isPremium && handleColorSelect('red')}
+              title={isPremium ? "Highlight area for improvement" : "Premium feature"}
+              disabled={!isPremium}
             />
           </div>
         </div>

@@ -24,7 +24,8 @@ const DataEntryModule: React.FC<DataEntryModuleProps> = ({
   loyaltyScale,
   data: externalData,
   onSegFileLoad,
-  onDemoDataLoad
+  onDemoDataLoad,
+  isDemoMode = false
 }) => {
   const [editingData, setEditingData] = useState<DataPoint | null>(null);
   const [data, setData] = useState<DataPoint[]>([]);
@@ -340,6 +341,7 @@ if (editingData) {
           lastManualEntryTimestamp={lastManualEntryTimestamp}
           existingData={data}
           onSegFileLoad={onSegFileLoad}
+          isDemoMode={isDemoMode}
         />
       )
     },
@@ -360,6 +362,7 @@ if (editingData) {
             scalesLocked={isScalesLocked}
             showScales={true}
             onScaleUpdate={handleScaleUpdate}
+            isDemoMode={isDemoMode}
           />
         </div>
       )
