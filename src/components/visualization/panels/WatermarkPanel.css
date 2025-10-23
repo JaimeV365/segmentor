@@ -259,6 +259,31 @@
   gap: 4px;
 }
 
+.watermark-reset-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  margin-top: 12px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  color: #495057;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.watermark-reset-button:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.watermark-reset-button:active {
+  background: #dee2e6;
+  transform: translateY(1px);
+}
+
 .arrow-row {
   display: flex;
   align-items: center;

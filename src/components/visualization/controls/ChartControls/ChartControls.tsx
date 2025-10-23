@@ -1,10 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { Switch } from '../../../ui/Switch/Switch';
 import { TwoStateToggle } from '../../../ui/TwoStateToggle/TwoStateToggle';
-import { BookOpen, Tags, Monitor, Filter, Crown } from 'lucide-react';
+import { BookOpen, Tags, Monitor, Filter } from 'lucide-react';
 import { ScaleFormat } from '../../../../types/base';
 import WatermarkPanel from '../../panels/WatermarkPanel';
 import './ChartControls.css';
+
+// Compass Icon Component
+const CompassIcon: React.FC<{ size?: number; className?: string }> = ({ size = 24, className = '' }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={`lucide lucide-compass-icon lucide-compass ${className}`}
+  >
+    <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/>
+    <circle cx="12" cy="12" r="10"/>
+  </svg>
+);
 
 
 type LabelMode = 'all' | 'quadrants' | 'sub-sections' | 'none';
@@ -74,6 +93,19 @@ interface ChartControlsProps {
   isPremium?: boolean;
   effects?: Set<string>;
   onEffectsChange?: (effects: Set<string>) => void;
+  dimensions?: {
+    totalCols: number;
+    totalRows: number;
+    cellWidth: number;
+    cellHeight: number;
+    midpointCol: number;
+    midpointRow: number;
+    hasNearApostles: boolean;
+    scaleRanges: {
+      satisfaction: { min: number; max: number };
+      loyalty: { min: number; max: number };
+    };
+  };
   
   // Save Progress functionality
   onSaveProgress?: () => void;
@@ -118,11 +150,17 @@ export const ChartControls: React.FC<ChartControlsProps> = ({
   activeFilterCount,
   isPremium = false,
   effects = new Set(),
-  onEffectsChange = () => {}
+  onEffectsChange = () => {},
+  dimensions
 }) => {
   console.log('🔍 ChartControls received labelPositioning:', labelPositioning);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [showWatermarkPanel, setShowWatermarkPanel] = useState(false);
+  
+  // Debug watermark panel state and props
+  console.log('🔍 ChartControls: showWatermarkPanel state:', showWatermarkPanel);
+  console.log('🔍 ChartControls: onEffectsChange prop:', typeof onEffectsChange, onEffectsChange.toString().substring(0, 100));
+  console.log('🔍 ChartControls: effects prop:', Array.from(effects));
 
 
   // Compute the areas display mode
@@ -450,13 +488,33 @@ useEffect(() => {
         {isPremium && (
           <div className={`control-group watermark-group ${isPremium ? 'premium-mode' : ''}`}>
             <div className="control-section-title">
-              <Crown size={16} className="control-section-icon" />
+              <CompassIcon size={16} className="control-section-icon" />
               <span className="control-section-title-text">Watermark</span>
             </div>
             <div className="control-group-content">
               <button 
                 className="watermark-toggle-button"
-                onClick={() => setShowWatermarkPanel(!showWatermarkPanel)}
+                onClick={() => {
+                  console.log('🔍 ChartControls: Watermark button clicked, current state:', showWatermarkPanel);
+                  setShowWatermarkPanel(!showWatermarkPanel);
+                  
+                  // Auto-scroll to chart when opening watermark controls
+                  if (!showWatermarkPanel) {
+                    setTimeout(() => {
+                      const chartElement = document.querySelector('.chart-container');
+                      if (chartElement) {
+                        const rect = chartElement.getBoundingClientRect();
+                        const headerHeight = 80; // Approximate header height
+                        const scrollTop = window.pageYOffset + rect.top - headerHeight;
+                        
+                        window.scrollTo({
+                          top: Math.max(0, scrollTop),
+                          behavior: 'smooth'
+                        });
+                      }
+                    }, 200);
+                  }
+                }}
                 style={{
                   width: '100%',
                   padding: '12px 16px',
@@ -484,7 +542,7 @@ useEffect(() => {
                   }
                 }}
               >
-                <Crown size={16} />
+                <CompassIcon size={16} />
                 Watermark Controls
               </button>
             </div>
@@ -500,6 +558,7 @@ useEffect(() => {
         onEffectsChange={onEffectsChange}
         onClose={() => setShowWatermarkPanel(false)}
         isOpen={showWatermarkPanel}
+        dimensions={dimensions}
       />
     )}
     </>

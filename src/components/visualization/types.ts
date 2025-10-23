@@ -97,6 +97,7 @@ export interface QuadrantChartProps {
   
   // Effects functionality
   onEffectsChange?: (effects: Set<string>) => void;
+  isPremium?: boolean;
   
   specialZoneBoundaries?: SpecialZoneBoundaries;
 }

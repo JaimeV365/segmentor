@@ -242,20 +242,27 @@
 }
 
 /* Make watermark button more compact in Premium mode */
-.watermark-group .watermark-toggle-button {
+.watermark-group.premium-mode .watermark-toggle-button {
   padding: 6px 8px !important;
   font-size: 11px !important;
   gap: 4px !important;
 }
 
 
-/* Alternative approach using CSS custom properties for Premium mode */
+/* Premium mode layout - allow flexible sizing but with constraints */
 .control-group.premium-mode {
-  flex: 0 0 200px !important;
-  width: 200px !important;
+  flex: 1 1 200px; /* Allow growth but minimum 200px */
+  min-width: 200px;
+  max-width: 300px; /* Prevent excessive width */
 }
 
 .control-group.premium-mode .control-group-content {
   padding: 8px !important;
   gap: 8px; /* Add gap between elements in Premium mode */
+}
+
+/* When in premium mode, allow the container to wrap if needed */
+.chart-controls:has(.premium-mode) {
+  flex-wrap: wrap;
+  justify-content: flex-start;
 }

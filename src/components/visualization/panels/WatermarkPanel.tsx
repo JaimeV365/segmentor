@@ -1,58 +1,78 @@
 import React, { useRef, useEffect } from 'react';
-import { Crown, X, RotateCcw, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
+import { X, RotateCcw, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Switch } from '../../ui/Switch/Switch';
+import { useWatermarkControls } from '../../../hooks/useWatermarkControls';
 import './WatermarkPanel.css';
+
+// Compass Icon Component
+const CompassIcon: React.FC<{ size?: number; className?: string }> = ({ size = 24, className = '' }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={`lucide lucide-compass-icon lucide-compass ${className}`}
+  >
+    <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/>
+    <circle cx="12" cy="12" r="10"/>
+  </svg>
+);
 
 interface WatermarkPanelProps {
   effects: Set<string>;
   onEffectsChange: (effects: Set<string>) => void;
   onClose: () => void;
   isOpen: boolean;
+  dimensions?: {
+    totalCols: number;
+    totalRows: number;
+    cellWidth: number;
+    cellHeight: number;
+    midpointCol: number;
+    midpointRow: number;
+    hasNearApostles: boolean;
+    scaleRanges: {
+      satisfaction: { min: number; max: number };
+      loyalty: { min: number; max: number };
+    };
+  };
 }
 
 const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
   effects,
   onEffectsChange,
   onClose,
-  isOpen
+  isOpen,
+  dimensions
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
-
-  // Helper functions to get current state
-  const isWatermarkVisible = !effects.has('HIDE_WATERMARK');
-  const getCurrentLogo = () => {
-    if (effects.has('SHOW_TM_LOGO')) return 'tm';
-    if (effects.has('CUSTOM_LOGO')) return 'custom';
-    return 'default';
-  };
   
-  const getCurrentSize = () => {
-    const sizeEffect = Array.from(effects).find(e => e.startsWith('LOGO_SIZE:'));
-    return sizeEffect ? parseInt(sizeEffect.replace('LOGO_SIZE:', ''), 10) : 90;
-  };
+  // Use the centralized watermark controls hook
+  const {
+    currentState,
+    handlePositionChange,
+    resetToDefault,
+    updateEffects
+  } = useWatermarkControls({
+    effects,
+    onEffectsChange,
+    dimensions
+  });
 
-  const getCurrentPosition = () => {
-    const xEffect = Array.from(effects).find(e => e.startsWith('LOGO_X:'));
-    const yEffect = Array.from(effects).find(e => e.startsWith('LOGO_Y:'));
-    return {
-      x: xEffect ? parseInt(xEffect.replace('LOGO_X:', ''), 10) : 20,
-      y: yEffect ? parseInt(yEffect.replace('LOGO_Y:', ''), 10) : 20
-    };
-  };
-  
-  const getCustomLogoUrl = () => {
-    const urlEffect = Array.from(effects).find(e => e.startsWith('CUSTOM_LOGO_URL:'));
-    return urlEffect ? urlEffect.replace('CUSTOM_LOGO_URL:', '') : '';
-  };
-  
-  const isLogoFlat = effects.has('LOGO_FLAT');
+  // Note: Auto-scroll is handled by ChartControls to avoid position changes
 
-  // Update effects helper
-  const updateEffects = (updater: (effects: Set<string>) => void) => {
-    const newEffects = new Set(effects);
-    updater(newEffects);
-    onEffectsChange(newEffects);
-  };
+  // Helper functions for UI
+  const isWatermarkVisible = currentState.isVisible;
+  const getCurrentLogo = () => currentState.logoType;
+  const getCurrentSize = () => currentState.size;
+  const getCurrentPosition = () => currentState.position;
+  const getCustomLogoUrl = () => currentState.customUrl;
+  const isLogoFlat = currentState.isFlat;
 
   // Event handlers
   const handleVisibilityToggle = (checked: boolean) => {
@@ -83,39 +103,6 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
       if (sizeEffect) effects.delete(sizeEffect);
       // Add new size effect
       effects.add(`LOGO_SIZE:${constrainedSize}`);
-    });
-  };
-
-  const handlePositionChange = (axis: 'x' | 'y', value: number) => {
-    const currentSize = getCurrentSize();
-    
-    // Calculate grid boundaries (assuming standard chart dimensions)
-    // These should match your actual chart grid dimensions
-    const gridWidth = 800; // Adjust based on your actual chart width
-    const gridHeight = 600; // Adjust based on your actual chart height
-    const margin = 20; // Margin from edges
-    
-    // Calculate maximum position based on logo size and grid boundaries
-    // With left/top positioning: 0,0 = top-left corner
-    const maxX = gridWidth - currentSize - margin;
-    const maxY = gridHeight - currentSize - margin;
-    const minX = margin;
-    const minY = margin;
-    
-    // Constrain position to stay within grid boundaries
-    let constrainedValue = value;
-    if (axis === 'x') {
-      constrainedValue = Math.max(minX, Math.min(maxX, value));
-    } else {
-      constrainedValue = Math.max(minY, Math.min(maxY, value));
-    }
-    
-    updateEffects(effects => {
-      // Remove existing position effect
-      const posEffect = Array.from(effects).find(e => e.startsWith(`LOGO_${axis.toUpperCase()}:`));
-      if (posEffect) effects.delete(posEffect);
-      // Add new position effect
-      effects.add(`LOGO_${axis.toUpperCase()}:${constrainedValue}`);
     });
   };
 
@@ -194,7 +181,7 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
       {/* Header */}
       <div className="watermark-panel-header">
         <div className="watermark-panel-title">
-          <Crown size={20} />
+          <CompassIcon size={20} />
           <span>Watermark Controls</span>
         </div>
         <button className="watermark-panel-close" onClick={onClose}>
@@ -282,7 +269,10 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
                   <div className="arrow-spacer"></div>
                   <button 
                     className="arrow-button"
-                    onClick={() => handlePositionChange('y', currentPosition.y - 10)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePositionChange('y', currentPosition.y - 15);
+                    }}
                     title="Move Up"
                   >
                     <ArrowUp size={16} />
@@ -292,7 +282,10 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
                 <div className="arrow-row">
                   <button 
                     className="arrow-button"
-                    onClick={() => handlePositionChange('x', currentPosition.x - 10)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePositionChange('x', currentPosition.x - 15);
+                    }}
                     title="Move Left"
                   >
                     <ArrowLeft size={16} />
@@ -302,7 +295,10 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
                   </div>
                   <button 
                     className="arrow-button"
-                    onClick={() => handlePositionChange('x', currentPosition.x + 10)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePositionChange('x', currentPosition.x + 15);
+                    }}
                     title="Move Right"
                   >
                     <ArrowRight size={16} />
@@ -312,7 +308,10 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
                   <div className="arrow-spacer"></div>
                   <button 
                     className="arrow-button"
-                    onClick={() => handlePositionChange('y', currentPosition.y + 10)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePositionChange('y', currentPosition.y + 15);
+                    }}
                     title="Move Down"
                   >
                     <ArrowDown size={16} />
@@ -320,6 +319,14 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
                   <div className="arrow-spacer"></div>
                 </div>
               </div>
+              <button 
+                className="watermark-reset-button"
+                onClick={resetToDefault}
+                title="Reset to default position (bottom-right)"
+              >
+                <RotateCcw size={16} />
+                Reset Position
+              </button>
             </div>
 
             {/* Style Options */}

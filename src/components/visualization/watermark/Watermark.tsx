@@ -72,6 +72,15 @@ export const Watermark: React.FC<WatermarkProps> = ({
     if (!isNaN(xValue)) {
       logoX = xValue;
     }
+  } else {
+    // Default to bottom-right if no position is set
+    const container = document.querySelector('.chart-container');
+    if (container) {
+      const rect = container.getBoundingClientRect();
+      const logoWidth = effects?.has('LOGO_FLAT') ? 90 : 90 * 0.3;
+      const logoHeight = effects?.has('LOGO_FLAT') ? 90 * 0.3 : 90;
+      logoX = Math.max(0, rect.width - logoWidth - 60); // 60px margin for better spacing
+    }
   }
   
   const yModifier = Array.from(effects).find(e => e.startsWith('LOGO_Y:'));
@@ -80,13 +89,22 @@ export const Watermark: React.FC<WatermarkProps> = ({
     if (!isNaN(yValue)) {
       logoY = yValue;
     }
+  } else {
+    // Default to bottom-right if no position is set
+    const container = document.querySelector('.chart-container');
+    if (container) {
+      const rect = container.getBoundingClientRect();
+      const logoWidth = effects?.has('LOGO_FLAT') ? 90 : 90 * 0.3;
+      const logoHeight = effects?.has('LOGO_FLAT') ? 90 * 0.3 : 90;
+      logoY = Math.max(0, rect.height - logoHeight - 60); // 60px margin for better spacing
+    }
   }
 
-  // Position in the bottom-right corner of the grid with adjustable offset
+  // Position within the chart area with adjustable offset
   const styles: React.CSSProperties = {
     position: 'absolute',
-    right: `${10 - logoX}px`,
-    bottom: `${40 + logoY}px`,
+    left: `${10 + logoX}px`,
+    top: `${10 + logoY}px`, // Changed from bottom to top for better control
     width: `${logoWidth}px`,
     height: `${logoHeight}px`,
     opacity: 0.6,

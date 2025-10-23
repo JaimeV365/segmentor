@@ -1,6 +1,6 @@
-import React from 'react';
-import { 
-  DataPoint, 
+import React, { useMemo } from 'react';
+import {
+  DataPoint,
   ScaleFormat
 } from '@/types/base';
 import { QuadrantChartProps } from '../types';
@@ -39,8 +39,13 @@ const QuadrantChart: React.FC<QuadrantChartProps> = ({
   activeFilterCount,
   filteredData,
   totalData,
-  onEffectsChange
+  onEffectsChange,
+  isPremium
 }) => {
+  // Debug the onEffectsChange prop
+  console.log('🔍 QuadrantChart: Component rendered!');
+  console.log('🔍 QuadrantChart: onEffectsChange prop:', typeof onEffectsChange, onEffectsChange?.toString().substring(0, 100));
+  
   // Get context values
   const { midpoint, apostlesZoneSize: contextApostlesZoneSize, terroristsZoneSize: contextTerroristsZoneSize, setApostlesZoneSize, setTerroristsZoneSize } = useQuadrantAssignment();
   
@@ -75,6 +80,27 @@ const QuadrantChart: React.FC<QuadrantChartProps> = ({
     setLabelPositioning,
   } = useChartState();
   
+  // Calculate grid dimensions for watermark controls
+  const gridDimensions = useMemo(() => {
+    const maxSat = parseInt(satisfactionScale.split('-')[1]);
+    const maxLoy = parseInt(loyaltyScale.split('-')[1]);
+    const minSat = parseInt(satisfactionScale.split('-')[0]);
+    const minLoy = parseInt(loyaltyScale.split('-')[0]);
+    return {
+      totalCols: maxSat,
+      totalRows: maxLoy,
+      cellWidth: 40, // Approximate cell width
+      cellHeight: 40, // Approximate cell height
+      midpointCol: Math.floor(maxSat / 2),
+      midpointRow: Math.floor(maxLoy / 2),
+      hasNearApostles: showNearApostles,
+      scaleRanges: {
+        satisfaction: { min: minSat, max: maxSat },
+        loyalty: { min: minLoy, max: maxLoy }
+      }
+    };
+  }, [satisfactionScale, loyaltyScale, showNearApostles]);
+
   // Debug boundaries
   console.log('🔍 Special zone boundaries calculated in QuadrantChart:', specialZoneBoundaries);
   console.log('🔍 Label positioning:', labelPositioning);
@@ -119,9 +145,10 @@ const QuadrantChart: React.FC<QuadrantChartProps> = ({
         isUnifiedControlsOpen={isUnifiedControlsOpen || false}
         setIsUnifiedControlsOpen={setIsUnifiedControlsOpen || (() => {})}
         activeFilterCount={activeFilterCount || 0}
-        isPremium={activeEffects?.has('premium') || false}
+        isPremium={isPremium || false}
         effects={activeEffects || new Set()}
         onEffectsChange={onEffectsChange || (() => {})}
+        dimensions={gridDimensions}
       />
       
       <ChartContainer

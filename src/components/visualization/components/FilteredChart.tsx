@@ -42,6 +42,10 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
   isPremium,
   onShowNotification
 }) => {
+  // Debug the onEffectsChange prop
+  console.log('🔍 FilteredChart: Component rendered!');
+  console.log('🔍 FilteredChart: onEffectsChange prop:', typeof onEffectsChange, onEffectsChange?.toString().substring(0, 100));
+  
   const [isUnifiedControlsOpen, setIsUnifiedControlsOpen] = useState(false);
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   
@@ -198,6 +202,8 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
   totalData={data}
   apostlesZoneSize={apostlesZoneSize}
   terroristsZoneSize={terroristsZoneSize}
+  onEffectsChange={onEffectsChange}
+  isPremium={isPremium}
 />
     </div>
   );
