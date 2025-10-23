@@ -1,7 +1,7 @@
 .two-state-toggle {
     position: relative;
     display: inline-flex;
-    width: 160px;  /* Match the width of other controls */
+    width: 180px;  /* Increased width to prevent text wrapping */
     height: 26px;  /* Match the height of existing switches */
     background: #f3f4f6;
     border-radius: 16px;
@@ -21,17 +21,18 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    font-size: 12px;  /* Match existing font size */
+    font-size: 11px;  /* Slightly smaller font for better fit */
     font-weight: 500;
     transition: all 0.2s ease;
     background-color: transparent;
     color: #6b7280;  /* Match existing text color */
     cursor: pointer;
     user-select: none;
-    padding: 0 8px;
+    padding: 0 6px;  /* Reduced padding for better fit */
     border-radius: 14px;
     position: relative;
     overflow: hidden;
+    white-space: nowrap;  /* Prevent text wrapping */
   }
   
   .two-state-toggle input:checked + label {

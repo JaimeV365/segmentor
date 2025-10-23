@@ -25,6 +25,25 @@ const CompassIcon: React.FC<{ size?: number; className?: string }> = ({ size = 2
   </svg>
 );
 
+// Crown Icon Component for Premium Features
+const CrownIcon: React.FC<{ size?: number; className?: string }> = ({ size = 12, className = '' }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={`lucide lucide-crown-icon lucide-crown ${className}`}
+  >
+    <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/>
+    <path d="M5 21h14"/>
+  </svg>
+);
+
 
 type LabelMode = 'all' | 'quadrants' | 'sub-sections' | 'none';
 type LabelPositioning = 'above-dots' | 'below-dots';
@@ -86,6 +105,7 @@ interface ChartControlsProps {
   setShowQuadrantLabels?: (show: boolean) => void;
   showSpecialZoneLabels?: boolean;
   setSpecialZoneLabels?: (show: boolean) => void;
+  onShowLabelsChange?: (show: boolean) => void;
   satisfactionScale?: ScaleFormat;
   loyaltyScale?: ScaleFormat;
   
@@ -129,6 +149,7 @@ export const ChartControls: React.FC<ChartControlsProps> = ({
   setShowQuadrantLabels = () => {},
   showSpecialZoneLabels = true,
   setSpecialZoneLabels = () => {},
+  onShowLabelsChange = () => {},
   showGrid,
   setShowGrid,
   isAdjustableMidpoint,
@@ -195,18 +216,22 @@ useEffect(() => {
       case 'all':
         setShowQuadrantLabels(true);
         setSpecialZoneLabels(true);
+        onShowLabelsChange(true); // Enable global labels
         break;
       case 'quadrants':
         setShowQuadrantLabels(true);
         setSpecialZoneLabels(false);
+        onShowLabelsChange(true); // Enable global labels
         break;
       case 'sub-sections':
         setShowQuadrantLabels(false);
         setSpecialZoneLabels(true);
+        onShowLabelsChange(true); // Enable global labels
         break;
       case 'none':
         setShowQuadrantLabels(false);
         setSpecialZoneLabels(false);
+        onShowLabelsChange(false); // Disable global labels
         break;
     }
   };
@@ -442,7 +467,7 @@ useEffect(() => {
             <span className="control-section-title-text">Labels</span>
           </div>
           <div className="control-group-content">
-            <div className={`labels-buttons ${isPremium ? 'premium-mode' : ''}`}>
+            <div className="vertical-buttons labels-buttons">
               {renderLabelButtons()}
             </div>
             
@@ -475,79 +500,85 @@ useEffect(() => {
   rightLabel="Modern"
   value={isClassicModel ? 'left' : 'right'}
   onChange={(value: 'left' | 'right') => setIsClassicModel(value === 'left')}
-  disabled={areasDisplayMode === 1}
-  disabledReason={areasDisplayMode === 1 ? "Not applicable when areas are hidden" : undefined}
+  disabled={labelMode === 'none'}
+  disabledReason={labelMode === 'none' ? "Not applicable when labels are hidden" : undefined}
 />
-            <div className={`labels-buttons ${isPremium ? 'premium-mode' : ''}`}>
+            <div className="vertical-buttons terminology-buttons">
               {renderAreasButtons()}
             </div>
           </div>
         </div>
 
-        {/* Watermark Controls (Premium only) */}
-        {isPremium && (
-          <div className={`control-group watermark-group ${isPremium ? 'premium-mode' : ''}`}>
-            <div className="control-section-title">
-              <CompassIcon size={16} className="control-section-icon" />
-              <span className="control-section-title-text">Watermark</span>
-            </div>
-            <div className="control-group-content">
-              <button 
-                className="watermark-toggle-button"
-                onClick={() => {
-                  console.log('🔍 ChartControls: Watermark button clicked, current state:', showWatermarkPanel);
-                  setShowWatermarkPanel(!showWatermarkPanel);
-                  
-                  // Auto-scroll to chart when opening watermark controls
-                  if (!showWatermarkPanel) {
-                    setTimeout(() => {
-                      const chartElement = document.querySelector('.chart-container');
-                      if (chartElement) {
-                        const rect = chartElement.getBoundingClientRect();
-                        const headerHeight = 80; // Approximate header height
-                        const scrollTop = window.pageYOffset + rect.top - headerHeight;
-                        
-                        window.scrollTo({
-                          top: Math.max(0, scrollTop),
-                          behavior: 'smooth'
-                        });
-                      }
-                    }, 200);
-                  }
-                }}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  backgroundColor: showWatermarkPanel ? '#3a863e' : 'white',
-                  color: showWatermarkPanel ? 'white' : '#3a863e',
-                  border: '1px solid #3a863e',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  if (!showWatermarkPanel) {
-                    e.currentTarget.style.backgroundColor = '#f0f9f0';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!showWatermarkPanel) {
-                    e.currentTarget.style.backgroundColor = 'white';
-                  }
-                }}
-              >
-                <CompassIcon size={16} />
-                Watermark Controls
-              </button>
-            </div>
+        {/* Watermark Controls (Always visible, but disabled in Standard mode) */}
+        <div className={`control-group watermark-group ${isPremium ? 'premium-mode' : 'standard-mode'}`}>
+          <div className="control-section-title">
+            <CompassIcon size={16} className="control-section-icon" />
+            <span className="control-section-title-text">Watermark</span>
           </div>
-        )}
+          <div className="control-group-content">
+            <button 
+              className="watermark-toggle-button"
+              disabled={!isPremium}
+              onClick={() => {
+                if (!isPremium) return; // Don't do anything in Standard mode
+                
+                console.log('🔍 ChartControls: Watermark button clicked, current state:', showWatermarkPanel);
+                setShowWatermarkPanel(!showWatermarkPanel);
+                
+                // Auto-scroll to chart when opening watermark controls
+                if (!showWatermarkPanel) {
+                  setTimeout(() => {
+                    const chartElement = document.querySelector('.chart-container');
+                    if (chartElement) {
+                      const rect = chartElement.getBoundingClientRect();
+                      const headerHeight = 80; // Approximate header height
+                      const scrollTop = window.pageYOffset + rect.top - headerHeight;
+                      
+                      window.scrollTo({
+                        top: Math.max(0, scrollTop),
+                        behavior: 'smooth'
+                      });
+                    }
+                  }, 200);
+                }
+              }}
+              style={{
+                width: '100%',
+                padding: '6px 8px',
+                backgroundColor: showWatermarkPanel ? '#3a863e' : 'white',
+                color: showWatermarkPanel ? 'white' : '#3a863e',
+                border: '1px solid #3a863e',
+                borderRadius: '6px',
+                fontSize: '11px',
+                fontWeight: '500',
+                cursor: isPremium ? 'pointer' : 'not-allowed',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '4px',
+                transition: 'all 0.2s ease',
+                opacity: isPremium ? 1 : 0.7,
+                whiteSpace: 'nowrap',
+                minHeight: '32px'
+              }}
+              onMouseEnter={(e) => {
+                if (!showWatermarkPanel && isPremium) {
+                  e.currentTarget.style.backgroundColor = '#f0f9f0';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!showWatermarkPanel && isPremium) {
+                  e.currentTarget.style.backgroundColor = 'white';
+                }
+              }}
+              title={isPremium ? "Watermark Controls" : "Watermark Controls - Premium Feature"}
+            >
+              <CompassIcon size={16} />
+              Watermark Controls
+              {!isPremium && <CrownIcon size={12} className="premium-crown" />}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 

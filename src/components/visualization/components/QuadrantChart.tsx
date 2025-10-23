@@ -124,6 +124,7 @@ const QuadrantChart: React.FC<QuadrantChartProps> = ({
         setShowQuadrantLabels={setShowQuadrantLabels}
         showSpecialZoneLabels={showSpecialZoneLabels}
         setSpecialZoneLabels={setShowSpecialZoneLabels}
+        onShowLabelsChange={onShowLabelsChange}
         showGrid={showGrid}
         setShowGrid={onShowGridChange}
         isAdjustableMidpoint={isAdjustableMidpoint}

@@ -66,10 +66,10 @@
   padding: 12px;
 }
 
+/* Base button styles - shared by all button types */
 .label-button {
   flex: 0 1 auto;
   min-width: 0;
-  max-width: calc(50% - 4px);
   padding: 8px 12px;
   background: white;
   border: 1px solid #e5e7eb;
@@ -96,6 +96,33 @@
   opacity: 0.5;
   cursor: not-allowed;
   background: #f3f4f6;
+}
+
+/* Layout classes for different button arrangements */
+.horizontal-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.horizontal-buttons .label-button {
+  max-width: calc(50% - 4px);
+  flex: 1 1 auto;
+}
+
+.vertical-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vertical-buttons .label-button {
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  font-size: 12px;
+  margin: 0;
 }
 
 /* Label positioning controls */
@@ -205,20 +232,28 @@
 }
 
 
-/* Alternative approach using CSS custom properties for Premium mode */
-.labels-buttons.premium-mode {
+/* Apply vertical layout to both labels and terminology sections */
+.labels-buttons,
+.terminology-buttons {
+  display: flex;
   flex-direction: column;
-  padding: 0; /* Remove padding since parent already has padding */
-  gap: 6px; /* Add small gap between stacked buttons */
+  gap: 6px;
 }
 
-.labels-buttons.premium-mode .label-button {
+.labels-buttons .label-button,
+.terminology-buttons .label-button {
   max-width: 100%;
   width: 100%;
   box-sizing: border-box;
-  padding: 6px 8px; /* Reduce button padding */
-  font-size: 12px; /* Smaller font for better fit */
-  margin: 0; /* Remove any default margins */
+  padding: 6px 8px;
+  font-size: 12px;
+  margin: 0;
+}
+
+/* Make Label Position toggle wider */
+.labels-buttons .two-state-toggle {
+  width: 100%;
+  max-width: none;
 }
 
 
@@ -226,9 +261,11 @@
 .watermark-toggle-button {
   box-sizing: border-box;
   max-width: 100%;
-  word-wrap: break-word;
-  padding: 8px 12px !important; /* Override inline styles for better fit */
-  font-size: 12px !important; /* Smaller font for better fit */
+  white-space: nowrap; /* Prevent text wrapping */
+  padding: 6px 8px !important; /* Reduce height */
+  font-size: 11px !important; /* Smaller font */
+  height: auto;
+  min-height: 32px; /* Set minimum height */
 }
 
 .watermark-toggle-button:focus {
@@ -265,4 +302,25 @@
 .chart-controls:has(.premium-mode) {
   flex-wrap: wrap;
   justify-content: flex-start;
+}
+
+/* Standard mode watermark styling */
+.watermark-group.standard-mode .watermark-toggle-button {
+  opacity: 0.7;
+  cursor: not-allowed;
+  filter: grayscale(20%);
+}
+
+.watermark-group.standard-mode .watermark-toggle-button:hover {
+  opacity: 0.9;
+  background: #f3f4f6 !important;
+  border-color: #d1d5db !important;
+  transform: none;
+}
+
+/* Premium crown icon styling */
+.premium-crown {
+  color: #f59e0b;
+  margin-left: 4px;
+  opacity: 0.8;
 }
