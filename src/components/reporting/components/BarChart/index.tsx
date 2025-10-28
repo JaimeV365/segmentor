@@ -131,6 +131,7 @@ const effectiveChartData = useMemo(() => {
 // Listen for manual reconnect events
 useEffect(() => {
   const handleManualReconnect = () => {
+    console.log('🔔 BarChart: Manual reconnect event received, setting flag');
     setIsManualReconnecting(true);
   };
 
@@ -149,9 +150,15 @@ useEffect(() => {
   });
   
   // Reset manual reconnecting flag when connection status changes
+  // Use a timeout to ensure onFilterChange has completed
   if (isManualReconnecting) {
-    console.log('🔄 Resetting manual reconnecting flag');
-    setIsManualReconnecting(false);
+    console.log('🔄 Resetting manual reconnecting flag with delay');
+    const timeoutId = setTimeout(() => {
+      console.log('🔄 Manual reconnecting flag reset');
+      setIsManualReconnecting(false);
+    }, 100); // Small delay to ensure onFilterChange completes
+    
+    return () => clearTimeout(timeoutId);
   }
 }, [filterContext?.isReportsConnected, isManualReconnecting]);
 
@@ -598,12 +605,18 @@ useEffect(() => {
           <FilterPanel
             data={effectiveData}
             onFilterChange={(filteredData, newFilters) => {
+              console.log('🔔 BARCHART onFilterChange triggered:', {
+                isReportsConnected: filterContext?.isReportsConnected,
+                isManualReconnecting,
+                newFiltersLength: newFilters.length,
+                shouldShowNotification: filterContext && filterContext.isReportsConnected && newFilters.length > 0 && !isManualReconnecting
+              });
 
               // Only auto-disconnect if currently connected and there are actual active filters
               // This prevents auto-disconnect on initial load when no user changes are made
               // Also skip if we're manually reconnecting to avoid duplicate notifications
               if (filterContext && filterContext.isReportsConnected && newFilters.length > 0 && !isManualReconnecting) {
-                console.log('📊 Auto-disconnecting reports filters');
+                console.log('🔔 Showing auto-disconnect notification');
                 filterContext.setReportsConnection(false);
                 
                 // Show notification about auto-disconnect (only once)
@@ -612,17 +625,21 @@ useEffect(() => {
                   type: 'success',
                   message: 'Bar chart filters are now independent from the main chart'
                 });
+              } else {
+                console.log('🔔 Skipping auto-disconnect notification:', {
+                  reason: isManualReconnecting ? 'manual reconnection' : 'no active filters or not connected'
+                });
               }
               
               // Don't show any notifications during manual reconnection
               if (isManualReconnecting) {
-                console.log('📊 Manual reconnection in progress, skipping notifications');
+                console.log('🔔 Manual reconnection in progress, skipping all notifications');
                 return;
               }
               
               // Update the local activeFilters state
               if (onFilterChange) {
-                console.log('📊 Calling parent onFilterChange with:', newFilters);
+                console.log('🔔 Calling parent onFilterChange with:', newFilters);
                 onFilterChange(newFilters); // Pass the new filters to the parent
               }
             }}

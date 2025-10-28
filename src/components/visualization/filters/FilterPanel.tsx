@@ -91,25 +91,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     isActive: false,
   });
 
-  // Initialize local state with context state when forceLocalState is true
-  useEffect(() => {
-    if (forceLocalState && filterContext?.filterState) {
-      // Initialize local state with context state
-      setFilterState(filterContext.filterState);
-    }
-  }, [forceLocalState, filterContext?.filterState]);
-
-  // Update local state when panel opens and we're in forceLocalState mode
-  useEffect(() => {
-    if (forceLocalState && isOpen && filterContext?.filterState) {
-      // Panel opened, update local state with current context state
-      setFilterState(filterContext.filterState);
-      
-      // Note: We'll handle immediate filter application in a separate useEffect
-      // that runs after applyFiltersWithState is defined
-    }
-  }, [isOpen, forceLocalState, filterContext?.filterState]);
-
   // Calculate relevant date presets based on actual data
   const relevantDatePresets = useMemo(() => {
     return getRelevantDatePresets(data);
@@ -478,6 +459,57 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   const [customStartDate, setCustomStartDate] = useState<string>('');
   const [customEndDate, setCustomEndDate] = useState<string>('');
   const [isInitializing, setIsInitializing] = useState(true);
+  
+  // Initialize local state with context state when forceLocalState is true
+  useEffect(() => {
+    if (forceLocalState && filterContext?.filterState) {
+      console.log('🔍 FilterPanel: Context filter state changed while forceLocalState=true:', {
+        contextFilterState: filterContext.filterState,
+        localFilterState,
+        isInitializing,
+        isReportsConnected: filterContext.isReportsConnected,
+        shouldUpdateLocal: !isInitializing && filterContext.isReportsConnected
+      });
+      
+      // Only update local state if not initializing AND reports are connected
+      // This prevents local filters from being overwritten when disconnected
+      if (!isInitializing && filterContext.isReportsConnected) {
+        console.log('🔍 FilterPanel: Updating local state with context state (connected)');
+        setFilterState(filterContext.filterState);
+      } else {
+        console.log('🔍 FilterPanel: Skipping local state update:', {
+          reason: isInitializing ? 'initializing' : 'reports disconnected'
+        });
+      }
+    }
+  }, [forceLocalState, filterContext?.filterState, filterContext?.isReportsConnected, isInitializing]);
+
+  // Update local state when panel opens and we're in forceLocalState mode
+  useEffect(() => {
+    if (forceLocalState && isOpen && filterContext?.filterState) {
+      console.log('🔍 FilterPanel: Panel opened, updating local state with current context state:', {
+        contextFilterState: filterContext.filterState,
+        localFilterState,
+        isInitializing,
+        isReportsConnected: filterContext.isReportsConnected,
+        shouldUpdateLocal: !isInitializing && filterContext.isReportsConnected
+      });
+      
+      // Panel opened, update local state with current context state
+      // Only if not initializing AND reports are connected
+      if (!isInitializing && filterContext.isReportsConnected) {
+        console.log('🔍 FilterPanel: Panel opened - updating local state (connected)');
+        setFilterState(filterContext.filterState);
+      } else {
+        console.log('🔍 FilterPanel: Panel opened - skipping update:', {
+          reason: isInitializing ? 'initializing' : 'reports disconnected'
+        });
+      }
+      
+      // Note: We'll handle immediate filter application in a separate useEffect
+      // that runs after applyFiltersWithState is defined
+    }
+  }, [isOpen, forceLocalState, filterContext?.filterState, filterContext?.isReportsConnected, isInitializing]);
   
   // Debug: Track isInitializing state changes
   useEffect(() => {

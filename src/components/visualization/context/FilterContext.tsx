@@ -449,9 +449,10 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
 
   // Enhanced setFilterState that automatically recalculates
   const handleSetFilterState = useCallback((newFilterState: FilterState) => {
-    console.log('🔄 FilterContext: Filter state updated, recalculating...', { 
+    console.log('🔍 FilterContext: Filter state updated, recalculating...', { 
       newFilterState,
-      dataLength: data.length
+      dataLength: data.length,
+      isReportsConnected
     });
     
     setFilterState(newFilterState);

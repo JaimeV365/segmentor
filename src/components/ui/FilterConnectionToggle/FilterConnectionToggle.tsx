@@ -32,6 +32,8 @@ export const FilterConnectionToggle: React.FC<FilterConnectionToggleProps> = ({
   };
   
   const handleConfirmReconnect = () => {
+    console.log('🔔 FilterConnectionToggle: Starting manual reconnection');
+    
     // Dispatch custom event to notify BarChart that this is a manual reconnect
     window.dispatchEvent(new CustomEvent('manual-reconnect-start'));
     
@@ -39,6 +41,7 @@ export const FilterConnectionToggle: React.FC<FilterConnectionToggleProps> = ({
     setShowConfirmModal(false);
     
     // Show notification about reconnecting (only from here, not from BarChart)
+    console.log('🔔 FilterConnectionToggle: Showing reconnection notification');
     showNotification({
       title: 'Filter Connection',
       type: 'success',
