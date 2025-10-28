@@ -388,20 +388,9 @@ useEffect(() => {
                     ref={filtersTabRef}
                     className={`filter-tab ${activePanelTab === 'filters' ? 'active' : ''}`}
                     onClick={(e) => {
-                      console.log("🎯🎯🎯 FILTERS TAB CLICKED - This should trigger forceLocalState: true");
-                      console.log("🎯 Current state before click:", { 
-                        showSidePanel, 
-                        activePanelTab, 
-                        isReportsConnected: filterContext?.isReportsConnected 
-                      });
                       e.stopPropagation();
                       setLastTabClicked('filters');
                       setActivePanelTab('filters');
-                      console.log("🎯 State after setting filters tab:", { 
-                        showSidePanel, 
-                        activePanelTab: 'filters', 
-                        isReportsConnected: filterContext?.isReportsConnected 
-                      });
                     }}
                     onMouseDown={(e) => {
                       console.log("Filters tab mousedown");
@@ -609,16 +598,6 @@ useEffect(() => {
           <FilterPanel
             data={effectiveData}
             onFilterChange={(filteredData, newFilters) => {
-              console.log('🎯🎯🎯 BARCHART FILTERPANEL onFilterChange triggered:', {
-                newFiltersLength: newFilters.length,
-                filteredDataLength: filteredData.length,
-                isReportsConnected: filterContext?.isReportsConnected,
-                isManualReconnecting,
-                forceLocalState: true, // This should always be true for bar chart
-                shouldAutoDisconnect: filterContext && filterContext.isReportsConnected && newFilters.length > 0 && !isManualReconnecting,
-                effectiveDataLength: effectiveData.length,
-                effectiveDataSample: effectiveData.slice(0, 2)
-              });
 
               // Only auto-disconnect if currently connected and there are actual active filters
               // This prevents auto-disconnect on initial load when no user changes are made

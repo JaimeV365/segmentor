@@ -496,24 +496,11 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
   }, []);
 
   const getReportsFilteredData = useCallback(() => {
-    console.log('🔄 getReportsFilteredData called:', {
-      isReportsConnected,
-      hasReportsFilterState: !!reportsFilterState,
-      filteredDataLength: filteredData.length,
-      dataLength: data.length
-    });
-    
     if (isReportsConnected || !reportsFilterState) {
       // Use master filtered data
-      console.log('🔄 Using master filtered data:', {
-        filteredDataLength: filteredData.length
-      });
       return filteredData;
     } else {
       // Apply Reports-specific filters
-      console.log('🔄 Applying reports-specific filters:', {
-        reportsFilterState
-      });
       return applyFilters(data, reportsFilterState);
     }
   }, [isReportsConnected, reportsFilterState, filteredData, data, applyFilters]);

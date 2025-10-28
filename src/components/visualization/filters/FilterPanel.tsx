@@ -76,17 +76,9 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   // Try to access filter context if available
   const filterContext = useFilterContextSafe();
   
-  console.log('🎛️ FilterPanel component mounted/rendered:', {
-    forceLocalState,
-    hasFilterContext: !!filterContext,
-    isReportsConnected: filterContext?.isReportsConnected,
-    dataLength: data.length
-  });
+  // FilterPanel component mounted/rendered
   
-  // Special log for bar chart FilterPanel
-  if (forceLocalState) {
-    console.log('🎯🎯🎯 BARCHART FILTERPANEL RENDERED - forceLocalState: true');
-  }
+  // Bar chart FilterPanel rendered with forceLocalState
   
   // Use context state if available, otherwise use local state
   const [localFilterState, setLocalFilterState] = useState<FilterState>({
@@ -102,10 +94,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   // Initialize local state with context state when forceLocalState is true
   useEffect(() => {
     if (forceLocalState && filterContext?.filterState) {
-      console.log('🎯🎯🎯 FILTERPANEL INITIALIZATION - forceLocalState: true');
-      console.log('🎯 Initializing local state with context state:', filterContext.filterState);
-      console.log('🔍 CALLING setFilterState (proper initialization check)');
-      console.log('🔍 Current state - isInitializing:', isInitializing, 'hasUserMadeChanges:', hasUserMadeChanges);
+      // Initialize local state with context state
       setFilterState(filterContext.filterState);
     }
   }, [forceLocalState, filterContext?.filterState]);
@@ -113,11 +102,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   // Update local state when panel opens and we're in forceLocalState mode
   useEffect(() => {
     if (forceLocalState && isOpen && filterContext?.filterState) {
-      console.log('🎯🎯🎯 FILTERPANEL PANEL OPENED - forceLocalState: true');
-      console.log('🎯 Panel opened, updating local state with current context state:', filterContext.filterState);
-      console.log('🎯 Current local state before update:', localFilterState);
-      console.log('🔍 CALLING setFilterState (proper initialization check) - Panel opened');
-      console.log('🔍 Current state - isInitializing:', isInitializing, 'hasUserMadeChanges:', hasUserMadeChanges);
+      // Panel opened, update local state with current context state
       setFilterState(filterContext.filterState);
       
       // Note: We'll handle immediate filter application in a separate useEffect
@@ -193,38 +178,19 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
   // When forceLocalState is true, always use local state for UI consistency
   const filterState = useMemo(() => {
-    console.log('🎯 filterState useMemo recalculating:', {
-      forceLocalState,
-      hasFilterContext: !!filterContext,
-      isReportsConnected: filterContext?.isReportsConnected,
-      localFilterStateAttributes: localFilterState.attributes.length,
-      contextFilterStateAttributes: filterContext?.filterState.attributes.length
-    });
-
     if (forceLocalState) {
       // Always use local state for UI consistency in forceLocalState mode
-      console.log('🎯 Returning local state (forceLocalState mode)');
       return localFilterState;
     }
     // Normal behavior: use context if available, otherwise local
-    console.log('🎯 Returning normal state');
     return filterContext?.filterState || localFilterState;
   }, [forceLocalState, filterContext, localFilterState]);
   
   // Create type-safe setter functions
   const setFilterState = (newState: FilterState | ((prev: FilterState) => FilterState)) => {
-    console.log('🎯🎯🎯 FILTERPANEL setFilterState called:', {
-      forceLocalState,
-      hasFilterContext: !!filterContext,
-      isReportsConnected: filterContext?.isReportsConnected,
-      newStateType: typeof newState,
-      isInitializing,
-      hasUserMadeChanges
-    });
 
     if (forceLocalState) {
       // Always update local state first for immediate UI feedback
-      console.log('🔗 forceLocalState: updating local state first');
       let updatedLocalState;
       if (typeof newState === 'function') {
         updatedLocalState = newState(localFilterState);
@@ -236,12 +202,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       
       // Mark that user has made changes (not during initialization)
       if (!isInitializing) {
-        console.log('🔗 User made changes, setting hasUserMadeChanges to true');
-        console.log('🔍 CALLING setHasUserMadeChanges(true) from setFilterState');
         setHasUserMadeChanges(true);
-      } else {
-        console.log('🔗 During initialization, NOT setting hasUserMadeChanges');
-        console.log('🔍 SKIPPING setHasUserMadeChanges because isInitializing:', isInitializing);
       }
       
       // Only update main context if NOT in forceLocalState mode AND connected
@@ -250,12 +211,9 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
         filterContext.setFilterState(updatedLocalState);
       } else if (forceLocalState) {
         console.log('🔗 Local FilterPanel: NOT updating main context (forceLocalState prevents this)');
-      } else if (filterContext && filterContext.isReportsConnected && isInitializing) {
-        console.log('🔗 Connected: skipping main context update during initialization');
       }
     } else if (!filterContext) {
       // No context available, use local state
-      console.log('🔗 No context: updating local state');
       if (typeof newState === 'function') {
         setLocalFilterState(newState(localFilterState));
       } else {
@@ -263,7 +221,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       }
     } else {
       // Use context state
-      console.log('🔗 Normal mode: updating context state');
       if (typeof newState === 'function') {
         filterContext.setFilterState(newState(filterContext.filterState));
       } else {
@@ -497,34 +454,21 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
   // Listen for manual filter validation triggers (from delete/exclude actions)
   useEffect(() => {
-    console.log('🎧 FilterPanel: Setting up event listener for reset-filters-if-needed');
-    
     const handleResetFilters = () => {
-      console.log('🎯 FilterPanel: Reset filters event received!', { 
-        currentPreset: filterState.dateRange.preset,
-        hasActiveFilter: filterState.dateRange.preset && filterState.dateRange.preset !== 'all'
-      });
       // Only validate if we have an active filter that might need resetting
       if (filterState.dateRange.preset && filterState.dateRange.preset !== 'all') {
-        console.log('✅ FilterPanel: Running filter validation...');
         validateAndResetFilters();
-      } else {
-        console.log('⏭️ FilterPanel: Skipping validation - no active filter');
       }
     };
 
     const handleForceReset = () => {
-      console.log('🎯 FilterPanel: Force reset event received!');
-      console.log('✅ FilterPanel: Running filter validation...');
       validateAndResetFilters();
     };
 
     document.addEventListener('reset-filters-if-needed', handleResetFilters);
     document.addEventListener('force-reset-filters', handleForceReset);
-    console.log('🎧 FilterPanel: Event listeners added successfully');
     
     return () => {
-      console.log('🎧 FilterPanel: Removing event listeners');
       document.removeEventListener('reset-filters-if-needed', handleResetFilters);
       document.removeEventListener('force-reset-filters', handleForceReset);
     };
@@ -537,13 +481,13 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   
   // Debug: Track isInitializing state changes
   useEffect(() => {
-    console.log('🔍 isInitializing state changed to:', isInitializing);
+    // Track isInitializing state changes
   }, [isInitializing]);
   const [hasUserMadeChanges, setHasUserMadeChanges] = useState(false);
   
   // Debug: Track hasUserMadeChanges state changes
   useEffect(() => {
-    console.log('🔍 hasUserMadeChanges state changed to:', hasUserMadeChanges);
+    // Track hasUserMadeChanges state changes
   }, [hasUserMadeChanges]);
 
   // availableFields is already defined above
@@ -633,45 +577,24 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
   // Apply current filters to data
   const applyFilters = useCallback(() => {
-    console.log('⚡ applyFilters called:', {
-      forceLocalState,
-      isInitializing,
-      hasFilterContext: !!filterContext,
-      isReportsConnected: filterContext?.isReportsConnected,
-      filterStateAttributes: filterState.attributes.length
-    });
-
     if (forceLocalState) {
       // When using forceLocalState, we need to call onFilterChange to notify parent
       
       // Don't call onFilterChange during initialization to prevent auto-disconnect
       if (isInitializing) {
-        console.log('⚡ Skipping applyFilters during initialization');
         return;
       }
       
       // Only call onFilterChange if user has made changes (not just existing filters)
       const result = applyFiltersWithState(filterState);
       if (hasUserMadeChanges && result.activeFilters.length > 0) {
-        console.log('⚡ User made changes, calling onFilterChange');
-        console.log('⚡ onFilterChange called with:', {
-          filteredDataLength: result.filteredData.length,
-          activeFiltersLength: result.activeFilters.length
-        });
         onFilterChange(result.filteredData, result.activeFilters);
-      } else {
-        console.log('⚡ No user changes detected, skipping onFilterChange:', {
-          hasUserMadeChanges,
-          activeFiltersLength: result.activeFilters.length
-        });
       }
     } else if (filterContext) {
       // Normal context behavior
-      console.log('⚡ Normal context behavior: updating context state');
       filterContext.setFilterState(filterState);
     } else {
       // Fallback for when context is not available
-      console.log('⚡ No context: applying filters locally');
       applyFiltersWithState(filterState);
     }
   }, [forceLocalState, filterState, applyFiltersWithState, onFilterChange, filterContext, isInitializing, hasUserMadeChanges]);
@@ -679,17 +602,10 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   // Handle immediate filter application when panel opens to avoid race condition
   useEffect(() => {
     if (forceLocalState && isOpen && filterContext?.filterState && applyFiltersWithState) {
-      console.log('🎯 Panel opened - applying filters immediately with new context state to avoid race condition');
       const result = applyFiltersWithState(filterContext.filterState);
-      console.log('🎯 Immediate filter application result:', {
-        filteredDataLength: result.filteredData.length,
-        activeFiltersLength: result.activeFilters.length,
-        hasUserMadeChanges
-      });
       
       // DO NOT call onFilterChange during initialization - this was causing triple notifications and main filter overwrites
       // The race condition is better handled by proper state management in the initialization useEffects
-      console.log('🎯 Skipping immediate onFilterChange to prevent triple notifications and main filter overwrites');
     }
   }, [isOpen, forceLocalState, filterContext?.filterState, applyFiltersWithState, onFilterChange, hasUserMadeChanges, isInitializing]);
 
@@ -698,8 +614,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     if (isInitializing && isOpen && forceLocalState && filterContext?.filterState) {
       // Use a timeout to ensure all initialization effects have completed
       const timeoutId = setTimeout(() => {
-        console.log('🎯 FilterPanel initialization complete, setting isInitializing to false');
-        console.log('🔍 CALLING setIsInitializing(false) from initialization timeout');
         setIsInitializing(false);
       }, 100); // Small delay to ensure all effects have run
       
@@ -709,14 +623,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
   // Convert preset to date range
   const applyDatePreset = (preset: string) => {
-    console.log('🎯🎯🎯 USER FILTER INTERACTION - applyDatePreset:', {
-      preset,
-      forceLocalState,
-      isInitializing,
-      hasUserMadeChanges,
-      willSetHasUserMadeChanges: !isInitializing
-    });
-    
     const now = new Date();
     let startDate: Date | null = null;
     let endDate: Date | null = null;
@@ -801,14 +707,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
   // Toggle attribute filter
   const toggleAttributeValue = (field: string, value: string | number) => {
-    console.log('🎯🎯🎯 USER FILTER INTERACTION - toggleAttributeValue:', {
-      field,
-      value,
-      forceLocalState,
-      isInitializing,
-      hasUserMadeChanges,
-      willSetHasUserMadeChanges: !isInitializing
-    });
     
     setFilterState(prev => ({
       ...prev,
@@ -867,14 +765,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
   // Apply custom date range
   const applyCustomDateRange = () => {
-    console.log('🎯🎯🎯 USER FILTER INTERACTION - applyCustomDateRange:', {
-      customStartDate,
-      customEndDate,
-      forceLocalState,
-      isInitializing,
-      hasUserMadeChanges,
-      willSetHasUserMadeChanges: !isInitializing
-    });
     
     let startDate: Date | null = null;
     let endDate: Date | null = null;
