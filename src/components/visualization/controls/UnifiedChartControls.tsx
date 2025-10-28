@@ -3,6 +3,7 @@ import { X, Filter, Crown } from 'lucide-react';
 import { DataPoint, GridDimensions } from '@/types/base';
 import { FilterPanel } from '../filters';
 import { UnifiedWatermarkPanel } from './UnifiedWatermarkPanel';
+import { useFilterContextSafe } from '../context/FilterContext';
 import './UnifiedChartControls.css';
 
 interface UnifiedChartControlsProps {
@@ -59,6 +60,22 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
   const [activeTab, setActiveTab] = useState<TabType>('filters');
   const [filterResetTrigger, setFilterResetTrigger] = useState(0);
   const panelRef = useRef<HTMLDivElement>(null);
+  
+  // Access filter context
+  const filterContext = useFilterContextSafe();
+  
+  // Handle filter changes by updating the FilterContext
+  const handleFilterChange = (filteredData: DataPoint[], activeFilters?: any[]) => {
+    console.log('🔄 UnifiedChartControls: Filter change received', {
+      filteredDataLength: filteredData.length,
+      activeFiltersLength: activeFilters?.length || 0,
+      hasFilterContext: !!filterContext
+    });
+    
+    // The FilterPanel will handle updating the FilterContext through its internal logic
+    // We don't need to do anything here since FilterPanel uses the context directly
+    // when forceLocalState is false (which is the default)
+  };
 
   // Smart tab selection logic - prioritize filters if available, otherwise watermark
   useEffect(() => {
@@ -132,7 +149,7 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
       <div className="unified-tab-body">
         <FilterPanel
           data={data}
-          onFilterChange={() => {}} // No longer needed - using context data directly
+          onFilterChange={handleFilterChange}
           onClose={() => {}} // We handle closing at the panel level
           isOpen={true}
           contentOnly={true} // Render only content without panel wrapper

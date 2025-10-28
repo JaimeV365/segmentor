@@ -58,6 +58,7 @@ const FilterFunnel: React.FC<FilterFunnelProps> = ({
               isOpen={true}
               showPointCount={true}
               hideHeader={true}
+              contentOnly={true}
             />
           </div>
         </div>

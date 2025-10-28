@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { DataPoint } from '@/types/base';
 import { ReportFilterPanel, ReportFilter } from '../../filters/ReportFilterPanel';
 import { Settings, X, Filter, Menu } from 'lucide-react';
@@ -7,6 +7,9 @@ import FilterPanel from '../../../visualization/filters/FilterPanel';
 import FilterToggle from '../../../visualization/filters/FilterToggle';
 import PremiumFeature from '../../../ui/PremiumFeature';
 import { ColorPalette } from '../../../ui/ColorPalette';
+import { FilterConnectionToggle } from '../../../ui/FilterConnectionToggle';
+import { useFilterContext } from '../../../visualization/context/FilterContext';
+import { useNotification } from '../../../data-entry/NotificationSystem';
 import { useZIndex } from '../../../../hooks/useZIndex';
 import './styles.css';
 
@@ -66,6 +69,7 @@ const BarChart: React.FC<BarChartProps> = ({
   // Replace separate panel states with unified panel
   const [showSidePanel, setShowSidePanel] = useState(false);
   const [activePanelTab, setActivePanelTab] = useState<'settings' | 'filters'>('settings');
+  const [isManualReconnecting, setIsManualReconnecting] = useState(false);
   
   // Use centralized z-index management
   const filterPanelZIndex = useZIndex('FILTER_PANEL');
@@ -78,6 +82,86 @@ const BarChart: React.FC<BarChartProps> = ({
 const cogwheelRef = useRef<HTMLButtonElement>(null);
 const settingsTabRef = useRef<HTMLButtonElement>(null);
 const filtersTabRef = useRef<HTMLButtonElement>(null);
+
+// Get filter context for connection management
+const filterContext = useFilterContext();
+const { showNotification } = useNotification();
+
+// Determine which data to use based on connection status
+const effectiveData = useMemo(() => {
+  console.log('📊 effectiveData calculation:', {
+    isReportsConnected: filterContext?.isReportsConnected,
+    hasFilterContext: !!filterContext,
+    originalDataLength: originalData?.length || 0,
+    contextFilteredDataLength: filterContext?.filteredData?.length || 0,
+    reportsFilteredDataLength: filterContext?.getReportsFilteredData?.()?.length || 0
+  });
+  
+  if (filterContext?.isReportsConnected) {
+    // When connected, use the filtered data from context
+    const reportsData = filterContext.getReportsFilteredData();
+    console.log('📊 Using reports filtered data:', {
+      reportsDataLength: reportsData.length,
+      isReportsConnected: filterContext.isReportsConnected
+    });
+    return reportsData;
+  } else {
+    // When disconnected, use the original data passed as prop
+    console.log('📊 Using original data:', {
+      originalDataLength: originalData?.length || 0,
+      isReportsConnected: filterContext?.isReportsConnected
+    });
+    return originalData || [];
+  }
+}, [filterContext?.isReportsConnected, filterContext?.getReportsFilteredData, originalData]);
+
+// Recalculate chart data when effective data changes
+const effectiveChartData = useMemo(() => {
+  // When connected, we should use the data prop as it's already calculated from filtered data
+  // When disconnected, we should also use the data prop as it's calculated from the local filters
+  // The key is that the data prop should always reflect the current filter state
+  console.log('📊 effectiveChartData recalculating:', {
+    dataLength: data.length,
+    effectiveDataLength: effectiveData.length,
+    isReportsConnected: filterContext?.isReportsConnected
+  });
+  return data;
+}, [data, effectiveData, filterContext?.isReportsConnected]);
+
+// Listen for manual reconnect events
+useEffect(() => {
+  const handleManualReconnect = () => {
+    setIsManualReconnecting(true);
+  };
+
+  window.addEventListener('manual-reconnect-start', handleManualReconnect);
+  
+  return () => {
+    window.removeEventListener('manual-reconnect-start', handleManualReconnect);
+  };
+}, []);
+
+// Reset manual reconnecting flag when connection status changes
+useEffect(() => {
+  console.log('🔄 Connection status effect triggered:', {
+    isReportsConnected: filterContext?.isReportsConnected,
+    isManualReconnecting
+  });
+  
+  // Reset manual reconnecting flag when connection status changes
+  if (isManualReconnecting) {
+    console.log('🔄 Resetting manual reconnecting flag');
+    setIsManualReconnecting(false);
+  }
+}, [filterContext?.isReportsConnected, isManualReconnecting]);
+
+// Force re-render when effective data changes
+useEffect(() => {
+  console.log('📊 Effective data changed:', {
+    dataLength: effectiveData.length,
+    isReportsConnected: filterContext?.isReportsConnected
+  });
+}, [effectiveData, filterContext?.isReportsConnected]);
   
 const handleClickOutside = useCallback((event: MouseEvent) => {
   // Only run this logic if the panel is showing
@@ -142,7 +226,7 @@ useEffect(() => {
   useEffect(() => {
     // Update applyToAll based on whether all bars are selected
     setApplyToAll(areAllBarsSelected());
-  }, [selectedBars, data.length]);
+  }, [selectedBars, effectiveChartData.length]);
 
   const getNiceScale = (maxValue: number): number[] => {
     // Round up maxValue to next nice number
@@ -170,7 +254,7 @@ useEffect(() => {
     );
   };
   
-  const maxCount = Math.max(...data.map(d => d.count), 1);
+  const maxCount = Math.max(...effectiveChartData.map(d => d.count), 1);
   const yScale = scaleLinear()
     .domain([0, maxCount])
     .nice()
@@ -183,7 +267,7 @@ useEffect(() => {
     }));
 
   const areAllBarsSelected = () => {
-    return selectedBars.size === data.length;
+    return selectedBars.size === effectiveChartData.length;
   };
 
   const handleBarClick = (value: number, event: React.MouseEvent) => {
@@ -276,21 +360,17 @@ useEffect(() => {
       {showSidePanel && (
         <div 
           className="filter-overlay" 
-          style={{ zIndex: filterOverlayZIndex }}
           onMouseDown={() => console.log("Overlay mousedown")}
         >
           <div 
             className="filter-panel open"
-            style={{ zIndex: filterPanelZIndex }}
             onClick={(e) => e.stopPropagation()} // Prevent clicks from bubbling up
           >
             <div 
               className="filter-panel-header"
-              style={{ zIndex: filterHeaderZIndex }}
             >
               <div 
                 className="filter-panel-tabs"
-                style={{ zIndex: filterTabsZIndex }}
               >
                 <button 
                   ref={settingsTabRef}
@@ -308,10 +388,20 @@ useEffect(() => {
                     ref={filtersTabRef}
                     className={`filter-tab ${activePanelTab === 'filters' ? 'active' : ''}`}
                     onClick={(e) => {
-                      console.log("Filters tab clicked");
+                      console.log("🎯🎯🎯 FILTERS TAB CLICKED - This should trigger forceLocalState: true");
+                      console.log("🎯 Current state before click:", { 
+                        showSidePanel, 
+                        activePanelTab, 
+                        isReportsConnected: filterContext?.isReportsConnected 
+                      });
                       e.stopPropagation();
                       setLastTabClicked('filters');
                       setActivePanelTab('filters');
+                      console.log("🎯 State after setting filters tab:", { 
+                        showSidePanel, 
+                        activePanelTab: 'filters', 
+                        isReportsConnected: filterContext?.isReportsConnected 
+                      });
                     }}
                     onMouseDown={(e) => {
                       console.log("Filters tab mousedown");
@@ -319,7 +409,12 @@ useEffect(() => {
                       e.stopPropagation();
                     }}
                   >
-                    Filters
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span>Filters</span>
+                      {filterContext && (
+                        <FilterConnectionToggle showLabel={false} />
+                      )}
+                    </div>
                     {activeFilters && activeFilters.length > 0 && (
                       <span className="filter-badge small">{activeFilters.length}</span>
                     )}
@@ -467,7 +562,7 @@ useEffect(() => {
                     onChange={(e) => {
                       setApplyToAll(e.target.checked);
                       if (e.target.checked) {
-                        setSelectedBars(new Set(data.map(d => d.value)));
+                        setSelectedBars(new Set(effectiveChartData.map(d => d.value)));
                       } else {
                         setSelectedBars(new Set());
                       }
@@ -509,25 +604,58 @@ useEffect(() => {
         </div>
       ) : (
         <div onClick={(e) => {
-          console.log("Filter panel container clicked");
           e.stopPropagation();
         }} style={{ width: '100%', height: '100%' }}>
           <FilterPanel
-            data={originalData || []}
+            data={effectiveData}
             onFilterChange={(filteredData, newFilters) => {
-              console.log("Filter change triggered", newFilters);
+              console.log('🎯🎯🎯 BARCHART FILTERPANEL onFilterChange triggered:', {
+                newFiltersLength: newFilters.length,
+                filteredDataLength: filteredData.length,
+                isReportsConnected: filterContext?.isReportsConnected,
+                isManualReconnecting,
+                forceLocalState: true, // This should always be true for bar chart
+                shouldAutoDisconnect: filterContext && filterContext.isReportsConnected && newFilters.length > 0 && !isManualReconnecting,
+                effectiveDataLength: effectiveData.length,
+                effectiveDataSample: effectiveData.slice(0, 2)
+              });
+
+              // Only auto-disconnect if currently connected and there are actual active filters
+              // This prevents auto-disconnect on initial load when no user changes are made
+              // Also skip if we're manually reconnecting to avoid duplicate notifications
+              if (filterContext && filterContext.isReportsConnected && newFilters.length > 0 && !isManualReconnecting) {
+                console.log('📊 Auto-disconnecting reports filters');
+                filterContext.setReportsConnection(false);
+                
+                // Show notification about auto-disconnect (only once)
+                showNotification({
+                  title: 'Filter Connection',
+                  type: 'success',
+                  message: 'Bar chart filters are now independent from the main chart'
+                });
+              }
+              
+              // Don't show any notifications during manual reconnection
+              if (isManualReconnecting) {
+                console.log('📊 Manual reconnection in progress, skipping notifications');
+                return;
+              }
+              
               // Update the local activeFilters state
               if (onFilterChange) {
+                console.log('📊 Calling parent onFilterChange with:', newFilters);
                 onFilterChange(newFilters); // Pass the new filters to the parent
               }
             }}
             onClose={() => {
-              console.log("Filter panel close triggered");
               setShowSidePanel(false);
             }}
             isOpen={true}
             showPointCount={true}
             hideHeader={true}
+            contentOnly={true}
+            // Force local state mode to prevent direct master updates
+            forceLocalState={true}
           />
         </div>
       )}
@@ -563,7 +691,7 @@ useEffect(() => {
         )}
 
         <div className="bar-chart-bars">
-          {data.map(({ value, count }) => {
+          {effectiveChartData.map(({ value, count }) => {
             const heightPercent = yScale(count);
             const showValueForBar = showValues || hoveredBar === value;
             

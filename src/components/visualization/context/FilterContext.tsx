@@ -45,6 +45,17 @@ export interface FilterContextType {
   // Data source
   data: DataPoint[];
   setData: (data: DataPoint[]) => void;
+  
+  // Connection management for Reports section
+  isReportsConnected: boolean;
+  reportsFilterState: FilterState | null;
+  setReportsConnection: (connected: boolean) => void;
+  updateReportsFilterState: (state: FilterState) => void;
+  syncReportsToMaster: () => void;
+  getReportsFilteredData: () => DataPoint[];
+  
+  // Notification function
+  onShowNotification?: (notification: { title: string; message: string; type: 'success' | 'error' | 'info' | 'warning' }) => void;
 }
 
 const FilterContext = createContext<FilterContextType | undefined>(undefined);
@@ -80,12 +91,17 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     }
   );
 
+  // Connection management for Reports section
+  const [isReportsConnected, setIsReportsConnected] = useState(true);
+  const [reportsFilterState, setReportsFilterState] = useState<FilterState | null>(null);
+
   // Apply filters to data with memoization
   const applyFilters = useCallback((dataToFilter: DataPoint[], currentFilterState: FilterState) => {
     console.log('🔄 FilterContext: Applying filters to data...', { 
       dataLength: dataToFilter.length, 
       hasDateFilter: currentFilterState.dateRange.preset !== 'all',
-      hasAttributeFilters: currentFilterState.attributes.some(attr => attr.values.size > 0)
+      hasAttributeFilters: currentFilterState.attributes.some(attr => attr.values.size > 0),
+      filterState: currentFilterState
     });
 
     // Create a signature for the filter state to enable memoization
@@ -108,11 +124,21 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
 
     // FIRST: Always exclude items marked as excluded
     filtered = filtered.filter(item => !item.excluded);
+    console.log('🔄 After excluding items:', { 
+      filteredLength: filtered.length,
+      excludedCount: dataToFilter.length - filtered.length
+    });
 
     // Apply date filter
     if (currentFilterState.dateRange.preset && currentFilterState.dateRange.preset !== 'all') {
+      console.log('🔄 Applying date filter:', {
+        preset: currentFilterState.dateRange.preset,
+        startDate: currentFilterState.dateRange.startDate,
+        endDate: currentFilterState.dateRange.endDate
+      });
       const { startDate, endDate } = currentFilterState.dateRange;
       if (startDate || endDate) {
+        const beforeDateFilter = filtered.length;
         filtered = filtered.filter(item => {
           if (!item.date) return false;
           
@@ -125,15 +151,45 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
           
           return true;
         });
+        console.log('🔄 After date filter:', {
+          beforeDateFilter,
+          afterDateFilter: filtered.length,
+          dateFilteredCount: beforeDateFilter - filtered.length
+        });
       }
+    } else {
+      console.log('🔄 No date filter applied (preset is "all")');
     }
 
     // Apply attribute filters
-    currentFilterState.attributes.forEach(attr => {
+    currentFilterState.attributes.forEach((attr, index) => {
       if (attr.values.size > 0) {
+        console.log(`🔄 Applying attribute filter ${index + 1}:`, {
+          field: attr.field,
+          values: Array.from(attr.values),
+          valuesSize: attr.values.size
+        });
+        const beforeAttributeFilter = filtered.length;
         filtered = filtered.filter(item => {
           const value = (item as any)[attr.field];
-          return attr.values.has(value);
+          const matches = attr.values.has(value);
+          console.log(`🔄 Checking item ${item.id}:`, {
+            field: attr.field,
+            value: value,
+            matches: matches,
+            availableValues: Array.from(attr.values)
+          });
+          return matches;
+        });
+        console.log(`🔄 After attribute filter ${index + 1}:`, {
+          beforeAttributeFilter,
+          afterAttributeFilter: filtered.length,
+          attributeFilteredCount: beforeAttributeFilter - filtered.length
+        });
+      } else {
+        console.log(`🔄 Skipping attribute filter ${index + 1} (no values):`, {
+          field: attr.field,
+          valuesSize: attr.values.size
         });
       }
     });
@@ -159,7 +215,12 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       };
       
       // Automatically recalculate filtered data when date range changes
+      console.log('🔄 updateDateRange: About to apply filters with new state:', newState);
       const newFilteredData = applyFilters(data, newState);
+      console.log('🔄 updateDateRange: Got filtered data:', {
+        dataLength: data.length,
+        filteredDataLength: newFilteredData.length
+      });
       setFilteredData(newFilteredData);
       
       // Update active filter count
@@ -185,7 +246,12 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       };
       
       // Automatically recalculate filtered data when attribute filter changes
+      console.log('🔄 updateAttributeFilter: About to apply filters with new state:', newState);
       const newFilteredData = applyFilters(data, newState);
+      console.log('🔄 updateAttributeFilter: Got filtered data:', {
+        dataLength: data.length,
+        filteredDataLength: newFilteredData.length
+      });
       setFilteredData(newFilteredData);
       
       // Update active filter count
@@ -327,13 +393,33 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       
       // Convert to array format with counts
       const availableFields = Array.from(fields.entries())
-        .map(([field, valuesSet]) => ({
-          field,
-          counts: Array.from(valuesSet).map(value => ({
-            value,
-            count: activeData.filter(item => (item as any)[field] === value || ((item as any).additionalAttributes && (item as any).additionalAttributes[field] === value)).length
-          }))
-        }))
+        .map(([field, valuesSet]) => {
+          // Sort values: numbers first (ascending), then strings (alphabetical)
+          const sortedValues = Array.from(valuesSet).sort((a, b) => {
+            const aNum = Number(a);
+            const bNum = Number(b);
+            
+            // If both are valid numbers, sort numerically
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+              return aNum - bNum;
+            }
+            
+            // If one is a number and one is a string, number comes first
+            if (!isNaN(aNum) && isNaN(bNum)) return -1;
+            if (isNaN(aNum) && !isNaN(bNum)) return 1;
+            
+            // Both are strings, sort alphabetically
+            return String(a).localeCompare(String(b));
+          });
+          
+          return {
+            field,
+            counts: sortedValues.map(value => ({
+              value,
+              count: activeData.filter(item => (item as any)[field] === value || ((item as any).additionalAttributes && (item as any).additionalAttributes[field] === value)).length
+            }))
+          };
+        })
         .sort((a, b) => {
           const priorityFields = ['satisfaction', 'loyalty', 'group', 'name', 'email'];
           const aIndex = priorityFields.indexOf(a.field);
@@ -386,6 +472,52 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     });
   }, [data, applyFilters]);
 
+  // Connection management functions
+  const setReportsConnection = useCallback((connected: boolean) => {
+    console.log('🔗 FilterContext: Setting Reports connection:', connected);
+    setIsReportsConnected(connected);
+    
+    if (connected) {
+      // When reconnecting, sync to master and clear local state
+      setReportsFilterState(null);
+      console.log('🔗 FilterContext: Synced Reports to master filters');
+    }
+  }, []);
+
+  const updateReportsFilterState = useCallback((state: FilterState) => {
+    console.log('🔗 FilterContext: Updating Reports filter state');
+    setReportsFilterState(state);
+  }, []);
+
+  const syncReportsToMaster = useCallback(() => {
+    console.log('🔗 FilterContext: Syncing Reports to master');
+    setReportsFilterState(null);
+    setIsReportsConnected(true);
+  }, []);
+
+  const getReportsFilteredData = useCallback(() => {
+    console.log('🔄 getReportsFilteredData called:', {
+      isReportsConnected,
+      hasReportsFilterState: !!reportsFilterState,
+      filteredDataLength: filteredData.length,
+      dataLength: data.length
+    });
+    
+    if (isReportsConnected || !reportsFilterState) {
+      // Use master filtered data
+      console.log('🔄 Using master filtered data:', {
+        filteredDataLength: filteredData.length
+      });
+      return filteredData;
+    } else {
+      // Apply Reports-specific filters
+      console.log('🔄 Applying reports-specific filters:', {
+        reportsFilterState
+      });
+      return applyFilters(data, reportsFilterState);
+    }
+  }, [isReportsConnected, reportsFilterState, filteredData, data, applyFilters]);
+
   const contextValue: FilterContextType = {
     filterState,
     setFilterState: handleSetFilterState,
@@ -397,7 +529,17 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     activeFilterCount,
     setActiveFilterCount,
     data,
-    setData: handleSetData
+    setData: handleSetData,
+    // Connection management
+    isReportsConnected,
+    reportsFilterState,
+    setReportsConnection,
+    updateReportsFilterState,
+    syncReportsToMaster,
+    getReportsFilteredData,
+    
+    // Notification function
+    onShowNotification
   };
 
   return (

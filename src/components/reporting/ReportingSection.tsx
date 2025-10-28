@@ -5,6 +5,7 @@ import ProximitySection from './components/ProximitySection/ProximitySection';
 import DistributionSection from './components/DistributionSection';
 import './ReportingSection.css';
 import { useReportGenerator } from './hooks/useReportGenerator';
+import { useFilterContext } from '../visualization/context/FilterContext';
 import type { DataPoint, ScaleFormat } from '../../types/base';
 
 interface ReportingSectionProps {
@@ -27,6 +28,10 @@ export const ReportingSection: React.FC<ReportingSectionProps> = ({
   showSpecialZones = true,
   showNearApostles = false
 }) => {
+  // Get filtered data from FilterContext
+  const { getReportsFilteredData } = useFilterContext();
+  const filteredData = getReportsFilteredData();
+
   const {
     dataReport,
     actionsReport,
@@ -37,7 +42,7 @@ export const ReportingSection: React.FC<ReportingSectionProps> = ({
     handleExportReport,
     handleShareReport
   } = useReportGenerator({
-    data,
+    data: filteredData, // Use filtered data instead of raw data
     satisfactionScale,
     loyaltyScale,
     activeEffects
@@ -114,7 +119,7 @@ total={dataReport?.totalEntries || 0}
 isPremium={isPremium}
 onQuadrantMove={() => {}}
 onQuadrantSelect={() => {}}
-data={data}
+data={filteredData}
 satisfactionScale={satisfactionScale}
 loyaltyScale={loyaltyScale}
 isClassicModel={isClassicModel}
@@ -123,7 +128,7 @@ showNearApostles={showNearApostles}
 />
 
 <ProximitySection
-data={data}
+data={filteredData}
 satisfactionScale={satisfactionScale}
 loyaltyScale={loyaltyScale}
 isPremium={isPremium}

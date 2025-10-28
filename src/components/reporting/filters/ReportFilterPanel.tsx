@@ -2,7 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Filter } from 'lucide-react';
 import './ReportFilterPanel.css';
-import { DataPoint } from '@/types/base';
+import { DataPoint } from '../../../types/base';
+import { FilterConnectionToggle } from '../../ui/FilterConnectionToggle';
+import { FilterDisconnectionPrompt } from '../../ui/FilterDisconnectionPrompt';
+import { useFilterContext } from '../../visualization/context/FilterContext';
 
 interface ReportFilterPanelProps {
   data: DataPoint[];
@@ -30,6 +33,37 @@ export const ReportFilterPanel: React.FC<ReportFilterPanelProps> = ({
 }) => {
   const [filters, setFilters] = useState<ReportFilter[]>(activeFilters || []);
   const [activeTab, setActiveTab] = useState<'filters' | 'settings'>('filters');
+  const [showDisconnectionPrompt, setShowDisconnectionPrompt] = useState(false);
+  const [pendingFilterChange, setPendingFilterChange] = useState<ReportFilter[] | null>(null);
+  
+  // Get FilterContext for connection management
+  const { isReportsConnected, setReportsConnection } = useFilterContext();
+  
+  // Handle disconnection prompt
+  const handleDisconnectionConfirm = () => {
+    setReportsConnection(false);
+    setShowDisconnectionPrompt(false);
+    if (pendingFilterChange) {
+      setFilters(pendingFilterChange);
+      setPendingFilterChange(null);
+    }
+  };
+  
+  const handleDisconnectionCancel = () => {
+    setShowDisconnectionPrompt(false);
+    setPendingFilterChange(null);
+  };
+  
+  // Check if we need to show disconnection prompt when filters change
+  const handleFilterChange = (newFilters: ReportFilter[]) => {
+    if (isReportsConnected && filters.length === 0 && newFilters.length > 0) {
+      // First filter change after inheriting from master - show prompt
+      setPendingFilterChange(newFilters);
+      setShowDisconnectionPrompt(true);
+    } else {
+      setFilters(newFilters);
+    }
+  };
   
   // Extract unique field names from data
   const getAvailableFields = () => {
@@ -87,7 +121,7 @@ export const ReportFilterPanel: React.FC<ReportFilterPanelProps> = ({
     
     const fields = getAvailableFields();
     if (fields.length > 0) {
-      setFilters([...filters, {
+      handleFilterChange([...filters, {
         field: fields[0],
         operator: 'equals',
         value: ''
@@ -98,7 +132,7 @@ export const ReportFilterPanel: React.FC<ReportFilterPanelProps> = ({
   const removeFilter = (index: number) => {
     const newFilters = [...filters];
     newFilters.splice(index, 1);
-    setFilters(newFilters);
+    handleFilterChange(newFilters);
   };
 
   const updateFilter = (index: number, field: string, value: any) => {
@@ -107,16 +141,25 @@ export const ReportFilterPanel: React.FC<ReportFilterPanelProps> = ({
       ...newFilters[index],
       [field]: value
     };
-    setFilters(newFilters);
+    handleFilterChange(newFilters);
   };
 
   const handleApply = () => {
+    // Check if this is the first filter change and we're connected
+    if (isReportsConnected && filters.length > 0 && activeFilters.length === 0) {
+      // First filter change - show disconnection prompt
+      setPendingFilterChange(filters);
+      setShowDisconnectionPrompt(true);
+      return;
+    }
+    
+    // Normal apply
     onApplyFilters(filters);
     onClose();
   };
 
   const handleClear = () => {
-    setFilters([]);
+    handleFilterChange([]);
     onApplyFilters([]);
     onClose();
   };
@@ -143,7 +186,10 @@ export const ReportFilterPanel: React.FC<ReportFilterPanelProps> = ({
     <div className={`report-filter-panel ${embedded ? 'embedded' : ''}`}>
       {!embedded && (
         <div className="report-filter-panel-header">
-          <h3>Filter Data</h3>
+          <div className="header-left">
+            <h3>Filter Data</h3>
+            <FilterConnectionToggle showLabel={true} />
+          </div>
           <button 
             className="report-filter-panel-close"
             onClick={onClose}
@@ -285,6 +331,13 @@ export const ReportFilterPanel: React.FC<ReportFilterPanelProps> = ({
           </button>
         </div>
       )}
+      
+      {/* Disconnection Prompt */}
+      <FilterDisconnectionPrompt
+        isVisible={showDisconnectionPrompt}
+        onConfirm={handleDisconnectionConfirm}
+        onCancel={handleDisconnectionCancel}
+      />
     </div>
   );
 };

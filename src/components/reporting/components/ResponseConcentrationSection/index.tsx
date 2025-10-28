@@ -610,6 +610,7 @@ const realPoint = candidatePoints.find(p => manualAssignments.has(p.id)) || cand
       isOpen={true}
       showPointCount={true}
       hideHeader={true}
+      contentOnly={true}
     />
   </div>
 )}

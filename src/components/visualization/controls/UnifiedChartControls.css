@@ -78,30 +78,36 @@
 
 /* Panel */
 .unified-controls-panel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 380px;
-  height: 100%;
-  background: white;
-  border-left: 1px solid #e5e7eb;
-  box-shadow: -2px 0 16px rgba(0, 0, 0, 0.15);
-  z-index: 999;
-  animation: slideInFromRight 0.3s ease-out;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  position: fixed !important;
+  top: 80px !important; /* Position below the demo banner (more accurate) */
+  right: 0 !important;
+  width: 380px !important;
+  height: calc(100vh - 80px) !important; /* Adjust height for top offset */
+  background: white !important;
+  border-left: 1px solid #e5e7eb !important;
+  box-shadow: -2px 0 16px rgba(0, 0, 0, 0.15) !important;
+  z-index: 999 !important; /* Lower than demo banner (1000) */
+  animation: slideInFromRight 0.3s ease-out !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Header with Tabs */
 .unified-controls-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0;
-  border-bottom: 1px solid #e5e7eb;
-  background-color: #f9fafb;
-  flex-shrink: 0;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 20px 16px 16px 16px !important; /* Extra top padding to prevent cutoff */
+  border-bottom: 1px solid #e5e7eb !important;
+  background-color: #f9fafb !important;
+  flex-shrink: 0 !important;
+  min-height: 60px !important; /* Ensure header has minimum height */
+  position: relative !important;
+  z-index: 1001 !important;
 }
 
 .unified-controls-tabs {

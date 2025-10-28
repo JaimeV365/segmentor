@@ -117,8 +117,18 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
   }, [isFilterPanelOpen]);
 
 
-  /// Handle filter changes
-  // No need for handleFilterChange - using context data directly
+  // Handle filter changes by updating the FilterContext
+  const handleFilterChange = (filteredData: DataPoint[], activeFilters?: any[]) => {
+    console.log('🔄 FilteredChart: Filter change received', {
+      filteredDataLength: filteredData.length,
+      activeFiltersLength: activeFilters?.length || 0,
+      hasFilterContext: !!filterContext
+    });
+    
+    // The FilterPanel will handle updating the FilterContext through its internal logic
+    // We don't need to do anything here since FilterPanel uses the context directly
+    // when forceLocalState is false (which is the default)
+  };
 
 
   // Calculate grid dimensions for watermark controls
@@ -152,7 +162,7 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
         hasFilterableData={hasFilterableData}
         activeFilterCount={effectiveActiveFilterCount}
         data={data}
-        onFilterChange={() => {}} // No longer needed - using context data directly
+        onFilterChange={handleFilterChange}
         effects={activeEffects}
         onEffectsChange={onEffectsChange || (() => {})}
         dimensions={gridDimensions}

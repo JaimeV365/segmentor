@@ -28,13 +28,20 @@
   border-bottom: 1px solid #e5e7eb;
   background-color: #f9fafb;
 }
-  
-.report-filter-panel-header h3 {
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-left h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  color: #374151;
+  color: #111827;
 }
+  
   
 .report-filter-panel-close {
   background: none;
