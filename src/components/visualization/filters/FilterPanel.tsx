@@ -119,18 +119,21 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   }, [isOpen, filterContext, getEffectiveFilterState]);
   
   // Track when connection status changes (for reconnection)
+  // Connection status is derived from state comparison, not a separate boolean
   useEffect(() => {
     if (forceLocalState && reportId && filterContext) {
-      const isConnected = filterContext.reportConnections[reportId] !== false;
+      const reportState = filterContext.getReportFilterState(reportId);
+      const mainState = filterContext.filterState;
+      const isConnected = filterContext.compareFilterStates(reportState, mainState);
+      
       if (isConnected && isOpen) {
         // Reset to main filters when reconnected
-        const mainState = filterContext.filterState;
         setLocalFilterState(mainState);
         setIsInitializing(true); // Set to true to prevent auto-disconnect during sync
         setHasUserMadeChanges(false);
       }
     }
-  }, [forceLocalState, reportId, filterContext?.reportConnections, filterContext?.filterState, isOpen]);
+  }, [forceLocalState, reportId, filterContext, filterContext?.filterState, filterContext?.reportFilterStates, isOpen]);
 
   // Calculate relevant date presets based on actual data
   const relevantDatePresets = useMemo(() => {
@@ -269,17 +272,36 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     
     // Update the filter state in the appropriate context
     // BUT: Don't update during initialization - this prevents auto-disconnect during init
+    // AND: Only update if state actually differs (prevents auto-disconnect when syncing)
     if (!isInitializing) {
-      console.log(`🔌 [FilterPanel] applyFiltersWithState - NOT initializing, updating state:`, {
+      console.log(`🔌 [FilterPanel] applyFiltersWithState - NOT initializing, checking if update needed:`, {
         reportId,
         forceLocalState,
         hasFilterContext: !!filterContext
       });
       
       if (forceLocalState && reportId && filterContext) {
-        // Use report filter state management (never touches main filters)
-        // This will auto-disconnect if connected, but only when user makes actual changes
-        filterContext.setReportFilterState(reportId, stateToUse);
+        // CRITICAL: Check if report state matches main state before updating
+        // Only call setReportFilterState if states actually differ (user change)
+        // If states match, this is a sync operation - skip to prevent auto-disconnect
+        const reportState = filterContext.getReportFilterState(reportId);
+        const mainState = filterContext.filterState;
+        const isConnected = filterContext.compareFilterStates(reportState, mainState);
+        
+        if (isConnected) {
+          // Report is connected - check if stateToUse differs from main
+          const stateMatches = filterContext.compareFilterStates(stateToUse, mainState);
+          
+          if (stateMatches) {
+            console.log(`🔌 [FilterPanel] State matches main - SKIPPING setReportFilterState (syncing, not user change)`);
+          } else {
+            console.log(`🔌 [FilterPanel] State differs from main - user change, updating`);
+            filterContext.setReportFilterState(reportId, stateToUse);
+          }
+        } else {
+          // Report is already disconnected - always update on changes
+          filterContext.setReportFilterState(reportId, stateToUse);
+        }
       } else if (filterContext) {
         // Use main filter state
         filterContext.setFilterState(stateToUse);
@@ -299,14 +321,9 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     onFilterChange(filteredData, activeFilters, stateToUse);
     
     // Mark initialization complete after first apply
-    // Use setTimeout to ensure syncReportToMaster completes before we allow updates
     if (isInitializing) {
-      console.log(`🔌 [FilterPanel] Marking initialization complete (delayed)`);
-      // Delay resetting isInitializing to ensure syncReportToMaster completes
-      setTimeout(() => {
-        setIsInitializing(false);
-        console.log(`🔌 [FilterPanel] Initialization complete - now allowing updates`);
-      }, 100); // Small delay to let syncReportToMaster complete
+      console.log(`🔌 [FilterPanel] Marking initialization complete`);
+      setIsInitializing(false);
     }
   }, [filterContext, forceLocalState, reportId, data, onFilterChange, isInitializing]);
 

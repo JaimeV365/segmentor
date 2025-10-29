@@ -29,8 +29,9 @@ export const ReportingSection: React.FC<ReportingSectionProps> = ({
   showNearApostles = false
 }) => {
   // Get filtered data from FilterContext
-  const { getReportsFilteredData } = useFilterContext();
-  const filteredData = getReportsFilteredData();
+  // NOTE: Old global API removed - each report uses getReportFilteredData with reportId
+  // For now, use main filter context filteredData
+  const { filteredData } = useFilterContext();
 
   const {
     dataReport,

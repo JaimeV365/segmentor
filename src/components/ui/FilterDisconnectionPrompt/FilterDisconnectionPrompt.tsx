@@ -13,7 +13,9 @@ export const FilterDisconnectionPrompt: React.FC<FilterDisconnectionPromptProps>
   onConfirm,
   onCancel
 }) => {
-  const { isReportsConnected } = useFilterContext();
+  // NOTE: Old global API removed - component kept for backward compatibility
+  const filterContext = useFilterContext();
+  const isReportsConnected = false; // Default since global API removed
 
   if (!isVisible) return null;
 

@@ -438,25 +438,6 @@ const handleTerroristsZoneSizeChange = (size: number) => {
       {/* App Header - Removed redundant header, mode indicator moved to welcome banner */}
       
       <main className="app-content">
-            {/* Temporary Premium Toggle Button for Testing */}
-            <div style={{
-              position: 'fixed',
-              top: '80px',
-              right: '20px',
-              zIndex: 1000,
-              background: isPremium ? '#3a863e' : '#6b7280',
-              color: 'white',
-              padding: '8px 16px',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-              transition: 'all 0.2s ease'
-            }} onClick={() => setIsPremium(!isPremium)}>
-              {isPremium ? '⭐ Premium Mode' : '🔒 Standard Mode'}
-            </div>
-            
             {/* Demo Banner */}
         {showWelcomeBanner && data.length === 0 && !isDemoMode && (
           <WelcomeBanner
@@ -570,11 +551,28 @@ const handleTerroristsZoneSizeChange = (size: number) => {
 />
                 </div>
                 
-                {/* Left Drawer with Save Button - Inside providers for context access */}
+                {/* Left Drawer with Save Button and Premium Toggle - Inside providers for context access */}
                 <LeftDrawer
                   isOpen={isDrawerOpen} 
                   onToggle={() => setIsDrawerOpen(!isDrawerOpen)}
                 >
+                  {/* Premium Toggle Button */}
+                  <div style={{
+                    marginBottom: '12px',
+                    padding: '8px',
+                    background: isPremium ? '#3a863e' : '#6b7280',
+                    color: 'white',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    textAlign: 'center',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }} onClick={() => setIsPremium(!isPremium)}>
+                    {isPremium ? '⭐ Premium Mode' : '🔒 Standard Mode'}
+                  </div>
+                  
                   {/* Save Button - Only show when there's data */}
                   {data.length > 0 && (
                     <DrawerSaveButton

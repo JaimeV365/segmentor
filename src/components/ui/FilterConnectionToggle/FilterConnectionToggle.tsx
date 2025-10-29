@@ -12,41 +12,24 @@ export const FilterConnectionToggle: React.FC<FilterConnectionToggleProps> = ({
   className = '',
   showLabel = false
 }) => {
-  const { 
-    isReportsConnected, 
-    setReportsConnection,
-    syncReportsToMaster 
-  } = useFilterContext();
+  // NOTE: Old global API removed - each report manages its own connection
+  // This component is no longer used - connection toggle is inline in BarChart
+  // Keeping for backward compatibility but methods don't exist
+  const filterContext = useFilterContext();
+  const isReportsConnected = false; // Default since global API removed
   
   const { showNotification } = useNotification();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const handleToggle = () => {
-    if (isReportsConnected) {
-      // Disconnect from master
-      setReportsConnection(false);
-    } else {
-      // Reconnect to master - show confirmation modal
-      setShowConfirmModal(true);
-    }
+    // NOTE: This component is deprecated - connection toggle is now inline in BarChart
+    // This is kept for backward compatibility only
+    console.warn('FilterConnectionToggle: This component is deprecated');
   };
   
   const handleConfirmReconnect = () => {
-    console.log('🔔 FilterConnectionToggle: Starting manual reconnection');
-    
-    // Dispatch custom event to notify BarChart that this is a manual reconnect
-    window.dispatchEvent(new CustomEvent('manual-reconnect-start'));
-    
-    syncReportsToMaster();
+    // NOTE: This component is deprecated
     setShowConfirmModal(false);
-    
-    // Show notification about reconnecting (only from here, not from BarChart)
-    console.log('🔔 FilterConnectionToggle: Showing reconnection notification');
-    showNotification({
-      title: 'Filter Connection',
-      type: 'success',
-      message: 'Bar chart filters are now connected to the main chart'
-    });
   };
   
   const handleCancelReconnect = () => {

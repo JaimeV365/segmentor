@@ -37,11 +37,12 @@ export const ReportFilterPanel: React.FC<ReportFilterPanelProps> = ({
   const [pendingFilterChange, setPendingFilterChange] = useState<ReportFilter[] | null>(null);
   
   // Get FilterContext for connection management
-  const { isReportsConnected, setReportsConnection } = useFilterContext();
+  // NOTE: Old global API removed - each report manages its own connection
+  // Connection management is now handled in BarChart component
+  const filterContext = useFilterContext();
   
-  // Handle disconnection prompt
+  // Handle disconnection prompt - disabled since we use per-report connections now
   const handleDisconnectionConfirm = () => {
-    setReportsConnection(false);
     setShowDisconnectionPrompt(false);
     if (pendingFilterChange) {
       setFilters(pendingFilterChange);
@@ -56,13 +57,8 @@ export const ReportFilterPanel: React.FC<ReportFilterPanelProps> = ({
   
   // Check if we need to show disconnection prompt when filters change
   const handleFilterChange = (newFilters: ReportFilter[]) => {
-    if (isReportsConnected && filters.length === 0 && newFilters.length > 0) {
-      // First filter change after inheriting from master - show prompt
-      setPendingFilterChange(newFilters);
-      setShowDisconnectionPrompt(true);
-    } else {
-      setFilters(newFilters);
-    }
+    // Connection management moved to individual report components
+    setFilters(newFilters);
   };
   
   // Extract unique field names from data
@@ -145,15 +141,8 @@ export const ReportFilterPanel: React.FC<ReportFilterPanelProps> = ({
   };
 
   const handleApply = () => {
-    // Check if this is the first filter change and we're connected
-    if (isReportsConnected && filters.length > 0 && activeFilters.length === 0) {
-      // First filter change - show disconnection prompt
-      setPendingFilterChange(filters);
-      setShowDisconnectionPrompt(true);
-      return;
-    }
-    
-    // Normal apply
+    // NOTE: Connection management moved to individual report components (e.g., BarChart)
+    // Just apply filters directly - no disconnection prompt needed
     onApplyFilters(filters);
     onClose();
   };

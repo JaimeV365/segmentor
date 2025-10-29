@@ -48,10 +48,10 @@ export interface FilterContextType {
   
   // Report filter connection system
   reportFilterStates: Record<string, FilterState>; // e.g., { "barChart": FilterState }
-  reportConnections: Record<string, boolean>; // e.g., { "barChart": true }
+  // Note: Connection status is derived from state comparison, not stored separately
   
   // Report filter methods
-  setReportConnection: (reportId: string, connected: boolean) => void;
+  setReportConnection: (reportId: string, connected: boolean) => void; // Deprecated: use syncReportToMaster instead
   syncReportToMaster: (reportId: string) => void; // Copy main → report
   getReportFilterState: (reportId: string) => FilterState;
   setReportFilterState: (reportId: string, state: FilterState) => void;
@@ -93,8 +93,8 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
   );
 
   // Report filter connection system state
+  // Note: Connection status is derived from comparing filter states, not stored separately
   const [reportFilterStates, setReportFilterStates] = useState<Record<string, FilterState>>({});
-  const [reportConnections, setReportConnections] = useState<Record<string, boolean>>({});
 
   // Apply filters to data with memoization
   const applyFilters = useCallback((dataToFilter: DataPoint[], currentFilterState: FilterState) => {
@@ -378,6 +378,12 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
   }, [data]);
 
   // Helper function to compare two filter states
+  /**
+   * Compare two filter states to determine if they are equivalent
+   * Used to determine connection status - if report state matches main state,
+   * the report is considered "connected". Compares date ranges and attributes
+   * (order-independent comparison).
+   */
   const compareFilterStates = useCallback((state1: FilterState, state2: FilterState): boolean => {
     // Compare dateRange
     const dateRangeMatches = (
@@ -401,7 +407,12 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     return dateRangeMatches && attributesMatch;
   }, []);
 
-  // Enhanced setFilterState that automatically recalculates
+  /**
+   * Enhanced setFilterState that automatically recalculates filtered data
+   * IMPORTANT: Syncs connected reports BEFORE updating main state to prevent
+   * false disconnect notifications. Connected reports are those whose filter
+   * states match the current main filter state.
+   */
   const handleSetFilterState = useCallback((newFilterState: FilterState) => {
     console.log('🔄 FilterContext: Filter state updated, recalculating...', { 
       newFilterState,
@@ -460,7 +471,11 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
 
   // Report filter connection system methods
   
-  // Sync report filters to main filters (used when reconnecting)
+  /**
+   * Sync report filters to main filters (used when reconnecting)
+   * Creates a deep copy of the main filter state and assigns it to the report.
+   * This makes the report's state match the main state, effectively reconnecting it.
+   */
   const syncReportToMaster = useCallback((reportId: string) => {
     console.log(`🔌 [FilterContext] syncReportToMaster called for ${reportId}`);
     setReportFilterStates(prev => {
@@ -486,30 +501,15 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     });
   }, [filterState]);
   
-  // Set connection status for a report
+  // Set connection status for a report (deprecated - maintained for backward compatibility)
+  // Connection is now derived from state comparison, use syncReportToMaster directly instead
   const setReportConnection = useCallback((reportId: string, connected: boolean) => {
-    console.log(`🔌 [FilterContext] setReportConnection called:`, {
-      reportId,
-      connected,
-      previousConnections: reportConnections,
-      previousValue: reportConnections[reportId]
-    });
-    
-    setReportConnections(prev => {
-      const newConnections = {
-        ...prev,
-        [reportId]: connected
-      };
-      console.log(`🔌 [FilterContext] setReportConnection updating to:`, newConnections);
-      return newConnections;
-    });
-    
-    // If connecting, sync to main filters
+    console.warn(`🔌 [FilterContext] setReportConnection is deprecated, use syncReportToMaster instead`);
     if (connected) {
-      console.log(`🔌 [FilterContext] Connection=true, syncing report ${reportId} to master`);
       syncReportToMaster(reportId);
     }
-  }, [syncReportToMaster, reportConnections]);
+    // Note: Disconnection happens automatically when filter states differ
+  }, [syncReportToMaster]);
   
   // Get filter state for a report (returns local state if exists, otherwise main state)
   const getReportFilterState = useCallback((reportId: string): FilterState => {
@@ -523,8 +523,13 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     return filterState;
   }, [filterState, reportFilterStates]);
   
-  // Set filter state for a report (only updates local state, never touches main)
-  // Connection status is now derived from comparing states, not stored separately
+  /**
+   * Set filter state for a report (only updates local state, never touches main)
+   * ARCHITECTURAL RULE: This method ONLY updates report local state.
+   * It NEVER writes to main filters - this ensures proper separation.
+   * Connection status is derived by comparing this state with main filter state,
+   * not stored as a separate boolean.
+   */
   const setReportFilterState = useCallback((reportId: string, state: FilterState) => {
     console.log(`🔌 [FilterContext] setReportFilterState called:`, {
       reportId
@@ -570,8 +575,7 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     setData: handleSetData,
     // Report filter connection system
     reportFilterStates,
-    reportConnections,
-    setReportConnection,
+    setReportConnection, // Deprecated but kept for backward compatibility
     syncReportToMaster,
     getReportFilterState,
     setReportFilterState,

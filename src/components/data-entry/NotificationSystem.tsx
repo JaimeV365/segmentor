@@ -7,6 +7,7 @@ export interface Notification {
   message: string;
   type: 'success' | 'error' | 'info' | 'warning';
   duration?: number;
+  icon?: React.ReactNode;
 }
 
 interface NotificationContextType {
@@ -107,28 +108,35 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
               justifyContent: 'space-between'
             }}
           >
-            <div style={{ flex: 1 }}>
-              <h3 style={{
-                margin: '0 0 0.25rem 0',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                color: notification.type === 'error' ? '#991B1B' :
-                       notification.type === 'success' ? '#166534' :
-                       notification.type === 'warning' ? '#92400E' :
-                       '#1E40AF'
-              }}>
-                {notification.title}
-              </h3>
-              <p style={{
-                margin: 0,
-                fontSize: '0.875rem',
-                color: notification.type === 'error' ? '#B91C1C' :
-                       notification.type === 'success' ? '#15803D' :
-                       notification.type === 'warning' ? '#B45309' :
-                       '#1E40AF'
-              }}>
-                {notification.message}
-              </p>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+              {notification.icon && (
+                <div style={{ marginTop: '2px' }}>
+                  {notification.icon}
+                </div>
+              )}
+              <div style={{ flex: 1 }}>
+                <h3 style={{
+                  margin: '0 0 0.25rem 0',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  color: notification.type === 'error' ? '#991B1B' :
+                         notification.type === 'success' ? '#166534' :
+                         notification.type === 'warning' ? '#92400E' :
+                         '#1E40AF'
+                }}>
+                  {notification.title}
+                </h3>
+                <p style={{
+                  margin: 0,
+                  fontSize: '0.875rem',
+                  color: notification.type === 'error' ? '#B91C1C' :
+                         notification.type === 'success' ? '#15803D' :
+                         notification.type === 'warning' ? '#B45309' :
+                         '#1E40AF'
+                }}>
+                  {notification.message}
+                </p>
+              </div>
             </div>
             <button
               onClick={() => clearNotification(notification.id)}
