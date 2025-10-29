@@ -25,3 +25,6 @@ yarn-error.log*
 # secret codes
 src/utils/secretCodes.ts
 .vercel
+
+# Browser data
+AppData/

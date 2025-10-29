@@ -29,13 +29,16 @@ interface FilterState {
 
 interface FilterPanelProps {
   data: DataPoint[];
-  onFilterChange: (filteredData: DataPoint[], filters: any[]) => void;
+  onFilterChange: (filteredData: DataPoint[], filters: any[], filterState?: FilterState) => void;
   onClose: () => void;
   isOpen: boolean;
   showPointCount?: boolean;
   onTogglePointCount?: (show: boolean) => void;
   hideHeader?: boolean;
   contentOnly?: boolean;
+  // Report filter connection system
+  reportId?: string; // e.g., "barChart" - used for report filter state management
+  forceLocalState?: boolean; // If true, uses report filter state instead of main filter state
   // Frequency controls
   frequencyFilterEnabled?: boolean;
   frequencyThreshold?: number;
@@ -49,8 +52,6 @@ interface FilterPanelProps {
   resetTrigger?: number;
   // Notification callback
   onShowNotification?: (notification: { title: string; message: string; type: 'success' | 'error' | 'info' | 'warning' }) => void;
-  // Force local state mode (for reports)
-  forceLocalState?: boolean;
 }
 
 // DATE_PRESETS is now imported from dateFilterUtils
@@ -64,21 +65,23 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   onTogglePointCount,
   hideHeader = false,
   contentOnly = false,
+  reportId,
+  forceLocalState = false,
   frequencyFilterEnabled = false,
   frequencyThreshold = 1,
   onFrequencyFilterEnabledChange,
   onFrequencyThresholdChange,
   frequencyData,
   resetTrigger,
-  onShowNotification,
-  forceLocalState = false
+  onShowNotification
 }) => {
+  console.log('🎛️ FilterPanel component mounted/rendered', { reportId, forceLocalState });
   // Try to access filter context if available
   const filterContext = useFilterContextSafe();
   
-  // FilterPanel component mounted/rendered
-  
-  // Bar chart FilterPanel rendered with forceLocalState
+  // Track if user has made changes (for auto-disconnect detection)
+  const [hasUserMadeChanges, setHasUserMadeChanges] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
   
   // Use context state if available, otherwise use local state
   const [localFilterState, setLocalFilterState] = useState<FilterState>({
@@ -90,6 +93,44 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     attributes: [],
     isActive: false,
   });
+  
+  // Get the appropriate filter state based on forceLocalState
+  const getEffectiveFilterState = useCallback((): FilterState => {
+    if (forceLocalState && reportId && filterContext) {
+      // Use report filter state
+      return filterContext.getReportFilterState(reportId);
+    } else if (filterContext) {
+      // Use main filter state
+      return filterContext.filterState;
+    } else {
+      // Fallback to local state
+      return localFilterState;
+    }
+  }, [forceLocalState, reportId, filterContext, localFilterState]);
+  
+  // Initialize filter state from context when panel opens or when connection changes
+  useEffect(() => {
+    if (isOpen && filterContext) {
+      const effectiveState = getEffectiveFilterState();
+      setLocalFilterState(effectiveState);
+      setIsInitializing(true);
+      setHasUserMadeChanges(false);
+    }
+  }, [isOpen, filterContext, getEffectiveFilterState]);
+  
+  // Track when connection status changes (for reconnection)
+  useEffect(() => {
+    if (forceLocalState && reportId && filterContext) {
+      const isConnected = filterContext.reportConnections[reportId] !== false;
+      if (isConnected && isOpen) {
+        // Reset to main filters when reconnected
+        const mainState = filterContext.filterState;
+        setLocalFilterState(mainState);
+        setIsInitializing(true); // Set to true to prevent auto-disconnect during sync
+        setHasUserMadeChanges(false);
+      }
+    }
+  }, [forceLocalState, reportId, filterContext?.reportConnections, filterContext?.filterState, isOpen]);
 
   // Calculate relevant date presets based on actual data
   const relevantDatePresets = useMemo(() => {
@@ -128,85 +169,39 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       });
     });
     
-    const result = Array.from(fields).map(field => {
-      // Sort values: numbers first (ascending), then strings (alphabetical)
-      const sortedValues = Object.keys(counts[field] || {}).sort((a, b) => {
-        const aNum = Number(a);
-        const bNum = Number(b);
-        
-        // If both are valid numbers, sort numerically
-        if (!isNaN(aNum) && !isNaN(bNum)) {
-          return aNum - bNum;
-        }
-        
-        // If one is a number and one is a string, number comes first
-        if (!isNaN(aNum) && isNaN(bNum)) return -1;
-        if (isNaN(aNum) && !isNaN(bNum)) return 1;
-        
-        // Both are strings, sort alphabetically
-        return String(a).localeCompare(String(b));
-      });
-      
-      return {
-        field,
-        values: sortedValues,
-        counts: counts[field] || {}
-      };
-    });
-    
-    return result;
-  }, [data, forceLocalState, filterContext]);
+    return Array.from(fields).map(field => ({
+      field,
+      values: Object.keys(counts[field] || {}),
+      counts: counts[field] || {}
+    }));
+  }, [data]);
 
-  // When forceLocalState is true, always use local state for UI consistency
-  const filterState = useMemo(() => {
-    if (forceLocalState) {
-      // Always use local state for UI consistency in forceLocalState mode
-      return localFilterState;
-    }
-    // Normal behavior: use context if available, otherwise local
-    return filterContext?.filterState || localFilterState;
-  }, [forceLocalState, filterContext, localFilterState]);
+  const filterState = forceLocalState && reportId && filterContext
+    ? filterContext.getReportFilterState(reportId)
+    : (filterContext?.filterState || localFilterState);
   
   // Create type-safe setter functions
   const setFilterState = (newState: FilterState | ((prev: FilterState) => FilterState)) => {
-
-    if (forceLocalState) {
-      // Always update local state first for immediate UI feedback
-      let updatedLocalState;
-      if (typeof newState === 'function') {
-        updatedLocalState = newState(localFilterState);
-        setLocalFilterState(updatedLocalState);
-      } else {
-        updatedLocalState = newState;
-        setLocalFilterState(updatedLocalState);
-      }
+    const stateToSet = typeof newState === 'function' ? newState(filterState) : newState;
+    
+    // Track user changes (but not during initialization)
+    if (!isInitializing) {
+      setHasUserMadeChanges(true);
       
-      // Mark that user has made changes (not during initialization)
-      if (!isInitializing) {
-        setHasUserMadeChanges(true);
-      }
-      
-      // Only update main context if NOT in forceLocalState mode AND connected
-      if (!forceLocalState && filterContext && filterContext.isReportsConnected && !isInitializing) {
-        console.log('🔗 Main FilterPanel: updating main context state (user made changes)');
-        filterContext.setFilterState(updatedLocalState);
-      } else if (forceLocalState) {
-        console.log('🔗 Local FilterPanel: NOT updating main context (forceLocalState prevents this)');
-      }
-    } else if (!filterContext) {
-      // No context available, use local state
-      if (typeof newState === 'function') {
-        setLocalFilterState(newState(localFilterState));
+      // Only update context state when user makes actual changes (not during initialization)
+      if (forceLocalState && reportId && filterContext) {
+        // Use report filter state management (never touches main filters)
+        filterContext.setReportFilterState(reportId, stateToSet);
+      } else if (filterContext) {
+        // Use main filter state
+        filterContext.setFilterState(stateToSet);
       } else {
-        setLocalFilterState(newState);
+        // Fallback to local state
+        setLocalFilterState(stateToSet);
       }
     } else {
-      // Use context state
-      if (typeof newState === 'function') {
-        filterContext.setFilterState(newState(filterContext.filterState));
-      } else {
-        filterContext.setFilterState(newState);
-      }
+      // During initialization, just update local state for display
+      setLocalFilterState(stateToSet);
     }
   };
 
@@ -272,9 +267,48 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       }
     });
     
-    // Return the filtered data and active filters for onFilterChange callback
-    return { filteredData, activeFilters, isActive };
-  }, [data]);
+    // Update the filter state in the appropriate context
+    // BUT: Don't update during initialization - this prevents auto-disconnect during init
+    if (!isInitializing) {
+      console.log(`🔌 [FilterPanel] applyFiltersWithState - NOT initializing, updating state:`, {
+        reportId,
+        forceLocalState,
+        hasFilterContext: !!filterContext
+      });
+      
+      if (forceLocalState && reportId && filterContext) {
+        // Use report filter state management (never touches main filters)
+        // This will auto-disconnect if connected, but only when user makes actual changes
+        filterContext.setReportFilterState(reportId, stateToUse);
+      } else if (filterContext) {
+        // Use main filter state
+        filterContext.setFilterState(stateToUse);
+      } else {
+        // Fallback for when context is not available
+        setLocalFilterState(stateToUse);
+      }
+    } else {
+      console.log(`🔌 [FilterPanel] applyFiltersWithState - SKIPPING state update (initializing):`, {
+        reportId,
+        forceLocalState,
+        isInitializing
+      });
+    }
+    
+    // Call onFilterChange callback with filterState for notifications
+    onFilterChange(filteredData, activeFilters, stateToUse);
+    
+    // Mark initialization complete after first apply
+    // Use setTimeout to ensure syncReportToMaster completes before we allow updates
+    if (isInitializing) {
+      console.log(`🔌 [FilterPanel] Marking initialization complete (delayed)`);
+      // Delay resetting isInitializing to ensure syncReportToMaster completes
+      setTimeout(() => {
+        setIsInitializing(false);
+        console.log(`🔌 [FilterPanel] Initialization complete - now allowing updates`);
+      }, 100); // Small delay to let syncReportToMaster complete
+    }
+  }, [filterContext, forceLocalState, reportId, data, onFilterChange, isInitializing]);
 
   // Reactive filtering: validate and reset filters when data changes
   const validateAndResetFilters = useCallback(() => {
@@ -435,21 +469,34 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
   // Listen for manual filter validation triggers (from delete/exclude actions)
   useEffect(() => {
+    console.log('🎧 FilterPanel: Setting up event listener for reset-filters-if-needed');
+    
     const handleResetFilters = () => {
+      console.log('🎯 FilterPanel: Reset filters event received!', { 
+        currentPreset: filterState.dateRange.preset,
+        hasActiveFilter: filterState.dateRange.preset && filterState.dateRange.preset !== 'all'
+      });
       // Only validate if we have an active filter that might need resetting
       if (filterState.dateRange.preset && filterState.dateRange.preset !== 'all') {
+        console.log('✅ FilterPanel: Running filter validation...');
         validateAndResetFilters();
+      } else {
+        console.log('⏭️ FilterPanel: Skipping validation - no active filter');
       }
     };
 
     const handleForceReset = () => {
+      console.log('🎯 FilterPanel: Force reset event received!');
+      console.log('✅ FilterPanel: Running filter validation...');
       validateAndResetFilters();
     };
 
     document.addEventListener('reset-filters-if-needed', handleResetFilters);
     document.addEventListener('force-reset-filters', handleForceReset);
+    console.log('🎧 FilterPanel: Event listeners added successfully');
     
     return () => {
+      console.log('🎧 FilterPanel: Removing event listeners');
       document.removeEventListener('reset-filters-if-needed', handleResetFilters);
       document.removeEventListener('force-reset-filters', handleForceReset);
     };
@@ -458,75 +505,12 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   const [datePickerVisible, setDatePickerVisible] = useState(false);
   const [customStartDate, setCustomStartDate] = useState<string>('');
   const [customEndDate, setCustomEndDate] = useState<string>('');
-  const [isInitializing, setIsInitializing] = useState(true);
-  
-  // Initialize local state with context state when forceLocalState is true
-  useEffect(() => {
-    if (forceLocalState && filterContext?.filterState) {
-      console.log('🔍 FilterPanel: Context filter state changed while forceLocalState=true:', {
-        contextFilterState: filterContext.filterState,
-        localFilterState,
-        isInitializing,
-        isReportsConnected: filterContext.isReportsConnected,
-        shouldUpdateLocal: !isInitializing && filterContext.isReportsConnected
-      });
-      
-      // Only update local state if not initializing AND reports are connected
-      // This prevents local filters from being overwritten when disconnected
-      if (!isInitializing && filterContext.isReportsConnected) {
-        console.log('🔍 FilterPanel: Updating local state with context state (connected)');
-        setFilterState(filterContext.filterState);
-      } else {
-        console.log('🔍 FilterPanel: Skipping local state update:', {
-          reason: isInitializing ? 'initializing' : 'reports disconnected'
-        });
-      }
-    }
-  }, [forceLocalState, filterContext?.filterState, filterContext?.isReportsConnected, isInitializing]);
-
-  // Update local state when panel opens and we're in forceLocalState mode
-  useEffect(() => {
-    if (forceLocalState && isOpen && filterContext?.filterState) {
-      console.log('🔍 FilterPanel: Panel opened, updating local state with current context state:', {
-        contextFilterState: filterContext.filterState,
-        localFilterState,
-        isInitializing,
-        isReportsConnected: filterContext.isReportsConnected,
-        shouldUpdateLocal: !isInitializing && filterContext.isReportsConnected
-      });
-      
-      // Panel opened, update local state with current context state
-      // Only if not initializing AND reports are connected
-      if (!isInitializing && filterContext.isReportsConnected) {
-        console.log('🔍 FilterPanel: Panel opened - updating local state (connected)');
-        setFilterState(filterContext.filterState);
-      } else {
-        console.log('🔍 FilterPanel: Panel opened - skipping update:', {
-          reason: isInitializing ? 'initializing' : 'reports disconnected'
-        });
-      }
-      
-      // Note: We'll handle immediate filter application in a separate useEffect
-      // that runs after applyFiltersWithState is defined
-    }
-  }, [isOpen, forceLocalState, filterContext?.filterState, filterContext?.isReportsConnected, isInitializing]);
-  
-  // Debug: Track isInitializing state changes
-  useEffect(() => {
-    // Track isInitializing state changes
-  }, [isInitializing]);
-  const [hasUserMadeChanges, setHasUserMadeChanges] = useState(false);
-  
-  // Debug: Track hasUserMadeChanges state changes
-  useEffect(() => {
-    // Track hasUserMadeChanges state changes
-  }, [hasUserMadeChanges]);
 
   // availableFields is already defined above
 
   // Initialize attributes on first render
   useEffect(() => {
-    if ((!filterContext || forceLocalState) && availableFields.length > 0 && filterState.attributes.length === 0) {
+    if (!filterContext && availableFields.length > 0 && filterState.attributes.length === 0) {
       setFilterState(prev => ({
         ...prev,
         attributes: availableFields.map(field => ({
@@ -540,19 +524,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
         }))
       }));
     }
-  }, [availableFields, filterState.attributes.length, filterContext, forceLocalState]);
-
-  // Sync local state with main context when connection status changes
-  useEffect(() => {
-    if (forceLocalState && filterContext) {
-      if (filterContext.isReportsConnected) {
-        // When connecting, sync local state with main context
-        setLocalFilterState(filterContext.filterState);
-      }
-      // Note: When connected, we don't sync local state with main context changes
-      // because we want changes to go directly to main context
-    }
-  }, [forceLocalState, filterContext?.isReportsConnected]);
+  }, [availableFields, filterState.attributes.length, filterContext]);
 
   // Apply filters when filterState changes
   useEffect(() => {
@@ -608,50 +580,20 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   };
 
   // Apply current filters to data
-  const applyFilters = useCallback(() => {
-    if (forceLocalState) {
-      // When using forceLocalState, we need to call onFilterChange to notify parent
-      
-      // Don't call onFilterChange during initialization to prevent auto-disconnect
-      if (isInitializing) {
-        return;
-      }
-      
-      // Only call onFilterChange if user has made changes (not just existing filters)
-      const result = applyFiltersWithState(filterState);
-      if (hasUserMadeChanges && result.activeFilters.length > 0) {
-        onFilterChange(result.filteredData, result.activeFilters);
-      }
+  const applyFilters = () => {
+    // No longer need to manually apply filters - the context handles this automatically
+    // Just update the filter state in the context
+    if (forceLocalState && reportId && filterContext) {
+      // Use report filter state management (never touches main filters)
+      filterContext.setReportFilterState(reportId, filterState);
     } else if (filterContext) {
-      // Normal context behavior
+      // Use main filter state (only if not forceLocalState)
       filterContext.setFilterState(filterState);
     } else {
       // Fallback for when context is not available
       applyFiltersWithState(filterState);
     }
-  }, [forceLocalState, filterState, applyFiltersWithState, onFilterChange, filterContext, isInitializing, hasUserMadeChanges]);
-
-  // Handle immediate filter application when panel opens to avoid race condition
-  useEffect(() => {
-    if (forceLocalState && isOpen && filterContext?.filterState && applyFiltersWithState) {
-      const result = applyFiltersWithState(filterContext.filterState);
-      
-      // DO NOT call onFilterChange during initialization - this was causing triple notifications and main filter overwrites
-      // The race condition is better handled by proper state management in the initialization useEffects
-    }
-  }, [isOpen, forceLocalState, filterContext?.filterState, applyFiltersWithState, onFilterChange, hasUserMadeChanges, isInitializing]);
-
-  // Complete initialization after FilterPanel is fully set up
-  useEffect(() => {
-    if (isInitializing && isOpen && forceLocalState && filterContext?.filterState) {
-      // Use a timeout to ensure all initialization effects have completed
-      const timeoutId = setTimeout(() => {
-        setIsInitializing(false);
-      }, 100); // Small delay to ensure all effects have run
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [isInitializing, isOpen, forceLocalState, filterContext?.filterState]);
+  };
 
   // Convert preset to date range
   const applyDatePreset = (preset: string) => {
@@ -737,12 +679,14 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     }
   };
 
-  // Toggle attribute filter
+  // Toggle attribute filter value
+  // This should always update state, but only trigger auto-disconnect if not initializing
   const toggleAttributeValue = (field: string, value: string | number) => {
-    
-    setFilterState(prev => ({
-      ...prev,
-      attributes: prev.attributes.map(attr => {
+    // Always update state - this is a user action
+    if (forceLocalState && reportId && filterContext) {
+      // Update report filter state
+      const currentState = filterContext.getReportFilterState(reportId);
+      const updatedAttributes = currentState.attributes.map(attr => {
         if (attr.field === field) {
           const newValues = new Set(attr.values);
           if (newValues.has(value)) {
@@ -753,21 +697,102 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
           return { ...attr, values: newValues };
         }
         return attr;
-      })
-    }));
+      });
+      
+      const newState = {
+        ...currentState,
+        attributes: updatedAttributes
+      };
+      
+      // Always update - setReportFilterState will handle auto-disconnect logic
+      // But we need to mark initialization as complete if this is a user action
+      if (isInitializing) {
+        setIsInitializing(false);
+      }
+      filterContext.setReportFilterState(reportId, newState);
+    } else if (filterContext) {
+      // Update main filter state
+      const currentState = filterContext.filterState;
+      const updatedAttributes = currentState.attributes.map(attr => {
+        if (attr.field === field) {
+          const newValues = new Set(attr.values);
+          if (newValues.has(value)) {
+            newValues.delete(value);
+          } else {
+            newValues.add(value);
+          }
+          return { ...attr, values: newValues };
+        }
+        return attr;
+      });
+      
+      const newState = {
+        ...currentState,
+        attributes: updatedAttributes
+      };
+      
+      // Main filters always update
+      filterContext.setFilterState(newState);
+    } else {
+      // Fallback to local state - always update
+      setLocalFilterState(prev => ({
+        ...prev,
+        attributes: prev.attributes.map(attr => {
+          if (attr.field === field) {
+            const newValues = new Set(attr.values);
+            if (newValues.has(value)) {
+              newValues.delete(value);
+            } else {
+              newValues.add(value);
+            }
+            return { ...attr, values: newValues };
+          }
+          return attr;
+        })
+      }));
+    }
   };
 
   // Toggle attribute section expand/collapse
+  // NOTE: Expanded state is UI-only and should always update, even during initialization
   const toggleAttributeExpanded = (field: string) => {
-    setFilterState(prev => ({
-      ...prev,
-      attributes: prev.attributes.map(attr => {
-        if (attr.field === field) {
-          return { ...attr, expanded: !attr.expanded };
-        }
-        return attr;
-      })
-    }));
+    // Always update state - expanded is UI state, not filter logic
+    if (forceLocalState && reportId && filterContext) {
+      // Update report filter state (expanded property is UI-only)
+      const currentState = filterContext.getReportFilterState(reportId);
+      filterContext.setReportFilterState(reportId, {
+        ...currentState,
+        attributes: currentState.attributes.map(attr => {
+          if (attr.field === field) {
+            return { ...attr, expanded: !(attr.expanded ?? false) };
+          }
+          return attr;
+        })
+      });
+    } else if (filterContext) {
+      // Update main filter state
+      const currentState = filterContext.filterState;
+      filterContext.setFilterState({
+        ...currentState,
+        attributes: currentState.attributes.map(attr => {
+          if (attr.field === field) {
+            return { ...attr, expanded: !(attr.expanded ?? false) };
+          }
+          return attr;
+        })
+      });
+    } else {
+      // Fallback to local state - always update regardless of initialization
+      setLocalFilterState(prev => ({
+        ...prev,
+        attributes: prev.attributes.map(attr => {
+          if (attr.field === field) {
+            return { ...attr, expanded: !(attr.expanded ?? false) };
+          }
+          return attr;
+        })
+      }));
+    }
   };
 
   // Reset all filters
@@ -797,7 +822,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
   // Apply custom date range
   const applyCustomDateRange = () => {
-    
     let startDate: Date | null = null;
     let endDate: Date | null = null;
     
@@ -879,6 +903,32 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       year: 'numeric',
       month: 'short',
       day: 'numeric'
+    });
+  };
+
+  // Sort filter values: numbers in ascending order, words alphabetically
+  const sortFilterValues = (values: Array<{value: string | number, count: number}>): Array<{value: string | number, count: number}> => {
+    return [...values].sort((a, b) => {
+      const aVal = a.value;
+      const bVal = b.value;
+      
+      // Check if both are numbers
+      const aIsNum = typeof aVal === 'number' || !isNaN(Number(aVal));
+      const bIsNum = typeof bVal === 'number' || !isNaN(Number(bVal));
+      
+      if (aIsNum && bIsNum) {
+        // Both are numbers - sort numerically in increasing order
+        return Number(aVal) - Number(bVal);
+      } else if (aIsNum && !bIsNum) {
+        // Numbers come before words
+        return -1;
+      } else if (!aIsNum && bIsNum) {
+        // Words come after numbers
+        return 1;
+      } else {
+        // Both are words - sort alphabetically
+        return String(aVal).localeCompare(String(bVal));
+      }
     });
   };
 
@@ -1019,7 +1069,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
               
               {attr.expanded && (
                 <div className="attribute-value-list">
-                  {attr.availableValues?.map(({value, count}) => (
+                  {sortFilterValues(attr.availableValues || []).map(({value, count}) => (
                     <div 
                       key={`${attr.field}-${value}`}
                       className={`attribute-value-item ${attr.values.has(value) ? 'selected' : ''}`}
@@ -1074,7 +1124,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
               
               {attr.expanded && (
                 <div className="attribute-value-list">
-                  {attr.availableValues?.map(({value, count}) => (
+                  {sortFilterValues(attr.availableValues || []).map(({value, count}) => (
                     <div 
                       key={`${attr.field}-${value}`}
                       className={`attribute-value-item ${attr.values.has(value) ? 'selected' : ''}`}
@@ -1143,7 +1193,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                     
                     {attr.expanded && (
                       <div className="attribute-value-list">
-                        {attr.availableValues?.map(({value, count}) => (
+                        {sortFilterValues(attr.availableValues || []).map(({value, count}) => (
                           <div 
                             key={`${attr.field}-${value}`}
                             className={`attribute-value-item ${attr.values.has(value) ? 'selected' : ''}`}

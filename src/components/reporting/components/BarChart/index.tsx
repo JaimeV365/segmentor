@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 import { DataPoint } from '@/types/base';
-import { ReportFilterPanel, ReportFilter } from '../../filters/ReportFilterPanel';
-import { Settings, X, Filter, Menu } from 'lucide-react';
+import { Settings, Filter, Menu, Link2, Link2Off } from 'lucide-react';
 import { scaleLinear } from 'd3-scale';
 import FilterPanel from '../../../visualization/filters/FilterPanel';
-import FilterToggle from '../../../visualization/filters/FilterToggle';
 import PremiumFeature from '../../../ui/PremiumFeature';
 import { ColorPalette } from '../../../ui/ColorPalette';
+import { UnifiedFilterTabPanel, FilterTabConfig } from '../../../ui/UnifiedFilterTabPanel';
 import { FilterConnectionToggle } from '../../../ui/FilterConnectionToggle';
-import { useFilterContext } from '../../../visualization/context/FilterContext';
-import { useNotification } from '../../../data-entry/NotificationSystem';
-import { useZIndex } from '../../../../hooks/useZIndex';
+import { useFilterContextSafe } from '../../../visualization/context/FilterContext';
+import { useNotification } from '../../../data-entry/hooks/useNotification';
+import { ReportFilter } from '../../filters/ReportFilterPanel';
 import './styles.css';
 
 export interface BarChartData {
@@ -65,143 +64,123 @@ const BarChart: React.FC<BarChartProps> = ({
   const [showChartLegend, setShowChartLegend] = useState(showLegend);
   const [selectedBars, setSelectedBars] = useState<Set<number>>(new Set());
   const [lastTabClicked, setLastTabClicked] = useState<string | null>(null);
-  
-  // Replace separate panel states with unified panel
-  const [showSidePanel, setShowSidePanel] = useState(false);
-  const [activePanelTab, setActivePanelTab] = useState<'settings' | 'filters'>('settings');
+  const [filterResetTrigger, setFilterResetTrigger] = useState(0);
+  const [hasLocalChanges, setHasLocalChanges] = useState(false);
   const [isManualReconnecting, setIsManualReconnecting] = useState(false);
   
-  // Use centralized z-index management
-  const filterPanelZIndex = useZIndex('FILTER_PANEL');
-  const filterOverlayZIndex = useZIndex('FILTER_OVERLAY');
-  const filterHeaderZIndex = useZIndex('FILTER_HEADER');
-  const filterTabsZIndex = useZIndex('FILTER_TABS');
+  // Unified panel state
+  const [showSidePanel, setShowSidePanel] = useState(false);
+  const [activePanelTab, setActivePanelTab] = useState<'settings' | 'filters'>('settings');
   
-  // Update ref to point to the side panel
-  const sidePanelRef = useRef<HTMLDivElement>(null);
-const cogwheelRef = useRef<HTMLButtonElement>(null);
-const settingsTabRef = useRef<HTMLButtonElement>(null);
-const filtersTabRef = useRef<HTMLButtonElement>(null);
-
-// Get filter context for connection management
-const filterContext = useFilterContext();
+  // Filter context for connection system
+  const filterContext = useFilterContextSafe();
 const { showNotification } = useNotification();
 
-// Determine which data to use based on connection status
-const effectiveData = useMemo(() => {
-  console.log('📊 effectiveData calculation:', {
-    isReportsConnected: filterContext?.isReportsConnected,
-    hasFilterContext: !!filterContext,
-    originalDataLength: originalData?.length || 0,
-    contextFilteredDataLength: filterContext?.filteredData?.length || 0,
-    reportsFilteredDataLength: filterContext?.getReportsFilteredData?.()?.length || 0
-  });
+  // Create unique REPORT_ID based on chartId to ensure each chart has its own filter state
+  // This prevents duplicate notifications when multiple charts share filter state
+  const REPORT_ID = useMemo(() => `barChart_${chartId || 'default'}`, [chartId]);
+
+  // Initialize report filter state on mount - sync to main filters
+  // This ensures report state exists and matches main state (connected by default)
+  useLayoutEffect(() => {
+    if (filterContext && !filterContext.reportFilterStates[REPORT_ID]) {
+      console.log('🔌 [BarChart] LAYOUT EFFECT INIT: Syncing report state to main state');
+      filterContext.syncReportToMaster(REPORT_ID);
+    }
+  }, [filterContext, REPORT_ID]);
   
-  if (filterContext?.isReportsConnected) {
-    // When connected, use the filtered data from context
-    const reportsData = filterContext.getReportsFilteredData();
-    console.log('📊 Using reports filtered data:', {
-      reportsDataLength: reportsData.length,
-      isReportsConnected: filterContext.isReportsConnected
-    });
-    return reportsData;
-  } else {
-    // When disconnected, use the original data passed as prop
-    console.log('📊 Using original data:', {
-      originalDataLength: originalData?.length || 0,
-      isReportsConnected: filterContext?.isReportsConnected
-    });
-    return originalData || [];
-  }
-}, [filterContext?.isReportsConnected, filterContext?.getReportsFilteredData, originalData]);
-
-// Recalculate chart data when effective data changes
-const effectiveChartData = useMemo(() => {
-  // When connected, we should use the data prop as it's already calculated from filtered data
-  // When disconnected, we should also use the data prop as it's calculated from the local filters
-  // The key is that the data prop should always reflect the current filter state
-  console.log('📊 effectiveChartData recalculating:', {
-    dataLength: data.length,
-    effectiveDataLength: effectiveData.length,
-    isReportsConnected: filterContext?.isReportsConnected
-  });
-  return data;
-}, [data, effectiveData, filterContext?.isReportsConnected]);
-
-// Listen for manual reconnect events
+  // Backup initialization check (runs after first render)
 useEffect(() => {
-  const handleManualReconnect = () => {
-    console.log('🔔 BarChart: Manual reconnect event received, setting flag');
-    setIsManualReconnecting(true);
-  };
-
-  window.addEventListener('manual-reconnect-start', handleManualReconnect);
+    if (filterContext && !filterContext.reportFilterStates[REPORT_ID]) {
+      console.log('🔌 [BarChart] Backup init: Syncing report state to main state');
+      filterContext.syncReportToMaster(REPORT_ID);
+    }
+  }, [filterContext, REPORT_ID]);
   
-  return () => {
-    window.removeEventListener('manual-reconnect-start', handleManualReconnect);
-  };
-}, []);
-
-// Reset manual reconnecting flag when connection status changes
-useEffect(() => {
-  console.log('🔄 Connection status effect triggered:', {
-    isReportsConnected: filterContext?.isReportsConnected,
-    isManualReconnecting
-  });
-  
-  // Reset manual reconnecting flag when connection status changes
-  // Use a timeout to ensure onFilterChange has completed
-  if (isManualReconnecting) {
-    console.log('🔄 Resetting manual reconnecting flag with delay');
-    const timeoutId = setTimeout(() => {
-      console.log('🔄 Manual reconnecting flag reset');
-      setIsManualReconnecting(false);
-    }, 100); // Small delay to ensure onFilterChange completes
+  // Derive connection status by comparing filter states
+  // Connected = report state matches main state (or no report state exists yet)
+  const isConnected = useMemo(() => {
+    if (!filterContext) {
+      console.log('🔌 [BarChart] No filterContext, defaulting to connected');
+      return true; // Default to connected if no context
+    }
     
-    return () => clearTimeout(timeoutId);
-  }
-}, [filterContext?.isReportsConnected, isManualReconnecting]);
-
-// Force re-render when effective data changes
-useEffect(() => {
-  console.log('📊 Effective data changed:', {
-    dataLength: effectiveData.length,
-    isReportsConnected: filterContext?.isReportsConnected
-  });
-}, [effectiveData, filterContext?.isReportsConnected]);
+    const reportState = filterContext.reportFilterStates[REPORT_ID];
+    const mainState = filterContext.filterState;
+    
+    // If no report state exists yet, consider connected (will sync from main)
+    if (!reportState) {
+      console.log('🔌 [BarChart] No report state exists, defaulting to connected');
+      return true;
+    }
+    
+    // Compare report state with main state
+    const connected = filterContext.compareFilterStates(reportState, mainState);
+    console.log('🔌 [BarChart] isConnected calculated from state comparison:', {
+      REPORT_ID,
+      connected,
+      reportState,
+      mainState
+    });
+    
+    return connected;
+  }, [filterContext, REPORT_ID, filterContext?.reportFilterStates?.[REPORT_ID], filterContext?.filterState]);
   
+  
+  // Get effective filtered data (uses report filters when connected/disconnected)
+  const effectiveData = useMemo(() => {
+    if (!originalData || !filterContext) return originalData || [];
+    
+    // Use report filter system to get filtered data
+    return filterContext.getReportFilteredData(REPORT_ID, originalData);
+  }, [originalData, filterContext, REPORT_ID, filterContext?.reportConnections?.[REPORT_ID], filterContext?.reportFilterStates?.[REPORT_ID]]);
+  
+  // Calculate filtered bar chart data from effectiveData
+  // This recreates the distribution based on filtered data points
+  const filteredBarChartData = useMemo(() => {
+    if (!originalData || !effectiveData || !chartId) return data;
+    
+    // Determine which field to aggregate by (satisfaction or loyalty)
+    const field = chartId === 'satisfaction' ? 'satisfaction' : 'loyalty';
+    
+    // Find max value from original data to maintain scale
+    const maxValue = Math.max(...data.map(d => d.value), 1);
+    
+    // Count occurrences of each value in filtered data
+    const distribution: Record<number, number> = {};
+    effectiveData.forEach(point => {
+      const value = (point as any)[field];
+      if (value !== undefined && value !== null) {
+        distribution[value] = (distribution[value] || 0) + 1;
+      }
+    });
+    
+    // Transform to BarChartData format matching the original data structure
+    return Array.from({ length: maxValue }, (_, i) => ({
+      value: i + 1,
+      count: distribution[i + 1] || 0
+    }));
+  }, [effectiveData, data, chartId, originalData]);
+  
+  // Use filtered data if available, otherwise fall back to original data
+  const displayData = filteredBarChartData;
+  
+  const panelRef = useRef<HTMLDivElement>(null);
+  const cogwheelRef = useRef<HTMLButtonElement>(null);
+  
+  // Handle click outside for bar selection clearing (panel closing handled by UnifiedFilterTabPanel)
 const handleClickOutside = useCallback((event: MouseEvent) => {
-  // Only run this logic if the panel is showing
-  if (!showSidePanel) return;
-  
   const targetElement = event.target as HTMLElement;
   const isBarClick = targetElement.closest('.bar-chart-bar');
-  const isPanelClick = targetElement.closest('.filter-panel');
-  const isFilterPanelClick = targetElement.closest('.report-filter-panel') || 
-                             targetElement.closest('.filter-panel-content');
-  const isTabClick = targetElement.closest('.filter-tab');
+    const isPanelClick = targetElement.closest('.unified-filter-tab-panel');
   const isControlButtonClick = cogwheelRef.current?.contains(targetElement);
   
-  console.log('Click outside handler triggered');
-  console.log('isPanelClick:', isPanelClick);
-  console.log('isFilterPanelClick:', isFilterPanelClick);
-  console.log('isTabClick:', isTabClick);
-  console.log('Target element:', targetElement);
-  console.log('Target classList:', targetElement.classList);
-  console.log('Current panel tab:', activePanelTab);
-  
-  // Close side panel when clicking outside (but not on tabs or bars)
-  if (!isPanelClick && !isControlButtonClick && !isTabClick && !isFilterPanelClick && !isBarClick) {
-    console.log('Closing panel!');
-    setShowSidePanel(false);
-  }
-  
   // Clear selection only if clicking outside bars and panel
-  if (!isBarClick && !isPanelClick && !isFilterPanelClick && !isTabClick) {
+    if (!isBarClick && !isPanelClick && !isControlButtonClick) {
     setSelectedBars(new Set());
     setApplyToAll(false);
   }
-}, [showSidePanel, activePanelTab]);
+  }, []);
   
 useEffect(() => {
   document.addEventListener('mouseup', handleClickOutside);
@@ -226,6 +205,179 @@ useEffect(() => {
   };
 }, []);
 
+  // Handle filter changes
+  // Connection status is now derived from state comparison, so we detect changes here
+  const handleFilterChange = useCallback((filteredData: DataPoint[], newFilters: any[], filterState?: any) => {
+    console.log("Filter change triggered", newFilters);
+    
+    if (!filterContext || !filterState || isManualReconnecting) {
+      // Notify parent component
+      if (onFilterChange) {
+        onFilterChange(newFilters);
+      }
+      return;
+    }
+    
+    // Check if we were connected before this change
+    const reportStateBefore = filterContext.reportFilterStates[REPORT_ID];
+    const wasConnected = reportStateBefore 
+      ? filterContext.compareFilterStates(reportStateBefore, filterContext.filterState)
+      : true; // Default to connected if no state exists
+    
+    // After setReportFilterState is called (in FilterPanel), the state will be updated
+    // We use a useEffect to detect the connection status change after the state update
+    
+    // Track local changes
+    setHasLocalChanges(true);
+    
+    // Notify parent component
+    if (onFilterChange) {
+      onFilterChange(newFilters);
+    }
+  }, [isManualReconnecting, onFilterChange, filterContext, REPORT_ID]);
+  
+  // Track connection status changes for notifications
+  const prevIsConnected = useRef<boolean | undefined>(undefined);
+  const lastNotificationTime = useRef<number>(0);
+  const lastNotificationType = useRef<'connected' | 'disconnected' | null>(null);
+  const notificationShownForState = useRef<string | null>(null); // Track exact state change that triggered notification
+  const isShowingNotification = useRef<boolean>(false); // Prevent concurrent notification calls
+  const notificationPending = useRef<boolean>(false); // Track if notification is in the process of being shown
+  const NOTIFICATION_DEBOUNCE_MS = 2000; // Increased to 2 seconds to prevent duplicates
+  
+  // Handle connection toggle
+  const handleConnectionToggle = useCallback((confirmed: boolean) => {
+    if (!filterContext) return;
+    
+    if (confirmed) {
+      // Reconnecting - sync report state to main state
+      setIsManualReconnecting(true);
+      
+      // Set notification tracking BEFORE sync to prevent useEffect from showing duplicate
+      const now = Date.now();
+      isShowingNotification.current = true;
+      lastNotificationTime.current = now;
+      lastNotificationType.current = 'connected';
+      // Use the actual state transition ID to prevent useEffect from showing duplicate
+      // When manually reconnecting, isConnected is currently false, will become true
+      const currentStateId = `${isConnected}_true`; // false_true when reconnecting
+      notificationShownForState.current = currentStateId; // Mark this state change IMMEDIATELY
+      
+      console.log(`🔔 [BarChart] Manual reconnect - setting notification tracking for: ${currentStateId}`);
+      
+      filterContext.syncReportToMaster(REPORT_ID);
+      setHasLocalChanges(false);
+      
+      // Show notification (green/success)
+      console.log(`🔔 [BarChart] Manual reconnect - showing notification`);
+      showNotification({
+        title: 'Filters Connected',
+        message: 'Bar chart filters are now connected to the main chart.',
+        type: 'success',
+        icon: <Link2 size={18} style={{ color: '#166534' }} />
+      });
+      
+      // Reset flag after a delay - but keep notification type set longer to prevent duplicate
+      setTimeout(() => {
+        setIsManualReconnecting(false);
+        isShowingNotification.current = false;
+        // Keep notification type set for a bit longer to prevent useEffect from triggering
+        setTimeout(() => {
+          lastNotificationType.current = null;
+          notificationShownForState.current = null;
+        }, NOTIFICATION_DEBOUNCE_MS);
+      }, 100);
+    } else {
+      // Disconnecting - user wants to make independent changes
+      // This is handled automatically when user makes changes (states will differ)
+      // Don't show notification here - it will be shown by the useEffect watching isConnected
+    }
+  }, [filterContext, REPORT_ID, showNotification]);
+  
+  // Notification tracking useEffect
+  // Only handles automatic DISCONNECT (user makes changes while connected)
+  // Manual RECONNECT is handled by handleConnectionToggle (no notification from useEffect)
+  // Initial sync on mount is silent (no notification)
+  useEffect(() => {
+    if (!filterContext) return;
+    
+    // Skip entirely if this is a manual reconnect
+    // Manual reconnect handles its own notification in handleConnectionToggle
+    if (isManualReconnecting) {
+      prevIsConnected.current = isConnected;
+      return;
+    }
+    
+    // Skip if states haven't actually changed
+    if (prevIsConnected.current === isConnected) {
+      return;
+    }
+    
+    // Create a stable identifier for this specific state change
+    const stateChangeId = `${prevIsConnected.current}_${isConnected}`;
+    
+    // CRITICAL: Check if we've already shown notification for this exact state change
+    // This MUST be checked BEFORE any other logic to prevent race conditions
+    const alreadyNotified = notificationShownForState.current === stateChangeId;
+    const isCurrentlyShowing = isShowingNotification.current;
+    const isPending = notificationPending.current;
+    
+    if (alreadyNotified || isCurrentlyShowing || isPending) {
+      console.log(`🔔 [BarChart] DUPLICATE PREVENTED: Already shown notification for ${stateChangeId} (alreadyNotified: ${alreadyNotified}, isCurrentlyShowing: ${isCurrentlyShowing}, isPending: ${isPending})`);
+      prevIsConnected.current = isConnected;
+      return;
+    }
+    
+    const reportState = filterContext.reportFilterStates[REPORT_ID];
+    const mainState = filterContext.filterState;
+    const now = Date.now();
+    
+    // ONLY automatic disconnect: connected -> disconnected
+    // This happens when user makes changes in bar chart filters while connected
+    const shouldShowDisconnect = (
+      prevIsConnected.current === true && 
+      isConnected === false && 
+      !isShowingNotification.current &&
+      (now - lastNotificationTime.current) > NOTIFICATION_DEBOUNCE_MS &&
+      lastNotificationType.current !== 'disconnected'
+    );
+    
+    if (shouldShowDisconnect) {
+      // Only show notification if report state actually differs from main state
+      const statesDiffer = reportState && !filterContext.compareFilterStates(reportState, mainState);
+      
+      if (statesDiffer) {
+        // CRITICAL: Set ALL flags IMMEDIATELY and SYNCHRONOUSLY before showing notification
+        // This MUST happen before any async operations to prevent race conditions
+        notificationPending.current = true; // Mark as pending FIRST
+        notificationShownForState.current = stateChangeId; // Mark this state change as notified
+        isShowingNotification.current = true;
+        lastNotificationTime.current = now;
+        lastNotificationType.current = 'disconnected';
+        
+        console.log(`🔔 [BarChart] Showing DISCONNECT notification for state change: ${stateChangeId}`);
+        showNotification({
+          title: 'Filters Disconnected',
+          message: 'Bar chart filters are now independent from the main chart.',
+          type: 'success',
+          icon: <Link2Off size={18} style={{ color: '#166534' }} />
+        });
+        
+        // Reset flags after showing notification
+        setTimeout(() => {
+          isShowingNotification.current = false;
+          notificationPending.current = false;
+        }, 500); // Increased timeout to ensure flags stay set longer
+      }
+    }
+    
+    // NO automatic connect logic - reconnection is only manual via handleConnectionToggle
+    // Initial sync on mount is silent (no notification)
+    
+    prevIsConnected.current = isConnected;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected, isManualReconnecting]); // Removed filterContext and showNotification - accessed via closure to prevent unnecessary re-runs
+
   useEffect(() => {
     setInternalShowGrid(showGrid);
   }, [showGrid]);
@@ -233,7 +385,7 @@ useEffect(() => {
   useEffect(() => {
     // Update applyToAll based on whether all bars are selected
     setApplyToAll(areAllBarsSelected());
-  }, [selectedBars, effectiveChartData.length]);
+  }, [selectedBars, displayData.length]);
 
   const getNiceScale = (maxValue: number): number[] => {
     // Round up maxValue to next nice number
@@ -261,7 +413,7 @@ useEffect(() => {
     );
   };
   
-  const maxCount = Math.max(...effectiveChartData.map(d => d.count), 1);
+  const maxCount = Math.max(...displayData.map(d => d.count), 1);
   const yScale = scaleLinear()
     .domain([0, maxCount])
     .nice()
@@ -274,7 +426,7 @@ useEffect(() => {
     }));
 
   const areAllBarsSelected = () => {
-    return selectedBars.size === effectiveChartData.length;
+    return selectedBars.size === displayData.length;
   };
 
   const handleBarClick = (value: number, event: React.MouseEvent) => {
@@ -321,108 +473,8 @@ useEffect(() => {
     }
   };
   
-  // Handle filter changes
-  const handleApplyFilters = (filters: ReportFilter[]) => {
-    onFilterChange?.(filters);
-    setShowSidePanel(false);
-  };
-  
-  // Function to open panel with specific tab
-  const handleOpenPanel = (tab: 'settings' | 'filters') => {
-    setActivePanelTab(tab);
-    setShowSidePanel(true);
-  };
-  
-  return (
-    <div className={`bar-chart-container ${showChartLegend ? 'show-legend' : ''} ${className}`} data-chart-id={chartId}>
-      {showChartLegend && title && (
-        <div className="bar-chart-legend">
-          <h4 className="bar-chart-title">{title}</h4>
-        </div>
-      )}
-      
-      {/* Always show hamburger menu - analysis feature */}
-      <PremiumFeature isPremium={true} featureType="hamburgerMenu">
-        <div className="bar-chart-controls">
-          <button
-            ref={cogwheelRef}
-            className={`bar-chart-control-button ${showSidePanel ? 'active' : ''} ${activeFilters && activeFilters.length > 0 ? 'has-filters' : ''}`}
-            onClick={() => {
-              setShowSidePanel(!showSidePanel);
-              // Start with filters tab if there are active filters, otherwise settings
-              setActivePanelTab(activeFilters && activeFilters.length > 0 ? 'filters' : 'settings');
-            }}
-            title="Chart settings and filters"
-          >
-            <Menu size={22} />
-            {activeFilters && activeFilters.length > 0 && (
-              <span className="filter-badge small">{activeFilters.length}</span>
-            )}
-          </button>
-        </div>
-      </PremiumFeature>
-
-
-      {/* Unified side panel using ReportFilterPanel */}
-      {showSidePanel && (
-        <div 
-          className="filter-overlay" 
-          onMouseDown={() => console.log("Overlay mousedown")}
-        >
-          <div 
-            className="filter-panel open"
-            onClick={(e) => e.stopPropagation()} // Prevent clicks from bubbling up
-          >
-            <div 
-              className="filter-panel-header"
-            >
-              <div 
-                className="filter-panel-tabs"
-              >
-                <button 
-                  ref={settingsTabRef}
-                  className={`filter-tab ${activePanelTab === 'settings' ? 'active' : ''}`}
-                  onClick={(e) => {
-                    console.log("Settings tab clicked");
-                    e.stopPropagation();
-                    setActivePanelTab('settings');
-                  }}
-                >
-                  Settings
-                </button>
-                <PremiumFeature isPremium={isPremium} featureType="filtering">
-                  <button 
-                    ref={filtersTabRef}
-                    className={`filter-tab ${activePanelTab === 'filters' ? 'active' : ''}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setLastTabClicked('filters');
-                      setActivePanelTab('filters');
-                    }}
-                    onMouseDown={(e) => {
-                      console.log("Filters tab mousedown");
-                      e.preventDefault(); 
-                      e.stopPropagation();
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span>Filters</span>
-                      {filterContext && (
-                        <FilterConnectionToggle showLabel={false} />
-                      )}
-                    </div>
-                    {activeFilters && activeFilters.length > 0 && (
-                      <span className="filter-badge small">{activeFilters.length}</span>
-                    )}
-                  </button>
-                </PremiumFeature>
-              </div>
-              <button className="filter-panel-close" onClick={() => setShowSidePanel(false)}>
-                <X size={20} />
-              </button>
-            </div>
-      
-      {activePanelTab === 'settings' ? (
+  // Render Settings Tab Content
+  const renderSettingsTab = () => (
         <div className="filter-panel-content">
           <div className="settings-group">
             <div className="settings-title">Display Settings</div>
@@ -498,7 +550,7 @@ useEffect(() => {
                   <span className="summary-label">Total Count:</span>
                   <span className="summary-value">
                     {Array.from(selectedBars).reduce((sum, value) => {
-                      const barData = data.find(d => d.value === value);
+                  const barData = displayData.find(d => d.value === value);
                       return sum + (barData?.count || 0);
                     }, 0)}
                   </span>
@@ -507,9 +559,9 @@ useEffect(() => {
                   <span className="summary-label">Percentage:</span>
                   <span className="summary-value">
                     {((Array.from(selectedBars).reduce((sum, value) => {
-                      const barData = data.find(d => d.value === value);
+                  const barData = displayData.find(d => d.value === value);
                       return sum + (barData?.count || 0);
-                    }, 0) / data.reduce((sum, d) => sum + d.count, 0)) * 100).toFixed(1)}%
+                }, 0) / displayData.reduce((sum, d) => sum + d.count, 0)) * 100).toFixed(1)}%
                   </span>
                 </div>
                 <div className="summary-item">
@@ -558,7 +610,7 @@ useEffect(() => {
                     onChange={(e) => {
                       setApplyToAll(e.target.checked);
                       if (e.target.checked) {
-                        setSelectedBars(new Set(effectiveChartData.map(d => d.value)));
+                    setSelectedBars(new Set(displayData.map(d => d.value)));
                       } else {
                         setSelectedBars(new Set());
                       }
@@ -598,66 +650,133 @@ useEffect(() => {
             )}
           </div>
         </div>
-      ) : (
-        <div onClick={(e) => {
-          e.stopPropagation();
-        }} style={{ width: '100%', height: '100%' }}>
+  );
+  
+  // Render Filters Tab Content
+  const renderFiltersTab = () => (
+    <PremiumFeature isPremium={isPremium} featureType="filtering">
+      <div className="unified-tab-content">
+        {/* Connection Toggle Header - show if has context */}
+        {filterContext && (
+          <div style={{ padding: '12px 16px', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+            <FilterConnectionToggle
+              reportId={REPORT_ID}
+              isConnected={isConnected}
+              onToggle={handleConnectionToggle}
+              hasLocalChanges={hasLocalChanges}
+            />
+          </div>
+        )}
+        
+        <div className="unified-tab-body">
           <FilterPanel
-            data={effectiveData}
-            onFilterChange={(filteredData, newFilters) => {
-              console.log('🔔 BARCHART onFilterChange triggered:', {
-                isReportsConnected: filterContext?.isReportsConnected,
-                isManualReconnecting,
-                newFiltersLength: newFilters.length,
-                shouldShowNotification: filterContext && filterContext.isReportsConnected && newFilters.length > 0 && !isManualReconnecting
-              });
-
-              // Only auto-disconnect if currently connected and there are actual active filters
-              // This prevents auto-disconnect on initial load when no user changes are made
-              // Also skip if we're manually reconnecting to avoid duplicate notifications
-              if (filterContext && filterContext.isReportsConnected && newFilters.length > 0 && !isManualReconnecting) {
-                console.log('🔔 Showing auto-disconnect notification');
-                filterContext.setReportsConnection(false);
-                
-                // Show notification about auto-disconnect (only once)
-                showNotification({
-                  title: 'Filter Connection',
-                  type: 'success',
-                  message: 'Bar chart filters are now independent from the main chart'
-                });
-              } else {
-                console.log('🔔 Skipping auto-disconnect notification:', {
-                  reason: isManualReconnecting ? 'manual reconnection' : 'no active filters or not connected'
-                });
-              }
-              
-              // Don't show any notifications during manual reconnection
-              if (isManualReconnecting) {
-                console.log('🔔 Manual reconnection in progress, skipping all notifications');
-                return;
-              }
-              
-              // Update the local activeFilters state
-              if (onFilterChange) {
-                console.log('🔔 Calling parent onFilterChange with:', newFilters);
-                onFilterChange(newFilters); // Pass the new filters to the parent
-              }
-            }}
+            data={originalData || []}
+            onFilterChange={handleFilterChange}
             onClose={() => {
+              console.log("Filter panel close triggered");
               setShowSidePanel(false);
             }}
             isOpen={true}
             showPointCount={true}
             hideHeader={true}
             contentOnly={true}
-            // Force local state mode to prevent direct master updates
+            reportId={REPORT_ID}
             forceLocalState={true}
+            resetTrigger={filterResetTrigger}
           />
         </div>
-      )}
+        
+        {/* Footer with Reset Button */}
+        <div className="unified-tab-footer">
+          <button 
+            className="unified-reset-button" 
+            onClick={() => {
+              // Reset all filters
+              setFilterResetTrigger(prev => prev + 1);
+              if (onFilterChange) {
+                onFilterChange([]);
+              }
+            }}
+            disabled={!activeFilters || activeFilters.length === 0}
+          >
+            Reset All
+          </button>
     </div>
+      </div>
+    </PremiumFeature>
+  );
+  
+  // Prepare tabs configuration
+  const tabs: FilterTabConfig[] = [
+    {
+      id: 'settings',
+      label: 'Settings',
+      icon: <Settings size={16} />
+    },
+    {
+      id: 'filters',
+      label: 'Filters',
+      icon: <Filter size={16} />,
+      badge: activeFilters && activeFilters.length > 0 ? activeFilters.length : undefined
+      // Premium check is now in renderFiltersTab content, not on tab button
+    }
+  ];
+  
+  // Prepare tab content
+  const tabContent: Record<string, React.ReactNode> = {
+    settings: renderSettingsTab(),
+    filters: renderFiltersTab()
+  };
+  
+  return (
+    <div className={`bar-chart-container ${showChartLegend ? 'show-legend' : ''} ${className}`} data-chart-id={chartId}>
+      {showChartLegend && title && (
+        <div className="bar-chart-legend">
+          <h4 className="bar-chart-title">{title}</h4>
   </div>
 )}
+      
+      {/* Always show hamburger menu - analysis feature */}
+      <PremiumFeature isPremium={true} featureType="hamburgerMenu">
+        <div className="bar-chart-controls">
+          <button
+            ref={cogwheelRef}
+            className={`bar-chart-control-button ${showSidePanel ? 'active' : ''} ${activeFilters && activeFilters.length > 0 ? 'has-filters' : ''}`}
+            onClick={() => {
+              const newState = !showSidePanel;
+              setShowSidePanel(newState);
+              // Start with filters tab if there are active filters, otherwise settings
+              if (newState) {
+                setActivePanelTab(activeFilters && activeFilters.length > 0 ? 'filters' : 'settings');
+              }
+            }}
+            title="Chart settings and filters"
+          >
+            <Menu size={22} />
+            {activeFilters && activeFilters.length > 0 && (
+              <span className="filter-badge small">{activeFilters.length}</span>
+            )}
+          </button>
+        </div>
+      </PremiumFeature>
+
+
+      {/* Unified Filter Tab Panel */}
+      <UnifiedFilterTabPanel
+        isOpen={showSidePanel}
+        onClose={() => setShowSidePanel(false)}
+        tabs={tabs}
+        activeTab={activePanelTab}
+        onTabChange={(tabId) => {
+          setActivePanelTab(tabId as 'settings' | 'filters');
+          if (tabId === 'filters') {
+            setLastTabClicked('filters');
+          }
+        }}
+        tabContent={tabContent}
+        panelRef={panelRef}
+        isPremium={isPremium}
+      />
       
       <div className="bar-chart-wrapper">
         <div className="bar-chart-scale">
@@ -687,7 +806,7 @@ useEffect(() => {
         )}
 
         <div className="bar-chart-bars">
-          {effectiveChartData.map(({ value, count }) => {
+          {displayData.map(({ value, count }) => {
             const heightPercent = yScale(count);
             const showValueForBar = showValues || hoveredBar === value;
             
@@ -726,7 +845,7 @@ useEffect(() => {
                   </div>
                 )}
 
-                {hoveredBar === value && (
+                {hoveredBar === value && count > 0 && (
                   <div className="bar-chart-tooltip">
                     <div className="bar-chart-tooltip-value">
                       Value: {value}

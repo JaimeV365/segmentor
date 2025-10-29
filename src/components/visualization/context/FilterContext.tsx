@@ -46,16 +46,17 @@ export interface FilterContextType {
   data: DataPoint[];
   setData: (data: DataPoint[]) => void;
   
-  // Connection management for Reports section
-  isReportsConnected: boolean;
-  reportsFilterState: FilterState | null;
-  setReportsConnection: (connected: boolean) => void;
-  updateReportsFilterState: (state: FilterState) => void;
-  syncReportsToMaster: () => void;
-  getReportsFilteredData: () => DataPoint[];
+  // Report filter connection system
+  reportFilterStates: Record<string, FilterState>; // e.g., { "barChart": FilterState }
+  reportConnections: Record<string, boolean>; // e.g., { "barChart": true }
   
-  // Notification function
-  onShowNotification?: (notification: { title: string; message: string; type: 'success' | 'error' | 'info' | 'warning' }) => void;
+  // Report filter methods
+  setReportConnection: (reportId: string, connected: boolean) => void;
+  syncReportToMaster: (reportId: string) => void; // Copy main → report
+  getReportFilterState: (reportId: string) => FilterState;
+  setReportFilterState: (reportId: string, state: FilterState) => void;
+  getReportFilteredData: (reportId: string, data: DataPoint[]) => DataPoint[];
+  compareFilterStates: (state1: FilterState, state2: FilterState) => boolean; // Compare two filter states
 }
 
 const FilterContext = createContext<FilterContextType | undefined>(undefined);
@@ -91,17 +92,16 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     }
   );
 
-  // Connection management for Reports section
-  const [isReportsConnected, setIsReportsConnected] = useState(true);
-  const [reportsFilterState, setReportsFilterState] = useState<FilterState | null>(null);
+  // Report filter connection system state
+  const [reportFilterStates, setReportFilterStates] = useState<Record<string, FilterState>>({});
+  const [reportConnections, setReportConnections] = useState<Record<string, boolean>>({});
 
   // Apply filters to data with memoization
   const applyFilters = useCallback((dataToFilter: DataPoint[], currentFilterState: FilterState) => {
     console.log('🔄 FilterContext: Applying filters to data...', { 
       dataLength: dataToFilter.length, 
       hasDateFilter: currentFilterState.dateRange.preset !== 'all',
-      hasAttributeFilters: currentFilterState.attributes.some(attr => attr.values.size > 0),
-      filterState: currentFilterState
+      hasAttributeFilters: currentFilterState.attributes.some(attr => attr.values.size > 0)
     });
 
     // Create a signature for the filter state to enable memoization
@@ -124,21 +124,11 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
 
     // FIRST: Always exclude items marked as excluded
     filtered = filtered.filter(item => !item.excluded);
-    console.log('🔄 After excluding items:', { 
-      filteredLength: filtered.length,
-      excludedCount: dataToFilter.length - filtered.length
-    });
 
     // Apply date filter
     if (currentFilterState.dateRange.preset && currentFilterState.dateRange.preset !== 'all') {
-      console.log('🔄 Applying date filter:', {
-        preset: currentFilterState.dateRange.preset,
-        startDate: currentFilterState.dateRange.startDate,
-        endDate: currentFilterState.dateRange.endDate
-      });
       const { startDate, endDate } = currentFilterState.dateRange;
       if (startDate || endDate) {
-        const beforeDateFilter = filtered.length;
         filtered = filtered.filter(item => {
           if (!item.date) return false;
           
@@ -151,45 +141,15 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
           
           return true;
         });
-        console.log('🔄 After date filter:', {
-          beforeDateFilter,
-          afterDateFilter: filtered.length,
-          dateFilteredCount: beforeDateFilter - filtered.length
-        });
       }
-    } else {
-      console.log('🔄 No date filter applied (preset is "all")');
     }
 
     // Apply attribute filters
-    currentFilterState.attributes.forEach((attr, index) => {
+    currentFilterState.attributes.forEach(attr => {
       if (attr.values.size > 0) {
-        console.log(`🔄 Applying attribute filter ${index + 1}:`, {
-          field: attr.field,
-          values: Array.from(attr.values),
-          valuesSize: attr.values.size
-        });
-        const beforeAttributeFilter = filtered.length;
         filtered = filtered.filter(item => {
           const value = (item as any)[attr.field];
-          const matches = attr.values.has(value);
-          console.log(`🔄 Checking item ${item.id}:`, {
-            field: attr.field,
-            value: value,
-            matches: matches,
-            availableValues: Array.from(attr.values)
-          });
-          return matches;
-        });
-        console.log(`🔄 After attribute filter ${index + 1}:`, {
-          beforeAttributeFilter,
-          afterAttributeFilter: filtered.length,
-          attributeFilteredCount: beforeAttributeFilter - filtered.length
-        });
-      } else {
-        console.log(`🔄 Skipping attribute filter ${index + 1} (no values):`, {
-          field: attr.field,
-          valuesSize: attr.values.size
+          return attr.values.has(value);
         });
       }
     });
@@ -215,12 +175,7 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       };
       
       // Automatically recalculate filtered data when date range changes
-      console.log('🔄 updateDateRange: About to apply filters with new state:', newState);
       const newFilteredData = applyFilters(data, newState);
-      console.log('🔄 updateDateRange: Got filtered data:', {
-        dataLength: data.length,
-        filteredDataLength: newFilteredData.length
-      });
       setFilteredData(newFilteredData);
       
       // Update active filter count
@@ -246,12 +201,7 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       };
       
       // Automatically recalculate filtered data when attribute filter changes
-      console.log('🔄 updateAttributeFilter: About to apply filters with new state:', newState);
       const newFilteredData = applyFilters(data, newState);
-      console.log('🔄 updateAttributeFilter: Got filtered data:', {
-        dataLength: data.length,
-        filteredDataLength: newFilteredData.length
-      });
       setFilteredData(newFilteredData);
       
       // Update active filter count
@@ -393,33 +343,13 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       
       // Convert to array format with counts
       const availableFields = Array.from(fields.entries())
-        .map(([field, valuesSet]) => {
-          // Sort values: numbers first (ascending), then strings (alphabetical)
-          const sortedValues = Array.from(valuesSet).sort((a, b) => {
-            const aNum = Number(a);
-            const bNum = Number(b);
-            
-            // If both are valid numbers, sort numerically
-            if (!isNaN(aNum) && !isNaN(bNum)) {
-              return aNum - bNum;
-            }
-            
-            // If one is a number and one is a string, number comes first
-            if (!isNaN(aNum) && isNaN(bNum)) return -1;
-            if (isNaN(aNum) && !isNaN(bNum)) return 1;
-            
-            // Both are strings, sort alphabetically
-            return String(a).localeCompare(String(b));
-          });
-          
-          return {
+        .map(([field, valuesSet]) => ({
             field,
-            counts: sortedValues.map(value => ({
+          counts: Array.from(valuesSet).map(value => ({
               value,
               count: activeData.filter(item => (item as any)[field] === value || ((item as any).additionalAttributes && (item as any).additionalAttributes[field] === value)).length
             }))
-          };
-        })
+        }))
         .sort((a, b) => {
           const priorityFields = ['satisfaction', 'loyalty', 'group', 'name', 'email'];
           const aIndex = priorityFields.indexOf(a.field);
@@ -447,14 +377,69 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     }
   }, [data]);
 
+  // Helper function to compare two filter states
+  const compareFilterStates = useCallback((state1: FilterState, state2: FilterState): boolean => {
+    // Compare dateRange
+    const dateRangeMatches = (
+      state1.dateRange.preset === state2.dateRange.preset &&
+      state1.dateRange.startDate?.getTime() === state2.dateRange.startDate?.getTime() &&
+      state1.dateRange.endDate?.getTime() === state2.dateRange.endDate?.getTime()
+    );
+    
+    // Compare attributes (order-independent)
+    const state1AttrMap = new Map(state1.attributes.map(a => [a.field, Array.from(a.values).sort()]));
+    const state2AttrMap = new Map(state2.attributes.map(a => [a.field, Array.from(a.values).sort()]));
+    const attributesMatch = (
+      state1.attributes.length === state2.attributes.length &&
+      state1.attributes.every(attr => {
+        const state2Values = state2AttrMap.get(attr.field);
+        const state1Values = state1AttrMap.get(attr.field);
+        return JSON.stringify(state1Values) === JSON.stringify(state2Values);
+      })
+    );
+    
+    return dateRangeMatches && attributesMatch;
+  }, []);
+
   // Enhanced setFilterState that automatically recalculates
   const handleSetFilterState = useCallback((newFilterState: FilterState) => {
-    console.log('🔍 FilterContext: Filter state updated, recalculating...', { 
+    console.log('🔄 FilterContext: Filter state updated, recalculating...', { 
       newFilterState,
-      dataLength: data.length,
-      isReportsConnected
+      dataLength: data.length
     });
     
+    // IMPORTANT: Sync connected reports BEFORE updating main state
+    // This ensures states stay in sync and prevents false disconnect notifications
+    // We compare with OLD filterState (current value), then sync to NEW state
+    setReportFilterStates(prevStates => {
+      const updatedStates = { ...prevStates };
+      
+      // Sync all reports whose states match the OLD main state (connected reports)
+      Object.keys(prevStates).forEach(reportId => {
+        const reportState = prevStates[reportId];
+        const isConnected = compareFilterStates(reportState, filterState); // Compare with OLD main state
+        
+        if (isConnected) {
+          // Report is connected - sync to NEW main filters
+          updatedStates[reportId] = {
+            ...newFilterState,
+            dateRange: {
+              ...newFilterState.dateRange,
+              startDate: newFilterState.dateRange.startDate ? new Date(newFilterState.dateRange.startDate) : null,
+              endDate: newFilterState.dateRange.endDate ? new Date(newFilterState.dateRange.endDate) : null
+            },
+            attributes: newFilterState.attributes.map(attr => ({
+              ...attr,
+              values: new Set(attr.values)
+            }))
+          };
+        }
+      });
+      
+      return updatedStates;
+    });
+    
+    // NOW update main state (after syncing reports)
     setFilterState(newFilterState);
     
     // Automatically recalculate filtered data
@@ -471,40 +456,105 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       filteredDataLength: newFilteredData.length,
       activeFilterCount: newActiveFilterCount
     });
-  }, [data, applyFilters]);
+  }, [data, applyFilters, compareFilterStates, filterState]);
 
-  // Connection management functions
-  const setReportsConnection = useCallback((connected: boolean) => {
-    console.log('🔗 FilterContext: Setting Reports connection:', connected);
-    setIsReportsConnected(connected);
+  // Report filter connection system methods
+  
+  // Sync report filters to main filters (used when reconnecting)
+  const syncReportToMaster = useCallback((reportId: string) => {
+    console.log(`🔌 [FilterContext] syncReportToMaster called for ${reportId}`);
+    setReportFilterStates(prev => {
+      // Create deep copy of main filter state
+      const mainStateCopy: FilterState = {
+        ...filterState,
+        dateRange: {
+          ...filterState.dateRange,
+          startDate: filterState.dateRange.startDate ? new Date(filterState.dateRange.startDate) : null,
+          endDate: filterState.dateRange.endDate ? new Date(filterState.dateRange.endDate) : null
+        },
+        attributes: filterState.attributes.map(attr => ({
+          ...attr,
+          values: new Set(attr.values)
+        }))
+      };
+      
+      console.log(`🔌 [FilterContext] syncReportToMaster updating reportFilterStates for ${reportId}`);
+      return {
+        ...prev,
+        [reportId]: mainStateCopy
+      };
+    });
+  }, [filterState]);
+  
+  // Set connection status for a report
+  const setReportConnection = useCallback((reportId: string, connected: boolean) => {
+    console.log(`🔌 [FilterContext] setReportConnection called:`, {
+      reportId,
+      connected,
+      previousConnections: reportConnections,
+      previousValue: reportConnections[reportId]
+    });
     
+    setReportConnections(prev => {
+      const newConnections = {
+        ...prev,
+        [reportId]: connected
+      };
+      console.log(`🔌 [FilterContext] setReportConnection updating to:`, newConnections);
+      return newConnections;
+    });
+    
+    // If connecting, sync to main filters
     if (connected) {
-      // When reconnecting, sync to master and clear local state
-      setReportsFilterState(null);
-      console.log('🔗 FilterContext: Synced Reports to master filters');
+      console.log(`🔌 [FilterContext] Connection=true, syncing report ${reportId} to master`);
+      syncReportToMaster(reportId);
     }
-  }, []);
-
-  const updateReportsFilterState = useCallback((state: FilterState) => {
-    console.log('🔗 FilterContext: Updating Reports filter state');
-    setReportsFilterState(state);
-  }, []);
-
-  const syncReportsToMaster = useCallback(() => {
-    console.log('🔗 FilterContext: Syncing Reports to master');
-    setReportsFilterState(null);
-    setIsReportsConnected(true);
-  }, []);
-
-  const getReportsFilteredData = useCallback(() => {
-    if (isReportsConnected || !reportsFilterState) {
-      // Use master filtered data
-      return filteredData;
-    } else {
-      // Apply Reports-specific filters
-      return applyFilters(data, reportsFilterState);
+  }, [syncReportToMaster, reportConnections]);
+  
+  // Get filter state for a report (returns local state if exists, otherwise main state)
+  const getReportFilterState = useCallback((reportId: string): FilterState => {
+    // Return local filter state if exists, otherwise return main state (default to connected)
+    const localState = reportFilterStates[reportId];
+    if (localState) {
+      return localState;
     }
-  }, [isReportsConnected, reportsFilterState, filteredData, data, applyFilters]);
+    
+    // No local state exists - return main state (connected by default)
+    return filterState;
+  }, [filterState, reportFilterStates]);
+  
+  // Set filter state for a report (only updates local state, never touches main)
+  // Connection status is now derived from comparing states, not stored separately
+  const setReportFilterState = useCallback((reportId: string, state: FilterState) => {
+    console.log(`🔌 [FilterContext] setReportFilterState called:`, {
+      reportId
+    });
+    
+    // IMPORTANT: This method ONLY updates report local state
+    // It NEVER writes to main filters - this is the architectural rule
+    // Connection status will be derived by comparing this state with main filter state
+    setReportFilterStates(prev => ({
+      ...prev,
+      [reportId]: {
+        ...state,
+        dateRange: {
+          ...state.dateRange,
+          startDate: state.dateRange.startDate ? new Date(state.dateRange.startDate) : null,
+          endDate: state.dateRange.endDate ? new Date(state.dateRange.endDate) : null
+        },
+        attributes: state.attributes.map(attr => ({
+          ...attr,
+          values: new Set(attr.values)
+        }))
+      }
+    }));
+  }, []);
+  
+  // Get filtered data for a report (uses appropriate filter state)
+  const getReportFilteredData = useCallback((reportId: string, dataToFilter: DataPoint[]): DataPoint[] => {
+    const reportFilterState = getReportFilterState(reportId);
+    return applyFilters(dataToFilter, reportFilterState);
+  }, [getReportFilterState, applyFilters]);
 
   const contextValue: FilterContextType = {
     filterState,
@@ -518,16 +568,15 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     setActiveFilterCount,
     data,
     setData: handleSetData,
-    // Connection management
-    isReportsConnected,
-    reportsFilterState,
-    setReportsConnection,
-    updateReportsFilterState,
-    syncReportsToMaster,
-    getReportsFilteredData,
-    
-    // Notification function
-    onShowNotification
+    // Report filter connection system
+    reportFilterStates,
+    reportConnections,
+    setReportConnection,
+    syncReportToMaster,
+    getReportFilterState,
+    setReportFilterState,
+    getReportFilteredData,
+    compareFilterStates
   };
 
   return (
