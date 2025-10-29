@@ -965,6 +965,54 @@ input[type="checkbox"]:focus {
 }
 
 /* --------------------
+   CONNECTION TOGGLE STYLES
+   -------------------- */
+
+.connection-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.connection-toggle-btn:hover {
+  background: #f9fafb;
+}
+
+.connection-toggle-btn.connected {
+  color: #3a863e;
+}
+
+.connection-toggle-btn.connected:hover {
+  background: #f0f9f0;
+}
+
+.connection-toggle-btn.disconnected {
+  color: #6b7280;
+}
+
+.connection-toggle-btn.disconnected:hover {
+  background: #f3f4f6;
+}
+
+.connection-label {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* Icon styling */
+.connection-toggle-btn svg {
+  flex-shrink: 0;
+}
+
+/* --------------------
    8. RESPONSIVE ADJUSTMENTS
    -------------------- */
 
