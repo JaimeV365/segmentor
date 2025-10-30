@@ -22,6 +22,9 @@ export interface FilterState {
   dateRange: DateRange;
   attributes: AttributeFilter[];
   isActive: boolean;
+  // Frequency filter shared across views
+  frequencyFilterEnabled?: boolean;
+  frequencyThreshold?: number;
 }
 
 export interface FilterContextType {
@@ -32,6 +35,7 @@ export interface FilterContextType {
   setFilterState: (state: FilterState) => void;
   updateDateRange: (dateRange: Partial<DateRange>) => void;
   updateAttributeFilter: (field: string, values: Set<string | number>) => void;
+  updateFrequencySettings: (enabled: boolean, threshold: number) => void;
   resetFilters: () => void;
   
   // Filtered data
@@ -89,7 +93,9 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
         preset: 'all'
       },
       attributes: [],
-      isActive: false
+      isActive: false,
+      frequencyFilterEnabled: false,
+      frequencyThreshold: 1
     }
   );
 
@@ -147,6 +153,20 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
           return true;
         });
       }
+    }
+
+    // Apply frequency filter (by satisfaction-loyalty coordinate grouping)
+    if (currentFilterState.frequencyFilterEnabled && (currentFilterState.frequencyThreshold || 1) > 1) {
+      const threshold = currentFilterState.frequencyThreshold || 1;
+      const groups = new Map<string, number>();
+      filtered.forEach(p => {
+        const key = `${(p as any).satisfaction}-${(p as any).loyalty}`;
+        groups.set(key, (groups.get(key) || 0) + 1);
+      });
+      filtered = filtered.filter(p => {
+        const key = `${(p as any).satisfaction}-${(p as any).loyalty}`;
+        return (groups.get(key) || 0) >= threshold;
+      });
     }
 
     // Apply attribute filters
@@ -218,6 +238,8 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     // Use handleSetFilterState to get sync logic
     handleSetFilterState(newState);
   }, [data, applyFilters, filterState]);
+
+  // Update frequency settings (moved below handleSetFilterState to avoid hoist issues)
 
   // Reset all filters
   const resetFilters = useCallback(() => {
@@ -396,6 +418,11 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       state1.dateRange.startDate?.getTime() === state2.dateRange.startDate?.getTime() &&
       state1.dateRange.endDate?.getTime() === state2.dateRange.endDate?.getTime()
     );
+    // Compare frequency settings
+    const freqMatches = (
+      (state1.frequencyFilterEnabled || false) === (state2.frequencyFilterEnabled || false) &&
+      (state1.frequencyThreshold || 1) === (state2.frequencyThreshold || 1)
+    );
     
     // Compare attributes (order-independent)
     const state1AttrMap = new Map(state1.attributes.map(a => [a.field, Array.from(a.values).sort()]));
@@ -409,7 +436,7 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       })
     );
     
-    return dateRangeMatches && attributesMatch;
+    return dateRangeMatches && freqMatches && attributesMatch;
   }, []);
 
   /**
@@ -569,6 +596,16 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     }));
   }, []);
   
+  // Define updateFrequencySettings here after handleSetFilterState is declared
+  const updateFrequencySettings = useCallback((enabled: boolean, threshold: number) => {
+    const newState: FilterState = {
+      ...filterState,
+      frequencyFilterEnabled: enabled,
+      frequencyThreshold: threshold
+    };
+    handleSetFilterState(newState);
+  }, [filterState, handleSetFilterState]);
+  
   // Get filtered data for a report (uses appropriate filter state)
   const getReportFilteredData = useCallback((reportId: string, dataToFilter: DataPoint[]): DataPoint[] => {
     const reportFilterState = getReportFilterState(reportId);
@@ -580,6 +617,7 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     setFilterState: handleSetFilterState,
     updateDateRange,
     updateAttributeFilter,
+    updateFrequencySettings,
     resetFilters,
     filteredData,
     setFilteredData,

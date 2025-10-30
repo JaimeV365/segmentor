@@ -969,6 +969,45 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
   // hasDateData is already defined above
 
+  // Frequency handlers that respect connection mode
+  const handleFrequencyEnabledChange = useCallback((enabled: boolean) => {
+    if (forceLocalState && reportId && filterContext) {
+      const currentState = filterContext.getReportFilterState(reportId);
+      const newState = {
+        ...currentState,
+        frequencyFilterEnabled: enabled,
+        frequencyThreshold: currentState.frequencyThreshold || frequencyThreshold
+      };
+      if (isInitializing) setIsInitializing(false);
+      filterContext.setReportFilterState(reportId, newState);
+    } else if (filterContext) {
+      filterContext.updateFrequencySettings(
+        enabled,
+        filterContext.filterState.frequencyThreshold || frequencyThreshold
+      );
+    }
+    if (onFrequencyFilterEnabledChange) onFrequencyFilterEnabledChange(enabled);
+  }, [forceLocalState, reportId, filterContext, frequencyThreshold, isInitializing, onFrequencyFilterEnabledChange]);
+
+  const handleFrequencyThresholdChange = useCallback((threshold: number) => {
+    if (forceLocalState && reportId && filterContext) {
+      const currentState = filterContext.getReportFilterState(reportId);
+      const newState = {
+        ...currentState,
+        frequencyThreshold: threshold,
+        frequencyFilterEnabled: currentState.frequencyFilterEnabled ?? true
+      };
+      if (isInitializing) setIsInitializing(false);
+      filterContext.setReportFilterState(reportId, newState);
+    } else if (filterContext) {
+      filterContext.updateFrequencySettings(
+        filterContext.filterState.frequencyFilterEnabled || true,
+        threshold
+      );
+    }
+    if (onFrequencyThresholdChange) onFrequencyThresholdChange(threshold);
+  }, [forceLocalState, reportId, filterContext, isInitializing, onFrequencyThresholdChange]);
+
   const content = (
     <>
       {/* Header - conditionally rendered */}
@@ -1258,18 +1297,25 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             <h4>Point Frequency</h4>
           </div>
           <div className="filter-section-content">
-            {onFrequencyFilterEnabledChange && (
+            {(onFrequencyFilterEnabledChange || filterContext) && (
               <Switch
-                checked={frequencyFilterEnabled}
-                onChange={onFrequencyFilterEnabledChange}
+                checked={forceLocalState && reportId && filterContext
+                  ? !!filterContext.getReportFilterState(reportId).frequencyFilterEnabled
+                  : (filterContext ? !!filterContext.filterState.frequencyFilterEnabled : frequencyFilterEnabled)}
+                onChange={handleFrequencyEnabledChange}
                 leftLabel="Filter Points"
               />
             )}
-            {frequencyFilterEnabled && onFrequencyThresholdChange && frequencyData && (
+            {((forceLocalState && reportId && filterContext
+               ? !!filterContext.getReportFilterState(reportId).frequencyFilterEnabled
+               : (filterContext ? !!filterContext.filterState.frequencyFilterEnabled : frequencyFilterEnabled))
+               && (onFrequencyThresholdChange || filterContext) && frequencyData) && (
               <FrequencySlider
                 maxFrequency={frequencyData.maxFrequency}
-                currentThreshold={frequencyThreshold}
-                onThresholdChange={onFrequencyThresholdChange}
+                currentThreshold={forceLocalState && reportId && filterContext
+                  ? (filterContext.getReportFilterState(reportId).frequencyThreshold || 1)
+                  : (filterContext ? (filterContext.filterState.frequencyThreshold || 1) : frequencyThreshold)}
+                onThresholdChange={handleFrequencyThresholdChange}
               />
             )}
           </div>
