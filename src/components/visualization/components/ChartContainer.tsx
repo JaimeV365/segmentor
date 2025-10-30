@@ -44,6 +44,7 @@ interface ChartContainerProps {
   hideWatermark: boolean;
   useCanvasRenderer?: boolean;
   activeEffects: Set<string>;
+  onEffectsChange?: (effects: Set<string>) => void;
   
   // Frequency filtering
   frequencyFilterEnabled: boolean;
@@ -83,6 +84,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
   hideWatermark,
   useCanvasRenderer = false,
   activeEffects,
+  onEffectsChange,
   frequencyFilterEnabled,
   frequencyThreshold,
   frequencyData,
@@ -233,6 +235,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
         <Watermark
           hide={hideWatermark}
           effects={activeEffects}
+          onEffectsChange={onEffectsChange}
           dimensions={dimensions}
         />
         </div>

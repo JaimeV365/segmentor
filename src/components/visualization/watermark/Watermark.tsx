@@ -1,12 +1,14 @@
 // Watermark.tsx
 import React from 'react';
 import { GridDimensions } from '@/types/base';
+import { useWatermarkControls } from '../../../hooks/useWatermarkControls';
 
 interface WatermarkProps {
   hide: boolean;
   customLogo?: string;
   effects?: Set<string>;
   dimensions: GridDimensions;
+  onEffectsChange?: (effects: Set<string>) => void;
 }
 
 const DEFAULT_LOGO = 'https://raw.githubusercontent.com/JaimeV365/segmentor/main/Logo%20large%209%20no%20motto%20stylised%20hand.png';
@@ -17,9 +19,17 @@ export const Watermark: React.FC<WatermarkProps> = ({
   hide, 
   customLogo, 
   effects = new Set(),
-  dimensions
+  dimensions,
+  onEffectsChange
 }) => {
-  if (hide || effects?.has('HIDE_WATERMARK')) return null;
+  // Hook for clamping and updating effects
+  const { constrainPosition, updateEffects } = useWatermarkControls({
+    effects,
+    onEffectsChange: onEffectsChange || (() => {}),
+    dimensions
+  });
+
+  const shouldHide = hide || effects?.has('HIDE_WATERMARK');
 
   // Choose logo based on effects
   let logoUrl = DEFAULT_LOGO; // Segmentor (default) logo
@@ -108,18 +118,59 @@ export const Watermark: React.FC<WatermarkProps> = ({
     transition: 'opacity 0.2s ease, transform 0.3s ease',
     zIndex: 25,
     transform: `rotate(${rotation})`,
-    pointerEvents: 'none'
+    pointerEvents: 'auto',
+    cursor: 'move'
   };
 
   const hoverStyles = {
     opacity: 1
   };
 
+  // Drag handling using Pointer Events
+  const isDraggingRef = React.useRef(false);
+  const startRef = React.useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
+  const rafRef = React.useRef<number>(0);
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+    isDraggingRef.current = true;
+    startRef.current = { x: e.clientX, y: e.clientY, posX: logoX, posY: logoY };
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current || !startRef.current) return;
+    cancelAnimationFrame(rafRef.current);
+    const { x, y, posX, posY } = startRef.current;
+    const dx = e.clientX - x;
+    const dy = e.clientY - y;
+    rafRef.current = requestAnimationFrame(() => {
+      const next = constrainPosition(posX + dx, posY + dy, logoSize, isFlat || false);
+      updateEffects(nextSet => {
+        Array.from(nextSet).filter(s => s.startsWith('LOGO_X:') || s.startsWith('LOGO_Y:')).forEach(s => nextSet.delete(s));
+        nextSet.add(`LOGO_X:${next.x}`);
+        nextSet.add(`LOGO_Y:${next.y}`);
+      });
+    });
+  };
+
+  const onPointerUp = () => {
+    if (isDraggingRef.current) {
+      isDraggingRef.current = false;
+      startRef.current = null;
+    }
+  };
+
+  if (shouldHide) return null;
+
   return (
     <div 
       style={styles} 
       onMouseEnter={e => Object.assign(e.currentTarget.style, hoverStyles)}
       onMouseLeave={e => Object.assign(e.currentTarget.style, { opacity: 0.6 })}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
     >
       <img 
   src={logoUrl} 

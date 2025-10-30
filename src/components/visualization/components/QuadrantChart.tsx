@@ -176,6 +176,7 @@ const QuadrantChart: React.FC<QuadrantChartProps> = ({
         isAdjustableMidpoint={isAdjustableMidpoint}
         hideWatermark={hideWatermark}
         activeEffects={activeEffects}
+        onEffectsChange={onEffectsChange}
         frequencyFilterEnabled={frequencyFilterEnabled}
         frequencyThreshold={frequencyThreshold}
         frequencyData={frequencyData}
