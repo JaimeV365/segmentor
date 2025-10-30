@@ -119,7 +119,9 @@ export const Watermark: React.FC<WatermarkProps> = ({
     zIndex: 25,
     transform: `rotate(${rotation})`,
     pointerEvents: 'auto',
-    cursor: 'move'
+    cursor: 'move',
+    userSelect: 'none',
+    touchAction: 'none'
   };
 
   const hoverStyles = {
@@ -132,6 +134,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
   const rafRef = React.useRef<number>(0);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
     (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
     isDraggingRef.current = true;
     startRef.current = { x: e.clientX, y: e.clientY, posX: logoX, posY: logoY };
@@ -176,6 +179,8 @@ export const Watermark: React.FC<WatermarkProps> = ({
   src={logoUrl} 
   alt="Logo" 
   style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+  draggable={false}
+  onDragStart={(e) => e.preventDefault()}
   onError={(e) => {
     console.error('Error loading logo from URL:', logoUrl);
     e.currentTarget.src = DEFAULT_LOGO; // Fallback to default logo
