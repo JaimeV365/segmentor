@@ -590,6 +590,7 @@ useEffect(() => {
         onClose={() => setShowWatermarkPanel(false)}
         isOpen={showWatermarkPanel}
         dimensions={dimensions}
+        isPremium={isPremium}
       />
     )}
     </>

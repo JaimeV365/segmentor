@@ -9,6 +9,7 @@ interface UnifiedWatermarkPanelProps {
   effects: Set<string>;
   onEffectsChange: (effects: Set<string>) => void;
   dimensions: GridDimensions;
+  isPremium?: boolean;
 }
 
 export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
@@ -16,7 +17,8 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
   onClose,
   effects,
   onEffectsChange,
-  dimensions
+  dimensions,
+  isPremium
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -45,7 +47,14 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
     dimensions
   });
 
-  // Drag is always enabled now
+  // Gate drag by panel open + premium
+  React.useEffect(() => {
+    updateEffects(next => {
+      if (isOpen && isPremium) next.add('WM_DRAG_ENABLED');
+      else next.delete('WM_DRAG_ENABLED');
+    });
+    return () => updateEffects(next => next.delete('WM_DRAG_ENABLED'));
+  }, [isOpen, isPremium, updateEffects]);
 
   return (
     <div className="unified-controls-panel" ref={panelRef}>

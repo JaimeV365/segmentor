@@ -113,7 +113,8 @@ export const Watermark: React.FC<WatermarkProps> = ({
   const parsedOpacity = opacityEffect ? parseFloat(opacityEffect.replace('LOGO_OPACITY:', '')) : 0.6;
   const logoOpacity = Math.max(0.4, Math.min(1, isNaN(parsedOpacity) ? 0.6 : parsedOpacity));
 
-  // Drag always enabled (per latest requirement)
+  // Drag enabled based on effect flag set by panels (premium/open)
+  const dragEnabled = effects?.has('WM_DRAG_ENABLED');
 
   const styles: React.CSSProperties = {
     position: 'absolute',
@@ -126,7 +127,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
     zIndex: 3000,
     transform: `rotate(${rotation})`,
     pointerEvents: 'auto',
-    cursor: 'move',
+    cursor: dragEnabled ? 'move' : 'default',
     userSelect: 'none',
     touchAction: 'none',
     willChange: 'left, top, transform'
@@ -176,10 +177,10 @@ export const Watermark: React.FC<WatermarkProps> = ({
   return (
     <div 
       style={styles} 
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerUp}
+      onPointerDown={dragEnabled ? onPointerDown : undefined}
+      onPointerMove={dragEnabled ? onPointerMove : undefined}
+      onPointerUp={dragEnabled ? onPointerUp : undefined}
+      onPointerCancel={dragEnabled ? onPointerUp : undefined}
     >
       <img 
   src={logoUrl} 
