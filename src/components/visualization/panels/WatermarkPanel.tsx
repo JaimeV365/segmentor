@@ -67,15 +67,7 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
     dimensions
   });
 
-  // Enable drag while panel is open
-  useEffect(() => {
-    updateEffects(next => {
-      if (isOpen) next.add('WM_DRAG_ENABLED');
-      else next.delete('WM_DRAG_ENABLED');
-    });
-    // Cleanup just in case
-    return () => updateEffects(next => next.delete('WM_DRAG_ENABLED'));
-  }, [isOpen, updateEffects]);
+  // Drag is always enabled now; no gating by panel state
 
   // Note: Auto-scroll is handled by ChartControls to avoid position changes
 
