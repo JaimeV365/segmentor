@@ -12,8 +12,6 @@ interface WatermarkProps {
 }
 
 const DEFAULT_LOGO = 'https://raw.githubusercontent.com/JaimeV365/segmentor/main/Logo%20large%209%20no%20motto%20stylised%20hand.png';
-const XP_LOGO = 'https://xperience-360.com/wp-content/uploads/2024/12/New-Xperience-Logo-Black-loop-corrected-360-centered.png';
-const TM_LOGO = 'https://cdn.prod.website-files.com/6667436f74d6166897e4686e/667ec77e501687a868dd9fe7_TeresaMonroe%20logo%20blanc.webp';
 
 export const Watermark: React.FC<WatermarkProps> = ({ 
   hide, 
@@ -32,13 +30,9 @@ export const Watermark: React.FC<WatermarkProps> = ({
   const shouldHide = hide || effects?.has('HIDE_WATERMARK');
 
   // Choose logo based on effects
-  let logoUrl = DEFAULT_LOGO; // Segmentor (default) logo
+  let logoUrl = DEFAULT_LOGO; // segmentor.app default logo
   
-  if (effects?.has('SHOW_XP_LOGO')) {
-    logoUrl = XP_LOGO;
-  } else if (effects?.has('SHOW_TM_LOGO')) {
-    logoUrl = TM_LOGO;
-  } else if (effects?.has('CUSTOM_LOGO')) {
+  if (effects?.has('CUSTOM_LOGO')) {
     // Get custom logo URL from effects
     const customUrlFromEffects = Array.from(effects).find(e => e.startsWith('CUSTOM_LOGO_URL:'));
     console.log('Custom logo effect found, effects:', Array.from(effects));
@@ -177,6 +171,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
 
   return (
     <div 
+      className="watermark-layer"
       style={styles} 
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -184,16 +179,22 @@ export const Watermark: React.FC<WatermarkProps> = ({
       onPointerCancel={onPointerUp}
     >
       <img 
-  src={logoUrl} 
-  alt="Logo" 
-  style={{ width: '100%', height: '100%', objectFit: 'contain', pointerEvents: 'none' }} 
-  draggable={false}
-  onDragStart={(e) => e.preventDefault()}
-  onError={(e) => {
-    console.error('Error loading logo from URL:', logoUrl);
-    e.currentTarget.src = DEFAULT_LOGO; // Fallback to default logo
-  }}
-/>
+        src={logoUrl} 
+        alt="Logo" 
+        style={{
+          width: isFlat ? '100%' : 'auto',
+          height: isFlat ? 'auto' : '100%',
+          objectFit: 'contain',
+          display: 'block',
+          pointerEvents: 'none'
+        }} 
+        draggable={false}
+        onDragStart={(e) => e.preventDefault()}
+        onError={(e) => {
+          console.error('Error loading logo from URL:', logoUrl);
+          e.currentTarget.src = DEFAULT_LOGO; // Fallback to default logo
+        }}
+      />
     </div>
   );
 };

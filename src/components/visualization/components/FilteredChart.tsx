@@ -3,6 +3,10 @@ import { DataPoint } from '@/types/base';
 import { QuadrantChartProps } from '../types';
 import QuadrantChart from './QuadrantChart';
 import { UnifiedChartControls } from '../controls/UnifiedChartControls';
+import { exportCapture } from '../../common/exportCapture';
+import { exportCsv } from '../../common/exportCsv';
+import { useQuadrantAssignment } from '../context/QuadrantAssignmentContext';
+import UnifiedLoadingPopup from '../../ui/UnifiedLoadingPopup';
 import { useFilterContextSafe } from '../context/FilterContext';
 import './FilteredChart.css';
 
@@ -80,6 +84,42 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
     
     return hasDate || hasCustomFields || hasMultipleGroups || hasSatisfactionDistribution || hasLoyaltyDistribution;
   }, [data]);
+  const [exporting, setExporting] = useState(false);
+  const quadrantCtx = useQuadrantAssignment();
+  // Allow external open-unified-panel with desired tab
+  useEffect(() => {
+    const opener = (e: Event) => {
+      const detail = (e as CustomEvent).detail || { tab: 'filters' };
+      if (detail.tab === 'export') {
+        document.body.setAttribute('data-unified-initial-tab', 'export');
+      }
+      setIsUnifiedControlsOpen(true);
+    };
+    window.addEventListener('open-unified-panel', opener as EventListener);
+    return () => window.removeEventListener('open-unified-panel', opener as EventListener);
+  }, []);
+  // Listen for export command from unified panel
+  useEffect(() => {
+    const handler = async (e: Event) => {
+      const detail = (e as CustomEvent).detail || { format: 'png' };
+      try {
+        setExporting(true);
+        if (detail.format === 'csv') {
+          const computeSegment = (p: any) => {
+            const q = quadrantCtx.getQuadrantForPoint(p);
+            return quadrantCtx.getDisplayNameForQuadrant(q);
+          };
+          exportCsv({ data: (filterContext?.filteredData || data) as any, computeSegment });
+        } else {
+          await exportCapture({ targetSelector: '.visualisation-section', format: detail.format, padding: 92, background: '#ffffff' });
+        }
+      } finally {
+        setExporting(false);
+      }
+    };
+    window.addEventListener('segmentor-export', handler as EventListener);
+    return () => window.removeEventListener('segmentor-export', handler as EventListener);
+  }, [quadrantCtx, filterContext, data]);
 
   // No need to update local filtered data - using context data directly
 
@@ -156,6 +196,7 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
 
   return (
     <div className="filtered-chart-container" ref={chartRef}>
+      <UnifiedLoadingPopup isVisible={exporting} text="segmenting" size="medium" />
       
       {/* Unified Controls Panel */}
       <UnifiedChartControls

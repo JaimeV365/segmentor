@@ -5,6 +5,7 @@ import { BookOpen, Tags, Monitor, Filter } from 'lucide-react';
 import { ScaleFormat } from '../../../../types/base';
 import WatermarkPanel from '../../panels/WatermarkPanel';
 import './ChartControls.css';
+import { ExportButton } from '../../../common/ExportButton';
 
 // Compass Icon Component
 const CompassIcon: React.FC<{ size?: number; className?: string }> = ({ size = 24, className = '' }) => (
@@ -178,6 +179,7 @@ export const ChartControls: React.FC<ChartControlsProps> = ({
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [showWatermarkPanel, setShowWatermarkPanel] = useState(false);
   const [watermarkDragOn, setWatermarkDragOn] = useState(false);
+  const [unifiedOpenedBy, setUnifiedOpenedBy] = useState<'filter' | 'export' | null>(null);
 
   // DnD always on; no DOM flags
   // DnD gating removed; always-on for stability
@@ -186,6 +188,12 @@ export const ChartControls: React.FC<ChartControlsProps> = ({
   console.log('🔍 ChartControls: showWatermarkPanel state:', showWatermarkPanel);
   console.log('🔍 ChartControls: onEffectsChange prop:', typeof onEffectsChange, onEffectsChange.toString().substring(0, 100));
   console.log('🔍 ChartControls: effects prop:', Array.from(effects));
+  // Reset opener when panel closes
+  useEffect(() => {
+    if (!isUnifiedControlsOpen) {
+      setUnifiedOpenedBy(null);
+    }
+  }, [isUnifiedControlsOpen]);
 
 
   // Compute the areas display mode
@@ -378,20 +386,18 @@ useEffect(() => {
               })()}
             </div>
             
-            {/* Filter button */}
-            <div style={{ position: 'relative' }}>
-              <button 
-                className={`chart-controls-filter-button ${isUnifiedControlsOpen ? 'active' : ''} ${activeFilterCount > 0 ? 'has-filters' : ''}`}
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent collapsing when clicking filter
-                  setIsUnifiedControlsOpen(!isUnifiedControlsOpen);
-                }}
-                title="Unified Controls"
-                aria-label="Toggle unified controls panel"
-                style={{
+            {/* Export button for main visualization (styled like filter button) */}
+            <div>
+              <ExportButton
+                targetSelector={'.visualisation-section'}
+                label={"Export"}
+                padding={92}
+                iconOnly
+                buttonClassName={`chart-controls-filter-button ${isUnifiedControlsOpen && unifiedOpenedBy === 'export' ? 'active' : ''}`}
+                buttonStyle={{
                   width: '32px',
                   height: '32px',
-                  backgroundColor: isUnifiedControlsOpen ? '#3a863e' : 'white',
+                  backgroundColor: isUnifiedControlsOpen && unifiedOpenedBy === 'export' ? '#3a863e' : 'white',
                   border: '1px solid #e5e7eb',
                   borderRadius: '6px',
                   display: 'flex',
@@ -400,7 +406,44 @@ useEffect(() => {
                   cursor: 'pointer',
                   boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                   transition: 'all 0.2s ease',
-                  color: isUnifiedControlsOpen ? 'white' : '#3a863e'
+                  color: isUnifiedControlsOpen && unifiedOpenedBy === 'export' ? 'white' : '#3a863e'
+                }}
+                icon={
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={isUnifiedControlsOpen && unifiedOpenedBy === 'export' ? 'white' : '#3a863e'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-download-icon lucide-download"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
+                }
+                onOpenOptions={() => {
+                  const evt = new CustomEvent('open-unified-panel', { detail: { tab: 'export' } });
+                  window.dispatchEvent(evt);
+                  setUnifiedOpenedBy('export');
+                }}
+              />
+            </div>
+
+            {/* Filter button */}
+            <div style={{ position: 'relative' }}>
+              <button 
+                className={`chart-controls-filter-button ${isUnifiedControlsOpen && unifiedOpenedBy === 'filter' ? 'active' : ''} ${activeFilterCount > 0 ? 'has-filters' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent collapsing when clicking filter
+                  const next = !isUnifiedControlsOpen;
+                  setIsUnifiedControlsOpen(next);
+                  setUnifiedOpenedBy(next ? 'filter' : null);
+                }}
+                title="Unified Controls"
+                aria-label="Toggle unified controls panel"
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  backgroundColor: isUnifiedControlsOpen && unifiedOpenedBy === 'filter' ? '#3a863e' : 'white',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '6px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                  transition: 'all 0.2s ease',
+                  color: isUnifiedControlsOpen && unifiedOpenedBy === 'filter' ? 'white' : '#3a863e'
                 }}
               >
                 <Filter size={16} />

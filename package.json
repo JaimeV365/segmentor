@@ -13,6 +13,8 @@
     "crypto-js": "^4.2.0",
     "d3-scale": "^4.0.2",
     "date-fns": "^4.1.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.3",
     "lucide-react": "^0.453.0",
     "papaparse": "^5.4.1",
     "react": "^18.3.1",

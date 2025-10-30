@@ -38,7 +38,7 @@ interface UnifiedChartControlsProps {
   onShowNotification?: (notification: { title: string; message: string; type: 'success' | 'error' | 'info' | 'warning' }) => void;
 }
 
-type TabType = 'filters' | 'watermark';
+type TabType = 'filters' | 'export';
 
 export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
   hasFilterableData,
@@ -59,6 +59,7 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
   onShowNotification
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('filters');
+  const [exportOnly, setExportOnly] = useState(false);
   const [filterResetTrigger, setFilterResetTrigger] = useState(0);
   const panelRef = useRef<HTMLDivElement>(null);
   // Watermark controls (used in watermark tab)
@@ -84,7 +85,7 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
     // when forceLocalState is false (which is the default)
   };
 
-  // Smart tab selection logic - only filters tab is available here
+  // Smart tab selection logic - pick initial tab from body data attribute
   useEffect(() => {
     if (isOpen) {
       console.log('🔍 UnifiedChartControls: Tab selection logic', {
@@ -92,7 +93,11 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
         isPremium,
         currentTab: activeTab
       });
-      setActiveTab('filters');
+      const desiredAttr = document.body.getAttribute('data-unified-initial-tab') as TabType | null;
+      const desired = desiredAttr || 'filters';
+      setActiveTab(desired);
+      setExportOnly(desired === 'export');
+      if (desiredAttr) document.body.removeAttribute('data-unified-initial-tab');
     }
   }, [isOpen, hasFilterableData, isPremium]);
 
@@ -180,7 +185,35 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
     </div>
   );
 
-  // Watermark tab removed from this panel; watermark is accessible via its own control button
+  const renderExportTab = () => (
+    <div className="unified-tab-content">
+      <div className="unified-tab-body">
+        <div style={{ display: 'grid', gap: 12 }}>
+          <div style={{ fontWeight: 600 }}>Export format</div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input type="radio" name="export-format" defaultChecked style={{ accentColor: '#3a863e' }} /> PNG (image)
+          </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input type="radio" name="export-format" style={{ accentColor: '#3a863e' }} /> PDF (document)
+          </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input type="radio" name="export-format" style={{ accentColor: '#3a863e' }} /> CSV (raw data)
+          </label>
+          <button
+            className="report-button"
+            onClick={() => {
+              const labelText = (document.querySelector('input[name="export-format"]:checked') as HTMLInputElement)?.nextSibling?.textContent || '';
+              const fmt = labelText.includes('CSV') ? 'csv' : (labelText.includes('PDF') ? 'pdf' : 'png');
+              const event = new CustomEvent('segmentor-export', { detail: { format: fmt } });
+              window.dispatchEvent(event);
+            }}
+          >
+            Export
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -188,21 +221,32 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
       {isOpen && (
         <div className="unified-controls-panel" ref={panelRef}>
           <div className="unified-controls-header">
-            <div className="unified-controls-tabs">
-              {hasFilterableData && (
-                <button 
-                  className={`unified-tab ${activeTab === 'filters' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('filters')}
-                >
-                  <Filter size={16} />
-                  Filters
-                  {activeFilterCount > 0 && (
-                    <span className="unified-filter-badge">{activeFilterCount}</span>
-                  )}
-                </button>
-              )}
-              {/* Watermark tab removed to avoid mixing with Filters */}
-            </div>
+            {!exportOnly && (
+              <div className="unified-controls-tabs">
+                {hasFilterableData && (
+                  <button 
+                    className={`unified-tab active`}
+                    onClick={() => setActiveTab('filters')}
+                  >
+                    <Filter size={16} />
+                    Filters
+                    {activeFilterCount > 0 && (
+                      <span className="unified-filter-badge">{activeFilterCount}</span>
+                    )}
+                  </button>
+                )}
+              </div>
+            )}
+            {/* Dynamic panel title reflecting the active tab */}
+            {exportOnly && (
+              <div
+                className="unified-controls-title"
+                aria-live="polite"
+                style={{ color: '#3a863e', fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
+              >
+                Main Chart Export
+              </div>
+            )}
             
             <button className="unified-close-button" onClick={onClose}>
               <X size={20} />
@@ -211,7 +255,7 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
 
           {/* Tab Content */}
           <div className="unified-controls-content">
-            {activeTab === 'filters' && renderFiltersTab()}
+            {exportOnly ? renderExportTab() : renderFiltersTab()}
           </div>
         </div>
       )}

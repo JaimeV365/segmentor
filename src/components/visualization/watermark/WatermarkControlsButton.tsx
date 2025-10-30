@@ -118,12 +118,6 @@ export const WatermarkControlsButton: React.FC<WatermarkControlsButtonProps> = (
 
     // Set new logo
     switch (logoType) {
-      case 'xp':
-        newEffects.add('SHOW_XP_LOGO');
-        break;
-      case 'tm':
-        newEffects.add('SHOW_TM_LOGO');
-        break;
       case 'custom':
         newEffects.add('CUSTOM_LOGO');
         break;
@@ -153,7 +147,7 @@ export const WatermarkControlsButton: React.FC<WatermarkControlsButtonProps> = (
   // Handle size adjustment
   const adjustSize = (delta: number) => {
     const currentSize = getCurrentSize();
-    const newSize = Math.max(50, Math.min(200, currentSize + delta));
+    const newSize = Math.max(90, Math.min(200, currentSize + delta));
     
     const newEffects = new Set(effects);
     
@@ -249,9 +243,7 @@ export const WatermarkControlsButton: React.FC<WatermarkControlsButtonProps> = (
                       onChange={(e) => handleLogoChange(e.target.value)}
                       className="watermark-control-select"
                     >
-                      <option value="default">Segmentor</option>
-                      <option value="xp">Xperience 360</option>
-                      <option value="tm">Teresa Monroe</option>
+                      <option value="default">segmentor.app</option>
                       <option value="custom">Custom Logo URL</option>
                     </select>
                   </div>

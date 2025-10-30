@@ -72,8 +72,6 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
               <select
                 className="unified-control-select"
                 value={
-                  effects.has('SHOW_XP_LOGO') ? 'xp' :
-                  effects.has('SHOW_TM_LOGO') ? 'tm' :
                   effects.has('CUSTOM_LOGO') ? 'custom' : 'default'
                 }
                 onChange={(e) => {
@@ -81,13 +79,11 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
                     next.delete('SHOW_XP_LOGO');
                     next.delete('SHOW_TM_LOGO');
                     next.delete('CUSTOM_LOGO');
-                    if (e.target.value === 'tm') next.add('SHOW_TM_LOGO');
-                    else if (e.target.value === 'custom') next.add('CUSTOM_LOGO');
+                    if (e.target.value === 'custom') next.add('CUSTOM_LOGO');
                   });
                 }}
               >
-                <option value="default">Segmentor (Default)</option>
-                <option value="tm">Teresa Monroe</option>
+                <option value="default">segmentor.app</option>
                 <option value="custom">Custom Logo</option>
               </select>
             </div>

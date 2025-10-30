@@ -73,6 +73,8 @@ console.log('🚨🚨🚨 About to render DistributionSection with:', {
 
       
 
+      
+
       {isOutOfSync && (
         <div className="update-warning">
           <span>⚠️ Report settings have changed. Click to update.</span>

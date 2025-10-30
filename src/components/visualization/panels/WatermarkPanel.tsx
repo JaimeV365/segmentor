@@ -240,8 +240,7 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
                 onChange={(e) => handleLogoChange(e.target.value)}
                 className="watermark-control-select"
               >
-                <option value="default">Segmentor (Default)</option>
-                <option value="tm">Teresa Monroe</option>
+                <option value="default">segmentor.app</option>
                 <option value="custom">Custom Logo</option>
               </select>
             </div>
@@ -266,7 +265,7 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
               <div className="watermark-size-controls">
                 <input
                   type="range"
-                  min="100"
+                  min="90"
                   max="400"
                   value={getCurrentSize()}
                   onChange={(e) => handleSizeChange(parseInt(e.target.value))}
@@ -274,7 +273,7 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
                 />
                 <input
                   type="number"
-                  min="100"
+                  min="90"
                   max="400"
                   value={getCurrentSize()}
                   onChange={(e) => {

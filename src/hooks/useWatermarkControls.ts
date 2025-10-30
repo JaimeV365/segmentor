@@ -125,9 +125,8 @@ export const useWatermarkControls = ({
     const x = getEffectValue('LOGO_X:', 0);
     const y = getEffectValue('LOGO_Y:', 0);
     
-    let logoType: 'default' | 'tm' | 'custom' = 'default';
-    if (effects.has('SHOW_TM_LOGO')) logoType = 'tm';
-    else if (effects.has('CUSTOM_LOGO')) logoType = 'custom';
+    let logoType: 'default' | 'custom' = 'default';
+    if (effects.has('CUSTOM_LOGO')) logoType = 'custom';
     
     const customUrl = Array.from(effects)
       .find(e => e.startsWith('CUSTOM_LOGO_URL:'))
@@ -191,7 +190,7 @@ export const useWatermarkControls = ({
   // Set size (with clamping of position so logo remains within bounds)
   const setLogoSize = useCallback((newSize: number) => {
     const state = getCurrentState();
-    const constrainedSize = Math.max(100, Math.min(400, newSize));
+    const constrainedSize = Math.max(90, Math.min(400, newSize));
     const constrainedPos = constrainPosition(state.position.x, state.position.y, constrainedSize, state.isFlat);
 
     updateEffects(effects => {
