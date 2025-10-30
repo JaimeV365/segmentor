@@ -111,7 +111,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
   // Opacity from effects with default and clamp
   const opacityEffect = Array.from(effects).find(e => e.startsWith('LOGO_OPACITY:'));
   const parsedOpacity = opacityEffect ? parseFloat(opacityEffect.replace('LOGO_OPACITY:', '')) : 0.6;
-  const logoOpacity = Math.max(0.1, Math.min(1, isNaN(parsedOpacity) ? 0.6 : parsedOpacity));
+  const logoOpacity = Math.max(0.3, Math.min(1, isNaN(parsedOpacity) ? 0.6 : parsedOpacity));
 
   // Drag enabled only when contextual menu sets a flag
   const dragEnabled = effects?.has('WM_DRAG_ENABLED');
@@ -123,13 +123,14 @@ export const Watermark: React.FC<WatermarkProps> = ({
     width: `${logoSize}px`,
     height: `${logoSize}px`,
     opacity: logoOpacity,
-    transition: 'opacity 0.2s ease, transform 0.3s ease',
+    transition: 'opacity 0.15s ease, transform 0.15s ease',
     zIndex: 25,
     transform: `rotate(${rotation})`,
     pointerEvents: dragEnabled ? 'auto' : 'none',
     cursor: dragEnabled ? 'move' : 'default',
     userSelect: 'none',
-    touchAction: 'none'
+    touchAction: 'none',
+    willChange: 'left, top, transform'
   };
 
   const hoverStyles = {
@@ -176,8 +177,6 @@ export const Watermark: React.FC<WatermarkProps> = ({
   return (
     <div 
       style={styles} 
-      onMouseEnter={e => Object.assign(e.currentTarget.style, hoverStyles)}
-      onMouseLeave={e => Object.assign(e.currentTarget.style, { opacity: 0.6 })}
       onPointerDown={dragEnabled ? onPointerDown : undefined}
       onPointerMove={dragEnabled ? onPointerMove : undefined}
       onPointerUp={dragEnabled ? onPointerUp : undefined}

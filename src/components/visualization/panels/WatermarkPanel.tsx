@@ -209,16 +209,16 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
               <div className="watermark-size-controls">
                 <input
                   type="range"
-                  min="0.1"
+                  min="0.3"
                   max="1"
                   step="0.05"
                   value={(() => {
                     const effect = Array.from(effects).find(e => e.startsWith('LOGO_OPACITY:'));
                     const v = effect ? parseFloat(effect.replace('LOGO_OPACITY:', '')) : 0.6;
-                    return isNaN(v) ? 0.6 : Math.max(0.1, Math.min(1, v));
+                    return isNaN(v) ? 0.6 : Math.max(0.3, Math.min(1, v));
                   })()}
                   onChange={(e) => {
-                    const val = Math.max(0.1, Math.min(1, parseFloat(e.target.value)));
+                    const val = Math.max(0.3, Math.min(1, parseFloat(e.target.value)));
                     updateEffects(next => {
                       Array.from(next).filter(s => s.startsWith('LOGO_OPACITY:')).forEach(s => next.delete(s));
                       next.add(`LOGO_OPACITY:${val}`);
@@ -229,7 +229,7 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
                 <span className="watermark-size-unit">{Math.round(((() => {
                   const effect = Array.from(effects).find(e => e.startsWith('LOGO_OPACITY:'));
                   const v = effect ? parseFloat(effect.replace('LOGO_OPACITY:', '')) : 0.6;
-                  return isNaN(v) ? 0.6 : Math.max(0.1, Math.min(1, v));
+                  return isNaN(v) ? 0.6 : Math.max(0.3, Math.min(1, v));
                 })()) * 100)}%</span>
               </div>
             </div>
