@@ -124,7 +124,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
     height: `${logoSize}px`,
     opacity: logoOpacity,
     transition: 'opacity 0.15s ease, transform 0.15s ease',
-    zIndex: 25,
+    zIndex: 3000,
     transform: `rotate(${rotation})`,
     pointerEvents: 'auto',
     cursor: dragEnabled ? 'move' : 'default',
@@ -185,7 +185,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
       <img 
   src={logoUrl} 
   alt="Logo" 
-  style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+  style={{ width: '100%', height: '100%', objectFit: 'contain', pointerEvents: 'none' }} 
   draggable={false}
   onDragStart={(e) => e.preventDefault()}
   onError={(e) => {
