@@ -123,16 +123,16 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
               <div className="unified-size-controls">
                 <input
                   type="range"
-                  min="0.3"
+                  min="0.4"
                   max="1"
                   step="0.05"
                   value={(() => {
                     const effect = Array.from(effects).find(e => e.startsWith('LOGO_OPACITY:'));
                     const v = effect ? parseFloat(effect.replace('LOGO_OPACITY:', '')) : 0.6;
-                    return isNaN(v) ? 0.6 : Math.max(0.3, Math.min(1, v));
+                    return isNaN(v) ? 0.6 : Math.max(0.4, Math.min(1, v));
                   })()}
                   onChange={(e) => {
-                    const val = Math.max(0.3, Math.min(1, parseFloat(e.target.value)));
+                    const val = Math.max(0.4, Math.min(1, parseFloat(e.target.value)));
                     updateEffects(next => {
                       Array.from(next).filter(s => s.startsWith('LOGO_OPACITY:')).forEach(s => next.delete(s));
                       next.add(`LOGO_OPACITY:${val}`);
@@ -143,7 +143,7 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
                 <div className="unified-size-display">{Math.round(((() => {
                   const effect = Array.from(effects).find(e => e.startsWith('LOGO_OPACITY:'));
                   const v = effect ? parseFloat(effect.replace('LOGO_OPACITY:', '')) : 0.6;
-                  return isNaN(v) ? 0.6 : Math.max(0.3, Math.min(1, v));
+                  return isNaN(v) ? 0.6 : Math.max(0.4, Math.min(1, v));
                 })()) * 100)}%</div>
               </div>
             </div>
