@@ -113,8 +113,8 @@ export const Watermark: React.FC<WatermarkProps> = ({
   const parsedOpacity = opacityEffect ? parseFloat(opacityEffect.replace('LOGO_OPACITY:', '')) : 0.6;
   const logoOpacity = Math.max(0.4, Math.min(1, isNaN(parsedOpacity) ? 0.6 : parsedOpacity));
 
-  // Drag enabled based on a flag set by panels (Premium + panel open)
-  const dragEnabled = effects?.has('WM_DRAG_ENABLED');
+  // Drag enabled flag (Premium interaction): tied to WM_DRAG_ENABLED effect
+  const dragEnabled = effects?.has('WM_DRAG_ENABLED') === true;
 
   const styles: React.CSSProperties = {
     position: 'absolute',
@@ -143,6 +143,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
   const rafRef = React.useRef<number>(0);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!effects?.has('WM_DRAG_ENABLED')) return;
     e.preventDefault();
     (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
     isDraggingRef.current = true;
@@ -177,10 +178,10 @@ export const Watermark: React.FC<WatermarkProps> = ({
   return (
     <div 
       style={styles} 
-      onPointerDown={dragEnabled ? onPointerDown : undefined}
-      onPointerMove={dragEnabled ? onPointerMove : undefined}
-      onPointerUp={dragEnabled ? onPointerUp : undefined}
-      onPointerCancel={dragEnabled ? onPointerUp : undefined}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
     >
       <img 
   src={logoUrl} 

@@ -42,6 +42,8 @@ interface WatermarkPanelProps {
     };
   };
   isPremium?: boolean;
+  dragEnabled?: boolean;
+  onToggleDrag?: () => void;
 }
 
 const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
@@ -50,7 +52,9 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
   onClose,
   isOpen,
   dimensions,
-  isPremium
+  isPremium,
+  dragEnabled,
+  onToggleDrag
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
   
@@ -69,14 +73,7 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
     dimensions
   });
 
-  // Gate DnD: enable only when panel is open and Premium
-  useEffect(() => {
-    updateEffects(next => {
-      if (isOpen && isPremium) next.add('WM_DRAG_ENABLED');
-      else next.delete('WM_DRAG_ENABLED');
-    });
-    return () => updateEffects(next => next.delete('WM_DRAG_ENABLED'));
-  }, [isOpen, isPremium, updateEffects]);
+  // DnD always on (stable behavior) — no gating here
 
   // Note: Auto-scroll is handled by ChartControls to avoid position changes
 
@@ -204,6 +201,7 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
 
         {isWatermarkVisible && (
           <>
+            
             {/* Opacity Control */}
             <div className="watermark-control-group">
               <label className="watermark-control-label">Transparency</label>
@@ -348,7 +346,7 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
                     <div className="arrow-spacer"></div>
                   </div>
                 </div>
-                <div className="watermark-rotation-side" style={{ marginLeft: 8 }}>
+                <div className="watermark-rotation-side" style={{ marginLeft: 8, display: 'flex', gap: 8 }}>
                   <button 
                     className="arrow-button"
                     onClick={(e) => {
@@ -359,6 +357,34 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
                   >
                     <RotateCw size={16} />
                   </button>
+                  {isPremium && (
+                    <button 
+                      className="arrow-button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (onToggleDrag) onToggleDrag();
+                        updateEffects(next => {
+                          if (dragEnabled) next.delete('WM_DRAG_ENABLED');
+                          else next.add('WM_DRAG_ENABLED');
+                        });
+                      }}
+                      title={dragEnabled ? 'Disable drag to move' : 'Enable drag to move'}
+                      aria-pressed={dragEnabled}
+                    >
+                      {(() => {
+                        const muted = !dragEnabled;
+                        return (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={muted ? '#9ca3af' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2" />
+                            <path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2" />
+                            <path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8" />
+                            <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+                            {muted && <path d="M3 21L21 3" />}
+                          </svg>
+                        );
+                      })()}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

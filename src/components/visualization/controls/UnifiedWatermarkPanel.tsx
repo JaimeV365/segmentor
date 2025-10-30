@@ -47,14 +47,7 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
     dimensions
   });
 
-  // Gate DnD: enable only when panel is open and Premium
-  React.useEffect(() => {
-    updateEffects(next => {
-      if (isOpen && isPremium) next.add('WM_DRAG_ENABLED');
-      else next.delete('WM_DRAG_ENABLED');
-    });
-    return () => updateEffects(next => next.delete('WM_DRAG_ENABLED'));
-  }, [isOpen, isPremium, updateEffects]);
+  // DnD always on (stable behavior) — no gating here
 
   return (
     <div className="unified-controls-panel" ref={panelRef}>
@@ -167,7 +160,7 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
                     <button className="unified-size-button" onClick={() => nudgePosition(0, 10)}>↓</button>
                   </div>
                 </div>
-                <div className="unified-position-rotate" style={{ marginLeft: 8 }}>
+                <div className="unified-position-rotate" style={{ marginLeft: 8, display: 'flex', gap: 8 }}>
                   <button
                     className="unified-size-button"
                     title="Toggle horizontal/vertical"
@@ -175,6 +168,30 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
                   >
                     <RotateCw size={16} />
                   </button>
+                  {isPremium && (
+                    <button
+                      className="unified-size-button"
+                      title={effects.has('WM_DRAG_ENABLED') ? 'Disable drag to move' : 'Enable drag to move'}
+                      aria-pressed={effects.has('WM_DRAG_ENABLED')}
+                      onClick={() => updateEffects(next => {
+                        if (next.has('WM_DRAG_ENABLED')) next.delete('WM_DRAG_ENABLED');
+                        else next.add('WM_DRAG_ENABLED');
+                      })}
+                    >
+                      {(() => {
+                        const muted = !effects.has('WM_DRAG_ENABLED');
+                        return (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={muted ? '#9ca3af' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2" />
+                            <path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2" />
+                            <path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8" />
+                            <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+                            {muted && <path d="M3 21L21 3" />}
+                          </svg>
+                        );
+                      })()}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

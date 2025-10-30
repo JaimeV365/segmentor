@@ -177,6 +177,10 @@ export const ChartControls: React.FC<ChartControlsProps> = ({
   console.log('🔍 ChartControls received labelPositioning:', labelPositioning);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [showWatermarkPanel, setShowWatermarkPanel] = useState(false);
+  const [watermarkDragOn, setWatermarkDragOn] = useState(false);
+
+  // DnD always on; no DOM flags
+  // DnD gating removed; always-on for stability
   
   // Debug watermark panel state and props
   console.log('🔍 ChartControls: showWatermarkPanel state:', showWatermarkPanel);
@@ -591,6 +595,8 @@ useEffect(() => {
         isOpen={showWatermarkPanel}
         dimensions={dimensions}
         isPremium={isPremium}
+        dragEnabled={watermarkDragOn}
+        onToggleDrag={() => setWatermarkDragOn(v => !v)}
       />
     )}
     </>
