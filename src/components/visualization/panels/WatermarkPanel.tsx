@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { X, RotateCcw, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
+import { X, RotateCcw, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, RotateCw } from 'lucide-react';
 import { Switch } from '../../ui/Switch/Switch';
 import { useWatermarkControls } from '../../../hooks/useWatermarkControls';
 import './WatermarkPanel.css';
@@ -57,7 +57,10 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
     currentState,
     handlePositionChange,
     resetToDefault,
-    updateEffects
+    updateEffects,
+    nudgePosition,
+    setLogoSize,
+    toggleFlat
   } = useWatermarkControls({
     effects,
     onEffectsChange,
@@ -95,15 +98,7 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
   };
 
   const handleSizeChange = (size: number) => {
-    // Constrain size between 50px and 200px
-    const constrainedSize = Math.max(50, Math.min(200, size));
-    updateEffects(effects => {
-      // Remove existing size effect
-      const sizeEffect = Array.from(effects).find(e => e.startsWith('LOGO_SIZE:'));
-      if (sizeEffect) effects.delete(sizeEffect);
-      // Add new size effect
-      effects.add(`LOGO_SIZE:${constrainedSize}`);
-    });
+    setLogoSize(size);
   };
 
   const handleCustomLogoChange = (url: string) => {
@@ -117,13 +112,7 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
   };
 
   const handleFlatToggle = (checked: boolean) => {
-    updateEffects(effects => {
-      if (checked) {
-        effects.add('LOGO_FLAT');
-      } else {
-        effects.delete('LOGO_FLAT');
-      }
-    });
+    toggleFlat(checked);
   };
 
   const handleReset = () => {
@@ -264,94 +253,88 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
             {/* Position Controls */}
             <div className="watermark-control-group">
               <label className="watermark-control-label">Position</label>
-              <div className="watermark-arrow-controls">
-                <div className="arrow-row">
-                  <div className="arrow-spacer"></div>
-                  <button 
-                    className="arrow-button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handlePositionChange('y', currentPosition.y - 15);
-                    }}
-                    title="Move Up"
-                  >
-                    <ArrowUp size={16} />
-                  </button>
-                  <div className="arrow-spacer"></div>
-                </div>
-                <div className="arrow-row">
-                  <button 
-                    className="arrow-button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handlePositionChange('x', currentPosition.x - 15);
-                    }}
-                    title="Move Left"
-                  >
-                    <ArrowLeft size={16} />
-                  </button>
-                  <div className="arrow-center">
-                    <span>Move</span>
+              <div className="watermark-position-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+                <div className="watermark-arrow-controls" style={{ marginLeft: '-6px' }}>
+                  <div className="arrow-row">
+                    <div className="arrow-spacer"></div>
+                    <button 
+                      className="arrow-button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        nudgePosition(0, -15);
+                      }}
+                      title="Move Up"
+                    >
+                      <ArrowUp size={16} />
+                    </button>
+                    <div className="arrow-spacer"></div>
                   </div>
-                  <button 
-                    className="arrow-button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handlePositionChange('x', currentPosition.x + 15);
-                    }}
-                    title="Move Right"
-                  >
-                    <ArrowRight size={16} />
-                  </button>
+                  <div className="arrow-row">
+                    <button 
+                      className="arrow-button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        nudgePosition(-15, 0);
+                      }}
+                      title="Move Left"
+                    >
+                      <ArrowLeft size={16} />
+                    </button>
+                    <div className="arrow-center"></div>
+                    <button 
+                      className="arrow-button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        nudgePosition(15, 0);
+                      }}
+                      title="Move Right"
+                    >
+                      <ArrowRight size={16} />
+                    </button>
+                  </div>
+                  <div className="arrow-row">
+                    <div className="arrow-spacer"></div>
+                    <button 
+                      className="arrow-button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        nudgePosition(0, 15);
+                      }}
+                      title="Move Down"
+                    >
+                      <ArrowDown size={16} />
+                    </button>
+                    <div className="arrow-spacer"></div>
+                  </div>
                 </div>
-                <div className="arrow-row">
-                  <div className="arrow-spacer"></div>
+                <div className="watermark-rotation-side" style={{ marginLeft: 8 }}>
                   <button 
                     className="arrow-button"
                     onClick={(e) => {
                       e.preventDefault();
-                      handlePositionChange('y', currentPosition.y + 15);
+                      toggleFlat(!currentState.isFlat);
                     }}
-                    title="Move Down"
+                    title="Toggle horizontal/vertical"
                   >
-                    <ArrowDown size={16} />
+                    <RotateCw size={16} />
                   </button>
-                  <div className="arrow-spacer"></div>
                 </div>
               </div>
-              <button 
-                className="watermark-reset-button"
-                onClick={resetToDefault}
-                title="Reset to default position (bottom-right)"
-              >
-                <RotateCcw size={16} />
-                Reset Position
-              </button>
             </div>
 
-            {/* Style Options */}
-            <div className="watermark-control-group">
-              <label className="watermark-control-label">
-                <Switch
-                  checked={isLogoFlat}
-                  onChange={handleFlatToggle}
-                  leftLabel="Flat Style"
-                />
-              </label>
-            </div>
+            {/* Style options removed: replaced by rotation icon near arrows */}
 
-            {/* Reset Button */}
-            <div className="watermark-control-group">
-              <button 
-                className="watermark-reset-button" 
-                onClick={handleReset}
-              >
-                <RotateCcw size={16} />
-                Reset All
-              </button>
-            </div>
           </>
         )}
+      </div>
+      {/* Footer with Reset Button matching unified style (stick to bottom) */}
+      <div className="unified-tab-footer">
+        <button 
+          className="unified-reset-button" 
+          onClick={handleReset}
+        >
+          Reset All
+        </button>
       </div>
     </div>
   );

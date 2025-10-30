@@ -171,6 +171,62 @@ export const useWatermarkControls = ({
     });
   }, [getCurrentState, constrainPosition, updateEffects]);
 
+  // Nudge/move by delta and clamp
+  const nudgePosition = useCallback((dx: number, dy: number) => {
+    const state = getCurrentState();
+    const nextX = state.position.x + dx;
+    const nextY = state.position.y + dy;
+    const constrained = constrainPosition(nextX, nextY, state.size, state.isFlat);
+
+    updateEffects(effects => {
+      const xEffect = Array.from(effects).find(e => e.startsWith('LOGO_X:'));
+      const yEffect = Array.from(effects).find(e => e.startsWith('LOGO_Y:'));
+      if (xEffect) effects.delete(xEffect);
+      if (yEffect) effects.delete(yEffect);
+      effects.add(`LOGO_X:${constrained.x}`);
+      effects.add(`LOGO_Y:${constrained.y}`);
+    });
+  }, [getCurrentState, constrainPosition, updateEffects]);
+
+  // Set size (with clamping of position so logo remains within bounds)
+  const setLogoSize = useCallback((newSize: number) => {
+    const state = getCurrentState();
+    const constrainedSize = Math.max(50, Math.min(200, newSize));
+    const constrainedPos = constrainPosition(state.position.x, state.position.y, constrainedSize, state.isFlat);
+
+    updateEffects(effects => {
+      const sizeEffect = Array.from(effects).find(e => e.startsWith('LOGO_SIZE:'));
+      const xEffect = Array.from(effects).find(e => e.startsWith('LOGO_X:'));
+      const yEffect = Array.from(effects).find(e => e.startsWith('LOGO_Y:'));
+      if (sizeEffect) effects.delete(sizeEffect);
+      if (xEffect) effects.delete(xEffect);
+      if (yEffect) effects.delete(yEffect);
+      effects.add(`LOGO_SIZE:${constrainedSize}`);
+      effects.add(`LOGO_X:${constrainedPos.x}`);
+      effects.add(`LOGO_Y:${constrainedPos.y}`);
+    });
+  }, [getCurrentState, constrainPosition, updateEffects]);
+
+  // Toggle flat/vertical and clamp current position for new rotation
+  const toggleFlat = useCallback((isFlat: boolean) => {
+    const state = getCurrentState();
+    const constrainedPos = constrainPosition(state.position.x, state.position.y, state.size, isFlat);
+
+    updateEffects(effects => {
+      // Rotation flag
+      if (isFlat) effects.add('LOGO_FLAT');
+      else effects.delete('LOGO_FLAT');
+
+      // Clamp current position under new rotation
+      const xEffect = Array.from(effects).find(e => e.startsWith('LOGO_X:'));
+      const yEffect = Array.from(effects).find(e => e.startsWith('LOGO_Y:'));
+      if (xEffect) effects.delete(xEffect);
+      if (yEffect) effects.delete(yEffect);
+      effects.add(`LOGO_X:${constrainedPos.x}`);
+      effects.add(`LOGO_Y:${constrainedPos.y}`);
+    });
+  }, [getCurrentState, constrainPosition, updateEffects]);
+
   // Reset to default position
   const resetToDefault = useCallback(() => {
     const state = getCurrentState();
@@ -210,6 +266,9 @@ export const useWatermarkControls = ({
     
     // Actions
     handlePositionChange,
+    nudgePosition,
+    setLogoSize,
+    toggleFlat,
     resetToDefault,
     scrollToChart,
     

@@ -1,10 +1,10 @@
 /* Watermark Panel - Reusing FilterPanel styles with watermark-specific overrides */
 .watermark-panel {
   position: fixed;
-  top: 0;
+  top: 80px;
   right: 0;
-  width: 360px;
-  height: 100%;
+  width: 380px;
+  height: calc(100vh - 80px);
   background: white;
   border-left: 1px solid #e5e7eb;
   box-shadow: -2px 0 16px rgba(0, 0, 0, 0.15);

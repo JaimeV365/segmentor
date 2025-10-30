@@ -38,7 +38,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
     } else {
       console.log('CUSTOM_LOGO effect found but no URL in effects');
     }
-  }
+  } 
 
   // Use custom logo from props if provided (overrides other settings)
   if (customLogo) {
@@ -49,16 +49,14 @@ export const Watermark: React.FC<WatermarkProps> = ({
   const rotation = effects?.has('LOGO_FLAT') ? '0deg' : '-90deg';
 
   // Base size (default)
-  let logoWidth = 90;
-  let logoHeight = 90;
+  let logoSize = 90;
 
   // Check for size modifiers in effects
   const sizeModifier = Array.from(effects).find(e => e.startsWith('LOGO_SIZE:'));
   if (sizeModifier) {
     const sizeValue = parseInt(sizeModifier.replace('LOGO_SIZE:', ''), 10);
     if (!isNaN(sizeValue) && sizeValue > 0) {
-      logoWidth = sizeValue;
-      logoHeight = sizeValue;
+      logoSize = sizeValue;
     }
   }
 
@@ -73,13 +71,12 @@ export const Watermark: React.FC<WatermarkProps> = ({
       logoX = xValue;
     }
   } else {
-    // Default to bottom-right if no position is set
     const container = document.querySelector('.chart-container');
     if (container) {
       const rect = container.getBoundingClientRect();
-      const logoWidth = effects?.has('LOGO_FLAT') ? 90 : 90 * 0.3;
-      const logoHeight = effects?.has('LOGO_FLAT') ? 90 * 0.3 : 90;
-      logoX = Math.max(0, rect.width - logoWidth - 60); // 60px margin for better spacing
+      const isFlatCalc = effects?.has('LOGO_FLAT');
+      const effWidth = isFlatCalc ? logoSize : logoSize * 0.3;
+      logoX = Math.max(0, rect.width - effWidth - 60);
     }
   }
   
@@ -90,23 +87,23 @@ export const Watermark: React.FC<WatermarkProps> = ({
       logoY = yValue;
     }
   } else {
-    // Default to bottom-right if no position is set
     const container = document.querySelector('.chart-container');
     if (container) {
       const rect = container.getBoundingClientRect();
-      const logoWidth = effects?.has('LOGO_FLAT') ? 90 : 90 * 0.3;
-      const logoHeight = effects?.has('LOGO_FLAT') ? 90 * 0.3 : 90;
-      logoY = Math.max(0, rect.height - logoHeight - 60); // 60px margin for better spacing
+      const isFlatCalc = effects?.has('LOGO_FLAT');
+      const effHeight = isFlatCalc ? logoSize * 0.3 : logoSize;
+      logoY = Math.max(0, rect.height - effHeight - 60);
     }
   }
 
   // Position within the chart area with adjustable offset
+  const isFlat = effects?.has('LOGO_FLAT');
   const styles: React.CSSProperties = {
     position: 'absolute',
     left: `${10 + logoX}px`,
     top: `${10 + logoY}px`, // Changed from bottom to top for better control
-    width: `${logoWidth}px`,
-    height: `${logoHeight}px`,
+    width: `${logoSize}px`,
+    height: `${logoSize}px`,
     opacity: 0.6,
     transition: 'opacity 0.2s ease, transform 0.3s ease',
     zIndex: 25,

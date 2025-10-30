@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { X, Crown } from 'lucide-react';
+import { X, Crown, RotateCw } from 'lucide-react';
 import { GridDimensions } from '@/types/base';
+import { useWatermarkControls } from '../../../hooks/useWatermarkControls';
 
 interface UnifiedWatermarkPanelProps {
   isOpen: boolean;
@@ -38,32 +39,11 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
 
   if (!isOpen) return null;
 
-  const updateEffects = (updater: (current: Set<string>) => void) => {
-    const next = new Set(effects);
-    updater(next);
-    onEffectsChange(next);
-  };
-
-  const getEffectValue = (prefix: string, fallback: number) => {
-    const found = Array.from(effects).find(e => e.startsWith(prefix));
-    if (!found) return fallback;
-    const parsed = parseInt(found.replace(prefix, ''), 10);
-    return Number.isNaN(parsed) ? fallback : parsed;
-  };
-
-  const size = getEffectValue('LOGO_SIZE:', 90);
-  const posX = getEffectValue('LOGO_X:', 0);
-  const posY = getEffectValue('LOGO_Y:', 0);
-  
-  // Calculate grid boundaries for watermark positioning
-  // The watermark is positioned relative to the bottom-right corner
-  // We need to ensure it stays within the grid bounds
-  const gridWidth = dimensions.totalCols * dimensions.cellWidth;
-  const gridHeight = dimensions.totalRows * dimensions.cellHeight;
-  
-  // Calculate maximum offsets based on grid size and watermark size
-  const maxXOffset = Math.max(0, gridWidth - size - 20); // 20px margin
-  const maxYOffset = Math.max(0, gridHeight - size - 20); // 20px margin
+  const { currentState, nudgePosition, setLogoSize, toggleFlat, updateEffects } = useWatermarkControls({
+    effects,
+    onEffectsChange,
+    dimensions
+  });
 
   return (
     <div className="unified-controls-panel" ref={panelRef}>
@@ -114,22 +94,14 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
               <div className="unified-size-controls">
                 <button
                   className="unified-size-button"
-                  onClick={() => updateEffects(next => {
-                    Array.from(next).filter(e => e.startsWith('LOGO_SIZE:')).forEach(e => next.delete(e));
-                    const newSize = Math.max(50, size - 10);
-                    next.add(`LOGO_SIZE:${newSize}`);
-                  })}
+                  onClick={() => setLogoSize(currentState.size - 10)}
                 >
                   -
                 </button>
-                <div className="unified-size-display">{size}px</div>
+                <div className="unified-size-display">{currentState.size}px</div>
                 <button
                   className="unified-size-button"
-                  onClick={() => updateEffects(next => {
-                    Array.from(next).filter(e => e.startsWith('LOGO_SIZE:')).forEach(e => next.delete(e));
-                    const newSize = Math.min(200, Math.max(50, size + 10));
-                    next.add(`LOGO_SIZE:${newSize}`);
-                  })}
+                  onClick={() => setLogoSize(currentState.size + 10)}
                 >
                   +
                 </button>
@@ -139,56 +111,44 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
             {/* Position Controls */}
             <div className="unified-control-group">
               <label className="unified-control-label">Position</label>
-              <div className="unified-size-controls">
-                <button className="unified-size-button" onClick={() => updateEffects(next => {
-                  Array.from(next).filter(e => e.startsWith('LOGO_X:')).forEach(e => next.delete(e));
-                  // move left but keep within grid bounds
-                  const nx = Math.max(-maxXOffset, posX - 10);
-                  if (nx !== 0) next.add(`LOGO_X:${nx}`);
-                })}>←</button>
-                <div className="unified-size-display">X</div>
-                <button className="unified-size-button" onClick={() => updateEffects(next => {
-                  Array.from(next).filter(e => e.startsWith('LOGO_X:')).forEach(e => next.delete(e));
-                  // move right but keep within grid bounds
-                  const nx = Math.min(maxXOffset, posX + 10);
-                  if (nx !== 0) next.add(`LOGO_X:${nx}`);
-                })}>→</button>
-              </div>
-              <div className="unified-size-controls">
-                <button className="unified-size-button" onClick={() => updateEffects(next => {
-                  Array.from(next).filter(e => e.startsWith('LOGO_Y:')).forEach(e => next.delete(e));
-                  // move up but keep within grid bounds
-                  const ny = Math.max(-maxYOffset, posY - 10);
-                  if (ny !== 0) next.add(`LOGO_Y:${ny}`);
-                })}>↑</button>
-                <div className="unified-size-display">Y</div>
-                <button className="unified-size-button" onClick={() => updateEffects(next => {
-                  Array.from(next).filter(e => e.startsWith('LOGO_Y:')).forEach(e => next.delete(e));
-                  // move down but keep within grid bounds
-                  const ny = Math.min(maxYOffset, posY + 10);
-                  if (ny !== 0) next.add(`LOGO_Y:${ny}`);
-                })}>↓</button>
+              <div className="unified-position-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+                <div className="unified-position-arrows" style={{ display: 'flex', flexDirection: 'column', gap: 8, marginLeft: '-6px' }}>
+                  <div className="unified-size-controls">
+                    <button className="unified-size-button" onClick={() => nudgePosition(0, -10)}>↑</button>
+                  </div>
+                  <div className="unified-size-controls">
+                    <button className="unified-size-button" onClick={() => nudgePosition(-10, 0)}>←</button>
+                    <div className="unified-size-display">Move</div>
+                    <button className="unified-size-button" onClick={() => nudgePosition(10, 0)}>→</button>
+                  </div>
+                  <div className="unified-size-controls">
+                    <button className="unified-size-button" onClick={() => nudgePosition(0, 10)}>↓</button>
+                  </div>
+                </div>
+                <div className="unified-position-rotate" style={{ marginLeft: 8 }}>
+                  <button
+                    className="unified-size-button"
+                    title="Toggle horizontal/vertical"
+                    onClick={() => toggleFlat(!effects.has('LOGO_FLAT'))}
+                  >
+                    <RotateCw size={16} />
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Rotation Controls */}
-            <div className="unified-control-group">
-              <label className="unified-control-label">Rotation</label>
-              <div className="unified-rotation-controls">
-                <button
-                  className={`unified-rotation-button ${!effects.has('LOGO_FLAT') ? 'active' : ''}`}
-                  onClick={() => updateEffects(next => next.delete('LOGO_FLAT'))}
-                >
-                  Vertical
-                </button>
-                <button
-                  className={`unified-rotation-button ${effects.has('LOGO_FLAT') ? 'active' : ''}`}
-                  onClick={() => updateEffects(next => next.add('LOGO_FLAT'))}
-                >
-                  Horizontal
-                </button>
-              </div>
+            {/* Footer with Reset Button */}
+            <div className="unified-tab-footer">
+              <button 
+                className="unified-reset-button" 
+                onClick={() => updateEffects(next => {
+                  Array.from(next).filter(e => e.startsWith('LOGO_') || e.startsWith('SHOW_') || e.startsWith('CUSTOM_') || e === 'HIDE_WATERMARK').forEach(e => next.delete(e));
+                })}
+              >
+                Reset All
+              </button>
             </div>
+            {/* Rotation controls removed in favor of side icon */}
           </div>
         </div>
       </div>
