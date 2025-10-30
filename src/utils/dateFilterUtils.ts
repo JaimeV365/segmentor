@@ -23,37 +23,47 @@ export const DATE_PRESETS: DatePreset[] = [
  */
 export function parseDateString(dateStr: string): Date | null {
   if (!dateStr || typeof dateStr !== 'string') return null;
-  
-  // Try different date formats
-  const formats = [
-    // DD/MM/YYYY
-    /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/,
-    // MM/DD/YYYY  
-    /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/,
-    // YYYY-MM-DD
-    /^(\d{4})-(\d{1,2})-(\d{1,2})$/,
-  ];
-  
-  for (const format of formats) {
-    const match = dateStr.match(format);
-    if (match) {
-      let year: number, month: number, day: number;
-      
-      if (format.source.includes('\\d{4}') && format.source.startsWith('^\\d{4}')) {
-        // YYYY-MM-DD format
-        [, year, month, day] = match.map(Number);
-      } else {
-        // DD/MM/YYYY or MM/DD/YYYY - assume DD/MM/YYYY for now
-        [, day, month, year] = match.map(Number);
-      }
-      
-      const date = new Date(year, month - 1, day);
-      if (!isNaN(date.getTime())) {
-        return date;
-      }
+  const raw = dateStr.trim();
+
+  // ISO-like: YYYY-MM-DD or YYYY/MM/DD
+  let m = raw.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+  if (m) {
+    const year = Number(m[1]);
+    const month = Number(m[2]);
+    const day = Number(m[3]);
+    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+      const d = new Date(year, month - 1, day);
+      if (!isNaN(d.getTime())) return d;
     }
   }
-  
+
+  // Day/Month/Year or Month/Day/Year with '/'
+  m = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) {
+    const a = Number(m[1]);
+    const b = Number(m[2]);
+    const year = Number(m[3]);
+    // Disambiguate: if first > 12 -> DD/MM; if second > 12 -> MM/DD; if both <= 12, prefer MM/DD (US style)
+    let month: number;
+    let day: number;
+    if (a > 12 && b <= 12) {
+      day = a; month = b;
+    } else if (b > 12 && a <= 12) {
+      month = a; day = b;
+    } else {
+      // both <= 12: default to MM/DD
+      month = a; day = b;
+    }
+    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+      const d = new Date(year, month - 1, day);
+      if (!isNaN(d.getTime())) return d;
+    }
+  }
+
+  // Named month formats e.g., "Jul 17, 2024" or "17 Jul 2024"
+  const tryNative = new Date(raw);
+  if (!isNaN(tryNative.getTime())) return tryNative;
+
   return null;
 }
 

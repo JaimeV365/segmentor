@@ -144,10 +144,7 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
 
   const renderFiltersTab = () => (
     <div className="unified-tab-content">
-      <div className="unified-tab-header">
-        <Filter size={16} />
-        <h3>Data Filters</h3>
-      </div>
+      {/* Header removed per request to avoid redundancy */}
       
       <div className="unified-tab-body">
         <FilterPanel

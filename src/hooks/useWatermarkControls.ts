@@ -81,9 +81,9 @@ export const useWatermarkControls = ({
   const getGridBounds = useCallback((logoSize: number, isFlat: boolean): GridBounds => {
     const container = getContainerDimensions();
     
-    // Calculate effective logo dimensions based on rotation
-    const logoWidth = isFlat ? logoSize : logoSize * 0.3;
-    const logoHeight = isFlat ? logoSize * 0.3 : logoSize;
+    // Use square footprint for clamping to ensure no overflow regardless of rotation
+    const logoWidth = logoSize;
+    const logoHeight = logoSize;
     
     // Use conservative boundaries to ensure logo stays within grid
     const margin = 60; // Better visual spacing from edges
@@ -191,7 +191,7 @@ export const useWatermarkControls = ({
   // Set size (with clamping of position so logo remains within bounds)
   const setLogoSize = useCallback((newSize: number) => {
     const state = getCurrentState();
-    const constrainedSize = Math.max(50, Math.min(200, newSize));
+    const constrainedSize = Math.max(100, Math.min(400, newSize));
     const constrainedPos = constrainPosition(state.position.x, state.position.y, constrainedSize, state.isFlat);
 
     updateEffects(effects => {

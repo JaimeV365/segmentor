@@ -667,8 +667,26 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       setDatePickerVisible(false);
     }
     
-    // Use context's updateDateRange method if available
-    if (filterContext) {
+    // Apply to the correct state container
+    if (forceLocalState && reportId && filterContext) {
+      // Update report-local state ONLY (do not touch main filters)
+      const currentState = filterContext.getReportFilterState(reportId);
+      const newState = {
+        ...currentState,
+        dateRange: {
+          ...currentState.dateRange,
+          startDate,
+          endDate,
+          preset
+        }
+      };
+      // Mark initialization complete if this is a user action
+      if (isInitializing) {
+        setIsInitializing(false);
+      }
+      filterContext.setReportFilterState(reportId, newState);
+    } else if (filterContext) {
+      // Update main filters (only when not in local/report mode)
       filterContext.updateDateRange({
         startDate,
         endDate,

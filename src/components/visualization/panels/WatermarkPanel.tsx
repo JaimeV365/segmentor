@@ -266,16 +266,16 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
               <div className="watermark-size-controls">
                 <input
                   type="range"
-                  min="50"
-                  max="200"
+                  min="100"
+                  max="400"
                   value={getCurrentSize()}
                   onChange={(e) => handleSizeChange(parseInt(e.target.value))}
                   className="watermark-size-slider"
                 />
                 <input
                   type="number"
-                  min="50"
-                  max="200"
+                  min="100"
+                  max="400"
                   value={getCurrentSize()}
                   onChange={(e) => {
                     const value = parseInt(e.target.value);
