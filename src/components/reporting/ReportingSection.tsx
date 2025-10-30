@@ -69,14 +69,9 @@ console.log('🚨🚨🚨 About to render DistributionSection with:', {
     <div className="section reporting-section">
       <div className="flex justify-between items-center mb-4">
         <h1 className="reports-title">Reports</h1>
-        <div className={`px-3 py-1 rounded-full text-sm ${
-          isPremium 
-            ? 'bg-green-50 text-green-700 border border-green-200' 
-            : 'bg-gray-50 text-gray-600 border border-gray-200'
-        }`}>
-          {isPremium ? '✨ Premium Mode' : 'Standard Mode'}
-        </div>
       </div>
+
+      
 
       {isOutOfSync && (
         <div className="update-warning">

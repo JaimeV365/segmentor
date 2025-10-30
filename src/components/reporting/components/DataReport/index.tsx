@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Info } from 'lucide-react';
 import type { DataReport as DataReportType } from '../../types';
 import BarChart from '../BarChart';
 import type { BarChartData } from '../BarChart';
@@ -65,6 +66,17 @@ export const DataReport: React.FC<DataReportProps> = ({
   return (
     <div className="report-card" onClick={(e) => e.stopPropagation()}>
       <h3 className="report-title">Data Report</h3>
+      {/* Introductory information specific to Data Report */}
+      <div className="report-content" style={{ paddingTop: 0 }}>
+        <div className="info-ribbon">
+          <div className="info-ribbon-content">
+            <Info size={16} className="info-icon" />
+            <p className="info-text">
+              This Data Report provides an overview of your dataset with key statistics and distributions. Use it to identify overall response trends and the most common satisfaction–loyalty combinations to help you analyse and segment customer data.
+            </p>
+          </div>
+        </div>
+      </div>
       <div className="report-content">
         {/* Basic Information section */}
         <div className="report-section">
