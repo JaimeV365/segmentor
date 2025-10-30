@@ -363,6 +363,11 @@
    5. PANELS AND FILTERS
    -------------------- */
 
+/* Bar Chart unified controls panel - lower z-index than main panel */
+.bar-chart-container .unified-controls-panel {
+  z-index: 998 !important; /* Lower than main unified controls panel (999) */
+}
+
 /* Filter Panel - Unified contextual menu styling */
 .bar-chart-container .filter-panel {
   position: fixed !important;
@@ -779,7 +784,7 @@
   position: absolute;
   top: -6px;
   right: -6px;
-  background-color: #C93C35; /* Updated to match the visualization chart badge color */
+  background-color: #ef4444; /* Consistent red color */
   color: white;
   font-size: 10px;
   font-weight: 600;
@@ -971,15 +976,15 @@ input[type="checkbox"]:focus {
 .connection-toggle-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 8px;
+  justify-content: center;
+  padding: 8px;
   border: none;
   border-radius: 6px;
   background: transparent;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 12px;
-  font-weight: 500;
+  width: 40px;
+  height: 40px;
 }
 
 .connection-toggle-btn:hover {
@@ -1002,14 +1007,55 @@ input[type="checkbox"]:focus {
   background: #f3f4f6;
 }
 
-.connection-label {
-  font-size: 11px;
-  font-weight: 500;
-}
-
 /* Icon styling */
 .connection-toggle-btn svg {
   flex-shrink: 0;
+}
+
+/* Connection status icon in tab */
+.connection-status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #3a863e;
+  margin-left: 4px;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.connection-status-icon:hover {
+  background-color: #f0f9f0;
+  color: #2d6a31;
+}
+
+/* Unified filter badge in tabs - positioned close to Filters text */
+.unified-filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  margin-left: 4px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.unified-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 /* --------------------

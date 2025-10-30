@@ -46,8 +46,9 @@
   background-color: #34753a;
 }
 
-.unified-filter-badge {
-  background-color: #C93C35;
+/* Badge for trigger buttons (absolute positioning) */
+.unified-chart-controls-trigger .unified-filter-badge {
+  background-color: #ef4444;
   color: white;
   font-size: 10px;
   font-weight: 600;
@@ -63,6 +64,26 @@
   position: absolute;
   top: -4px;
   right: -4px;
+}
+
+/* Badge for tabs (inline positioning close to text) */
+.unified-tab .unified-filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  margin-left: 4px;
+  flex-shrink: 0;
+  line-height: 1;
+  position: static;
 }
 
 /* Overlay */

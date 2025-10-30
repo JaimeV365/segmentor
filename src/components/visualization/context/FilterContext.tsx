@@ -57,6 +57,7 @@ export interface FilterContextType {
   setReportFilterState: (reportId: string, state: FilterState) => void;
   getReportFilteredData: (reportId: string, data: DataPoint[]) => DataPoint[];
   compareFilterStates: (state1: FilterState, state2: FilterState) => boolean; // Compare two filter states
+  isSyncingFromMain: boolean; // Flag to prevent false disconnect notifications during sync
 }
 
 const FilterContext = createContext<FilterContextType | undefined>(undefined);
@@ -95,6 +96,10 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
   // Report filter connection system state
   // Note: Connection status is derived from comparing filter states, not stored separately
   const [reportFilterStates, setReportFilterStates] = useState<Record<string, FilterState>>({});
+  
+  // Flag to track when main filter changes are syncing to reports
+  // This prevents false disconnect notifications during sync
+  const [isSyncingFromMain, setIsSyncingFromMain] = useState(false);
 
   // Apply filters to data with memoization
   const applyFilters = useCallback((dataToFilter: DataPoint[], currentFilterState: FilterState) => {
@@ -165,54 +170,54 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
 
   // Update date range
   const updateDateRange = useCallback((dateRangeUpdate: Partial<DateRange>) => {
-    setFilterState(prev => {
-      const newState = {
-        ...prev,
-        dateRange: {
-          ...prev.dateRange,
-          ...dateRangeUpdate
-        }
-      };
-      
-      // Automatically recalculate filtered data when date range changes
-      const newFilteredData = applyFilters(data, newState);
-      setFilteredData(newFilteredData);
-      
-      // Update active filter count
-      const hasDateFilter = newState.dateRange.preset && newState.dateRange.preset !== 'all';
-      const hasAttributeFilters = newState.attributes.some(attr => attr.values.size > 0);
-      const newActiveFilterCount = (hasDateFilter ? 1 : 0) + newState.attributes.filter(attr => attr.values.size > 0).length;
-      setActiveFilterCount(newActiveFilterCount);
-      
-      return newState;
-    });
-  }, [data, applyFilters]);
+    // Use handleSetFilterState instead of setFilterState to get sync logic
+    const newState = {
+      ...filterState,
+      dateRange: {
+        ...filterState.dateRange,
+        ...dateRangeUpdate
+      }
+    };
+    
+    // Automatically recalculate filtered data when date range changes
+    const newFilteredData = applyFilters(data, newState);
+    setFilteredData(newFilteredData);
+    
+    // Update active filter count
+    const hasDateFilter = newState.dateRange.preset && newState.dateRange.preset !== 'all';
+    const hasAttributeFilters = newState.attributes.some(attr => attr.values.size > 0);
+    const newActiveFilterCount = (hasDateFilter ? 1 : 0) + newState.attributes.filter(attr => attr.values.size > 0).length;
+    setActiveFilterCount(newActiveFilterCount);
+    
+    // Use handleSetFilterState to get sync logic
+    handleSetFilterState(newState);
+  }, [data, applyFilters, filterState]);
 
   // Update attribute filter
   const updateAttributeFilter = useCallback((field: string, values: Set<string | number>) => {
-    setFilterState(prev => {
-      const newState = {
-        ...prev,
-        attributes: prev.attributes.map(attr => 
-          attr.field === field 
-            ? { ...attr, values }
-            : attr
-        )
-      };
-      
-      // Automatically recalculate filtered data when attribute filter changes
-      const newFilteredData = applyFilters(data, newState);
-      setFilteredData(newFilteredData);
-      
-      // Update active filter count
-      const hasDateFilter = newState.dateRange.preset && newState.dateRange.preset !== 'all';
-      const hasAttributeFilters = newState.attributes.some(attr => attr.values.size > 0);
-      const newActiveFilterCount = (hasDateFilter ? 1 : 0) + newState.attributes.filter(attr => attr.values.size > 0).length;
-      setActiveFilterCount(newActiveFilterCount);
-      
-      return newState;
-    });
-  }, [data, applyFilters]);
+    // Use handleSetFilterState instead of setFilterState to get sync logic
+    const newState = {
+      ...filterState,
+      attributes: filterState.attributes.map(attr => 
+        attr.field === field 
+          ? { ...attr, values }
+          : attr
+      )
+    };
+    
+    // Automatically recalculate filtered data when attribute filter changes
+    const newFilteredData = applyFilters(data, newState);
+    setFilteredData(newFilteredData);
+    
+    // Update active filter count
+    const hasDateFilter = newState.dateRange.preset && newState.dateRange.preset !== 'all';
+    const hasAttributeFilters = newState.attributes.some(attr => attr.values.size > 0);
+    const newActiveFilterCount = (hasDateFilter ? 1 : 0) + newState.attributes.filter(attr => attr.values.size > 0).length;
+    setActiveFilterCount(newActiveFilterCount);
+    
+    // Use handleSetFilterState to get sync logic
+    handleSetFilterState(newState);
+  }, [data, applyFilters, filterState]);
 
   // Reset all filters
   const resetFilters = useCallback(() => {
@@ -419,9 +424,12 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       dataLength: data.length
     });
     
-    // IMPORTANT: Sync connected reports BEFORE updating main state
-    // This ensures states stay in sync and prevents false disconnect notifications
-    // We compare with OLD filterState (current value), then sync to NEW state
+    // Set sync flag to prevent false disconnect notifications
+    console.log('🔄 FilterContext: Setting isSyncingFromMain to true');
+    setIsSyncingFromMain(true);
+    
+    // Sync connected reports BEFORE updating main state
+    // This prevents the BarChart from seeing a temporary disconnect state
     setReportFilterStates(prevStates => {
       const updatedStates = { ...prevStates };
       
@@ -452,6 +460,12 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     
     // NOW update main state (after syncing reports)
     setFilterState(newFilterState);
+    
+    // Clear sync flag after a brief delay
+    setTimeout(() => {
+      console.log('🔄 FilterContext: Setting isSyncingFromMain to false');
+      setIsSyncingFromMain(false);
+    }, 100);
     
     // Automatically recalculate filtered data
     const newFilteredData = applyFilters(data, newFilterState);
@@ -580,7 +594,8 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     getReportFilterState,
     setReportFilterState,
     getReportFilteredData,
-    compareFilterStates
+    compareFilterStates,
+    isSyncingFromMain
   };
 
   return (
