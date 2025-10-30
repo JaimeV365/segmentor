@@ -45,6 +45,15 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
     dimensions
   });
 
+  // Enable drag while panel is open
+  React.useEffect(() => {
+    updateEffects(next => {
+      if (isOpen) next.add('WM_DRAG_ENABLED');
+      else next.delete('WM_DRAG_ENABLED');
+    });
+    return () => updateEffects(next => next.delete('WM_DRAG_ENABLED'));
+  }, [isOpen, updateEffects]);
+
   return (
     <div className="unified-controls-panel" ref={panelRef}>
       <div className="unified-controls-header">
@@ -105,6 +114,37 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
                 >
                   +
                 </button>
+              </div>
+            </div>
+
+            {/* Transparency Control */}
+            <div className="unified-control-group">
+              <label className="unified-control-label">Transparency</label>
+              <div className="unified-size-controls">
+                <input
+                  type="range"
+                  min="0.1"
+                  max="1"
+                  step="0.05"
+                  value={(() => {
+                    const effect = Array.from(effects).find(e => e.startsWith('LOGO_OPACITY:'));
+                    const v = effect ? parseFloat(effect.replace('LOGO_OPACITY:', '')) : 0.6;
+                    return isNaN(v) ? 0.6 : Math.max(0.1, Math.min(1, v));
+                  })()}
+                  onChange={(e) => {
+                    const val = Math.max(0.1, Math.min(1, parseFloat(e.target.value)));
+                    updateEffects(next => {
+                      Array.from(next).filter(s => s.startsWith('LOGO_OPACITY:')).forEach(s => next.delete(s));
+                      next.add(`LOGO_OPACITY:${val}`);
+                    });
+                  }}
+                  className="unified-control-input"
+                />
+                <div className="unified-size-display">{Math.round(((() => {
+                  const effect = Array.from(effects).find(e => e.startsWith('LOGO_OPACITY:'));
+                  const v = effect ? parseFloat(effect.replace('LOGO_OPACITY:', '')) : 0.6;
+                  return isNaN(v) ? 0.6 : Math.max(0.1, Math.min(1, v));
+                })()) * 100)}%</div>
               </div>
             </div>
 
