@@ -69,7 +69,14 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
     dimensions
   });
 
-  // Drag is always enabled — no gating here
+  // Gate DnD: enable only when panel is open and Premium
+  useEffect(() => {
+    updateEffects(next => {
+      if (isOpen && isPremium) next.add('WM_DRAG_ENABLED');
+      else next.delete('WM_DRAG_ENABLED');
+    });
+    return () => updateEffects(next => next.delete('WM_DRAG_ENABLED'));
+  }, [isOpen, isPremium, updateEffects]);
 
   // Note: Auto-scroll is handled by ChartControls to avoid position changes
 

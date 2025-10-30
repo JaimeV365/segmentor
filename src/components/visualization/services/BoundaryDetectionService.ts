@@ -124,10 +124,10 @@ export class BoundaryDetectionService {
           
           // Test 4 half-segment positions to see what quadrants are adjacent
           const testPositions = [
-            { sat: point.satisfaction + 0.5, loy: point.loyalty },     // right
-            { sat: point.satisfaction - 0.5, loy: point.loyalty },     // left
-            { sat: point.satisfaction, loy: point.loyalty + 0.5 },     // up
-            { sat: point.satisfaction, loy: point.loyalty - 0.5 }      // down
+            { sat: point.satisfaction + 0.25, loy: point.loyalty },     // right
+            { sat: point.satisfaction - 0.25, loy: point.loyalty },     // left
+            { sat: point.satisfaction, loy: point.loyalty + 0.25 },     // up
+            { sat: point.satisfaction, loy: point.loyalty - 0.25 }      // down
           ];
           
           testPositions.forEach(testPos => {
@@ -164,10 +164,10 @@ export class BoundaryDetectionService {
     
     // Test 4 half-segment positions to see if point is on a boundary
     const testPositions = [
-      { sat: point.satisfaction + 0.5, loy: point.loyalty },     // right
-      { sat: point.satisfaction - 0.5, loy: point.loyalty },     // left
-      { sat: point.satisfaction, loy: point.loyalty + 0.5 },     // up
-      { sat: point.satisfaction, loy: point.loyalty - 0.5 }      // down
+      { sat: point.satisfaction + 0.25, loy: point.loyalty },     // right
+      { sat: point.satisfaction - 0.25, loy: point.loyalty },     // left
+      { sat: point.satisfaction, loy: point.loyalty + 0.25 },     // up
+      { sat: point.satisfaction, loy: point.loyalty - 0.25 }      // down
     ];
     
     testPositions.forEach(testPos => {
