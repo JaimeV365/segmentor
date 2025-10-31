@@ -6,6 +6,8 @@ import { UnifiedWatermarkPanel } from './UnifiedWatermarkPanel';
 import { useFilterContextSafe } from '../context/FilterContext';
 import './UnifiedChartControls.css';
 import { useWatermarkControls } from '../../../hooks/useWatermarkControls';
+import { exportCapture } from '../../common/exportCapture';
+import { exportCsv } from '../../common/exportCsv';
 
 interface UnifiedChartControlsProps {
   // Filter-related props
@@ -61,6 +63,8 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
   const [activeTab, setActiveTab] = useState<TabType>('filters');
   const [exportOnly, setExportOnly] = useState(false);
   const [filterResetTrigger, setFilterResetTrigger] = useState(0);
+  const [exportFormat, setExportFormat] = useState<'png' | 'pdf' | 'csv'>('png');
+  const [isExporting, setIsExporting] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   // Watermark controls (used in watermark tab)
   const { currentState, nudgePosition, setLogoSize, toggleFlat, updateEffects } = useWatermarkControls({
@@ -185,35 +189,110 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
     </div>
   );
 
-  const renderExportTab = () => (
+  const renderExportTab = () => {
+    console.log('📋 renderExportTab called, exportFormat:', exportFormat);
+    return (
     <div className="unified-tab-content">
       <div className="unified-tab-body">
         <div style={{ display: 'grid', gap: 12 }}>
           <div style={{ fontWeight: 600 }}>Export format</div>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <input type="radio" name="export-format" defaultChecked style={{ accentColor: '#3a863e' }} /> PNG (image)
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+            <input 
+              type="radio" 
+              name="export-format" 
+              checked={exportFormat === 'png'}
+              onChange={() => setExportFormat('png')}
+              style={{ accentColor: '#3a863e', cursor: 'pointer' }} 
+            /> PNG (image)
           </label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <input type="radio" name="export-format" style={{ accentColor: '#3a863e' }} /> PDF (document)
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+            <input 
+              type="radio" 
+              name="export-format" 
+              checked={exportFormat === 'pdf'}
+              onChange={() => setExportFormat('pdf')}
+              style={{ accentColor: '#3a863e', cursor: 'pointer' }} 
+            /> PDF (document)
           </label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <input type="radio" name="export-format" style={{ accentColor: '#3a863e' }} /> CSV (raw data)
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+            <input 
+              type="radio" 
+              name="export-format" 
+              checked={exportFormat === 'csv'}
+              onChange={() => setExportFormat('csv')}
+              style={{ accentColor: '#3a863e', cursor: 'pointer' }} 
+            /> CSV (raw data)
           </label>
           <button
-            className="report-button"
-            onClick={() => {
-              const labelText = (document.querySelector('input[name="export-format"]:checked') as HTMLInputElement)?.nextSibling?.textContent || '';
-              const fmt = labelText.includes('CSV') ? 'csv' : (labelText.includes('PDF') ? 'pdf' : 'png');
-              const event = new CustomEvent('segmentor-export', { detail: { format: fmt } });
-              window.dispatchEvent(event);
+            className={`date-preset-button ${isExporting ? 'active' : ''}`}
+            style={{
+              background: isExporting ? '#3a863e' : 'white',
+              border: '1px solid #d1d5db',
+              color: isExporting ? 'white' : '#374151',
+              padding: '8px 16px',
+              borderRadius: '6px',
+              fontSize: '14px',
+              fontWeight: '500',
+              cursor: isExporting ? 'wait' : 'pointer',
+              width: '100%',
+              marginTop: '8px',
+              transition: 'all 0.2s ease'
             }}
+            onMouseEnter={(e) => {
+              if (!isExporting) {
+                e.currentTarget.style.backgroundColor = '#f0f9f0';
+                e.currentTarget.style.borderColor = '#3a863e';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isExporting) {
+                e.currentTarget.style.backgroundColor = 'white';
+                e.currentTarget.style.borderColor = '#d1d5db';
+              }
+            }}
+            onClick={async (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (isExporting) return;
+              
+              console.log('🔘 Export button clicked, format:', exportFormat);
+              setIsExporting(true);
+              try {
+                if (exportFormat === 'csv') {
+                  // For CSV, dispatch event to FilteredChart which has quadrant context
+                  const event = new CustomEvent('segmentor-export', { 
+                    detail: { format: 'csv' },
+                    bubbles: true,
+                    cancelable: true
+                  });
+                  window.dispatchEvent(event);
+                } else {
+                  console.log('📤 Calling exportCapture for', exportFormat);
+                  // For PNG/PDF, call exportCapture directly
+                  await exportCapture({
+                    targetSelector: '.chart-container',
+                    format: exportFormat,
+                    padding: 92,
+                    background: '#ffffff'
+                  });
+                  console.log('✅ exportCapture completed');
+                }
+              } catch (error) {
+                console.error('❌ Export failed:', error);
+                alert(`Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+              } finally {
+                setIsExporting(false);
+              }
+            }}
+            disabled={isExporting}
           >
-            Export
+            {isExporting ? 'Exporting…' : 'Export'}
           </button>
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   return (
     <>
@@ -255,7 +334,10 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
 
           {/* Tab Content */}
           <div className="unified-controls-content">
-            {exportOnly ? renderExportTab() : renderFiltersTab()}
+            {(() => {
+              console.log('🔍 Rendering content, exportOnly:', exportOnly, 'isOpen:', isOpen);
+              return exportOnly ? renderExportTab() : renderFiltersTab();
+            })()}
           </div>
         </div>
       )}

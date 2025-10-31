@@ -1,0 +1,1281 @@
+Error: Not allowed to define cross-origin object as property on [Object] or [Array] XrayWrapper 3 content-script.js:376:604
+Feature Policy: Skipping unsupported feature name “clipboard-read”. content-script.js:39:3880
+Feature Policy: Skipping unsupported feature name “clipboard-write”. content-script.js:39:3880
+Feature Policy: Skipping unsupported feature name “clipboard-read”. content-script.js:39:89374
+Feature Policy: Skipping unsupported feature name “clipboard-write”. content-script.js:39:89374
+Error: Not allowed to define cross-origin object as property on [Object] or [Array] XrayWrapper 3 content-script.js:376:604
+Feature Policy: Skipping unsupported feature name “clipboard-read”. bundle.js:59428:24
+Feature Policy: Skipping unsupported feature name “clipboard-write”. bundle.js:59428:24
+   ❌ LATERAL SEARCH AREA: Customer DEMO_87 not in potential search area for hostages bundle.js:24652:17
+   🔍 Customer DEMO_87: isProximity=false, targets=[], looking for hostages bundle.js:23360:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:24527:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:24528:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[3,4,5] bundle.js:24529:13
+   📏 Lateral search area: sat=[3], loy=[3,4,5] bundle.js:24530:13
+   📏 Lateral search area check: DEMO_88 at (2,2) - sat: false (2 in [3]), loy: false (2 in [3,4,5]) bundle.js:24599:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_88 not in potential search area for mercenaries bundle.js:24652:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:24527:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:24528:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:24529:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:24530:13
+   📏 Lateral search area check: DEMO_88 at (2,2) - sat: true (2 in [1,2,3]), loy: false (2 in [5,4]) bundle.js:24599:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_88 not in potential search area for hostages bundle.js:24652:17
+   🔍 Customer DEMO_88: isProximity=false, targets=[], looking for hostages bundle.js:23360:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:24527:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:24528:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[3,4,5] bundle.js:24529:13
+   📏 Lateral search area: sat=[3], loy=[3,4,5] bundle.js:24530:13
+   📏 Lateral search area check: DEMO_89 at (2,2) - sat: false (2 in [3]), loy: false (2 in [3,4,5]) bundle.js:24599:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_89 not in potential search area for mercenaries bundle.js:24652:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:24527:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:24528:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:24529:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:24530:13
+   📏 Lateral search area check: DEMO_89 at (2,2) - sat: true (2 in [1,2,3]), loy: false (2 in [5,4]) bundle.js:24599:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_89 not in potential search area for hostages bundle.js:24652:17
+   🔍 Customer DEMO_89: isProximity=false, targets=[], looking for hostages bundle.js:23360:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:24527:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:24528:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[3,4,5] bundle.js:24529:13
+   📏 Lateral search area: sat=[3], loy=[3,4,5] bundle.js:24530:13
+   📏 Lateral search area check: DEMO_90 at (2,2) - sat: false (2 in [3]), loy: false (2 in [3,4,5]) bundle.js:24599:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_90 not in potential search area for mercenaries bundle.js:24652:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:24527:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:24528:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:24529:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:24530:13
+   📏 Lateral search area check: DEMO_90 at (2,2) - sat: true (2 in [1,2,3]), loy: false (2 in [5,4]) bundle.js:24599:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_90 not in potential search area for hostages bundle.js:24652:17
+   🔍 Customer DEMO_90: isProximity=false, targets=[], looking for hostages bundle.js:23360:15
+📊 FINAL RESULT for defectors -> hostages: 2 customers, 2 positions bundle.js:23385:13
+🔥🔥🔥 CALLING analyzeDiagonalProximity: loyalists -> defectors bundle.js:23169:17
+🔍 Diagonal analysis: loyalists -> defectors (31 customers) bundle.js:23412:13
+✅ DIAGONAL: Customer DEMO_26 at (3,6) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_27 at (3,7) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_28 at (3,8) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_29 at (3,9) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_30 at (3,10) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_35 at (4,5) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_36 at (4,6) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_37 at (4,7) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_38 at (4,8) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_45 at (5,5) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_46 at (5,6) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_47 at (5,7) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_48 at (5,8) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_55 at (5,5) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_56 at (5,6) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_57 at (5,7) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_58 at (5,8) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_65 at (4,5) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_66 at (4,6) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_67 at (4,7) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_68 at (4,8) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_71 at (4,6) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_72 at (4,6) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_73 at (4,6) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_74 at (4,6) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_75 at (4,6) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_76 at (4,6) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_77 at (4,6) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_78 at (4,6) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_79 at (4,6) belongs to loyalists (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_80 at (4,6) belongs to loyalists (context assignment) bundle.js:23583:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_26 at (3,6) to defectors boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📐 DIAGONAL DISTANCE: Customer DEMO_27 at (3,7) to defectors boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_27 at (3,7) - sat: true (3 in [3]), loy: false (7 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_27 at (3,7) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_28 at (3,8) to defectors boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_28 at (3,8) - sat: true (3 in [3]), loy: false (8 in [5,6]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_29 at (3,9) to defectors boundary (3,5) = 4 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_29 at (3,9) - sat: true (3 in [3]), loy: false (9 in [5,6]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_30 at (3,10) to defectors boundary (3,5) = 5 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_30 at (3,10) - sat: true (3 in [3]), loy: false (10 in [5,6]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_35 at (4,5) to defectors boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_35 at (4,5) - sat: false (4 in [3]), loy: true (5 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_35 at (4,5) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_36 at (4,6) to defectors boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_36 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_36 at (4,6) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_37 at (4,7) to defectors boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_37 at (4,7) - sat: false (4 in [3]), loy: false (7 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_37 at (4,7) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_38 at (4,8) to defectors boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_38 at (4,8) - sat: false (4 in [3]), loy: false (8 in [5,6]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_45 at (5,5) to defectors boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_45 at (5,5) - sat: false (5 in [3]), loy: true (5 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_45 at (5,5) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_46 at (5,6) to defectors boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_46 at (5,6) - sat: false (5 in [3]), loy: true (6 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_46 at (5,6) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_47 at (5,7) to defectors boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_47 at (5,7) - sat: false (5 in [3]), loy: false (7 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_47 at (5,7) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_48 at (5,8) to defectors boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_48 at (5,8) - sat: false (5 in [3]), loy: false (8 in [5,6]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_55 at (5,5) to defectors boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_55 at (5,5) - sat: false (5 in [3]), loy: true (5 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_55 at (5,5) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_56 at (5,6) to defectors boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_56 at (5,6) - sat: false (5 in [3]), loy: true (6 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_56 at (5,6) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_57 at (5,7) to defectors boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_57 at (5,7) - sat: false (5 in [3]), loy: false (7 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_57 at (5,7) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_58 at (5,8) to defectors boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_58 at (5,8) - sat: false (5 in [3]), loy: false (8 in [5,6]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_65 at (4,5) to defectors boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_65 at (4,5) - sat: false (4 in [3]), loy: true (5 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_65 at (4,5) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_66 at (4,6) to defectors boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_66 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_66 at (4,6) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_67 at (4,7) to defectors boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_67 at (4,7) - sat: false (4 in [3]), loy: false (7 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_67 at (4,7) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_68 at (4,8) to defectors boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_68 at (4,8) - sat: false (4 in [3]), loy: false (8 in [5,6]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_71 at (4,6) to defectors boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_71 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_71 at (4,6) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_72 at (4,6) to defectors boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_72 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_72 at (4,6) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_73 at (4,6) to defectors boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_73 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_73 at (4,6) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_74 at (4,6) to defectors boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_74 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_74 at (4,6) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_75 at (4,6) to defectors boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_75 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_75 at (4,6) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_76 at (4,6) to defectors boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_76 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_76 at (4,6) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_77 at (4,6) to defectors boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_77 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_77 at (4,6) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_78 at (4,6) to defectors boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_78 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_78 at (4,6) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_79 at (4,6) to defectors boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_79 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_79 at (4,6) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_80 at (4,6) to defectors boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_80 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_80 at (4,6) meets distance (1) but fails search area bundle.js:23453:17
+   - Qualifying customers: 1 bundle.js:23483:13
+🔥🔥🔥 CALLING analyzeDiagonalProximity: mercenaries -> hostages bundle.js:23173:17
+🔍 Diagonal analysis: mercenaries -> hostages (20 customers) bundle.js:23412:13
+✅ DIAGONAL: Customer DEMO_21 at (3,1) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_22 at (3,2) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_23 at (3,3) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_24 at (3,4) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_31 at (4,1) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_32 at (4,2) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_33 at (4,3) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_34 at (4,4) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_41 at (5,1) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_42 at (5,2) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_43 at (5,3) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_44 at (5,4) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_51 at (5,1) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_52 at (5,2) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_53 at (5,3) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_54 at (5,4) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_61 at (4,1) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_62 at (4,2) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_63 at (4,3) belongs to mercenaries (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_64 at (4,4) belongs to mercenaries (context assignment) bundle.js:23583:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_21 at (3,1) to hostages boundary (3,5) = 4 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_21 at (3,1) - sat: true (3 in [3]), loy: false (1 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_22 at (3,2) to hostages boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_22 at (3,2) - sat: true (3 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_23 at (3,3) to hostages boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_23 at (3,3) - sat: true (3 in [3]), loy: false (3 in [5,4]) bundle.js:23735:15
+   🔍 Customer DEMO_23 at (3,3) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_24 at (3,4) to hostages boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📐 DIAGONAL DISTANCE: Customer DEMO_31 at (4,1) to hostages boundary (3,5) = 4 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_31 at (4,1) - sat: false (4 in [3]), loy: false (1 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_32 at (4,2) to hostages boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_32 at (4,2) - sat: false (4 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_33 at (4,3) to hostages boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_33 at (4,3) - sat: false (4 in [3]), loy: false (3 in [5,4]) bundle.js:23735:15
+   🔍 Customer DEMO_33 at (4,3) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_34 at (4,4) to hostages boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_34 at (4,4) - sat: false (4 in [3]), loy: true (4 in [5,4]) bundle.js:23735:15
+   🔍 Customer DEMO_34 at (4,4) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_41 at (5,1) to hostages boundary (3,5) = 4 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_41 at (5,1) - sat: false (5 in [3]), loy: false (1 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_42 at (5,2) to hostages boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_42 at (5,2) - sat: false (5 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_43 at (5,3) to hostages boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_43 at (5,3) - sat: false (5 in [3]), loy: false (3 in [5,4]) bundle.js:23735:15
+   🔍 Customer DEMO_43 at (5,3) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_44 at (5,4) to hostages boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_44 at (5,4) - sat: false (5 in [3]), loy: true (4 in [5,4]) bundle.js:23735:15
+   🔍 Customer DEMO_44 at (5,4) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_51 at (5,1) to hostages boundary (3,5) = 4 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_51 at (5,1) - sat: false (5 in [3]), loy: false (1 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_52 at (5,2) to hostages boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_52 at (5,2) - sat: false (5 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_53 at (5,3) to hostages boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_53 at (5,3) - sat: false (5 in [3]), loy: false (3 in [5,4]) bundle.js:23735:15
+   🔍 Customer DEMO_53 at (5,3) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_54 at (5,4) to hostages boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_54 at (5,4) - sat: false (5 in [3]), loy: true (4 in [5,4]) bundle.js:23735:15
+   🔍 Customer DEMO_54 at (5,4) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_61 at (4,1) to hostages boundary (3,5) = 4 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_61 at (4,1) - sat: false (4 in [3]), loy: false (1 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_62 at (4,2) to hostages boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_62 at (4,2) - sat: false (4 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_63 at (4,3) to hostages boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_63 at (4,3) - sat: false (4 in [3]), loy: false (3 in [5,4]) bundle.js:23735:15
+   🔍 Customer DEMO_63 at (4,3) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_64 at (4,4) to hostages boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_64 at (4,4) - sat: false (4 in [3]), loy: true (4 in [5,4]) bundle.js:23735:15
+   🔍 Customer DEMO_64 at (4,4) meets distance (1) but fails search area bundle.js:23453:17
+   - Qualifying customers: 1 bundle.js:23483:13
+🔥🔥🔥 CALLING analyzeDiagonalProximity: hostages -> mercenaries bundle.js:23177:17
+🔍 Diagonal analysis: hostages -> mercenaries (12 customers) bundle.js:23412:13
+✅ DIAGONAL: Customer DEMO_5 at (1,5) belongs to hostages (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_6 at (1,6) belongs to hostages (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_7 at (1,7) belongs to hostages (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_8 at (1,8) belongs to hostages (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_9 at (1,9) belongs to hostages (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_10 at (1,10) belongs to hostages (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_15 at (2,5) belongs to hostages (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_16 at (2,6) belongs to hostages (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_17 at (2,7) belongs to hostages (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_18 at (2,8) belongs to hostages (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_19 at (2,9) belongs to hostages (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_20 at (2,10) belongs to hostages (context assignment) bundle.js:23583:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_5 at (1,5) to mercenaries boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_5 at (1,5) - sat: false (1 in [3]), loy: true (5 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_5 at (1,5) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_6 at (1,6) to mercenaries boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_6 at (1,6) - sat: false (1 in [3]), loy: true (6 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_6 at (1,6) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_7 at (1,7) to mercenaries boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_7 at (1,7) - sat: false (1 in [3]), loy: false (7 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_7 at (1,7) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_8 at (1,8) to mercenaries boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_8 at (1,8) - sat: false (1 in [3]), loy: false (8 in [5,6]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_9 at (1,9) to mercenaries boundary (3,5) = 4 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_9 at (1,9) - sat: false (1 in [3]), loy: false (9 in [5,6]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_10 at (1,10) to mercenaries boundary (3,5) = 5 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_10 at (1,10) - sat: false (1 in [3]), loy: false (10 in [5,6]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_15 at (2,5) to mercenaries boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_15 at (2,5) - sat: false (2 in [3]), loy: true (5 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_15 at (2,5) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_16 at (2,6) to mercenaries boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_16 at (2,6) - sat: false (2 in [3]), loy: true (6 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_16 at (2,6) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_17 at (2,7) to mercenaries boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_17 at (2,7) - sat: false (2 in [3]), loy: false (7 in [5,6]) bundle.js:23735:15
+   🔍 Customer DEMO_17 at (2,7) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_18 at (2,8) to mercenaries boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_18 at (2,8) - sat: false (2 in [3]), loy: false (8 in [5,6]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_19 at (2,9) to mercenaries boundary (3,5) = 4 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_19 at (2,9) - sat: false (2 in [3]), loy: false (9 in [5,6]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_20 at (2,10) to mercenaries boundary (3,5) = 5 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:23729:13
+   📏 Search area check: DEMO_20 at (2,10) - sat: false (2 in [3]), loy: false (10 in [5,6]) bundle.js:23735:15
+   - Qualifying customers: 0 bundle.js:23483:13
+🔥🔥🔥 CALLING analyzeDiagonalProximity: defectors -> loyalists bundle.js:23181:17
+🔍 Diagonal analysis: defectors -> loyalists (16 customers) bundle.js:23412:13
+✅ DIAGONAL: Customer DEMO_2 at (1,2) belongs to defectors (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_3 at (1,3) belongs to defectors (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_4 at (1,4) belongs to defectors (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_12 at (2,2) belongs to defectors (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_13 at (2,3) belongs to defectors (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_14 at (2,4) belongs to defectors (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_81 at (2,2) belongs to defectors (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_82 at (2,2) belongs to defectors (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_83 at (2,2) belongs to defectors (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_84 at (2,2) belongs to defectors (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_85 at (2,2) belongs to defectors (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_86 at (2,2) belongs to defectors (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_87 at (2,2) belongs to defectors (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_88 at (2,2) belongs to defectors (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_89 at (2,2) belongs to defectors (context assignment) bundle.js:23583:17
+✅ DIAGONAL: Customer DEMO_90 at (2,2) belongs to defectors (context assignment) bundle.js:23583:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_2 at (1,2) to loyalists boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_2 at (1,2) - sat: false (1 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_3 at (1,3) to loyalists boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_3 at (1,3) - sat: false (1 in [3]), loy: false (3 in [5,4]) bundle.js:23735:15
+   🔍 Customer DEMO_3 at (1,3) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_4 at (1,4) to loyalists boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_4 at (1,4) - sat: false (1 in [3]), loy: true (4 in [5,4]) bundle.js:23735:15
+   🔍 Customer DEMO_4 at (1,4) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_12 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_12 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_13 at (2,3) to loyalists boundary (3,5) = 2 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_13 at (2,3) - sat: false (2 in [3]), loy: false (3 in [5,4]) bundle.js:23735:15
+   🔍 Customer DEMO_13 at (2,3) meets distance (2) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_14 at (2,4) to loyalists boundary (3,5) = 1 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_14 at (2,4) - sat: false (2 in [3]), loy: true (4 in [5,4]) bundle.js:23735:15
+   🔍 Customer DEMO_14 at (2,4) meets distance (1) but fails search area bundle.js:23453:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_81 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_81 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_82 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_82 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_83 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_83 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_84 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_84 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_85 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_85 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_86 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_86 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_87 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_87 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_88 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_88 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_89 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_89 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_90 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:23505:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:23728:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:23729:13
+   📏 Search area check: DEMO_90 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:23735:15
+   - Qualifying customers: 0 bundle.js:23483:13
+🔍 CALCULATING loyalists_close_to_apostles: 
+Object { loyalistsCount: 31, showSpecialZones: true, showNearApostles: false }
+bundle.js:23186:17
+🔍 analyzeSpecialZoneProximity: loyalists -> apostles | customers: 31 | showSpecialZones: true | showNearApostles: false bundle.js:23825:13
+🔍 shouldAnalyzeSpecialZoneProximity result for loyalists -> apostles: true bundle.js:23829:13
+📊 After target zone exclusion: 31 customers (excluded 0 already in apostles zone) bundle.js:23855:13
+🔍 Customer DEMO_26 at (3,6) is on quadrant boundary: hostages=true, mercenaries=false bundle.js:24094:15
+🚫 EXCLUDING customer DEMO_26 at (3,6) - on quadrant boundary (Rule 8) bundle.js:23861:17
+🔍 Customer DEMO_27 at (3,7) is on quadrant boundary: hostages=true, mercenaries=false bundle.js:24094:15
+🚫 EXCLUDING customer DEMO_27 at (3,7) - on quadrant boundary (Rule 8) bundle.js:23861:17
+🔍 Customer DEMO_28 at (3,8) is on quadrant boundary: hostages=true, mercenaries=false bundle.js:24094:15
+🚫 EXCLUDING customer DEMO_28 at (3,8) - on quadrant boundary (Rule 8) bundle.js:23861:17
+🔍 Customer DEMO_29 at (3,9) is on quadrant boundary: hostages=true, mercenaries=false bundle.js:24094:15
+🚫 EXCLUDING customer DEMO_29 at (3,9) - on quadrant boundary (Rule 8) bundle.js:23861:17
+🔍 Customer DEMO_30 at (3,10) is on quadrant boundary: hostages=true, mercenaries=false bundle.js:24094:15
+🚫 EXCLUDING customer DEMO_30 at (3,10) - on quadrant boundary (Rule 8) bundle.js:23861:17
+🔍 Customer DEMO_35 at (4,5) is on quadrant boundary: hostages=false, mercenaries=true bundle.js:24094:15
+🚫 EXCLUDING customer DEMO_35 at (4,5) - on quadrant boundary (Rule 8) bundle.js:23861:17
+🔍 Customer DEMO_45 at (5,5) is on quadrant boundary: hostages=false, mercenaries=true bundle.js:24094:15
+🚫 EXCLUDING customer DEMO_45 at (5,5) - on quadrant boundary (Rule 8) bundle.js:23861:17
+🔍 Customer DEMO_55 at (5,5) is on quadrant boundary: hostages=false, mercenaries=true bundle.js:24094:15
+🚫 EXCLUDING customer DEMO_55 at (5,5) - on quadrant boundary (Rule 8) bundle.js:23861:17
+🔍 Customer DEMO_65 at (4,5) is on quadrant boundary: hostages=false, mercenaries=true bundle.js:24094:15
+🚫 EXCLUDING customer DEMO_65 at (4,5) - on quadrant boundary (Rule 8) bundle.js:23861:17
+📊 After boundary conflict exclusion: 22 customers (excluded 9 on quadrant boundaries) bundle.js:23865:13
+🎯 loyalists customer DEMO_38 at (4,8) is 1 positions from apostles zone bundle.js:23895:17
+🎯 loyalists customer DEMO_48 at (5,8) is 1 positions from apostles zone bundle.js:23895:17
+🎯 loyalists customer DEMO_58 at (5,8) is 1 positions from apostles zone bundle.js:23895:17
+🎯 loyalists customer DEMO_68 at (4,8) is 1 positions from apostles zone bundle.js:23895:17
+📊 Special zone proximity result: loyalists -> apostles: 4 customers, 2 positions, avg distance: 1.00 bundle.js:23914:13
+🔍 CALCULATING loyalists_close_to_near_apostles: 
+Object { loyalistsCount: 31, showSpecialZones: true, showNearApostles: false }
+bundle.js:23194:17
+🔍 analyzeSpecialZoneProximity: loyalists -> near_apostles | customers: 31 | showSpecialZones: true | showNearApostles: false bundle.js:23825:13
+🔍 shouldAnalyzeSpecialZoneProximity result for loyalists -> near_apostles: false bundle.js:23829:13
+❌ Special zone proximity analysis skipped for loyalists -> near_apostles (conditions not met) bundle.js:23836:15
+🔍 CALCULATING near_apostles_close_to_apostles: 
+Object { near_apostlesCount: 0, showSpecialZones: true, showNearApostles: false }
+bundle.js:23202:17
+🔍 analyzeSpecialZoneProximity: near_apostles -> apostles | customers: 0 | showSpecialZones: true | showNearApostles: false bundle.js:23825:13
+🔍 shouldAnalyzeSpecialZoneProximity result for near_apostles -> apostles: false bundle.js:23829:13
+🔍 CALCULATING defectors_close_to_terrorists: 
+Object { defectorsCount: 16, showSpecialZones: true, showNearApostles: false }
+bundle.js:23210:17
+🔍 analyzeSpecialZoneProximity: defectors -> terrorists | customers: 16 | showSpecialZones: true | showNearApostles: false bundle.js:23825:13
+🔍 shouldAnalyzeSpecialZoneProximity result for defectors -> terrorists: true bundle.js:23829:13
+📊 After target zone exclusion: 16 customers (excluded 0 already in terrorists zone) bundle.js:23855:13
+📊 After boundary conflict exclusion: 16 customers (excluded 0 on quadrant boundaries) bundle.js:23865:13
+🎯 defectors customer DEMO_2 at (1,2) is 1 positions from terrorists zone bundle.js:23895:17
+🎯 defectors customer DEMO_12 at (2,2) is 1 positions from terrorists zone bundle.js:23895:17
+🎯 defectors customer DEMO_81 at (2,2) is 1 positions from terrorists zone bundle.js:23895:17
+🎯 defectors customer DEMO_82 at (2,2) is 1 positions from terrorists zone bundle.js:23895:17
+🎯 defectors customer DEMO_83 at (2,2) is 1 positions from terrorists zone bundle.js:23895:17
+🎯 defectors customer DEMO_84 at (2,2) is 1 positions from terrorists zone bundle.js:23895:17
+🎯 defectors customer DEMO_85 at (2,2) is 1 positions from terrorists zone bundle.js:23895:17
+🎯 defectors customer DEMO_86 at (2,2) is 1 positions from terrorists zone bundle.js:23895:17
+🎯 defectors customer DEMO_87 at (2,2) is 1 positions from terrorists zone bundle.js:23895:17
+🎯 defectors customer DEMO_88 at (2,2) is 1 positions from terrorists zone bundle.js:23895:17
+🎯 defectors customer DEMO_89 at (2,2) is 1 positions from terrorists zone bundle.js:23895:17
+🎯 defectors customer DEMO_90 at (2,2) is 1 positions from terrorists zone bundle.js:23895:17
+📊 Special zone proximity result: defectors -> terrorists: 12 customers, 2 positions, avg distance: 1.00 bundle.js:23914:13
+🔍 analyzeSpecialZoneProximity: apostles -> loyalists | customers: 8 | showSpecialZones: true | showNearApostles: false bundle.js:23825:13
+🔍 shouldAnalyzeSpecialZoneProximity result for apostles -> loyalists: true bundle.js:23829:13
+❌ No boundaries found for target zone: loyalists bundle.js:23843:15
+🔍 analyzeSpecialZoneProximity: near_apostles -> loyalists | customers: 0 | showSpecialZones: true | showNearApostles: false bundle.js:23825:13
+🔍 shouldAnalyzeSpecialZoneProximity result for near_apostles -> loyalists: false bundle.js:23829:13
+🔍 analyzeSpecialZoneProximity: terrorists -> defectors | customers: 2 | showSpecialZones: true | showNearApostles: false bundle.js:23825:13
+🔍 shouldAnalyzeSpecialZoneProximity result for terrorists -> defectors: true bundle.js:23829:13
+❌ No boundaries found for target zone: defectors bundle.js:23843:15
+🔍 DEBUGGING SUMMARY CALCULATION - About to call calculateSummaryMetrics bundle.js:23230:13
+🔍 Analysis details: 
+Object { loyalists_close_to_mercenaries: 19, loyalists_close_to_hostages: 2, mercenaries_close_to_loyalists: 5, mercenaries_close_to_defectors: 2, hostages_close_to_loyalists: 0, hostages_close_to_defectors: 4, defectors_close_to_mercenaries: 0, defectors_close_to_hostages: 2 }
+bundle.js:23231:13
+🔍 Special zones details: 
+Object { apostles_close_to_loyalists: 0, near_apostles_close_to_loyalists: 0, terrorists_close_to_defectors: 0 }
+bundle.js:23243:15
+🚨 SUMMARY CALCULATION RESULT: 
+Object { totalProximityCustomers: 52, totalProximityPositions: 24 }
+bundle.js:23252:13
+🔍 Detecting crossroads customers... bundle.js:24211:13
+🎯 Crossroads customer DEMO_26 appears in 3 relationships: loyalists_close_to_mercenaries_hostages, loyalists_close_to_mercenaries_hostages, loyalists_close_to_defectors bundle.js:24243:17
+🎯 Crossroads customer DEMO_24 appears in 3 relationships: mercenaries_close_to_loyalists_defectors, mercenaries_close_to_loyalists_defectors, mercenaries_close_to_hostages bundle.js:24243:17
+📊 Crossroads detection complete: 2 total, 2 high-value bundle.js:24273:13
+🚨 CROSSROADS DETECTION RESULT: 
+Object { totalCrossroads: 2, highValueCrossroads: 2 }
+bundle.js:23259:13
+🚨 ENHANCED PROXIMITY CLASSIFIER FINAL RESULT: 
+Object { loyalists_close_to_apostles: 4, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 12, showSpecialZones: true, showNearApostles: false }
+bundle.js:23275:13
+🚀🚀🚀 ENHANCED PROXIMITY CLASSIFIER - analyzeProximity COMPLETE bundle.js:23282:13
+🚀 FINAL RESULTS: bundle.js:23283:13
+   - Total proximity customers: 52 bundle.js:23284:13
+   - Total proximity positions: 24 bundle.js:23285:13
+   - Average risk score: 52 bundle.js:23286:13
+   - Defectors close to loyalists: 0 customers bundle.js:23287:13
+   - Defectors close to loyalists positions: 
+Array []
+bundle.js:23288:13
+🎯 Proximity Analysis Result: 
+Object { analysis: {…}, specialZones: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:23289:13
+🔍 DISTRIBUTION SECTION: EnhancedProximityClassifier result: 
+Object { loyalists_close_to_apostles: 4, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 12, showSpecialZones: true, mode: "MAIN_AREAS" }
+bundle.js:14763:15
+🚨 DISTRIBUTION SECTION RETURNING RESULT: 
+Object { analysis: {…}, specialZones: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:14770:15
+🔍 DISTRIBUTION SECTION proximityAnalysis result: 
+Object { loyalists_close_to_mercenaries: 19, isAvailable: true, totalCustomers: 90 }
+bundle.js:14877:11
+🚨 DISTRIBUTION SECTION PROXIMITY CALCULATIONS: 
+Object { loyalists_near_mercenaries: 19, loyalists_near_hostages: 2, hostages_near_loyalists: 0, hostages_near_defectors: 4 }
+bundle.js:14941:11
+🔍 DISTRIBUTION USING CONTEXT DIRECTLY: 
+Object { showSpecialZones: true, showNearApostles: false, contextDistribution: {…}, finalDistribution: {…} }
+bundle.js:14962:11
+🔍 Special Groups Debug: 
+Object { showNearApostles: false, apostles: 8, near_apostles: 0, terrorists: 2, totalSpecial: 10 }
+bundle.js:15093:11
+🔍 Full Distribution Object: 
+Object { loyalists: 50, defectors: 14, mercenaries: 10, hostages: 16, apostles: 38, nearApostles: 12, terrorists: 1 }
+bundle.js:15100:11
+🔍 Effective Distribution: 
+Object { loyalists: 31, mercenaries: 20, hostages: 12, defectors: 16, apostles: 8, terrorists: 2, nearApostles: 0 }
+bundle.js:15101:11
+🎯 ProximitySection: Using context distribution: 
+Object { loyalists: 31, mercenaries: 20, hostages: 12, defectors: 16, apostles: 8, terrorists: 2, near_apostles: 0, neutral: 0 }
+bundle.js:18776:11
+🔍 Context distribution totals: 
+Object { loyalists: 31, apostles: 8, total_loyalist_area: 39, totalFromContext: 89 }
+bundle.js:18780:11
+🔍 ABOUT TO USE proximityAnalysis.summary: 
+Object { totalProximityCustomers: 52, isAvailable: true, source: "proximityAnalysis.summary" }
+bundle.js:18926:11
+🎯 ProximitySection: Using context distribution: 
+Object { loyalists: 31, mercenaries: 20, hostages: 12, defectors: 16, apostles: 8, terrorists: 2, near_apostles: 0, neutral: 0 }
+bundle.js:18776:11
+🔍 Context distribution totals: 
+Object { loyalists: 31, apostles: 8, total_loyalist_area: 39, totalFromContext: 89 }
+bundle.js:18780:11
+🔍 ABOUT TO USE proximityAnalysis.summary: 
+Object { totalProximityCustomers: 52, isAvailable: true, source: "proximityAnalysis.summary" }
+bundle.js:18926:11
+***DEBUG*** Prepared filterable data: 12 bundle.js:20334:15
+***DEBUG*** Prepared filterable data: 12 bundle.js:20336:15
+***DEBUG*** Prepared filterable data sample: 
+Object { id: "DEMO_36", name: "Samuel Price", satisfaction: 4, loyalty: 6, email: "demo36@example.com", date: "2024-01-06", group: "Terrorists", additionalAttributes: {…} }
+bundle.js:20337:15
+🔍 ReportingSection Premium Check: bundle.js:11534:11
+  activeEffects: 
+Array(4) [ "premium", "LOGO_FLAT", "LOGO_X:0", "LOGO_Y:0" ]
+bundle.js:11535:11
+  activeEffects.has("premium"): true bundle.js:11536:11
+  isPremium result: true bundle.js:11537:11
+🚨🚨🚨 REPORTING SECTION RENDERING - THIS SHOULD APPEAR bundle.js:11538:11
+🚨🚨🚨 About to render DistributionSection with: 
+Object { dataLength: 90, showSpecialZones: true, showNearApostles: false, dataReportExists: true, distributionExists: true }
+bundle.js:11539:11
+🔍 ReportingSection Premium Check: bundle.js:11534:11
+  activeEffects: 
+Array(4) [ "premium", "LOGO_FLAT", "LOGO_X:0", "LOGO_Y:0" ]
+bundle.js:11535:11
+  activeEffects.has("premium"): true bundle.js:11536:11
+  isPremium result: true bundle.js:11537:11
+🚨🚨🚨 REPORTING SECTION RENDERING - THIS SHOULD APPEAR bundle.js:11538:11
+🚨🚨🚨 About to render DistributionSection with: 
+Object { dataLength: 90, showSpecialZones: true, showNearApostles: false, dataReportExists: true, distributionExists: true }
+bundle.js:11539:11
+🚨 COMPONENT START - ResponseConcentrationSection is rendering! bundle.js:20205:11
+🔥 ResponseConcentrationSection ENTRY - originalData length: 90 bundle.js:20206:11
+🔥 Component is rendering with settings: 
+Object { useQuadrantColors: true, customColors: {}, showAverageDot: true, frequencyThreshold: 2, showTiers: true, maxTiers: 3, applyMainChartFrequencyFilter: false }
+bundle.js:20207:11
+🔥 MANUAL ASSIGNMENTS DEBUG: 
+Array []
+bundle.js:20214:11
+🔥 MANUAL ASSIGNMENTS STRING: <empty string> bundle.js:20215:11
+🔥 CONTEXT CONNECTED - midpoint: 
+Object { sat: 3, loy: 5 }
+ manualAssignments size: 0 bundle.js:20216:11
+***DEBUG*** isPremium result: true bundle.js:20217:11
+***DEBUG*** Initial filteredData: 
+Array(15) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, … ]
+bundle.js:20272:11
+***DEBUG*** Report mostCommonCombos: 
+Array [ {…} ]
+bundle.js:20273:11
+***DEBUG*** Settings frequencyThreshold: 2 bundle.js:20274:11
+***DEBUG*** Settings showTiers: true bundle.js:20275:11
+***DEBUG*** Settings maxTiers: 3 bundle.js:20276:11
+***DEBUG*** getFilteredCombinations result: 
+Array(10) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…} ]
+bundle.js:20394:13
+🔥 getPointColor CALLED for point: 4 6 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: loyalists for point: DEMO_36 bundle.js:20442:15
+🔥 Mapping quadrant to color: loyalists bundle.js:20445:15
+🔥 getPointColor CALLED for point: 2 2 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: defectors for point: DEMO_12 bundle.js:20442:15
+🔥 Mapping quadrant to color: defectors bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 1 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_31 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 2 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_32 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 3 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_33 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 4 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_34 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 5 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: loyalists for point: DEMO_35 bundle.js:20442:15
+🔥 Mapping quadrant to color: loyalists bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 7 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: loyalists for point: DEMO_37 bundle.js:20442:15
+🔥 Mapping quadrant to color: loyalists bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 8 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: loyalists for point: DEMO_38 bundle.js:20442:15
+🔥 Mapping quadrant to color: loyalists bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 9 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: apostles for point: DEMO_39 bundle.js:20442:15
+🔥 Mapping quadrant to color: apostles bundle.js:20445:15
+🚨 COMPONENT START - ResponseConcentrationSection is rendering! bundle.js:20205:11
+🔥 ResponseConcentrationSection ENTRY - originalData length: 90 bundle.js:20206:11
+🔥 Component is rendering with settings: 
+Object { useQuadrantColors: true, customColors: {}, showAverageDot: true, frequencyThreshold: 2, showTiers: true, maxTiers: 3, applyMainChartFrequencyFilter: false }
+bundle.js:20207:11
+🔥 MANUAL ASSIGNMENTS DEBUG: 
+Array []
+bundle.js:20214:11
+🔥 MANUAL ASSIGNMENTS STRING: <empty string> bundle.js:20215:11
+🔥 CONTEXT CONNECTED - midpoint: 
+Object { sat: 3, loy: 5 }
+ manualAssignments size: 0 bundle.js:20216:11
+***DEBUG*** isPremium result: true bundle.js:20217:11
+***DEBUG*** Initial filteredData: 
+Array(15) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, … ]
+bundle.js:20272:11
+***DEBUG*** Report mostCommonCombos: 
+Array [ {…} ]
+bundle.js:20273:11
+***DEBUG*** Settings frequencyThreshold: 2 bundle.js:20274:11
+***DEBUG*** Settings showTiers: true bundle.js:20275:11
+***DEBUG*** Settings maxTiers: 3 bundle.js:20276:11
+***DEBUG*** getFilteredCombinations result: 
+Array(10) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…} ]
+bundle.js:20394:13
+🔥 getPointColor CALLED for point: 4 6 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: loyalists for point: DEMO_36 bundle.js:20442:15
+🔥 Mapping quadrant to color: loyalists bundle.js:20445:15
+🔥 getPointColor CALLED for point: 2 2 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: defectors for point: DEMO_12 bundle.js:20442:15
+🔥 Mapping quadrant to color: defectors bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 1 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_31 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 2 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_32 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 3 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_33 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 4 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_34 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 5 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: loyalists for point: DEMO_35 bundle.js:20442:15
+🔥 Mapping quadrant to color: loyalists bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 7 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: loyalists for point: DEMO_37 bundle.js:20442:15
+🔥 Mapping quadrant to color: loyalists bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 8 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: loyalists for point: DEMO_38 bundle.js:20442:15
+🔥 Mapping quadrant to color: loyalists bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 9 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: apostles for point: DEMO_39 bundle.js:20442:15
+🔥 Mapping quadrant to color: apostles bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 6 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: loyalists for point: DEMO_36 bundle.js:20442:15
+🔥 Mapping quadrant to color: loyalists bundle.js:20445:15
+🔥 getPointColor CALLED for point: 2 2 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: defectors for point: DEMO_12 bundle.js:20442:15
+🔥 Mapping quadrant to color: defectors bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 1 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_31 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 2 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_32 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 3 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_33 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 4 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_34 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 5 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: loyalists for point: DEMO_35 bundle.js:20442:15
+🔥 Mapping quadrant to color: loyalists bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 7 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: loyalists for point: DEMO_37 bundle.js:20442:15
+🔥 Mapping quadrant to color: loyalists bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 8 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: loyalists for point: DEMO_38 bundle.js:20442:15
+🔥 Mapping quadrant to color: loyalists bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 9 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: apostles for point: DEMO_39 bundle.js:20442:15
+🔥 Mapping quadrant to color: apostles bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 10 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: apostles for point: DEMO_40 bundle.js:20442:15
+🔥 Mapping quadrant to color: apostles bundle.js:20445:15
+🔥 getPointColor CALLED for point: 5 1 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_41 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 5 2 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_42 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 5 3 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_43 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 5 4 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_44 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 6 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: loyalists for point: DEMO_36 bundle.js:20442:15
+🔥 Mapping quadrant to color: loyalists bundle.js:20445:15
+🔥 getPointColor CALLED for point: 2 2 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: defectors for point: DEMO_12 bundle.js:20442:15
+🔥 Mapping quadrant to color: defectors bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 1 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_31 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 2 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_32 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 3 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_33 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 4 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_34 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 5 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: loyalists for point: DEMO_35 bundle.js:20442:15
+🔥 Mapping quadrant to color: loyalists bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 7 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: loyalists for point: DEMO_37 bundle.js:20442:15
+🔥 Mapping quadrant to color: loyalists bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 8 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: loyalists for point: DEMO_38 bundle.js:20442:15
+🔥 Mapping quadrant to color: loyalists bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 9 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: apostles for point: DEMO_39 bundle.js:20442:15
+🔥 Mapping quadrant to color: apostles bundle.js:20445:15
+🔥 getPointColor CALLED for point: 4 10 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: apostles for point: DEMO_40 bundle.js:20442:15
+🔥 Mapping quadrant to color: apostles bundle.js:20445:15
+🔥 getPointColor CALLED for point: 5 1 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_41 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 5 2 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_42 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 5 3 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_43 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔥 getPointColor CALLED for point: 5 4 bundle.js:20416:13
+🔥 Using quadrant colors - creating temp point bundle.js:20418:15
+🔥 Context returned quadrant: mercenaries for point: DEMO_44 bundle.js:20442:15
+🔥 Mapping quadrant to color: mercenaries bundle.js:20445:15
+🔍 ChartControls received labelPositioning: above-dots bundle.js:31265:11
+🔍 ChartControls: showWatermarkPanel state: false bundle.js:31275:11
+🔍 ChartControls: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:31276:11
+🔍 ChartControls: effects prop: 
+Array(4) [ "premium", "LOGO_FLAT", "LOGO_X:0", "LOGO_Y:0" ]
+bundle.js:31277:11
+🔍 Counter debug: 
+Object { filteredCount: 90, totalCount: 90, filteredDataLength: 90, dataLength: 90, excludedCount: 0, hasFilters: true, filteredDataIsSameAsData: false, activeDataLength: 90 }
+bundle.js:31466:23
+🔍 ChartControls received labelPositioning: above-dots bundle.js:31265:11
+🔍 ChartControls: showWatermarkPanel state: false bundle.js:31275:11
+🔍 ChartControls: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:31276:11
+🔍 ChartControls: effects prop: 
+Array(4) [ "premium", "LOGO_FLAT", "LOGO_X:0", "LOGO_Y:0" ]
+bundle.js:31277:11
+🔍 Counter debug: 
+Object { filteredCount: 90, totalCount: 90, filteredDataLength: 90, dataLength: 90, excludedCount: 0, hasFilters: true, filteredDataIsSameAsData: false, activeDataLength: 90 }
+bundle.js:31466:23
+Document click: 
+<button class="watermark-toggle-button" style="width: 100%; padding: 6p…wrap; min-height: 32px;" title="Watermark Controls">
+bundle.js:12075:15
+Document click: 
+<button class="watermark-toggle-button" style="width: 100%; padding: 6p…wrap; min-height: 32px;" title="Watermark Controls">
+bundle.js:12075:15
+🔍 ChartControls: Watermark button clicked, current state: false bundle.js:31853:25
+🔍 ChartControls received labelPositioning: above-dots bundle.js:31265:11
+🔍 ChartControls: showWatermarkPanel state: true bundle.js:31275:11
+🔍 ChartControls: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:31276:11
+🔍 ChartControls: effects prop: 
+Array(4) [ "premium", "LOGO_FLAT", "LOGO_X:0", "LOGO_Y:0" ]
+bundle.js:31277:11
+🔍 Counter debug: 
+Object { filteredCount: 90, totalCount: 90, filteredDataLength: 90, dataLength: 90, excludedCount: 0, hasFilters: true, filteredDataIsSameAsData: false, activeDataLength: 90 }
+bundle.js:31466:23
+🔍 ChartControls received labelPositioning: above-dots bundle.js:31265:11
+🔍 ChartControls: showWatermarkPanel state: true bundle.js:31275:11
+🔍 ChartControls: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:31276:11
+🔍 ChartControls: effects prop: 
+Array(4) [ "premium", "LOGO_FLAT", "LOGO_X:0", "LOGO_Y:0" ]
+bundle.js:31277:11
+🔍 Counter debug: 
+Object { filteredCount: 90, totalCount: 90, filteredDataLength: 90, dataLength: 90, excludedCount: 0, hasFilters: true, filteredDataIsSameAsData: false, activeDataLength: 90 }
+bundle.js:31466:23
+🔍 ChartControls received labelPositioning: above-dots bundle.js:31265:11
+🔍 ChartControls: showWatermarkPanel state: false bundle.js:31275:11
+🔍 ChartControls: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:31276:11
+🔍 ChartControls: effects prop: 
+Array(4) [ "premium", "LOGO_FLAT", "LOGO_X:0", "LOGO_Y:0" ]
+bundle.js:31277:11
+🔍 Counter debug: 
+Object { filteredCount: 90, totalCount: 90, filteredDataLength: 90, dataLength: 90, excludedCount: 0, hasFilters: true, filteredDataIsSameAsData: false, activeDataLength: 90 }
+bundle.js:31466:23
+🔍 ChartControls received labelPositioning: above-dots bundle.js:31265:11
+🔍 ChartControls: showWatermarkPanel state: false bundle.js:31275:11
+🔍 ChartControls: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:31276:11
+🔍 ChartControls: effects prop: 
+Array(4) [ "premium", "LOGO_FLAT", "LOGO_X:0", "LOGO_Y:0" ]
+bundle.js:31277:11
+🔍 Counter debug: 
+Object { filteredCount: 90, totalCount: 90, filteredDataLength: 90, dataLength: 90, excludedCount: 0, hasFilters: true, filteredDataIsSameAsData: false, activeDataLength: 90 }
+bundle.js:31466:23
+Document click: 
+<svg class="lucide lucide-download-icon lucide-download" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3a863e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+bundle.js:12075:15
+Document click: 
+<svg class="lucide lucide-download-icon lucide-download" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3a863e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+bundle.js:12075:15
+🔍 FilteredChart: Component rendered! bundle.js:28866:11
+🔍 FilteredChart: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:28867:11
+🔍 FilteredChart: Component rendered! bundle.js:28866:11
+🔍 FilteredChart: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:28867:11
+🔍 Rendering content, exportOnly: true isOpen: true bundle.js:33364:19
+📋 renderExportTab called, exportFormat: png bundle.js:33108:13
+🔍 Rendering content, exportOnly: true isOpen: true bundle.js:33364:19
+📋 renderExportTab called, exportFormat: png bundle.js:33108:13
+🔍 QuadrantChart: Component rendered! bundle.js:29360:11
+🔍 QuadrantChart: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:29361:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:29436:11
+🔍 Label positioning: above-dots bundle.js:29437:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:29438:11
+🔍 QuadrantChart: Component rendered! bundle.js:29360:11
+🔍 QuadrantChart: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:29361:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:29436:11
+🔍 Label positioning: above-dots bundle.js:29437:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:29438:11
+🔍 ChartControls received labelPositioning: above-dots bundle.js:31265:11
+🔍 ChartControls: showWatermarkPanel state: false bundle.js:31275:11
+🔍 ChartControls: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:31276:11
+🔍 ChartControls: effects prop: 
+Array(4) [ "premium", "LOGO_FLAT", "LOGO_X:0", "LOGO_Y:0" ]
+bundle.js:31277:11
+🔍 Counter debug: 
+Object { filteredCount: 90, totalCount: 90, filteredDataLength: 90, dataLength: 90, excludedCount: 0, hasFilters: true, filteredDataIsSameAsData: false, activeDataLength: 90 }
+bundle.js:31466:23
+🔍 ChartControls received labelPositioning: above-dots bundle.js:31265:11
+🔍 ChartControls: showWatermarkPanel state: false bundle.js:31275:11
+🔍 ChartControls: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:31276:11
+🔍 ChartControls: effects prop: 
+Array(4) [ "premium", "LOGO_FLAT", "LOGO_X:0", "LOGO_Y:0" ]
+bundle.js:31277:11
+🔍 Counter debug: 
+Object { filteredCount: 90, totalCount: 90, filteredDataLength: 90, dataLength: 90, excludedCount: 0, hasFilters: true, filteredDataIsSameAsData: false, activeDataLength: 90 }
+bundle.js:31466:23
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:40302:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:40303:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:40302:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:40303:11
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:39872:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:39897:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:39897:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:39897:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:39897:13
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:39872:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:39897:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:39897:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:39897:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:39897:13
+🔧 ResizeHandle: Not adjustable, not rendering 2 bundle.js:32603:13
+🔍 UnifiedChartControls: Tab selection logic 
+Object { hasFilterableData: true, isPremium: true, currentTab: "export" }
+bundle.js:33001:15
+Document click: 
+<button class="date-preset-button " style="background: white; borde… 8px; transition: 0.2s;">
+bundle.js:12075:15
+Document click: 
+<button class="date-preset-button " style="background: white; borde… 8px; transition: 0.2s;">
+bundle.js:12075:15
+🔘 Export button clicked, format: png bundle.js:33233:23
+📤 Calling exportCapture for png bundle.js:33247:27
+🔍 exportCapture called with selector: .chart-container bundle.js:1064:11
+✅ Element found: chart-container 960 x 680 bundle.js:1077:11
+🔍 Rendering content, exportOnly: true isOpen: true bundle.js:33364:19
+📋 renderExportTab called, exportFormat: png bundle.js:33108:13
+🔍 Rendering content, exportOnly: true isOpen: true bundle.js:33364:19
+📋 renderExportTab called, exportFormat: png bundle.js:33108:13
+🚫 Hidden 1 watermark elements in clone (will draw separately) bundle.js:1108:13
+🖼️ Starting html2canvas capture... bundle.js:1113:13
+#2 0ms Starting document clone with size 1963x945 scrolled to 0,-1455.13330078125 bundle.js:61611:25
+Feature Policy: Skipping unsupported feature name “clipboard-read”. bundle.js:59428:24
+Feature Policy: Skipping unsupported feature name “clipboard-write”. bundle.js:59428:24
+#2 641ms Unable to access cssRules property DOMException: CSSStyleSheet.cssRules getter: Not allowed to access cross-origin stylesheet
+    createStyleClone http://localhost:3000/static/js/bundle.js:59451
+    createElementClone http://localhost:3000/static/js/bundle.js:59426
+    cloneNode http://localhost:3000/static/js/bundle.js:59560
+    appendChildNode http://localhost:3000/static/js/bundle.js:59532
+    cloneChildNodes http://localhost:3000/static/js/bundle.js:59547
+    cloneNode http://localhost:3000/static/js/bundle.js:59577
+    appendChildNode http://localhost:3000/static/js/bundle.js:59532
+    cloneChildNodes http://localhost:3000/static/js/bundle.js:59547
+    cloneNode http://localhost:3000/static/js/bundle.js:59577
+    DocumentCloner http://localhost:3000/static/js/bundle.js:59349
+    renderElement http://localhost:3000/static/js/bundle.js:61737
+    step http://localhost:3000/static/js/bundle.js:54225
+    verb http://localhost:3000/static/js/bundle.js:54174
+    __awaiter http://localhost:3000/static/js/bundle.js:54148
+    __awaiter http://localhost:3000/static/js/bundle.js:54130
+    renderElement http://localhost:3000/static/js/bundle.js:61693
+    html2canvas http://localhost:3000/static/js/bundle.js:61687
+    exportCapture http://localhost:3000/static/js/bundle.js:1114
+bundle.js:61660:25
+🔍 Rendering content, exportOnly: true isOpen: true bundle.js:33364:19
+📋 renderExportTab called, exportFormat: png bundle.js:33108:13
+🔍 Rendering content, exportOnly: true isOpen: true bundle.js:33364:19
+📋 renderExportTab called, exportFormat: png bundle.js:33108:13
+#2 1036ms Document cloned, element located at -10000,1455.13330078125 with size 1108x863 using computed rendering bundle.js:61611:25
+#2 1036ms Starting DOM parsing bundle.js:61611:25
+#2 1197ms Starting renderer for element at -10000,1455.13330078125 with size 1108x863 bundle.js:61611:25
+#2 1197ms Canvas renderer initialized (1108x863) with scale 2 bundle.js:61611:25
+#2 1270ms Finished rendering bundle.js:61611:25
+✅ Canvas created: 2216 x 1726 bundle.js:1119:13
+🎨 Composing watermark with live settings... bundle.js:1123:15
+🎬 composeWatermarkOnCanvas called 
+Object { effectsSize: 4, effects: (4) […], chartWidth: 960, chartHeight: 680 }
+bundle.js:1501:11
+🔍 Parsed watermark settings: 
+Object { isFlat: true, logoSize: 90, logoX: 0, logoY: 0, logoUrl: "https://raw.githubusercontent.com/JaimeV360/segmen..." }
+bundle.js:1508:11
+✅ FLAT mode - calculated dimensions: 
+Object { displayWidth: 180, displayHeight: 27.155172413793103, naturalAspect: 6.628571428571429 }
+bundle.js:1550:15
+📍 Watermark position (FLAT): 
+Object { logoX: 0, logoY: 0, paddingLeft: 102, paddingTop: 31, calculatedX: 224, calculatedY: 82, clampedX: 224, clampedY: 82, canvasSize: "2216x1726", imageSize: "180x27.155172413793103", … }
+bundle.js:1576:13
+✅ Watermark drawing complete. Check export for: bundle.js:1612:13
+  - Red square at (100, 100) - if visible, canvas drawing works bundle.js:1613:13
+  - Watermark logo - should be at clamped position bundle.js:1614:13
+✅ Watermark composed bundle.js:1135:17
+📦 Converting canvas to blob... bundle.js:1143:15
+✅ Blob created, size: 190598 bytes bundle.js:1150:19
+✅ Object URL created: blob:http://localhost:3000/334e4b64-410b-4a7f-803a... bundle.js:1152:19
+🔗 Link created, download attribute: segmentor-app_main_chart_31-10-2025-12-55.png bundle.js:1164:19
+✅ Link appended to DOM, clicking... bundle.js:1166:19
+Document click: 
+<a href="blob:http://localhost:30…b-4a7f-803a-adb2745e8d2a" download="segmentor-app_main_chart_31-10-2025-12-55.png">
+bundle.js:12075:15
+Document click: 
+<a href="blob:http://localhost:30…b-4a7f-803a-adb2745e8d2a" download="segmentor-app_main_chart_31-10-2025-12-55.png">
+bundle.js:12075:15
+✅ link.click() called bundle.js:1168:19
+✅ Cleanup complete, download should have started bundle.js:1174:21
+✅ exportCapture completed bundle.js:33263:27
+🔍 Rendering content, exportOnly: true isOpen: true bundle.js:33364:19
+📋 renderExportTab called, exportFormat: png bundle.js:33108:13
+🔍 Rendering content, exportOnly: true isOpen: true bundle.js:33364:19
+📋 renderExportTab called, exportFormat: png bundle.js:33108:13
+🔍 FilteredChart: Component rendered! bundle.js:28866:11
+🔍 FilteredChart: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:28867:11
+🔍 FilteredChart: Component rendered! bundle.js:28866:11
+🔍 FilteredChart: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:28867:11
+🔍 QuadrantChart: Component rendered! bundle.js:29360:11
+🔍 QuadrantChart: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:29361:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:29436:11
+🔍 Label positioning: above-dots bundle.js:29437:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:29438:11
+🔍 QuadrantChart: Component rendered! bundle.js:29360:11
+🔍 QuadrantChart: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:29361:11
+🔍 Special zone boundaries calculated in QuadrantChart: 
+Object { apostles: {…}, terrorists: {…} }
+bundle.js:29436:11
+🔍 Label positioning: above-dots bundle.js:29437:11
+🔍 ChartControls props: 
+Object { labelPositioning: "above-dots", setLabelPositioning: BoundFunctionObject }
+bundle.js:29438:11
+🔍 ChartControls received labelPositioning: above-dots bundle.js:31265:11
+🔍 ChartControls: showWatermarkPanel state: false bundle.js:31275:11
+🔍 ChartControls: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:31276:11
+🔍 ChartControls: effects prop: 
+Array(4) [ "premium", "LOGO_FLAT", "LOGO_X:0", "LOGO_Y:0" ]
+bundle.js:31277:11
+🔍 Counter debug: 
+Object { filteredCount: 90, totalCount: 90, filteredDataLength: 90, dataLength: 90, excludedCount: 0, hasFilters: true, filteredDataIsSameAsData: false, activeDataLength: 90 }
+bundle.js:31466:23
+🔍 ChartControls received labelPositioning: above-dots bundle.js:31265:11
+🔍 ChartControls: showWatermarkPanel state: false bundle.js:31275:11
+🔍 ChartControls: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:31276:11
+🔍 ChartControls: effects prop: 
+Array(4) [ "premium", "LOGO_FLAT", "LOGO_X:0", "LOGO_Y:0" ]
+bundle.js:31277:11
+🔍 Counter debug: 
+Object { filteredCount: 90, totalCount: 90, filteredDataLength: 90, dataLength: 90, excludedCount: 0, hasFilters: true, filteredDataIsSameAsData: false, activeDataLength: 90 }
+bundle.js:31466:23
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:40302:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:40303:11
+🔧 SpecialZones: Rendering zones only - apostles size=1, terrorists size=1 bundle.js:40302:11
+🔧 SpecialZones: showHandles=true (ignored - handles managed by ResizeHandle component) bundle.js:40303:11
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:39872:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:39897:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:39897:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:39897:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:39897:13
+🔍 IndependentLabelLayer rendering: 
+Object { showLabels: true, labelPositioning: "above-dots", showSpecialZones: true, showQuadrantLabels: true, showSpecialZoneLabels: true, midpoint: {…}, specialZoneBoundaries: {…} }
+bundle.js:39872:11
+🔍 loyalists positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:39897:13
+🔍 mercenaries positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:39897:13
+🔍 hostages positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:39897:13
+🔍 defectors positioning: 
+Object { satMin: 1, satMax: 5, loyMin: 0, loyMax: 10, midpointSat: 3, midpointLoy: 5, satisfactionScale: "1-5", loyaltyScale: "0-10" }
+bundle.js:39897:13
+🔧 ResizeHandle: Not adjustable, not rendering 2 bundle.js:32603:13
+🔍 ChartControls received labelPositioning: above-dots bundle.js:31265:11
+🔍 ChartControls: showWatermarkPanel state: false bundle.js:31275:11
+🔍 ChartControls: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:31276:11
+🔍 ChartControls: effects prop: 
+Array(4) [ "premium", "LOGO_FLAT", "LOGO_X:0", "LOGO_Y:0" ]
+bundle.js:31277:11
+🔍 Counter debug: 
+Object { filteredCount: 90, totalCount: 90, filteredDataLength: 90, dataLength: 90, excludedCount: 0, hasFilters: true, filteredDataIsSameAsData: false, activeDataLength: 90 }
+bundle.js:31466:23
+🔍 ChartControls received labelPositioning: above-dots bundle.js:31265:11
+🔍 ChartControls: showWatermarkPanel state: false bundle.js:31275:11
+🔍 ChartControls: onEffectsChange prop: function function() {
+    [native code]
+} bundle.js:31276:11
+🔍 ChartControls: effects prop: 
+Array(4) [ "premium", "LOGO_FLAT", "LOGO_X:0", "LOGO_Y:0" ]
+bundle.js:31277:11
+🔍 Counter debug: 
+Object { filteredCount: 90, totalCount: 90, filteredDataLength: 90, dataLength: 90, excludedCount: 0, hasFilters: true, filteredDataIsSameAsData: false, activeDataLength: 90 }
+bundle.js:31466:23

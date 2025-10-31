@@ -81,14 +81,29 @@ export const useWatermarkControls = ({
   const getGridBounds = useCallback((logoSize: number, isFlat: boolean): GridBounds => {
     const container = getContainerDimensions();
     
-    // Use square footprint for clamping to ensure no overflow regardless of rotation
-    const logoWidth = logoSize;
-    const logoHeight = logoSize;
+    // Scale margin inversely with logo size: larger logos get smaller margin
+    // Use same margin calculation as default position (matching Watermark.tsx)
+    // Base margin of 100 for default size (90), scales down proportionally
+    // Minimum margin of 40 to match default position minimum
+    const baseMargin = 100;
+    const baseSize = 90;
+    const marginX = Math.max(40, baseMargin * (baseSize / logoSize));
     
-    // Use conservative boundaries to ensure logo stays within grid
-    const margin = 60; // Better visual spacing from edges
-    const maxX = Math.max(0, container.width - logoWidth - margin - 10); // -10 for the offset
-    const maxY = Math.max(0, container.height - logoHeight - margin - 10); // -10 for the offset
+    // For flat mode, use smaller Y margin since logo is much shorter (0.3x height)
+    // Use smaller base margin for flat mode to allow more movement range
+    // For vertical mode, use same scaled margin as X
+    const marginY = isFlat 
+      ? Math.max(20, 50 * (baseSize / logoSize)) // Smaller margin for flat (50px base, min 20px) - allows more range
+      : Math.max(40, baseMargin * (baseSize / logoSize)); // Same as X for vertical
+    
+    // Account for actual visual footprint after rotation
+    // For X axis: flat uses full width, vertical uses 0.85x width after rotation
+    const effWidth = isFlat ? logoSize : logoSize * 0.85;
+    // For Y axis: flat uses 0.3x height, vertical uses full height after rotation
+    const effHeight = isFlat ? logoSize * 0.3 : logoSize;
+    
+    const maxX = Math.max(0, container.width - effWidth - marginX - 10); // -10 for the offset
+    const maxY = Math.max(0, container.height - effHeight - marginY - 10); // -10 for the offset
     
     return {
       minX: 0, // Start from 0 since Watermark adds 10px offset
@@ -116,14 +131,39 @@ export const useWatermarkControls = ({
     onEffectsChange(newEffects);
   }, [effects, onEffectsChange]);
 
-  // Get current watermark state (simplified, no DOM queries)
+  // Get current watermark state (calculates default position if not set in effects)
   const getCurrentState = useCallback((): WatermarkState => {
     const size = getEffectValue('LOGO_SIZE:', 90);
     const isFlat = effects.has('LOGO_FLAT');
     
-    // Get current position from effects
-    const x = getEffectValue('LOGO_X:', 0);
-    const y = getEffectValue('LOGO_Y:', 0);
+    // Check if position is explicitly set in effects
+    const hasXEffect = Array.from(effects).some(e => e.startsWith('LOGO_X:'));
+    const hasYEffect = Array.from(effects).some(e => e.startsWith('LOGO_Y:'));
+    
+    let x: number;
+    let y: number;
+    
+    if (hasXEffect) {
+      x = getEffectValue('LOGO_X:', 0);
+    } else {
+      // Calculate default X position (matching Watermark.tsx logic)
+      const container = getContainerDimensions();
+      const effWidth = isFlat ? size : size * 0.85; // Visual width after rotation for vertical
+      // Scale margin with logo size: larger logos get smaller margin (closer to edge)
+      const baseMargin = 100;
+      const baseSize = 90;
+      const margin = Math.max(40, baseMargin * (baseSize / size)); // Min 40px margin
+      x = Math.max(0, container.width - effWidth - margin);
+    }
+    
+    if (hasYEffect) {
+      y = getEffectValue('LOGO_Y:', 0);
+    } else {
+      // Calculate default Y position (matching Watermark.tsx logic)
+      const container = getContainerDimensions();
+      const effHeight = isFlat ? size * 0.3 : size; // Visual height after rotation for vertical
+      y = Math.max(0, container.height - effHeight - 80);
+    }
     
     let logoType: 'default' | 'custom' = 'default';
     if (effects.has('CUSTOM_LOGO')) logoType = 'custom';
@@ -140,7 +180,7 @@ export const useWatermarkControls = ({
       customUrl,
       isVisible: !effects.has('HIDE_WATERMARK')
     };
-  }, [effects, getEffectValue]);
+  }, [effects, getEffectValue, getContainerDimensions]);
 
   // Constrain position to grid bounds
   const constrainPosition = useCallback((x: number, y: number, logoSize: number, isFlat: boolean) => {
@@ -206,17 +246,33 @@ export const useWatermarkControls = ({
     });
   }, [getCurrentState, constrainPosition, updateEffects]);
 
-  // Toggle flat/vertical and clamp current position for new rotation
+  // Toggle flat/vertical and preserve visual position when switching
   const toggleFlat = useCallback((isFlat: boolean) => {
     const state = getCurrentState();
-    const constrainedPos = constrainPosition(state.position.x, state.position.y, state.size, isFlat);
+    const wasFlat = state.isFlat;
+    
+    // If switching modes and we have a position, preserve the visual bottom edge
+    let newY = state.position.y;
+    if (wasFlat !== isFlat) {
+      // Calculate current visual height
+      const currentVisualHeight = wasFlat ? state.size * 0.3 : state.size;
+      // Calculate current visual bottom edge
+      const visualBottom = state.position.y + currentVisualHeight;
+      // Calculate new visual height for the new mode
+      const newVisualHeight = isFlat ? state.size * 0.3 : state.size;
+      // Calculate new Y position to preserve visual bottom edge
+      newY = visualBottom - newVisualHeight;
+    }
+    
+    // Constrain both X and Y positions for the new rotation
+    const constrainedPos = constrainPosition(state.position.x, newY, state.size, isFlat);
 
     updateEffects(effects => {
       // Rotation flag
       if (isFlat) effects.add('LOGO_FLAT');
       else effects.delete('LOGO_FLAT');
 
-      // Clamp current position under new rotation
+      // Update position to preserve visual placement
       const xEffect = Array.from(effects).find(e => e.startsWith('LOGO_X:'));
       const yEffect = Array.from(effects).find(e => e.startsWith('LOGO_Y:'));
       if (xEffect) effects.delete(xEffect);
@@ -274,6 +330,7 @@ export const useWatermarkControls = ({
     // Utilities
     getGridBounds,
     getDefaultPosition,
+    getCurrentState,
     constrainPosition,
     updateEffects
   };

@@ -389,7 +389,7 @@ useEffect(() => {
             {/* Export button for main visualization (styled like filter button) */}
             <div>
               <ExportButton
-                targetSelector={'.visualisation-section'}
+                targetSelector={'.visualization-section'}
                 label={"Export"}
                 padding={92}
                 iconOnly

@@ -21,7 +21,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
   onEffectsChange
 }) => {
   // Hook for clamping and updating effects
-  const { constrainPosition, updateEffects } = useWatermarkControls({
+  const { constrainPosition, updateEffects, getCurrentState, getGridBounds } = useWatermarkControls({
     effects,
     onEffectsChange: onEffectsChange || (() => {}),
     dimensions
@@ -79,8 +79,15 @@ export const Watermark: React.FC<WatermarkProps> = ({
     if (container) {
       const rect = container.getBoundingClientRect();
       const isFlatCalc = effects?.has('LOGO_FLAT');
-      const effWidth = isFlatCalc ? logoSize : logoSize * 0.3;
-      logoX = Math.max(0, rect.width - effWidth - 60);
+      // For vertical: after rotation, visual height = containerWidth (2.8x logoSize)
+      // Visual width = containerHeight (0.85 * logoSize)
+      // Account for the visual footprint after rotation
+      const effWidth = isFlatCalc ? logoSize : logoSize * 0.85; // Visual width after rotation
+      // Scale margin with logo size: larger logos get smaller margin (closer to edge)
+      const baseMargin = 100;
+      const baseSize = 90;
+      const margin = Math.max(40, baseMargin * (baseSize / logoSize)); // Min 40px margin
+      logoX = Math.max(0, rect.width - effWidth - margin);
     }
   }
   
@@ -95,8 +102,11 @@ export const Watermark: React.FC<WatermarkProps> = ({
     if (container) {
       const rect = container.getBoundingClientRect();
       const isFlatCalc = effects?.has('LOGO_FLAT');
-      const effHeight = isFlatCalc ? logoSize * 0.3 : logoSize;
-      logoY = Math.max(0, rect.height - effHeight - 60);
+      // For vertical: the container is square (logoSize x logoSize), after rotation it's still logoSize visually
+      // For flat: much smaller height
+      const effHeight = isFlatCalc ? logoSize * 0.3 : logoSize; // Visual height after rotation
+      // Position with larger margin to place logo higher
+      logoY = Math.max(0, rect.height - effHeight - 80);
     }
   }
 
@@ -133,7 +143,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
 
   // Drag handling using Pointer Events
   const isDraggingRef = React.useRef(false);
-  const startRef = React.useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
+  const startRef = React.useRef<{ x: number; y: number; posX: number; posY: number; offsetX?: number; offsetY?: number } | null>(null);
   const rafRef = React.useRef<number>(0);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -141,21 +151,92 @@ export const Watermark: React.FC<WatermarkProps> = ({
     e.preventDefault();
     (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
     isDraggingRef.current = true;
-    startRef.current = { x: e.clientX, y: e.clientY, posX: logoX, posY: logoY };
+    
+    // Get current state to get the actual logoX/logoY position from effects/default
+    const state = getCurrentState();
+    
+    const container = document.querySelector('.chart-container');
+    const containerRect = container?.getBoundingClientRect();
+    
+    if (containerRect) {
+      // Get mouse position relative to container
+      const containerX = e.clientX - containerRect.left;
+      const containerY = e.clientY - containerRect.top;
+      // Store the current logoX/logoY from state (this is what the logo position actually is)
+      startRef.current = { 
+        x: containerX, 
+        y: containerY, 
+        posX: state.position.x, 
+        posY: state.position.y
+      };
+    } else {
+      // Fallback to screen coordinates if container not found
+      startRef.current = { 
+        x: e.clientX, 
+        y: e.clientY, 
+        posX: state.position.x, 
+        posY: state.position.y
+      };
+    }
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!isDraggingRef.current || !startRef.current) return;
     cancelAnimationFrame(rafRef.current);
-    const { x, y, posX, posY } = startRef.current;
-    const dx = e.clientX - x;
-    const dy = e.clientY - y;
+    const { x: startX, y: startY, posX, posY } = startRef.current;
+    
+    // Get container position to convert screen coordinates to container-relative coordinates
+    const container = document.querySelector('.chart-container');
+    const containerRect = container?.getBoundingClientRect();
+    
+    if (!containerRect) return;
+    
+    // Convert current mouse position to container-relative coordinates
+    const currentContainerX = e.clientX - containerRect.left;
+    const currentContainerY = e.clientY - containerRect.top;
+    
+    // Calculate delta from mouse movement
+    const dx = currentContainerX - startX;
+    const dy = currentContainerY - startY;
+    
     rafRef.current = requestAnimationFrame(() => {
-      const next = constrainPosition(posX + dx, posY + dy, logoSize, isFlat || false);
+      // Get size and isFlat from state (but NOT position, as it recalculates defaults)
+      const state = getCurrentState();
+      
+      // CRITICAL: Use the starting position we captured, not getCurrentState().position
+      // because getCurrentState() recalculates defaults if no explicit effect exists
+      // Calculate new position by adding delta to the STARTING position
+      const newX = posX + dx;
+      const newY = posY + dy;
+      
+      // Get bounds - remove the restrictive margins for drag
+      const bounds = getGridBounds(state.size, state.isFlat);
+      
+      // For drag, use MUCH more permissive bounds - allow movement across most of the grid
+      // Remove the restrictive margins that prevent movement
+      // Push maxX further right by reducing the margin even more
+      const logoWidth = state.isFlat ? state.size : state.size * 0.85;
+      const logoHeight = state.isFlat ? state.size * 0.3 : state.size;
+      
+      const dragBounds = {
+        ...bounds,
+        minX: 0,
+        minY: 40,  // Increase top margin to prevent logo from going too high (40px gap from top)
+        maxX: bounds.width - logoWidth + 100,  // Push 100px further right than normal bounds
+        maxY: bounds.height - logoHeight + 50  // Also push 50px further down
+      };
+      
+      // Constrain with permissive drag bounds
+      const constrainedX = Math.max(dragBounds.minX, Math.min(dragBounds.maxX, newX));
+      const constrainedY = Math.max(dragBounds.minY, Math.min(dragBounds.maxY, newY));
+      
+      // ALWAYS set explicit position effects during drag to prevent recalculation
       updateEffects(nextSet => {
+        // Remove old position effects
         Array.from(nextSet).filter(s => s.startsWith('LOGO_X:') || s.startsWith('LOGO_Y:')).forEach(s => nextSet.delete(s));
-        nextSet.add(`LOGO_X:${next.x}`);
-        nextSet.add(`LOGO_Y:${next.y}`);
+        // Always add explicit position, even if it's the same, to prevent default recalculation
+        nextSet.add(`LOGO_X:${constrainedX}`);
+        nextSet.add(`LOGO_Y:${constrainedY}`);
       });
     });
   };

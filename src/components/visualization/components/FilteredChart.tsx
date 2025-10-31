@@ -101,7 +101,9 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
   // Listen for export command from unified panel
   useEffect(() => {
     const handler = async (e: Event) => {
+      console.log('📥 Export event received:', e);
       const detail = (e as CustomEvent).detail || { format: 'png' };
+      console.log('📥 Export detail:', detail);
       try {
         setExporting(true);
         if (detail.format === 'csv') {
@@ -111,7 +113,25 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
           };
           exportCsv({ data: (filterContext?.filteredData || data) as any, computeSegment });
         } else {
-          await exportCapture({ targetSelector: '.visualisation-section', format: detail.format, padding: 92, background: '#ffffff' });
+          console.log('📥 Starting image export...');
+          // Get chart container dimensions for watermark positioning
+          const chartContainer = document.querySelector('.chart-container') as HTMLElement;
+          const chartWidth = chartContainer?.getBoundingClientRect().width || 0;
+          const chartHeight = chartContainer?.getBoundingClientRect().height || 0;
+          console.log('📥 Chart dimensions:', { chartWidth, chartHeight, activeEffectsSize: activeEffects?.size });
+          
+          try {
+            await exportCapture({ 
+              targetSelector: '.chart-container', 
+              format: detail.format, 
+              padding: 92, 
+              background: '#ffffff'
+            });
+            console.log('✅ Export completed');
+          } catch (error) {
+            console.error('❌ Export failed:', error);
+            alert(`Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          }
         }
       } finally {
         setExporting(false);
@@ -119,7 +139,7 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
     };
     window.addEventListener('segmentor-export', handler as EventListener);
     return () => window.removeEventListener('segmentor-export', handler as EventListener);
-  }, [quadrantCtx, filterContext, data]);
+  }, [quadrantCtx, filterContext, data, activeEffects]);
 
   // No need to update local filtered data - using context data directly
 

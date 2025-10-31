@@ -77,8 +77,12 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ targetSelector, labe
           const timestamp = `${dd}-${mm}-${yyyy}-${HH}-${MM}`;
           link.href = url;
           link.download = `segmentor-app_main_chart_${timestamp}.png`;
+          document.body.appendChild(link);
           link.click();
-          URL.revokeObjectURL(url);
+          setTimeout(() => {
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+          }, 100);
         });
       } else {
         const imgData = canvas.toDataURL('image/png');
@@ -204,5 +208,3 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ targetSelector, labe
 };
 
 export default ExportButton;
-
-
