@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+.main-navigation {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.nav-logo img {
+  height: 40px;
+  width: auto;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #374151;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav-link:hover {
+  color: #3a863e;
+}
+
+.nav-link-primary {
+  background: #3a863e;
+  color: white !important;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+}
+
+.nav-link-primary:hover {
+  background: #2d6b31;
+}
+
+@media (max-width: 768px) {
+  .nav-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .nav-links {
+    gap: 1rem;
+  }
+}
+</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>Brand+ - Upgrade to Custom Branding | segmentor.app</title>
+    <meta name="description" content="Upgrade to Brand+ for full features with your custom branding. Perfect for client presentations and professional reports. £99/month or €99/month.">
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Branding -->
+    <link rel="stylesheet" href="/assets/css/shared.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@400;600;700&family=Jaro&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <style>
+      /* CSS Reset for Cross-Browser Compatibility */
+      *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      
+      html {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      body {
+        font-family: 'Lato', sans-serif;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background: #f8f9fa;
+        color: #2c3e50;
+      }
+      
+      img {
+        max-width: 100%;
+        height: auto;
+        border: 0;
+        vertical-align: middle;
+      }
+      
+      button, input, select, textarea {
+        font-family: 'Lato', sans-serif;
+        font-size: inherit;
+        line-height: inherit;
+        margin: 0;
+      }
+      
+      button {
+        cursor: pointer;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+      }
+      
+      a {
+        color: inherit;
+        text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      
+      /* App Content */
+      .app-content {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 24px !important;
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+        padding: 0 16px 16px 16px !important;
+      }
+
+      /* Section */
+      .section {
+        background: white !important;
+        border-radius: 8px !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+        padding: 24px !important;
+        margin-bottom: 24px !important;
+      }
+
+      .section h2 {
+        margin: 0 0 16px 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      .hero-section {
+        text-align: center;
+        padding: 48px 24px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border-radius: 12px;
+        margin-bottom: 24px;
+      }
+
+      .hero-section h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 16px;
+      }
+
+      .hero-subtitle {
+        font-size: 1.125rem;
+        color: #6b7280;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* Plans Grid */
+      .plans-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 24px;
+        margin-top: 24px;
+      }
+
+      .plan-card {
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 32px;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .plan-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .plan-card-featured {
+        border-color: #3a863e;
+        box-shadow: 0 4px 12px rgba(58, 134, 62, 0.15);
+      }
+
+      .plan-badge {
+        position: absolute;
+        top: -12px;
+        right: 24px;
+        background: #3a863e;
+        color: white;
+        padding: 4px 16px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+
+      .plan-card h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 8px;
+      }
+
+      .plan-description {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-bottom: 24px;
+      }
+
+      .features-list {
+        list-style: none;
+        padding: 0;
+        margin: 24px 0;
+      }
+
+      .features-list li {
+        padding: 8px 0;
+        color: #374151;
+        font-size: 0.9375rem;
+      }
+
+      .features-list li strong {
+        color: #3a863e;
+      }
+
+      .plan-price {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 24px 0;
+      }
+
+      .plan-price-loading {
+        font-size: 1.125rem;
+        color: #6b7280;
+        font-style: italic;
+      }
+
+      .cta-button {
+        display: inline-block;
+        width: 100%;
+        background: #3a863e;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.2s ease;
+        margin-top: 16px;
+      }
+
+      .cta-button:hover {
+        background: #2d6b31;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(58, 134, 62, 0.3);
+      }
+
+      .cta-button:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .pricing-details {
+        margin-top: 16px;
+      }
+
+      .pricing-details p {
+        margin: 12px 0;
+        font-size: 1.125rem;
+      }
+
+      .pricing-details strong {
+        color: #3a863e;
+      }
+
+      .pricing-note {
+        color: #6b7280;
+        font-size: 0.9375rem;
+        font-style: italic;
+        margin-top: 16px;
+      }
+
+      .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #e5e7eb;
+        border-top-color: #3a863e;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-right: 8px;
+        vertical-align: middle;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      .loading-text {
+        color: #6b7280;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+
+      .trial-content {
+        text-align: center;
+      }
+
+      .trial-features {
+        text-align: left;
+      }
+
+      .trial-button {
+        display: inline-block;
+        background: #3a863e;
+        color: white;
+        padding: 14px 32px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 1.0625rem;
+        text-align: center;
+        transition: all 0.2s ease;
+        margin-top: 8px;
+      }
+
+      .trial-button:hover {
+        background: #2d6b31;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(58, 134, 62, 0.3);
+      }
+
+      .trial-note {
+        text-align: center;
+      }
+
+      @media (max-width: 768px) {
+        .hero-section h1 {
+          font-size: 2rem;
+        }
+
+        .plans-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+</head>
+<body>
+
+<nav class="main-navigation">
+  <div class="nav-container">
+    <div class="nav-logo">
+      <a href="/">
+        <img src="/segmentor-logo.png" alt="Segmentor" />
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/about.html" class="nav-link">About</a>
+      <a href="/faq.html" class="nav-link">FAQ</a>
+      <a href="/tool/" class="nav-link nav-link-primary">Use Tool</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+    <div class="app-content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <h1>Upgrade to Brand+</h1>
+            <p class="hero-subtitle">
+                Full features with your custom branding. Perfect for client presentations and professional reports.
+            </p>
+        </section>
+
+        <!-- Plans Comparison -->
+        <section class="section">
+            <h2>Choose Your Plan</h2>
+            <div class="plans-grid">
+                <!-- Plan 1: Free (no name) -->
+                <div class="plan-card">
+                    <h3>Full Features</h3>
+                    <p class="plan-description">Segmentor Branding</p>
+                    <ul class="features-list">
+                        <li>✓ All visualization features</li>
+                        <li>✓ Complete analysis tools</li>
+                        <li>✓ Full reporting capabilities</li>
+                        <li>✓ Data export options</li>
+                        <li>✓ Segmentor branding</li>
+                    </ul>
+                    <div class="plan-price">Free</div>
+                </div>
+                
+                <!-- Plan 2: Brand+ -->
+                <div class="plan-card plan-card-featured">
+                    <div class="plan-badge">Brand+</div>
+                    <h3>Full Features</h3>
+                    <p class="plan-description">Your Custom Branding</p>
+                    <ul class="features-list">
+                        <li>✓ All visualization features</li>
+                        <li>✓ Complete analysis tools</li>
+                        <li>✓ Full reporting capabilities</li>
+                        <li>✓ Data export options</li>
+                        <li>✓ <strong>Your logo & colors</strong></li>
+                        <li>✓ <strong>Remove Segmentor branding</strong></li>
+                        <li>✓ <strong>Custom watermark controls</strong></li>
+                    </ul>
+                    <div id="plan-price" class="plan-price-loading">
+                        <span class="loading-spinner"></span>
+                        Detecting location...
+                    </div>
+                    <a id="cta-button" href="#" class="cta-button" style="display: none;">Upgrade to Brand+</a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Trial Section -->
+        <section class="section">
+            <h2>Try Brand+ Free</h2>
+            <div class="trial-content">
+                <p style="margin-bottom: 16px; color: #374151; font-size: 1.0625rem;">
+                    Want to see Brand+ in action? Try our demo mode with sample customer data and experience all Brand+ features.
+                </p>
+                <div class="trial-features" style="margin: 24px 0; padding: 20px; background: #f9fafb; border-radius: 8px; border-left: 4px solid #3a863e;">
+                    <h3 style="margin: 0 0 12px 0; color: #3a863e; font-size: 1.125rem; font-weight: 600;">What you'll get:</h3>
+                    <ul style="margin: 0; padding-left: 20px; color: #374151;">
+                        <li style="margin: 8px 0;">Sample customer data pre-loaded</li>
+                        <li style="margin: 8px 0;">All Brand+ features activated</li>
+                        <li style="margin: 8px 0;">Custom branding controls enabled</li>
+                        <li style="margin: 8px 0;">Full access to explore the tool</li>
+                    </ul>
+                </div>
+                <a href="/?trial=true" class="trial-button" target="_blank" rel="noopener noreferrer">
+                    Start Free Trial
+                </a>
+                <p class="trial-note" style="margin-top: 16px; color: #6b7280; font-size: 0.875rem; font-style: italic;">
+                    No payment required. No registration needed. Start exploring immediately with no extra steps.
+                </p>
+            </div>
+        </section>
+        
+        <!-- Pricing Details -->
+        <section class="section">
+            <h2>Pricing</h2>
+            <div class="pricing-details" id="pricing-details">
+                <div class="loading-text">
+                    <span class="loading-spinner"></span>
+                    Detecting location...
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script>
+    let currency = 'EUR'; // Default to EUR
+    let currencySymbol = '€';
+    let currencyCode = 'EUR';
+    
+    // Detect currency based on IP location
+    async function detectCurrency() {
+        try {
+            const response = await fetch('https://ipapi.co/json/');
+            const data = await response.json();
+            
+            if (data.country_code === 'GB') {
+                currency = 'GBP';
+                currencySymbol = '£';
+                currencyCode = 'GBP';
+            } else {
+                currency = 'EUR';
+                currencySymbol = '€';
+                currencyCode = 'EUR';
+            }
+        } catch (error) {
+            console.error('Error detecting currency:', error);
+            // Default to EUR on error
+            currency = 'EUR';
+            currencySymbol = '€';
+            currencyCode = 'EUR';
+        }
+        
+        updatePricing();
+    }
+    
+    function updatePricing() {
+        // Update plan price
+        const planPriceEl = document.getElementById('plan-price');
+        if (currency === 'GBP') {
+            planPriceEl.className = 'plan-price';
+            planPriceEl.textContent = '£99/month';
+        } else {
+            planPriceEl.className = 'plan-price';
+            planPriceEl.textContent = '99€/month';
+        }
+        
+        // Update pricing details
+        const pricingDetailsEl = document.getElementById('pricing-details');
+        if (currency === 'GBP') {
+            pricingDetailsEl.innerHTML = `
+                <p><strong>Monthly:</strong> £99/month</p>
+                <p><strong>Annual:</strong> £999/year (save £189)</p>
+                <p class="pricing-note">All features included. Only the branding changes.</p>
+            `;
+        } else {
+            pricingDetailsEl.innerHTML = `
+                <p><strong>Monthly:</strong> 99€/month</p>
+                <p><strong>Annual:</strong> 999€/year (save 189€)</p>
+                <p class="pricing-note">All features included. Only the branding changes.</p>
+            `;
+        }
+        
+        // Update CTA button
+        const ctaButton = document.getElementById('cta-button');
+        ctaButton.href = `#?currency=${currencyCode}`; // Placeholder - replace with actual Qualtrics link
+        ctaButton.style.display = 'inline-block';
+    }
+    
+    // Detect currency on page load
+    detectCurrency();
+</script>
+
+</body>
+</html>
+

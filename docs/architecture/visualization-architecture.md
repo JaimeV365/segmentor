@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the architecture of the visualization system in the Apostles Model project. The system has been refactored from a monolithic structure to a modular, scalable, and maintainable architecture following React best practices and SOLID principles.
+This document describes the architecture of the visualization system in the Segmentor project. The system has been refactored from a monolithic structure to a modular, scalable, and maintainable architecture following React best practices and SOLID principles.
 
 ## Architecture Principles
 

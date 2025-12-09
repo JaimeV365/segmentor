@@ -58,6 +58,54 @@ export interface CreateSaveDataParams {
   // Premium
   isPremium?: boolean;
   effects?: Set<string>;
+  
+  // Report Visibility States
+  reportVisibility?: {
+    showRecommendationScore: boolean;
+    responseConcentrationExpanded: boolean;
+  };
+  
+  // Report Settings and Customizations
+  reportSettings?: {
+    responseConcentration?: any; // ResponseConcentrationSettings type
+    recommendationScore?: {
+      decimalPrecision: 0 | 1 | 2;
+      categoryChartType: 'bar' | 'pie';
+      displayFormat: 'count' | 'percentage' | 'both';
+      useCategoryColors: boolean;
+    };
+    customizations?: {
+      highlightedKPIs: string[];
+      chartColors: {
+        satisfaction: Record<number, string>;
+        loyalty: Record<number, string>;
+      };
+    };
+    proximityDisplay?: {
+      grouping: 'flat' | 'bySourceRegion' | 'byStrategicPriority' | 'byDistance';
+      showOpportunities: boolean;
+      showWarnings: boolean;
+      showEmptyCategories: boolean;
+      highlightHighImpact: boolean;
+      highImpactMethod: 'smart' | 'highBar' | 'standard' | 'sensitive';
+      sortBy: 'customerCount' | 'averageDistance' | 'strategicImpact' | 'alphabetical';
+    };
+    actionReports?: {
+      editableTexts?: Record<string, {
+        content: string;
+        backgroundColor?: string | null;
+      }>;
+      expandedSections?: {
+        findings: boolean;
+        opportunitiesRisks: boolean;
+        actions: boolean;
+      };
+    };
+  };
+  
+  // Individual Report Filter States
+  // Note: These should have Date objects and Sets - the service will serialize them
+  reportFilterStates?: Record<string, any>;
 }
 
 class ComprehensiveSaveLoadServiceImpl implements SaveLoadService {
@@ -167,29 +215,73 @@ class ComprehensiveSaveLoadServiceImpl implements SaveLoadService {
           frequencyThreshold: params.frequencyThreshold
         },
         
-        filters: params.filterState ? {
+        // Always save filter state, even if empty/default
+        filters: {
           dateRange: {
-            startDate: params.filterState.dateRange.startDate?.toISOString() || null,
-            endDate: params.filterState.dateRange.endDate?.toISOString() || null,
-            preset: params.filterState.dateRange.preset
+            startDate: params.filterState?.dateRange?.startDate instanceof Date 
+              ? params.filterState.dateRange.startDate.toISOString() 
+              : (typeof params.filterState?.dateRange?.startDate === 'string' 
+                  ? params.filterState.dateRange.startDate 
+                  : null),
+            endDate: params.filterState?.dateRange?.endDate instanceof Date 
+              ? params.filterState.dateRange.endDate.toISOString() 
+              : (typeof params.filterState?.dateRange?.endDate === 'string' 
+                  ? params.filterState.dateRange.endDate 
+                  : null),
+            preset: params.filterState?.dateRange?.preset || 'all'
           },
-          attributes: params.filterState.attributes.map(attr => ({
+          attributes: (params.filterState?.attributes || []).map(attr => ({
             field: attr.field,
-            values: Array.from(attr.values),
+            values: attr.values instanceof Set ? Array.from(attr.values) : (Array.isArray(attr.values) ? attr.values : []),
             availableValues: attr.availableValues,
             expanded: attr.expanded
           })),
-          isActive: params.filterState.isActive
-        } : {
-          dateRange: { startDate: null, endDate: null, preset: 'all' },
-          attributes: [],
-          isActive: false
+          isActive: params.filterState?.isActive || false
         },
         
         premium: params.isPremium ? {
           isPremium: true,
           effects: Array.from(params.effects || new Set())
-        } : undefined
+        } : undefined,
+        
+        // Report Visibility States
+        reportVisibility: params.reportVisibility || {
+          showRecommendationScore: false,
+          responseConcentrationExpanded: false
+        },
+        
+        // Report Settings and Customizations
+        reportSettings: params.reportSettings || undefined,
+        
+        // Individual Report Filter States
+        reportFilterStates: params.reportFilterStates ? Object.entries(params.reportFilterStates).reduce((acc, [reportId, state]) => {
+          // Handle both already-serialized and raw FilterState formats
+          const dateRange = state.dateRange || {};
+          const startDate = dateRange.startDate instanceof Date 
+            ? dateRange.startDate.toISOString() 
+            : (typeof dateRange.startDate === 'string' ? dateRange.startDate : null);
+          const endDate = dateRange.endDate instanceof Date 
+            ? dateRange.endDate.toISOString() 
+            : (typeof dateRange.endDate === 'string' ? dateRange.endDate : null);
+          
+          acc[reportId] = {
+            dateRange: {
+              startDate,
+              endDate,
+              preset: dateRange.preset || 'all'
+            },
+            attributes: (state.attributes || []).map((attr: any) => ({
+              field: attr.field,
+              values: attr.values instanceof Set ? Array.from(attr.values) : (Array.isArray(attr.values) ? attr.values : []),
+              availableValues: attr.availableValues,
+              expanded: attr.expanded
+            })),
+            isActive: state.isActive || false,
+            frequencyFilterEnabled: state.frequencyFilterEnabled,
+            frequencyThreshold: state.frequencyThreshold
+          };
+          return acc;
+        }, {} as Record<string, any>) : undefined
       }
     };
   }

@@ -1,7 +1,7 @@
-# Apostles Model Builder - User Guide
+# Segmentor - User Guide
 
 ## Overview
-The Apostles Model Builder helps you analyze satisfaction and loyalty data through an interactive visualization tool.
+Segmentor helps you analyze satisfaction and loyalty data through an interactive visualization tool. It starts with the Apostles Model visualization, then provides powerful analytics and insights.
 
 ## Getting Started
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The DataEntryModule is the central component for managing all data input functionality in the Apostles Model Builder application. It provides a comprehensive interface for both manual data entry and CSV file import, with built-in validation, scale management, duplicate detection, and persistent storage.
+The DataEntryModule is the central component for managing all data input functionality in the Segmentor application. It provides a comprehensive interface for both manual data entry and CSV file import, with built-in validation, scale management, duplicate detection, and persistent storage.
 
 ## Component Architecture
 

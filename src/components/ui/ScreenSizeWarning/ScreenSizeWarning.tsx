@@ -79,13 +79,13 @@ export const ScreenSizeWarning: React.FC<ScreenSizeWarningProps> = ({ className 
       case 'very-small':
         return {
           icon: <Smartphone size={16} />,
-          message: "For the best experience, we recommend using a larger screen. Some features may be limited on very small screens.",
+          message: "For the full experience with all features, try using a larger screen or desktop device.",
           type: 'very-small-screen'
         };
       case 'small':
         return {
           icon: <Smartphone size={16} />,
-          message: "For optimal experience, consider using a larger screen. Some advanced features are simplified on smaller screens.",
+          message: "For the full experience with all features, try using a larger screen or desktop device.",
           type: 'small-screen'
         };
       case 'medium':

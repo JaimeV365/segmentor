@@ -112,6 +112,15 @@ return '#CC0000';
             combo.tier ? `mini-plot-point--tier${combo.tier}` : ''
           ].filter(Boolean).join(' ');
 
+          // Use combo.size and combo.opacity if provided (for multi-tier visualization)
+          // Default size scale: 1 = 100%, tier2 = 0.9 = 90%, tier3 = 0.85 = 85%
+          const pointSize = combo.size !== undefined ? combo.size : 1;
+          const pointOpacity = combo.opacity !== undefined ? combo.opacity : 1;
+          
+          // Calculate actual width/height in pixels (base size is 16px for better visibility)
+          const baseSize = 16;
+          const actualSize = baseSize * pointSize;
+
           return (
             <div
               key={index}
@@ -119,7 +128,11 @@ return '#CC0000';
               style={{
                 left: `${x}%`,
                 bottom: `${y}%`,
-                backgroundColor: color
+                backgroundColor: color,
+                width: `${actualSize}px`,
+                height: `${actualSize}px`,
+                opacity: pointOpacity,
+                transform: 'translate(-50%, 50%)' // Center the point on coordinates
               }}
               title={`Satisfaction: ${combo.satisfaction}, Loyalty: ${combo.loyalty} (${combo.count} responses)`}
             />

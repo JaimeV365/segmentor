@@ -108,6 +108,12 @@
   transform: scale(1.1);
 }
 
+.tick.unavailable {
+  color: #d1d5db;
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .slider-description {
   text-align: center;
   margin-top: 0.5rem;

@@ -5,18 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting to Tool...</title>
     <script>
-        // Redirect to the main app in development
+        // Redirect to the main app in development, preserving query parameters
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            window.location.href = '/';
+            const queryString = window.location.search;
+            window.location.href = '/' + queryString;
         }
     </script>
 </head>
 <body>
     <p>Redirecting to the tool...</p>
     <script>
-        // Fallback redirect
+        // Fallback redirect, preserving query parameters
         setTimeout(() => {
-            window.location.href = '/';
+            const queryString = window.location.search;
+            window.location.href = '/' + queryString;
         }, 1000);
     </script>
 </body>

@@ -53,20 +53,22 @@ export class DataProcessingService {
         if (hasSpaceForNearApostles) {
           const nearApostlesMinSat = apostlesMinSat - 1;
           const nearApostlesMinLoy = apostlesMinLoy - 1;
-          
+
           // L-shaped Near-Apostles zone around Apostles zone
           // The L-shape consists of:
           // 1. Left edge: satisfaction in [nearApostlesMinSat, apostlesMinSat), loyalty >= apostlesMinLoy
           // 2. Bottom edge: satisfaction >= apostlesMinSat, loyalty in [nearApostlesMinLoy, apostlesMinLoy)
-          // 3. Interior: satisfaction in (nearApostlesMinSat, apostlesMinSat), loyalty in (nearApostlesMinLoy, apostlesMinLoy)
-          
+          // 3. Corner: satisfaction = nearApostlesMinSat, loyalty = nearApostlesMinLoy
+          // 4. Interior: satisfaction in [nearApostlesMinSat, apostlesMinSat), loyalty in [nearApostlesMinLoy, apostlesMinLoy)
+
           // Check if point is in the L-shaped Near-Apostles zone
           const isInLeftEdge = satisfaction >= nearApostlesMinSat && satisfaction < apostlesMinSat && loyalty >= apostlesMinLoy;
           const isInBottomEdge = satisfaction >= apostlesMinSat && loyalty >= nearApostlesMinLoy && loyalty < apostlesMinLoy;
-          const isInInterior = satisfaction > nearApostlesMinSat && satisfaction < apostlesMinSat &&
-                               loyalty > nearApostlesMinLoy && loyalty < apostlesMinLoy;
-          
-          if (isInLeftEdge || isInBottomEdge || isInInterior) {
+          const isInCorner = satisfaction === nearApostlesMinSat && loyalty === nearApostlesMinLoy;
+          const isInInterior = satisfaction >= nearApostlesMinSat && satisfaction < apostlesMinSat &&
+                               loyalty >= nearApostlesMinLoy && loyalty < apostlesMinLoy;
+
+          if (isInLeftEdge || isInBottomEdge || isInCorner || isInInterior) {
             return 'near_apostles';
           }
         }

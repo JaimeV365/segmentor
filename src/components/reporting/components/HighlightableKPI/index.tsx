@@ -55,7 +55,7 @@ export const HighlightableKPI: React.FC<HighlightableKPIProps> = ({
             <button
               className={`color-option green ${!isPremium ? 'disabled' : ''}`}
               onClick={() => isPremium && handleColorSelect('green')}
-              title={isPremium ? "Highlight positive metric" : "Premium feature"}
+              title={isPremium ? "Highlight positive metric" : "Brand+ feature"}
               disabled={!isPremium}
             />
             <button
@@ -66,7 +66,7 @@ export const HighlightableKPI: React.FC<HighlightableKPIProps> = ({
             <button
               className={`color-option red ${!isPremium ? 'disabled' : ''}`}
               onClick={() => isPremium && handleColorSelect('red')}
-              title={isPremium ? "Highlight area for improvement" : "Premium feature"}
+              title={isPremium ? "Highlight area for improvement" : "Brand+ feature"}
               disabled={!isPremium}
             />
           </div>

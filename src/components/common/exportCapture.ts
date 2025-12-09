@@ -47,6 +47,140 @@ export async function exportCapture(options: {
   clone.style.boxSizing = 'border-box';
   clone.style.overflow = 'visible';
   
+  // Convert canvas elements to images for better html2canvas compatibility
+  // Canvas elements with complex strokes (like inner rings) can render incorrectly in html2canvas
+  // We need to get the original canvas from the DOM (not the clone) to get the actual rendered content
+  const originalCanvasElements = el.querySelectorAll('canvas.canvas-data-points') as NodeListOf<HTMLCanvasElement>;
+  const clonedCanvasElements = clone.querySelectorAll('canvas.canvas-data-points') as NodeListOf<HTMLCanvasElement>;
+  
+  console.log('🔍 Export: Found', originalCanvasElements.length, 'canvas elements');
+  
+  originalCanvasElements.forEach((originalCanvas, index) => {
+    const clonedCanvas = clonedCanvasElements[index];
+    if (!clonedCanvas || !originalCanvas) return;
+    
+    try {
+      // Get the rendered content from the original canvas
+      const dataUrl = originalCanvas.toDataURL('image/png', 1.0);
+      console.log('✅ Export: Converted canvas to image, size:', dataUrl.length);
+      
+      // Convert cloned canvas to image
+      const img = document.createElement('img');
+      img.src = dataUrl;
+      
+      // Copy positioning styles from canvas
+      const computedStyle = window.getComputedStyle(originalCanvas);
+      img.style.width = computedStyle.width || `${originalCanvas.width}px`;
+      img.style.height = computedStyle.height || `${originalCanvas.height}px`;
+      img.style.position = computedStyle.position || 'absolute';
+      img.style.left = computedStyle.left || '0';
+      img.style.top = computedStyle.top || '0';
+      img.style.pointerEvents = 'none';
+      img.style.zIndex = computedStyle.zIndex || 'auto';
+      
+      // Replace cloned canvas with image
+      const parent = clonedCanvas.parentElement;
+      if (parent) {
+        parent.insertBefore(img, clonedCanvas);
+        clonedCanvas.remove();
+        console.log('✅ Export: Replaced canvas with image');
+      }
+    } catch (err) {
+      console.warn('❌ Export: Failed to convert canvas to image:', err);
+    }
+  });
+  
+  // Fix data point inner rings for export (convert inset box-shadow to nested divs for better html2canvas compatibility)
+  // Also remove outer box-shadows that create black shadow artifacts
+  const dataPoints = clone.querySelectorAll('.data-point') as NodeListOf<HTMLElement>;
+  console.log('🔍 Export: Found', dataPoints.length, 'data points');
+  
+  dataPoints.forEach((point, index) => {
+    // Get computed style from ORIGINAL element (not clone) to see actual box-shadow
+    // Find the corresponding original point
+    const originalPoints = el.querySelectorAll('.data-point') as NodeListOf<HTMLElement>;
+    const originalPoint = originalPoints[index];
+    
+    // Get size from original or clone
+    const inlineWidth = point.style.width;
+    const size = parseFloat(inlineWidth) || (originalPoint ? parseFloat(window.getComputedStyle(originalPoint).width) : parseFloat(window.getComputedStyle(point).width)) || 0;
+    
+    // Get the computed box-shadow from the ORIGINAL element to see what we need to convert
+    // But we'll remove ALL box-shadows from the CLONE and rebuild only what we need
+    const originalBoxShadow = originalPoint ? window.getComputedStyle(originalPoint).boxShadow : '';
+    
+    // ALWAYS remove all box-shadows from the clone first (CSS class adds box-shadow: 0 1px 3px rgba(0,0,0,0.2))
+    // Use !important to override CSS class box-shadow
+    point.style.setProperty('box-shadow', 'none', 'important');
+    
+    // Also remove any outline that might create a black circle
+    point.style.setProperty('outline', 'none', 'important');
+    
+    // Now check the original's box-shadow to see if it has an inset shadow (inner ring) we need to convert
+    let boxShadow = originalBoxShadow;
+    
+    console.log(`🔍 Export: Point ${index}, boxShadow:`, boxShadow, 'size:', size);
+    
+    // Check if it's an inset box-shadow (inner ring)
+    // Box-shadow format in browser: "rgba(0, 0, 0, 0.3) 0px 0px 0px 16.52px inset"
+    if (boxShadow && boxShadow.includes('inset')) {
+      // Match format: "rgba(...) 0px 0px 0px Xpx inset" or "rgba(...) 0 0 0 Xpx inset"
+      const insetMatch = boxShadow.match(/(rgba?\([^)]+\))\s+0(?:px)?\s+0(?:px)?\s+0(?:px)?\s+([\d.]+)px\s+inset/);
+      if (insetMatch) {
+        const ringColor = insetMatch[1];
+        const ringWidth = parseFloat(insetMatch[2]);
+        
+        // Calculate inner circle size so the border stays INSIDE the dot
+        // The inset box-shadow creates a ring that's ringWidth pixels from the edge
+        // So the ring extends from radius (size/2 - ringWidth) to radius (size/2)
+        // When we use a border with box-sizing: content-box, the border is added OUTSIDE the element's size
+        // So if inner div has size D and border B, total size = D + 2*B
+        // We want total size <= size (dot size), so: D + 2*B <= size
+        // Therefore: D <= size - 2*B
+        // To match the inset box-shadow exactly, we want the border outer edge at size/2
+        // So: D/2 + B = size/2, therefore D = size - 2*B
+        const innerCircleSize = Math.max(0, size - ringWidth * 2);
+        
+        console.log(`✅ Export: Converting point ${index}, ringWidth:`, ringWidth, 'innerCircleSize:', innerCircleSize, 'dot size:', size);
+        
+        if (innerCircleSize > 0 && ringWidth > 0) {
+          // Remove ALL box-shadows (inset and outer shadows) that might create artifacts in html2canvas
+          // The CSS has box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) which creates the black shadow
+          // Use !important to override CSS class
+          point.style.setProperty('box-shadow', 'none', 'important');
+          
+          // Add flex display to center the inner ring
+          point.style.display = 'flex';
+          point.style.alignItems = 'center';
+          point.style.justifyContent = 'center';
+          
+          // Create nested div for inner ring
+          // Use content-box so border is added outside, matching the inset box-shadow behavior
+          const innerRing = document.createElement('div');
+          innerRing.style.width = `${innerCircleSize}px`;
+          innerRing.style.height = `${innerCircleSize}px`;
+          innerRing.style.borderRadius = '50%';
+          innerRing.style.border = `${ringWidth}px solid ${ringColor}`;
+          innerRing.style.boxSizing = 'content-box'; // Border added outside, not included in size
+          innerRing.style.pointerEvents = 'none';
+          innerRing.style.flexShrink = '0';
+          innerRing.style.boxShadow = 'none'; // Ensure no shadow on inner ring
+          innerRing.style.margin = '0'; // No margin
+          innerRing.style.padding = '0'; // No padding
+          
+          point.appendChild(innerRing);
+          const actualOuterRadius = (innerCircleSize + ringWidth * 2) / 2;
+          console.log(`✅ Export: Added inner ring to point ${index}, innerCircleSize:`, innerCircleSize, 'ringWidth:', ringWidth, 'total size:', innerCircleSize + ringWidth * 2, 'dot size:', size, 'actual outer radius:', actualOuterRadius, 'dot radius:', size/2);
+        } else {
+          // Even if no inner ring, remove outer box-shadow to prevent black shadow artifacts
+          point.style.setProperty('box-shadow', 'none', 'important');
+        }
+      } else {
+        console.warn(`⚠️ Export: Could not parse box-shadow for point ${index}:`, boxShadow);
+      }
+    }
+  });
+  
   // Fix watermark dimensions in the clone for export only (vertical mode needs wider container)
   // This doesn't affect the visualization, only the export
   const watermarkLayers = clone.querySelectorAll('.watermark-layer') as NodeListOf<HTMLElement>;

@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Save, Check } from 'lucide-react';
 import { useSaveLoad } from '../../../hooks/useSaveLoad';
 import { comprehensiveSaveLoadService } from '../../../services/ComprehensiveSaveLoadService';
 import { useNotification } from '../../data-entry/NotificationSystem';
+import { useUnsavedChanges } from '../../../hooks/useUnsavedChanges';
+import { useChartConfigSafe } from '../../visualization/context/ChartConfigContext';
+import { useQuadrantAssignmentSafe } from '../../visualization/context/UnifiedQuadrantContext';
 import './DrawerSaveButton.css';
 
 interface DrawerSaveButtonProps {
@@ -57,6 +60,35 @@ export const DrawerSaveButton: React.FC<DrawerSaveButtonProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const { showNotification } = useNotification();
   
+  // Get context values for unsaved changes tracking
+  const chartConfig = useChartConfigSafe();
+  const quadrantContext = useQuadrantAssignmentSafe();
+  
+  // Track unsaved changes
+  const { hasUnsavedChanges, lastSavedText, markAsSaved } = useUnsavedChanges({
+    data,
+    satisfactionScale,
+    loyaltyScale,
+    showGrid,
+    showScaleNumbers,
+    showLegends,
+    showNearApostles,
+    showSpecialZones,
+    isAdjustableMidpoint,
+    labelMode,
+    labelPositioning,
+    areasDisplayMode,
+    frequencyFilterEnabled,
+    frequencyThreshold,
+    filterState,
+    isPremium,
+    effects,
+    midpoint: chartConfig?.midpoint,
+    apostlesZoneSize: chartConfig?.apostlesZoneSize,
+    terroristsZoneSize: chartConfig?.terroristsZoneSize,
+    isClassicModel: chartConfig?.isClassicModel
+  });
+  
   // Try to use the context-based save, but fallback to basic save if context is not available
   let saveProgress: (() => Promise<void>) | null = null;
   let contextIsSaving = false;
@@ -88,7 +120,11 @@ export const DrawerSaveButton: React.FC<DrawerSaveButtonProps> = ({
     console.log('Context not available, using fallback save');
   }
 
-  const handleSave = async () => {
+  // Count only non-excluded data points
+  const activeDataPoints = data ? data.filter((point: any) => !point.excluded) : [];
+  const hasData = activeDataPoints.length > 0;
+
+  const handleSave = useCallback(async () => {
     if (isSaving) return;
     
     setIsSaving(true);
@@ -98,11 +134,14 @@ export const DrawerSaveButton: React.FC<DrawerSaveButtonProps> = ({
         // Use context-based save (this will show its own notification)
         await saveProgress();
         setShowSuccess(true);
+        markAsSaved();
         setTimeout(() => setShowSuccess(false), 2000);
       } else {
         // Fallback save without context data
+        // Use only non-excluded data points for saving
+        const dataToSave = data.filter((point: any) => !point.excluded);
         const saveData = comprehensiveSaveLoadService.createSaveData({
-          data,
+          data: dataToSave,
           manualAssignments: new Map(), // No manual assignments available
           satisfactionScale, // Use actual scale from props
           loyaltyScale, // Use actual scale from props
@@ -130,9 +169,10 @@ export const DrawerSaveButton: React.FC<DrawerSaveButtonProps> = ({
         
         // Only show notification for fallback save
         setShowSuccess(true);
+        markAsSaved();
         showNotification({
           title: 'Success',
-          message: 'Progress saved successfully!',
+          message: 'Progress saved successfully! The file has been downloaded to your Downloads folder.',
           type: 'success'
         });
         
@@ -149,16 +189,32 @@ export const DrawerSaveButton: React.FC<DrawerSaveButtonProps> = ({
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [isSaving, saveProgress, data, satisfactionScale, loyaltyScale, showGrid, showScaleNumbers, showLegends, showNearApostles, showSpecialZones, isAdjustableMidpoint, labelMode, labelPositioning, areasDisplayMode, frequencyFilterEnabled, frequencyThreshold, filterState, isPremium, effects, markAsSaved, showNotification]);
 
-  const hasData = data && data.length > 0;
+  // Keyboard shortcut (Option 5)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (!isSaving && !contextIsSaving && hasData) {
+          handleSave();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isSaving, contextIsSaving, hasData, handleSave]);
 
   return (
     <div className="drawer-save-button-container">
       <button
-        className={`drawer-save-button ${(isSaving || contextIsSaving) ? 'saving' : ''} ${showSuccess ? 'success' : ''} ${!hasData ? 'disabled' : ''}`}
+        className={`drawer-save-button ${(isSaving || contextIsSaving) ? 'saving' : ''} ${showSuccess ? 'success' : ''} ${!hasData ? 'disabled' : ''} ${hasUnsavedChanges ? 'has-unsaved' : ''}`}
         onClick={handleSave}
         disabled={isSaving || contextIsSaving || !hasData}
+        title={hasUnsavedChanges 
+          ? 'You have unsaved changes. Press Cmd+S (Mac) or Ctrl+S (Windows/Linux) to save. On tablets/phones, use the button.' 
+          : 'Press Cmd+S (Mac) or Ctrl+S (Windows/Linux) to save. On tablets/phones, use the button.'}
       >
         <div className="drawer-save-button__icon">
           {showSuccess ? (
@@ -174,15 +230,31 @@ export const DrawerSaveButton: React.FC<DrawerSaveButtonProps> = ({
           <div className="drawer-save-button__title">
             {showSuccess ? 'Saved!' : (isSaving || contextIsSaving) ? 'Saving...' : 'Save Progress'}
           </div>
-          <div className="drawer-save-button__subtitle">
-            {hasData ? `${data.length} data points` : 'No data to save'}
-          </div>
         </div>
+        
+        {/* Keyboard shortcut hint (Option 5) - Platform-aware */}
+        {!isSaving && !contextIsSaving && hasData && (() => {
+          // Detect platform for correct keyboard hint
+          const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 || 
+                        navigator.userAgent.toUpperCase().indexOf('MAC') >= 0;
+          const modifierKey = isMac ? 'Cmd' : 'Ctrl';
+          
+          return (
+            <div className="drawer-save-button__keyboard-hint">
+              <span className="keyboard-key">{modifierKey}</span>
+              <span className="keyboard-key">S</span>
+            </div>
+          );
+        })()}
       </button>
       
+      {/* Status indicator (Option 6) */}
       {hasData && (
-        <div className="drawer-save-button__info">
-          <span>Save as .seg file</span>
+        <div className="drawer-save-button__status">
+          <span className={`status-dot ${hasUnsavedChanges ? 'status-dot--unsaved' : 'status-dot--saved'}`}></span>
+          <span className="status-text">
+            {hasUnsavedChanges ? 'Unsaved changes' : `Last saved: ${lastSavedText}`}
+          </span>
         </div>
       )}
     </div>
@@ -190,3 +262,4 @@ export const DrawerSaveButton: React.FC<DrawerSaveButtonProps> = ({
 };
 
 export default DrawerSaveButton;
+

@@ -6,28 +6,9 @@
   width: 100%; /* Ensure full width */
 }
 
-.response-concentration-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  background: #f9fafb; 
-  border-radius: 0.5rem;
-  border: 1px solid #e5e7eb;
-  padding: 1.5rem;
-  width: 100%; /* Ensure full width */
-  max-width: 100%; /* ADD: Prevent overflow */
-  box-sizing: border-box; /* Include padding in width calculation */
-  overflow: hidden; /* ADD: Contain any overflowing content */
-}
+/* Duplicate .response-concentration-grid definition removed - using the one at line 732 */
 
-.concentration-column h5 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #374151;
-  margin: 0 0 1rem 0;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
-}
+/* Duplicate .concentration-column h5 definition removed - using the one at line 741 */
 
 .response-concentration-controls {
   position: static;
@@ -45,12 +26,7 @@
   opacity: 1;
 }
 
-.miniplot-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem 0.5rem 1.5rem 0rem;
-}
+/* .miniplot-container styles moved to line 754 */
 
 .combination-marker {
   width: 6px;
@@ -100,11 +76,12 @@
 .concentration-column {
   background: white;
   border-radius: 0.5rem;
-  padding: 1.5rem;  /* Choose the padding you want */
+  padding: 1.25rem; /* Consistent padding for all columns */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
+  min-height: 0; /* Allow columns to shrink if needed */
 }
 
 .filter-count {
@@ -473,18 +450,7 @@ padding-right: 30px;
   border-bottom: none !important;
 }
 
-.info-ribbon {
-  background-color: #fffbeb;
-  border: 1px solid #fde68a;
-  border-radius: 0.5rem;
-  padding: 0.75rem 1rem;
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  width: 100%;
-  box-sizing: border-box;
-}
+/* Remove duplicate - using the one at line 1040 */
 
 .info-ribbon-icon {
   color: #f59e0b; /* Brand-compatible amber color */
@@ -636,17 +602,416 @@ padding-right: 30px;
 /* Existing styles - keeping all current styling */
 .response-concentration-section {
   position: relative;
-  background: #f9fafb;
+  background: transparent;
   border-radius: 0.5rem;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  padding: 0;
+  padding-bottom: 1.5rem;
+  margin: 0; /* Remove margin-bottom to match Data Report spacing */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure info ribbon is properly integrated within the section */
+.response-concentration-section > .info-ribbon {
+  margin-top: 0;
+  margin-bottom: 3rem !important;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
+  max-width: 100%;
+  position: relative; /* Ensure it's in normal flow */
+}
+
+/* Ensure info ribbon is contained properly within advanced-section-content */
+.advanced-section-content .info-ribbon {
+  position: relative;
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 0;
 }
 
 .response-concentration-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 1rem;
+  padding: 1.25rem;
+  padding-bottom: 0;
+}
+
+/* Button is now rendered directly in title wrapper, no special positioning needed */
+.response-concentration-title-controls {
+  /* Styles handled by response-concentration-control-button */
+}
+
+/* Panel title for Response Concentration */
+/* Note: UnifiedChartControls.css is imported in the component file */
+.response-concentration-section .bar-chart-panel-title {
+  position: absolute;
+  top: 8px;
+  left: 16px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.response-concentration-section .unified-controls-header {
+  position: relative;
+  padding-top: 40px !important; /* Extra space for title */
+  z-index: 1002 !important; /* Ensure header is above content */
+  pointer-events: auto !important; /* Ensure header can receive clicks */
+}
+
+.response-concentration-section .unified-controls-tabs {
+  position: relative;
+  z-index: 1003 !important; /* Ensure tabs are above content */
+  pointer-events: auto !important; /* Ensure tabs can receive clicks */
+}
+
+.response-concentration-section .unified-tab {
+  position: relative;
+  pointer-events: auto !important; /* Ensure tabs can receive clicks */
+}
+
+.response-concentration-section .unified-tab .connection-status-icon {
+  position: relative;
+  z-index: 1005 !important; /* Ensure icon is above everything */
+  pointer-events: auto !important; /* Always clickable */
+}
+
+/* Ensure content doesn't overlap header */
+.response-concentration-section .unified-controls-content {
+  position: relative;
+  z-index: 1000 !important; /* Lower than header */
+  pointer-events: auto !important;
+  overflow: hidden; /* Prevent content from overlapping header */
+}
+
+/* Ensure FilterPanel content doesn't cover the header */
+.response-concentration-section .unified-tab-body {
+  position: relative;
+  z-index: 1000 !important;
+  pointer-events: auto !important;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.response-concentration-section .unified-tab-body .filter-panel-content,
+.response-concentration-section .unified-tab-body .filter-section {
+  position: relative;
+  z-index: auto !important;
+  pointer-events: auto !important;
+}
+
+/* Connection icon styling - matches BarChart */
+.response-concentration-section .unified-tab .connection-status-icon {
+  pointer-events: auto !important; /* Always clickable */
+  position: relative;
+  z-index: 1005 !important;
+}
+
+/* Connection status icon */
+.connection-status-icon {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  color: #3a863e;
+  margin-left: 4px;
+  cursor: pointer !important;
+  padding: 2px;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  pointer-events: auto !important; /* Always clickable, even when inside disabled button */
+  position: relative;
+  z-index: 10 !important; /* Ensure it's above other elements */
+}
+
+.connection-status-icon:hover {
+  background-color: #f0f9f0;
+  color: #2d6a31;
+}
+
+/* Ensure connection icon is clickable even when parent button is disabled */
+.unified-tab:disabled .connection-status-icon,
+.unified-tab.disabled .connection-status-icon {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+}
+
+/* Unified filter badge in tabs */
+.unified-filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  margin-left: 4px;
+  flex-shrink: 0;
+  line-height: 1;
+  position: static;
+}
+
+/* Reconnection Modal - Using same classes as BarChart for consistency */
+/* Styles are imported from BarChart via shared CSS, but defined here for safety */
+.filter-connection-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.filter-connection-modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 400px;
+  width: 90%;
+  padding: 0;
+  overflow: hidden;
+}
+
+.filter-connection-modal .modal-header {
+  padding: 24px 24px 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.filter-connection-modal .modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.filter-connection-modal .modal-content {
+  padding: 16px 24px;
+}
+
+.filter-connection-modal .modal-content p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.filter-connection-modal .modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.filter-connection-modal .modal-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.filter-connection-modal .modal-btn.cancel-btn {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.filter-connection-modal .modal-btn.cancel-btn:hover {
+  background: #e5e7eb;
+}
+
+.filter-connection-modal .modal-btn.confirm-btn {
+  background: #3a863e;
+  color: white;
+}
+
+.filter-connection-modal .modal-btn.confirm-btn:hover {
+  background: #34753a;
+}
+
+.response-concentration-section ~ .filter-panel,
+.response-concentration-section .filter-panel,
+.filter-panel {
+  position: fixed !important;
+  top: 80px !important; /* Position below demo banner */
+  right: 0 !important;
+  height: calc(100vh - 80px) !important;
+  width: 380px !important;
+  max-width: 380px !important;
+  background-color: white !important;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1) !important;
+  z-index: 999 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  transform: translateX(100%) !important;
+  transition: transform 0.3s ease !important;
+  pointer-events: auto !important;
+  overflow: hidden !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  bottom: auto !important;
+}
+
+.response-concentration-section ~ .filter-panel.open,
+.response-concentration-section .filter-panel.open,
+.filter-panel.open {
+  transform: translateX(0) !important;
+  animation: slideInFromRight 0.3s ease-out forwards;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.filter-panel-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 20px 16px 16px 16px !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  flex-shrink: 0 !important;
+  min-height: 60px !important;
+  background-color: white !important;
+}
+
+.filter-panel-tabs {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.filter-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #6b7280;
+  font-size: 0.875rem;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.filter-tab.active {
+  color: #3a863e;
+  border-bottom-color: #3a863e;
+}
+
+.filter-panel-close {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 4px;
+}
+
+.filter-panel-close:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.filter-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  min-height: 0;
+  max-height: calc(100vh - 200px);
+}
+
+.settings-sub-tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 1rem;
+  background-color: #f9fafb;
+  margin-left: -16px;
+  margin-right: -16px;
+  padding: 0 16px;
+}
+
+.settings-sub-tab {
+  padding: 0.75rem 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #6b7280;
+  font-size: 0.875rem;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  margin-bottom: -1px;
+}
+
+.settings-sub-tab:hover {
+  color: #374151;
+}
+
+.settings-sub-tab.active {
+  color: #3a863e;
+  border-bottom-color: #3a863e;
+  font-weight: 600;
+}
+
+.settings-content {
+  padding: 0;
+  overflow: visible;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Fix for ResponseSettings component when used in unified panel */
+.unified-tab-body .response-settings-panel {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  height: auto !important;
+  overflow: visible !important;
+  z-index: auto !important;
+}
+
+.unified-tab-body .settings-section {
+  overflow: visible !important;
+  padding: 0 !important;
+  margin-bottom: 1.5rem;
+}
+
+.unified-tab-body .settings-section h4 {
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .section-title-container {
@@ -656,10 +1021,11 @@ padding-right: 30px;
 }
 
 .section-title-container h3 {
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  color: #374151;
+  color: #1f2937;
   margin: 0;
+  padding: 0;
 }
 
 .filter-indicator {
@@ -687,11 +1053,28 @@ padding-right: 30px;
   border: 1px solid #fde68a;
   border-radius: 0.5rem;
   padding: 1rem;
-  margin-bottom: 1.5rem;
+  margin: 0;
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0; /* Prevent flex shrinking */
+}
+
+/* Ensure info ribbon integrates properly when inside report-content */
+.report-content .info-ribbon {
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 0;
+}
+
+/* Negative margins to compensate for report-content padding if needed */
+.report-content[style*="paddingTop: 0"] .info-ribbon {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .info-ribbon-content {
@@ -707,11 +1090,92 @@ padding-right: 30px;
   flex-shrink: 0;
 }
 
+.info-text-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
 .info-text {
   font-size: 0.875rem;
   color: #78350f;
   margin: 0;
   line-height: 1.5;
+}
+
+.info-expand-btn,
+.info-collapse-btn {
+  background: none;
+  border: none;
+  color: #b45309;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: left;
+  margin-top: 0.25rem;
+  transition: all 0.2s ease;
+  border-radius: 0.25rem;
+  align-self: flex-start;
+}
+
+.info-expand-btn:hover,
+.info-collapse-btn:hover {
+  background-color: rgba(180, 83, 9, 0.1);
+  color: #92400e;
+}
+
+.info-expanded {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(180, 83, 9, 0.2);
+  animation: slideDown 0.3s ease;
+}
+
+.info-detail-section {
+  margin-bottom: 1rem;
+}
+
+.info-detail-section:last-of-type {
+  margin-bottom: 0.75rem;
+}
+
+.info-detail-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #92400e;
+  margin: 0 0 0.5rem 0;
+}
+
+.info-detail-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  list-style-type: disc;
+}
+
+.info-detail-list li {
+  font-size: 0.8125rem;
+  color: #78350f;
+  line-height: 1.5;
+  margin-bottom: 0.375rem;
+}
+
+.info-detail-list li:last-child {
+  margin-bottom: 0;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+    transform: translateY(0);
+  }
 }
 
 .info-ribbon-close {
@@ -731,8 +1195,10 @@ padding-right: 30px;
 .response-concentration-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  /* Removed duplicate background and padding - these are now on the main section */
+  gap: 1.5rem; /* Reduced from 2rem for better balance */
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 0;
 }
 
 
@@ -741,23 +1207,24 @@ padding-right: 30px;
   font-size: 0.875rem;
   font-weight: 600;
   color: #374151;
-  margin: 0 0 1rem 0;
+  margin: 0 0 1rem 0; /* Consistent top margin, 1rem bottom for spacing */
+  padding: 0; /* No padding for symmetry */
   /* Removed the border-bottom that was causing the unwanted border */
 }
 
 .miniplot-container {
   width: 100%;
-  height: 200px;
+  min-height: 280px;
   background: #f9fafb;
   border-radius: 0.375rem;
   border: 1px solid #e5e7eb;
-  margin-bottom: 1rem;
-  margin-left: -.1rem;
+  margin: 0 0 1rem 0; /* Removed negative left margin for symmetry */
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  /* Removed excessive padding that was causing layout issues */
+  justify-content: flex-start; /* Align to left instead of center */
+  padding: 20px 40px 30px 20px; /* Top, Right (increased), Bottom, Left - space for scale numbers */
+  box-sizing: border-box;
 }
 
 .miniplot-legend {
@@ -832,6 +1299,8 @@ padding-right: 30px;
   margin: 0;
   max-height: 300px;
   overflow-y: auto;
+  flex: 1; /* Allow list to take available space */
+  min-height: 0; /* Allow shrinking */
   overflow-x: hidden;
   width: 100%;
 }

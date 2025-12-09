@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import { X, Filter, Crown, RotateCw } from 'lucide-react';
 import { DataPoint, GridDimensions } from '@/types/base';
 import { FilterPanel } from '../filters';
@@ -60,6 +60,7 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
   onClose,
   onShowNotification
 }) => {
+  // Initialize tab state - always start with filters, will be updated by useEffect when panel opens
   const [activeTab, setActiveTab] = useState<TabType>('filters');
   const [exportOnly, setExportOnly] = useState(false);
   const [filterResetTrigger, setFilterResetTrigger] = useState(0);
@@ -76,6 +77,29 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
   // Access filter context
   const filterContext = useFilterContextSafe();
   
+  // Calculate filter count with fallback (same logic as DistributionSection)
+  // Use centralized count from FilterContext, but fallback to actual state if needed
+  const mainFilterCount = filterContext?.activeFilterCount ?? 0;
+  const actualFilterCount = useMemo(() => {
+    if (!filterContext || mainFilterCount > 0) return mainFilterCount;
+    
+    // Fallback: calculate from actual filter state if centralized count is 0
+    const mainState = filterContext.filterState;
+    const actualDateCount = (mainState.dateRange.preset && 
+                            mainState.dateRange.preset !== 'all' && 
+                            mainState.dateRange.preset !== 'custom' &&
+                            (mainState.dateRange.startDate || mainState.dateRange.endDate)) ? 1 :
+                           (mainState.dateRange.preset === 'custom' && 
+                            (mainState.dateRange.startDate || mainState.dateRange.endDate)) ? 1 : 0;
+    const actualAttributeCount = mainState.attributes.reduce((sum, attr) => sum + attr.values.size, 0);
+    const actualTotalCount = actualDateCount + actualAttributeCount;
+    
+    return actualTotalCount > 0 ? actualTotalCount : mainFilterCount;
+  }, [filterContext, mainFilterCount, filterContext?.filterState]);
+  
+  // Use the calculated count (with fallback) instead of the prop
+  const effectiveFilterCount = actualFilterCount > 0 ? actualFilterCount : activeFilterCount;
+  
   // Handle filter changes by updating the FilterContext
   const handleFilterChange = (filteredData: DataPoint[], activeFilters?: any[]) => {
     console.log('🔄 UnifiedChartControls: Filter change received', {
@@ -90,20 +114,32 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
   };
 
   // Smart tab selection logic - pick initial tab from body data attribute
-  useEffect(() => {
+  // Use useLayoutEffect to run synchronously before browser paint, ensuring tab is set before first render
+  useLayoutEffect(() => {
     if (isOpen) {
-      console.log('🔍 UnifiedChartControls: Tab selection logic', {
-        hasFilterableData,
-        isPremium,
-        currentTab: activeTab
-      });
+      // Read the attribute synchronously (before paint)
       const desiredAttr = document.body.getAttribute('data-unified-initial-tab') as TabType | null;
       const desired = desiredAttr || 'filters';
-      setActiveTab(desired);
-      setExportOnly(desired === 'export');
-      if (desiredAttr) document.body.removeAttribute('data-unified-initial-tab');
+      
+      console.log('🔍 UnifiedChartControls: Panel opened, setting tab to', desired, 'from attribute:', desiredAttr, 'current activeTab:', activeTab, 'current exportOnly:', exportOnly);
+      
+      // Update state synchronously (useLayoutEffect runs before paint, so this will be applied immediately)
+      if (desired !== activeTab || (desired === 'export' && !exportOnly) || (desired === 'filters' && exportOnly)) {
+        setActiveTab(desired);
+        setExportOnly(desired === 'export');
+        console.log('✅ UnifiedChartControls: Tab state updated to', desired, 'exportOnly:', desired === 'export');
+      }
+      
+      // Clean up attribute after reading
+      if (desiredAttr) {
+        document.body.removeAttribute('data-unified-initial-tab');
+      }
+    } else {
+      // When panel closes, reset to filters for next open
+      setActiveTab('filters');
+      setExportOnly(false);
     }
-  }, [isOpen, hasFilterableData, isPremium]);
+  }, [isOpen]); // Only depend on isOpen to run when panel opens/closes
 
   // Handle click outside to close panel
   useEffect(() => {
@@ -309,8 +345,8 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
                   >
                     <Filter size={16} />
                     Filters
-                    {activeFilterCount > 0 && (
-                      <span className="unified-filter-badge">{activeFilterCount}</span>
+                    {effectiveFilterCount > 0 && (
+                      <span className="unified-filter-badge">{effectiveFilterCount}</span>
                     )}
                   </button>
                 )}
@@ -334,10 +370,16 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
 
           {/* Tab Content */}
           <div className="unified-controls-content">
-            {(() => {
-              console.log('🔍 Rendering content, exportOnly:', exportOnly, 'isOpen:', isOpen);
-              return exportOnly ? renderExportTab() : renderFiltersTab();
-            })()}
+            {/* Always render FilterPanel to keep it mounted (for quadrant change detection)
+                but hide it visually when export tab is active */}
+            <div style={{ display: exportOnly ? 'none' : 'block' }}>
+              {renderFiltersTab()}
+            </div>
+            
+            {/* Export tab - always rendered but hidden when filters tab is active */}
+            <div style={{ display: exportOnly ? 'block' : 'none' }}>
+              {renderExportTab()}
+            </div>
           </div>
         </div>
       )}

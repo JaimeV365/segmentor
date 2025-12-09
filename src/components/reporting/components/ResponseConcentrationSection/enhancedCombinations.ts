@@ -1,5 +1,5 @@
 import { getTierSize, type TierNumber } from './tierSizes';
-// Enhanced combinations that support custom frequency thresholds and multi-tier visualization
+// Enhanced combinations that support custom frequency thresholds and tier-capped display
 interface Combination {
   satisfaction: number;
   loyalty: number;
@@ -15,7 +15,7 @@ interface CombinationWithTier extends Combination {
 
 interface EnhancedCombinationOptions {
   frequencyThreshold?: number; // Custom minimum frequency
-  showTiers?: boolean; // Enable multi-tier visualization
+  showTiers?: boolean; // Enable tier-capped display (limits combinations shown)
   maxTiers?: number; // Number of tiers to show (1-3)
   isPremium?: boolean; // Premium feature access
 }
@@ -70,31 +70,23 @@ const getEnhancedCombinations = (
     combo.count >= frequencyThreshold
   );
 
-  // If premium and multi-tier is enabled
-  if (isPremium && showTiers && filteredCombinations.length > 0) {
-    return applyTierLogic(filteredCombinations, maxCount, maxTiers);
+  if (filteredCombinations.length === 0) {
+    return [];
   }
 
-  // Standard filtering logic (existing behavior enhanced)
-  if (maxCount >= 3) {
-    // High-frequency combinations: show top tier only
-    const threshold = Math.max(3, maxCount * 0.8);
-    return filteredCombinations
-      .filter(combo => combo.count >= threshold)
-      .slice(0, 6)
-      .map(combo => ({ ...combo, tier: 1, opacity: 1, size: 1 }));
-  } else if (maxCount >= 2) {
-    // Moderate frequency: show combinations that appear 2+ times
-    return filteredCombinations
-      .filter(combo => combo.count >= Math.max(2, frequencyThreshold))
-      .slice(0, 8)
-      .map(combo => ({ ...combo, tier: 1, opacity: 1, size: 1 }));
-  } else {
-    // Low frequency: fall back to top combinations
-    return filteredCombinations
-      .slice(0, 2)
-      .map(combo => ({ ...combo, tier: 1, opacity: 1, size: 1 }));
+  // Always apply tier-based size differences (makes visualization easier to see)
+  // Size differences are always based on frequency, regardless of showTiers toggle
+  const tieredCombinations = applyTierLogic(filteredCombinations, maxCount, maxTiers);
+  
+  // When showTiers is OFF, show ALL combinations (no tier-based limiting)
+  // When showTiers is ON, use the tier-based results (which may be limited)
+  if (!showTiers) {
+    // Apply tier visual properties to ALL combinations, but don't limit the count
+    return applyTierVisualsToAll(filteredCombinations, maxTiers);
   }
+  
+  // When showTiers is ON, use the tier-limited results
+  return tieredCombinations;
 };
 
 const applyTierLogic = (
@@ -118,6 +110,8 @@ const applyTierLogic = (
    
 
     // Add visual properties for each tier
+    // Always apply size differences (makes it easier to see frequency variations)
+    // Opacity differences also always applied for better visual distinction
     const tierWithVisuals = tierCombinations.map(combo => ({
       ...combo,
       tier,
@@ -135,6 +129,57 @@ const applyTierLogic = (
   }
 
   return result.slice(0, Math.min(15, combinations.length)); // Overall limit
+};
+
+// Apply tier-based visual properties (size, opacity, tier) to ALL combinations
+// without limiting the count - used when showTiers is OFF but we still want size differences
+const applyTierVisualsToAll = (
+  combinations: CombinationWithTier[],
+  maxTiers: number
+): CombinationWithTier[] => {
+  if (combinations.length === 0) return [];
+  
+  // Get unique frequency levels and sort them descending
+  const uniqueFrequencies = Array.from(new Set(combinations.map(c => c.count))).sort((a, b) => b - a);
+  
+  // Use actual frequency levels as tier thresholds (up to maxTiers)
+  const tierThresholds = uniqueFrequencies.slice(0, Math.min(maxTiers, 3));
+  
+  // Assign tiers and visual properties to ALL combinations
+  const result: CombinationWithTier[] = [];
+  
+  for (let tier = 1; tier <= tierThresholds.length; tier++) {
+    const currentFrequency = tierThresholds[tier - 1];
+    const tierCombinations = combinations.filter(combo => combo.count === currentFrequency);
+    
+    // Add visual properties for each tier
+    const tierWithVisuals = tierCombinations.map(combo => ({
+      ...combo,
+      tier,
+      opacity: tier === 1 ? 1 : tier === 2 ? 0.7 : 0.5,
+      size: getTierSize(tier as TierNumber)
+    }));
+    
+    result.push(...tierWithVisuals);
+  }
+  
+  // For any remaining combinations that don't fit into the top tiers,
+  // assign them the lowest tier visual properties
+  const assignedFrequencies = new Set(tierThresholds);
+  const remainingCombinations = combinations.filter(combo => !assignedFrequencies.has(combo.count));
+  
+  if (remainingCombinations.length > 0 && tierThresholds.length > 0) {
+    const lowestTier = Math.min(tierThresholds.length, maxTiers);
+    const remainingWithVisuals = remainingCombinations.map(combo => ({
+      ...combo,
+      tier: lowestTier,
+      opacity: lowestTier === 1 ? 1 : lowestTier === 2 ? 0.7 : 0.5,
+      size: getTierSize(lowestTier as TierNumber)
+    }));
+    result.push(...remainingWithVisuals);
+  }
+  
+  return result;
 };
 
 export { getEnhancedCombinations, type CombinationWithTier, type EnhancedCombinationOptions };

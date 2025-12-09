@@ -54,7 +54,6 @@ const BarChart: React.FC<BarChartProps> = ({
   isPremium = false
 }) => {
   const [hoveredBar, setHoveredBar] = useState<number | null>(null);
-  const [selectedBar] = useState<number | null>(null);
   const [showValues, setShowValues] = useState(true);
   const [internalShowGrid, setInternalShowGrid] = useState(showGrid);
   const [customHexInput, setCustomHexInput] = useState('');
@@ -65,6 +64,9 @@ const BarChart: React.FC<BarChartProps> = ({
   const [filterResetTrigger, setFilterResetTrigger] = useState(0);
   const [hasLocalChanges, setHasLocalChanges] = useState(false);
   const [isManualReconnecting, setIsManualReconnecting] = useState(false);
+  const [showReconnectModal, setShowReconnectModal] = useState(false);
+  // Store filtered data from FilterPanel when report filters are applied
+  const [filteredDataFromPanel, setFilteredDataFromPanel] = useState<DataPoint[] | null>(null);
   
   // Unified panel state
   const [showSidePanel, setShowSidePanel] = useState(false);
@@ -153,14 +155,51 @@ useEffect(() => {
     return connected;
   }, [filterContext, REPORT_ID, filterContext?.reportFilterStates?.[REPORT_ID], filterContext?.filterState, filterContext?.isSyncingFromMain]);
   
+  // Calculate filter count from appropriate state (main if connected, report if disconnected)
+  const filterCount = useMemo(() => {
+    if (!filterContext) return activeFilters?.length || 0;
+    
+    const stateToUse = isConnected 
+      ? filterContext.filterState 
+      : (filterContext.getReportFilterState(REPORT_ID) || filterContext.filterState);
+    
+    // Count active filters from FilterState
+    const hasDateFilter = stateToUse.dateRange?.preset && stateToUse.dateRange.preset !== 'all';
+    const attributeFilterCount = stateToUse.attributes?.filter(attr => attr.values && attr.values.size > 0).length || 0;
+    const totalCount = (hasDateFilter ? 1 : 0) + attributeFilterCount;
+    
+    // Fallback to activeFilters array length if available and state count is 0
+    return totalCount > 0 ? totalCount : (activeFilters?.length || 0);
+  }, [filterContext, isConnected, REPORT_ID, activeFilters]);
+  
+  
+  // Clear filteredDataFromPanel when report reconnects (so we use main filteredData)
+  useEffect(() => {
+    if (isConnected && filteredDataFromPanel !== null) {
+      console.log(`🔌 [BarChart] Report reconnected - clearing filteredDataFromPanel and using main filteredData`);
+      setFilteredDataFromPanel(null);
+    }
+  }, [isConnected, filteredDataFromPanel]);
   
   // Get effective filtered data (uses report filters when connected/disconnected)
+  // CRITICAL: When report filters disconnect and have segment filters, FilterPanel filters the data
+  // and passes it via onFilterChange. We should use that filtered data instead of getReportFilteredData
+  // which can't handle segment filtering without quadrantContext.
   const effectiveData = useMemo(() => {
     if (!originalData || !filterContext) return originalData || [];
     
-    // Use report filter system to get filtered data
+    // If we have filtered data from FilterPanel (for disconnected reports with segment filters), use it
+    if (!isConnected && filteredDataFromPanel !== null) {
+      console.log(`🔌 [BarChart] Using filtered data from FilterPanel (disconnected):`, {
+        filteredDataLength: filteredDataFromPanel.length,
+        originalDataLength: originalData.length
+      });
+      return filteredDataFromPanel;
+    }
+    
+    // Otherwise, use report filter system to get filtered data
     return filterContext.getReportFilteredData(REPORT_ID, originalData);
-  }, [originalData, filterContext, REPORT_ID, filterContext?.reportFilterStates?.[REPORT_ID]]);
+  }, [originalData, filterContext, REPORT_ID, filterContext?.reportFilterStates?.[REPORT_ID], filterContext?.filterState, filteredDataFromPanel, isConnected]);
   
   // Calculate filtered bar chart data from effectiveData
   // This recreates the distribution based on filtered data points
@@ -195,19 +234,43 @@ useEffect(() => {
   const panelRef = useRef<HTMLDivElement>(null);
   const cogwheelRef = useRef<HTMLButtonElement>(null);
   
+  // Function to close other bar chart panels when this one opens
+  const closeOtherBarChartPanels = useCallback((currentChartId: string) => {
+    // Dispatch event to close other panels
+    const closeEvent = new CustomEvent('closeBarChartPanel', { 
+      detail: { exceptChartId: currentChartId } 
+    });
+    document.dispatchEvent(closeEvent);
+    
+    // Also close Response Concentration panel when opening BarChart panel
+    const closeResponseEvent = new CustomEvent('closeResponseConcentrationPanel', { 
+      detail: {} 
+    });
+    document.dispatchEvent(closeResponseEvent);
+  }, []);
+  
   // Handle click outside for bar selection clearing (panel closing handled by UnifiedFilterTabPanel)
 const handleClickOutside = useCallback((event: MouseEvent) => {
   const targetElement = event.target as HTMLElement;
+  // Check if click is within THIS chart's container (using chartId)
+  const isThisChartClick = targetElement.closest(`[data-chart-id="${chartId}"]`);
   const isBarClick = targetElement.closest('.bar-chart-bar');
-    const isPanelClick = targetElement.closest('.unified-filter-tab-panel');
+  // Check if click is within THIS chart's panel (not another chart's panel)
+  const isThisChartPanel = panelRef.current?.contains(targetElement);
+  // Check if click is within ANY chart panel (to prevent cross-chart interference)
+  const isAnyChartPanel = targetElement.closest('.unified-controls-panel');
+  // Check if click is on color palette buttons (they should not clear selection)
+  const isColorPaletteClick = targetElement.closest('.color-palette') || targetElement.closest('.color-swatch');
   const isControlButtonClick = cogwheelRef.current?.contains(targetElement);
   
-  // Clear selection only if clicking outside bars and panel
-    if (!isBarClick && !isPanelClick && !isControlButtonClick) {
+  // Only clear selection if clicking outside THIS chart's bars, panel, container, and color palette
+  // AND not clicking on any other chart's panel (to allow both charts to have selections)
+  if (!isBarClick && !isThisChartPanel && !isControlButtonClick && !isThisChartClick && !isAnyChartPanel && !isColorPaletteClick) {
+    console.log(`[BarChart ${chartId}] Clearing selection - click outside chart (not in any panel or color palette)`);
     setSelectedBars(new Set());
     setApplyToAll(false);
   }
-  }, []);
+  }, [chartId]);
   
 useEffect(() => {
   document.addEventListener('mouseup', handleClickOutside);
@@ -235,7 +298,14 @@ useEffect(() => {
   // Handle filter changes
   // Connection status is now derived from state comparison, so we detect changes here
   const handleFilterChange = useCallback((filteredData: DataPoint[], newFilters: any[], filterState?: any) => {
-    console.log("Filter change triggered", newFilters);
+    console.log("Filter change triggered", newFilters, {
+      filteredDataLength: filteredData.length,
+      originalDataLength: originalData?.length
+    });
+    
+    // CRITICAL: Store filtered data from FilterPanel for disconnected reports with segment filters
+    // This ensures we use the correctly filtered data instead of getReportFilteredData which can't handle segments
+    setFilteredDataFromPanel(filteredData);
     
     if (!filterContext || !filterState || isManualReconnecting) {
       // Notify parent component
@@ -321,7 +391,30 @@ useEffect(() => {
     }
   }, [filterContext, REPORT_ID, showNotification]);
   
+  // Track if we're still in the initial setup phase (first few seconds after mount)
+  const initialSetupPhaseRef = useRef<boolean>(true);
+  const mountTimeRef = useRef<number>(Date.now());
+  
   // Notification tracking useEffect
+  // Initialize prevIsConnected to match initial isConnected value to prevent false transitions
+  // Use useLayoutEffect to ensure this runs synchronously BEFORE the notification effect
+  useLayoutEffect(() => {
+    if (prevIsConnected.current === undefined && filterContext) {
+      prevIsConnected.current = isConnected;
+      console.log(`🔔 [BarChart] Initializing prevIsConnected to ${isConnected} for ${REPORT_ID}`);
+    }
+    
+    // End initial setup phase after 3 seconds or when report state is stable
+    const timeSinceMount = Date.now() - mountTimeRef.current;
+    if (initialSetupPhaseRef.current && (timeSinceMount > 3000 || filterContext?.reportFilterStates[REPORT_ID])) {
+      // Give it a bit more time for sync operations to complete
+      setTimeout(() => {
+        initialSetupPhaseRef.current = false;
+        console.log(`🔔 [BarChart] Initial setup phase ended for ${REPORT_ID}`);
+      }, 1000);
+    }
+  }, [filterContext, isConnected, REPORT_ID]);
+
   // Only handles automatic DISCONNECT (user makes changes while connected)
   // Manual RECONNECT is handled by handleConnectionToggle (no notification from useEffect)
   // Initial sync on mount is silent (no notification)
@@ -331,6 +424,12 @@ useEffect(() => {
     // Skip entirely if this is a manual reconnect
     // Manual reconnect handles its own notification in handleConnectionToggle
     if (isManualReconnecting) {
+      prevIsConnected.current = isConnected;
+      return;
+    }
+    
+    // Skip if prevIsConnected hasn't been initialized yet (first render)
+    if (prevIsConnected.current === undefined) {
       prevIsConnected.current = isConnected;
       return;
     }
@@ -361,12 +460,13 @@ useEffect(() => {
     
     // ONLY automatic disconnect: connected -> disconnected
     // This happens when user makes changes in bar chart filters while connected
-    // BUT NOT when main filters are syncing to reports
+    // BUT NOT when main filters are syncing to reports OR during initial setup phase
     const shouldShowDisconnect = (
       prevIsConnected.current === true && 
       isConnected === false && 
       !isShowingNotification.current &&
       !filterContext.isSyncingFromMain && // Don't show notification during main filter sync
+      !initialSetupPhaseRef.current && // Don't show notification during initial setup phase
       (now - lastNotificationTime.current) > NOTIFICATION_DEBOUNCE_MS &&
       lastNotificationType.current !== 'disconnected'
     );
@@ -470,7 +570,11 @@ useEffect(() => {
   };
 
   const handleBarClick = (value: number, event: React.MouseEvent) => {
-    if (!interactive) return;
+    console.log(`[BarChart ${chartId}] handleBarClick called - value:`, value, 'interactive:', interactive);
+    if (!interactive) {
+      console.log(`[BarChart ${chartId}] Bar click ignored - not interactive`);
+      return;
+    }
   
     let newSelection: Set<number>;
     
@@ -491,14 +595,46 @@ useEffect(() => {
       }
     }
     
+    console.log(`[BarChart ${chartId}] Setting selectedBars to:`, Array.from(newSelection));
     setSelectedBars(newSelection);
     
     // Auto-open contextual menu when bars are selected (but not when deselecting all)
     if (newSelection.size > 0) {
+      console.log(`[BarChart ${chartId}] Opening side panel with ${newSelection.size} selected bars`);
+      // Close other bar chart panels first
+      closeOtherBarChartPanels(chartId);
       setShowSidePanel(true);
       setActivePanelTab('settings');
     }
   };
+  
+  // Listen for close events from other charts and Response Concentration
+  useEffect(() => {
+    const handleCloseBarChartEvent = (event: CustomEvent) => {
+      const exceptChartId = event.detail?.exceptChartId;
+      // If exceptChartId is null, close all charts (called from Response Concentration)
+      // If exceptChartId is set but doesn't match this chart, close this one
+      if ((exceptChartId === null || (exceptChartId && exceptChartId !== chartId)) && showSidePanel) {
+        console.log(`[BarChart ${chartId}] Closing panel - another panel opened`);
+        setShowSidePanel(false);
+      }
+    };
+    
+    const handleCloseResponseConcentrationEvent = () => {
+      // Close this panel when Response Concentration panel opens
+      if (showSidePanel) {
+        console.log(`[BarChart ${chartId}] Closing panel - Response Concentration opened`);
+        setShowSidePanel(false);
+      }
+    };
+    
+    document.addEventListener('closeBarChartPanel', handleCloseBarChartEvent as EventListener);
+    document.addEventListener('closeResponseConcentrationPanel', handleCloseResponseConcentrationEvent as EventListener);
+    return () => {
+      document.removeEventListener('closeBarChartPanel', handleCloseBarChartEvent as EventListener);
+      document.removeEventListener('closeResponseConcentrationPanel', handleCloseResponseConcentrationEvent as EventListener);
+    };
+  }, [chartId, showSidePanel]);
   
   // Format operator for display
   const formatOperator = (operator: string): string => {
@@ -578,117 +714,102 @@ useEffect(() => {
             </>
           )}
           {/* Selected Bars Analysis - Available to all users */}
-          {selectedBars.size > 0 && (
-            <div className="settings-group">
-              <div className="settings-title">Selected Bars Analysis</div>
-              <div className="selected-bars-summary">
-                <div className="summary-item">
-                  <span className="summary-label">Selected:</span>
-                  <span className="summary-value">{selectedBars.size} bar{selectedBars.size > 1 ? 's' : ''}</span>
-                </div>
-                <div className="summary-item">
-                  <span className="summary-label">Total Count:</span>
-                  <span className="summary-value">
-                    {Array.from(selectedBars).reduce((sum, value) => {
-                  const barData = displayData.find(d => d.value === value);
-                      return sum + (barData?.count || 0);
-                    }, 0)}
-                  </span>
-                </div>
-                <div className="summary-item">
-                  <span className="summary-label">Percentage:</span>
-                  <span className="summary-value">
-                    {((Array.from(selectedBars).reduce((sum, value) => {
-                  const barData = displayData.find(d => d.value === value);
-                      return sum + (barData?.count || 0);
-                }, 0) / displayData.reduce((sum, d) => sum + d.count, 0)) * 100).toFixed(1)}%
-                  </span>
-                </div>
-                <div className="summary-item">
-                  <span className="summary-label">Values:</span>
-                  <span className="summary-value">
-                    {Array.from(selectedBars).sort((a, b) => a - b).join(', ')}
-                  </span>
+          {selectedBars.size > 0 && (() => {
+            console.log(`[BarChart ${chartId}] Rendering Selected Bars Analysis - selectedBars.size:`, selectedBars.size);
+            return (
+              <div className="settings-group">
+                <div className="settings-title">Selected Bars Analysis</div>
+                <div className="selected-bars-summary">
+                  <div className="summary-item">
+                    <span className="summary-label">Selected:</span>
+                    <span className="summary-value">{selectedBars.size} bar{selectedBars.size > 1 ? 's' : ''}</span>
+                  </div>
+                  <div className="summary-item">
+                    <span className="summary-label">Total Count:</span>
+                    <span className="summary-value">
+                      {Array.from(selectedBars).reduce((sum, value) => {
+                        const barData = displayData.find(d => d.value === value);
+                        return sum + (barData?.count || 0);
+                      }, 0)}
+                    </span>
+                  </div>
+                  <div className="summary-item">
+                    <span className="summary-label">Percentage:</span>
+                    <span className="summary-value">
+                      {((Array.from(selectedBars).reduce((sum, value) => {
+                        const barData = displayData.find(d => d.value === value);
+                        return sum + (barData?.count || 0);
+                      }, 0) / displayData.reduce((sum, d) => sum + d.count, 0)) * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="summary-item">
+                    <span className="summary-label">Values:</span>
+                    <span className="summary-value">
+                      {Array.from(selectedBars).sort((a, b) => a - b).join(', ')}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
-          <div className="settings-group">
-            <div className="settings-title">Bar Colours</div>
-            {isPremium ? (
-              <>
+          {isPremium && (() => {
+            console.log('[BarChart] Rendering ColorPalette - isPremium:', isPremium, 'selectedBars.size:', selectedBars.size, 'disabled:', selectedBars.size === 0);
+            return (
+              <div className="settings-group">
+                <div className="settings-title">Bar Colours</div>
                 <ColorPalette
-                  selectedColor={customColors[selectedBar || 0]}
-                  onColorSelect={(color: string) => {
-                    if (selectedBars.size === 0) return;
+                selectedColor={selectedBars.size > 0 ? customColors[Array.from(selectedBars)[0]] : undefined}
+                onColorSelect={(color: string) => {
+                  console.log('[BarChart] onColorSelect called with color:', color, 'selectedBars:', Array.from(selectedBars));
+                  if (selectedBars.size === 0) {
+                    console.log('[BarChart] No bars selected, returning early');
+                    return;
+                  }
+                  selectedBars.forEach(barValue => {
+                    console.log('[BarChart] Calling onColorChange for bar:', barValue, 'with color:', color);
+                    onColorChange?.(barValue, color);
+                  });
+                  setCustomHexInput(color.replace('#', ''));
+                }}
+                isPremium={isPremium}
+                disabled={selectedBars.size === 0}
+                showCustomInput={true}
+                customHexValue={customHexInput}
+                onCustomHexChange={(value: string) => {
+                  setCustomHexInput(value);
+                  if (value.length === 6 && selectedBars.size > 0) {
                     selectedBars.forEach(barValue => {
-                      onColorChange?.(barValue, color);
+                      onColorChange?.(barValue, '#' + value);
                     });
-                    setCustomHexInput(color.replace('#', ''));
+                  }
+                }}
+              />
+              <div className="settings-option">
+                <input
+                  type="checkbox"
+                  id={`apply-all-${chartId}`}
+                  checked={applyToAll}
+                  style={{ 
+                    cursor: 'pointer',
+                    opacity: selectedBars.size === 0 ? 0.5 : 1
                   }}
-                  isPremium={isPremium}
-                  disabled={selectedBars.size === 0}
-                  showCustomInput={true}
-                  customHexValue={customHexInput}
-                  onCustomHexChange={(value: string) => {
-                    setCustomHexInput(value);
-                    if (value.length === 6) {
-                      onColorChange?.(selectedBar || 0, '#' + value);
+                  onChange={(e) => {
+                    setApplyToAll(e.target.checked);
+                    if (e.target.checked) {
+                  setSelectedBars(new Set(displayData.map(d => d.value)));
+                    } else {
+                      setSelectedBars(new Set());
                     }
                   }}
                 />
-                <div className="settings-option">
-                  <input
-                    type="checkbox"
-                    id={`apply-all-${chartId}`}
-                    checked={applyToAll}
-                    style={{ 
-                      cursor: 'pointer',
-                      opacity: selectedBars.size === 0 ? 0.5 : 1
-                    }}
-                    onChange={(e) => {
-                      setApplyToAll(e.target.checked);
-                      if (e.target.checked) {
-                    setSelectedBars(new Set(displayData.map(d => d.value)));
-                      } else {
-                        setSelectedBars(new Set());
-                      }
-                    }}
-                  />
-                  <label htmlFor={`apply-all-${chartId}`}>
-                    Apply to all bars
-                  </label>
-                </div>
-              </>
-            ) : (
-              <div className="premium-feature-placeholder">
-                <div className="premium-placeholder-content">
-                  <div className="premium-placeholder-title-row">
-                    <span className="premium-placeholder-title">Premium Feature</span>
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="12" 
-                      height="12" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="2" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      className="lucide lucide-crown-icon lucide-crown premium-crown"
-                    >
-                      <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/>
-                      <path d="M5 21h14"/>
-                    </svg>
-                  </div>
-                  <div className="premium-placeholder-description">
-                    Customise bar colours to match your brand
-                  </div>
-                </div>
+                <label htmlFor={`apply-all-${chartId}`}>
+                  Apply to all bars
+                </label>
               </div>
-            )}
-          </div>
+              </div>
+            );
+          })()}
         </div>
   );
   
@@ -726,7 +847,7 @@ useEffect(() => {
                 onFilterChange([]);
               }
             }}
-            disabled={!activeFilters || activeFilters.length === 0}
+            disabled={filterCount === 0}
           >
             Reset All
           </button>
@@ -757,6 +878,10 @@ useEffect(() => {
             className={`bar-chart-control-button ${showSidePanel ? 'active' : ''} ${activeFilters && activeFilters.length > 0 ? 'has-filters' : ''}`}
             onClick={() => {
               const newState = !showSidePanel;
+              if (newState) {
+                // Close other panels when opening this one
+                closeOtherBarChartPanels(chartId);
+              }
               setShowSidePanel(newState);
               // Start with filters tab if there are active filters, otherwise settings
               if (newState) {
@@ -778,6 +903,9 @@ useEffect(() => {
       {showSidePanel && (
         <div className="unified-controls-panel" ref={panelRef}>
           <div className="unified-controls-header">
+            <div className="bar-chart-panel-title">
+              {title || `Chart Settings${chartId ? ` - ${chartId.charAt(0).toUpperCase() + chartId.slice(1)}` : ''}`}
+            </div>
             <div className="unified-controls-tabs">
               <button 
                 className={`unified-tab ${activePanelTab === 'settings' ? 'active' : ''}`}
@@ -803,8 +931,8 @@ useEffect(() => {
                     onClick={(e) => {
                       e.stopPropagation();
                       if (!isConnected) {
-                        // Reconnect: sync to master
-                        handleConnectionToggle(true);
+                        // Show confirmation modal before reconnecting
+                        setShowReconnectModal(true);
                       }
                     }}
                     title={isConnected ? 'Connected to main filters (will disconnect automatically when you change filters)' : 'Click to reconnect to main filters'}
@@ -816,8 +944,8 @@ useEffect(() => {
                     )}
                   </span>
                 )}
-                {activeFilters && activeFilters.length > 0 && (
-                  <span className="unified-filter-badge">{activeFilters.length}</span>
+                {filterCount > 0 && (
+                  <span className="unified-filter-badge">{filterCount}</span>
                 )}
               </button>
             </div>
@@ -865,6 +993,10 @@ useEffect(() => {
           {displayData.map(({ value, count }) => {
             const heightPercent = yScale(count);
             const showValueForBar = showValues || hoveredBar === value;
+            const barColor = customColors[value] || '#3a863e';
+            if (value === 1) { // Log first bar as sample
+              console.log('[BarChart] Rendering bar value:', value, 'customColors:', customColors, 'barColor:', barColor);
+            }
             
             return (
               <div 
@@ -878,7 +1010,7 @@ useEffect(() => {
                     }`}
                     style={{
                       height: `${heightPercent}%`,
-                      backgroundColor: customColors[value] || '#3a863e'
+                      backgroundColor: barColor
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -921,6 +1053,41 @@ useEffect(() => {
           })}
         </div>
       </div>
+      
+      {/* Reconnection Confirmation Modal */}
+      {showReconnectModal && (
+        <div className="filter-connection-modal-overlay">
+          <div className="filter-connection-modal">
+            <div className="modal-header">
+              <h3>Connect to Main Chart Filters?</h3>
+            </div>
+            <div className="modal-content">
+              <p>This will discard your local changes and sync to the main chart filters.</p>
+            </div>
+            <div className="modal-actions">
+              <button 
+                className="modal-btn cancel-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowReconnectModal(false);
+                }}
+              >
+                Cancel
+              </button>
+              <button 
+                className="modal-btn confirm-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowReconnectModal(false);
+                  handleConnectionToggle(true);
+                }}
+              >
+                Connect
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

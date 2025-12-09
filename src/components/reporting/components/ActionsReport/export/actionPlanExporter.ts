@@ -1,0 +1,2002 @@
+import jsPDF from 'jspdf';
+import * as XLSX from 'xlsx';
+import type { ActionPlanReport, ChartImage } from '../types';
+
+const DEFAULT_LOGO = 'https://raw.githubusercontent.com/JaimeV365/segmentor/main/Logo%20large%209%20no%20motto%20stylised%20hand.png';
+const DISCLAIMER_TEXT = 'This report is generated automatically and is provided for general informational purposes only. It is NOT professional advice and must not be relied upon as such. See full disclaimer at segmentor.app';
+
+/**
+ * Loads a font from a URL and adds it to jsPDF
+ * Fonts are embedded in the PDF, so users don't need them installed
+ */
+async function loadFontForPDF(
+  pdf: jsPDF,
+  fontName: string,
+  fontUrl: string,
+  style: 'normal' | 'bold' | 'italic' | 'bolditalic' = 'normal'
+): Promise<boolean> {
+  try {
+    // Check if font is already loaded
+    const fontKey = `${fontName}-${style}`;
+    if ((pdf as any).__fontsLoaded?.has(fontKey)) {
+      return true;
+    }
+
+    // Fetch font file
+    const response = await fetch(fontUrl);
+    if (!response.ok) {
+      console.warn(`Failed to load font ${fontName} from ${fontUrl}`);
+      return false;
+    }
+
+    const fontBlob = await response.blob();
+    const fontArrayBuffer = await fontBlob.arrayBuffer();
+    
+    // Convert to base64 (handle large files properly)
+    const bytes = new Uint8Array(fontArrayBuffer);
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    const fontBase64 = btoa(binary);
+
+    // Add to jsPDF virtual file system
+    const fontFileName = `${fontName}-${style}.ttf`;
+    pdf.addFileToVFS(fontFileName, fontBase64);
+    pdf.addFont(fontFileName, fontName, style);
+
+    // Track loaded fonts
+    if (!(pdf as any).__fontsLoaded) {
+      (pdf as any).__fontsLoaded = new Set();
+    }
+    (pdf as any).__fontsLoaded.add(fontKey);
+
+    // Verify font was actually added by trying to set it
+    // If it fails, the font wasn't properly registered
+    try {
+      const currentFont = pdf.getFont();
+      pdf.setFont(fontName, style);
+      const testFont = pdf.getFont();
+      if (testFont.fontName !== fontName || testFont.fontStyle !== style) {
+        console.warn(`Font ${fontName} ${style} was not properly registered`);
+        pdf.setFont(currentFont.fontName, currentFont.fontStyle);
+        return false;
+      }
+      pdf.setFont(currentFont.fontName, currentFont.fontStyle);
+    } catch (error) {
+      console.warn(`Font ${fontName} ${style} verification failed:`, error);
+      return false;
+    }
+
+    console.log(`Successfully loaded font: ${fontName} ${style}`);
+    return true;
+  } catch (error) {
+    console.warn(`Failed to load font ${fontName}:`, error);
+    return false;
+  }
+}
+
+/**
+ * Ensures Montserrat and Lato fonts are loaded in the PDF
+ */
+async function ensureFontsLoaded(pdf: jsPDF, bodyFont?: string): Promise<void> {
+  try {
+    // Montserrat Bold (for section headers)
+    // Using local font files from public/fonts folder
+    const montserratBoldTTF = '/fonts/Montserrat-Bold.ttf';
+    const montserratBoldLoaded = await loadFontForPDF(pdf, 'Montserrat', montserratBoldTTF, 'bold');
+    if (!montserratBoldLoaded) {
+      console.warn('Montserrat Bold font not loaded, using helvetica bold fallback');
+    }
+
+    // Load body font based on selection
+    if (bodyFont === 'Lato') {
+      const latoRegularTTF = '/fonts/Lato-Regular.ttf';
+      const latoLoaded = await loadFontForPDF(pdf, 'Lato', latoRegularTTF, 'normal');
+      if (!latoLoaded) {
+        console.warn('Lato Regular font not loaded, using helvetica fallback');
+      }
+    } else if (bodyFont === 'Montserrat') {
+      // For Montserrat body text, we need Regular, but we only have Bold
+      // We'll use Lato as fallback for body text, or use helvetica
+      // Note: We don't have Montserrat Regular, so we'll use Lato or helvetica
+      const latoRegularTTF = '/fonts/Lato-Regular.ttf';
+      await loadFontForPDF(pdf, 'Lato', latoRegularTTF, 'normal');
+      console.warn('Montserrat Regular not available, using Lato for body text');
+    }
+    // For helvetica, arial, and times, they are built-in jsPDF fonts, no need to load
+  } catch (error) {
+    console.warn('Failed to load custom fonts, using fallbacks:', error);
+  }
+}
+
+/**
+ * Loads logo image and returns as data URL with dimensions
+ */
+async function loadLogoForPDF(logoUrl: string): Promise<{ dataUrl: string; width: number; height: number } | null> {
+  try {
+    const response = await fetch(logoUrl);
+    const blob = await response.blob();
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+    
+    // Get image dimensions
+    const img = new Image();
+    img.src = dataUrl;
+    await new Promise<void>((resolve, reject) => {
+      if (img.complete) {
+        resolve();
+      } else {
+        img.onload = () => resolve();
+        img.onerror = reject;
+      }
+    });
+    
+    return { dataUrl, width: img.width, height: img.height };
+  } catch (error) {
+    console.warn('Failed to load logo for PDF watermark:', error);
+    return null;
+  }
+}
+
+/**
+ * Gets section title for a finding category
+ */
+function getSectionTitle(category: string): string {
+  const titles: Record<string, string> = {
+    'data': 'Data Overview',
+    'concentration': 'Response Concentration',
+    'distribution': 'Customer Distribution',
+    'proximity': 'Proximity Analysis',
+    'recommendation': 'Recommendation Score'
+  };
+  return titles[category] || category.charAt(0).toUpperCase() + category.slice(1);
+}
+
+/**
+ * Adds a simple section header with Montserrat + Branded Green (no decoration)
+ * Used for category sections (Findings, Opportunities & Risks, Actions)
+ */
+function addSimpleSectionHeader(
+  pdf: jsPDF,
+  title: string,
+  yPosition: number,
+  margin: number
+): number {
+  // Try to use Montserrat Bold, fallback to helvetica if not loaded
+  pdf.setFontSize(18);
+  
+  // Check if Montserrat Bold was actually loaded using our tracking
+  const fontsLoaded = (pdf as any).__fontsLoaded;
+  if (fontsLoaded && fontsLoaded.has('Montserrat-bold')) {
+    try {
+      pdf.setFont('Montserrat', 'bold');
+      const currentFont = pdf.getFont();
+      if (currentFont.fontName === 'Montserrat' && currentFont.fontStyle === 'bold') {
+        // Font is loaded and working
+      } else {
+        throw new Error(`Font not properly set. Got: ${currentFont.fontName} ${currentFont.fontStyle}`);
+      }
+    } catch (error) {
+      console.warn('Montserrat Bold not available, using helvetica bold:', error);
+      pdf.setFont('helvetica', 'bold');
+    }
+  } else {
+    pdf.setFont('helvetica', 'bold'); // Fallback if Montserrat not loaded
+  }
+  
+  // Use branded green color (#3a863e)
+  pdf.setTextColor(58, 134, 62); // #3a863e (branded green)
+  
+  // Align to the left, same as rest of text (margin, not margin + 10)
+  const titleX = margin;
+  pdf.text(title, titleX, yPosition);
+  
+  // Reset text color
+  pdf.setTextColor(0, 0, 0);
+  
+  // Return new yPosition (text height + spacing)
+  return yPosition + 12;
+}
+
+/**
+ * Adds a styled section header to the PDF (matching main category style)
+ * Uses Montserrat-style font (helvetica bold as closest match) with green decoration
+ * Used only for the main "Actions Report" title
+ * 
+ * Original CSS:
+ * - font-family: 'Montserrat', sans-serif
+ * - font-size: 1.75rem (28px)
+ * - padding-left: 48px
+ * - padding-bottom: 12px
+ * - Vertical bar: left: 32px, top: 50% (centered), width: 4px, height: 24px
+ * - Horizontal bar: left: 32px, bottom: 0, width: 60px, height: 3px
+ */
+function addStyledSectionHeader(
+  pdf: jsPDF,
+  title: string,
+  yPosition: number,
+  margin: number
+): number {
+  // Try to use Montserrat Bold, fallback to helvetica if not loaded
+  // Font size: 1.75rem = 28px, at 96 DPI = 7.4mm, but we'll use 18mm for PDF visibility
+  pdf.setFontSize(18);
+  
+  // Check if Montserrat Bold was actually loaded using our tracking
+  const fontsLoaded = (pdf as any).__fontsLoaded;
+  if (fontsLoaded && fontsLoaded.has('Montserrat-bold')) {
+    try {
+      pdf.setFont('Montserrat', 'bold');
+      const currentFont = pdf.getFont();
+      // Verify the font was actually set
+      if (currentFont.fontName === 'Montserrat' && currentFont.fontStyle === 'bold') {
+        // Font is loaded and working - log for debugging
+        console.log('Using Montserrat Bold font');
+      } else {
+        throw new Error(`Font not properly set. Got: ${currentFont.fontName} ${currentFont.fontStyle}`);
+      }
+    } catch (error) {
+      console.warn('Montserrat Bold not available, using helvetica bold:', error);
+      pdf.setFont('helvetica', 'bold');
+    }
+  } else {
+    console.warn('Montserrat Bold not loaded (not in fontsLoaded set), using helvetica bold');
+    pdf.setFont('helvetica', 'bold'); // Fallback if Montserrat not loaded
+  }
+  pdf.setTextColor(44, 62, 80); // #2c3e50
+  
+  // Original CSS analysis:
+  // - padding-left: 48px (text starts 48px from left)
+  // - bar left: 32px (bar starts 32px from left)
+  // - So bar is 16px (4.23mm) to the left of text start
+  // - Text baseline positioning
+  const textBaselineY = yPosition;
+  
+  // Text positioning: padding-left: 48px = 12.7mm at 96 DPI
+  // But we'll align everything more to the left by reducing this slightly
+  const titleX = margin + 10; // Reduced from 12.7mm to align better left
+  pdf.text(title, titleX, textBaselineY);
+  
+  // Get text height for vertical centering
+  // Font size 18mm, with typical line height ~1.2x = ~21.6mm total text height
+  const textHeight = 18 * 1.2; // ~21.6mm
+  // Text center: adjust to properly center the vertical bar on the text
+  // Move the vertical bar DOWN (lower on page) by decreasing the multiplier further
+  // In jsPDF, Y=0 is at TOP, Y increases DOWNWARD
+  // So to move DOWN, we need to INCREASE Y, which means DECREASE the offset from textBaselineY
+  const textCenterY = textBaselineY - (textHeight * 0.20); // Decreased from 0.25 to 0.20 to move bar DOWN further (higher Y = lower on page)
+  
+  // Vertical green bar: left: 32px = 8.47mm from margin
+  // But we'll align it better: bar should be 16px (4.23mm) to the left of text
+  // Width: 4px = 1.06mm, Height: 24px = 6.35mm
+  // Positioned at top: 50% (centered vertically on text)
+  const barX = titleX - 4.23; // 16px (4.23mm) to the left of text
+  const verticalBarHeight = 6.35;
+  const barY = textCenterY - (verticalBarHeight / 2); // Center on text (now lower/closer due to textCenterY adjustment)
+  pdf.setFillColor(58, 134, 62); // #3a863e (green)
+  pdf.rect(barX, barY, 1.06, verticalBarHeight, 'F');
+  
+  // Horizontal green bar: same X position as vertical bar, width: 60px = 15.9mm, height: 3px = 0.79mm
+  // Move the horizontal bar UP (closer to text) by decreasing the Y position
+  const horizontalBarHeight = 0.79;
+  const horizontalBarY = textBaselineY + 3.5; // Decreased from 6mm to 3.5mm to move bar UP (closer to text)
+  pdf.rect(barX, horizontalBarY, 15.9, horizontalBarHeight, 'F');
+  
+  // Reset text color
+  pdf.setTextColor(0, 0, 0);
+  
+  // Return new yPosition (text height + padding-bottom + extra spacing for gap)
+  // padding-bottom: 12px = 3.18mm, plus extra spacing for bigger gap
+  return yPosition + 15; // Increased from 12 to 15 for bigger gap
+}
+
+/**
+ * Gets the watermark rotation from the main visualization chart
+ * Returns rotation in degrees (0 for flat, -90 for vertical)
+ */
+function getMainChartWatermarkRotation(): number {
+  try {
+    const watermarkElement = document.querySelector('.chart-container .watermark-layer');
+    if (watermarkElement) {
+      const transform = window.getComputedStyle(watermarkElement).transform;
+      const style = watermarkElement.getAttribute('style') || '';
+      
+      // First, check for explicit rotate() function in style attribute
+      const rotateMatch = style.match(/rotate\(([^)]+)\)/);
+      if (rotateMatch) {
+        const rotateValue = rotateMatch[1].trim();
+        if (rotateValue === '0deg' || rotateValue === '0') {
+          console.log('Detected watermark rotation from rotate(): 0 degrees (flat)');
+          return 0; // Flat
+        } else if (rotateValue === '-90deg' || rotateValue === '-90') {
+          console.log('Detected watermark rotation from rotate(): -90 degrees (vertical)');
+          return -90; // Vertical
+        }
+      }
+      
+      // Also check computed transform
+      if (transform && transform !== 'none') {
+        // Parse transform matrix to get rotation
+        // For -90deg rotation: matrix(0, 1, -1, 0, x, y)
+        // For 0deg rotation: matrix(1, 0, 0, 1, x, y)
+        const matrixMatch = transform.match(/matrix\(([^)]+)\)/);
+        if (matrixMatch) {
+          const values = matrixMatch[1].split(',').map(v => parseFloat(v.trim()));
+          if (values.length >= 4) {
+            // Check if it's rotated (values[0] is close to 0 and values[1] is close to 1)
+            if (Math.abs(values[0]) < 0.1 && Math.abs(values[1] - 1) < 0.1) {
+              console.log('Detected watermark rotation from matrix: -90 degrees (vertical)');
+              return -90; // Vertical/rotated
+            }
+            // Check if it's flat (values[0] is close to 1 and values[1] is close to 0)
+            if (Math.abs(values[0] - 1) < 0.1 && Math.abs(values[1]) < 0.1) {
+              console.log('Detected watermark rotation from matrix: 0 degrees (flat)');
+              return 0; // Flat/not rotated
+            }
+            // If neither pattern matches, log for debugging
+            console.log('Watermark transform values:', values, 'transform:', transform);
+          }
+        }
+      }
+      
+      // Check if transform is 'none' - this could mean flat (0 degrees) OR it hasn't been set yet
+      // We need to check the actual style attribute to see if rotation is explicitly set
+      if (transform === 'none' || !transform) {
+        // Check the inline style for explicit rotation
+        const inlineStyle = watermarkElement.getAttribute('style') || '';
+        // If style contains rotate(0deg) or no rotation at all, it's flat
+        if (inlineStyle.includes('rotate(0deg)') || inlineStyle.includes('rotate(0)') || 
+            (!inlineStyle.includes('rotate') && !inlineStyle.includes('transform'))) {
+          console.log('Detected watermark rotation: 0 degrees (flat) - no transform in style');
+          return 0; // Flat
+        }
+      }
+    }
+    
+    // Default: check localStorage for LOGO_FLAT effect
+    try {
+      // Check if there's a stored preference for flat watermark
+      const storedEffects = localStorage.getItem('watermarkEffects');
+      if (storedEffects) {
+        const effects = JSON.parse(storedEffects);
+        if (Array.isArray(effects) && effects.includes('LOGO_FLAT')) {
+          console.log('Detected watermark rotation from localStorage: 0 degrees (flat)');
+          return 0; // Flat
+        }
+      }
+    } catch (e) {
+      // Ignore localStorage errors
+    }
+    
+    console.log('Using default watermark rotation: -90 degrees (vertical)');
+    // Default to -90 (vertical) as that's the default in Watermark.tsx
+    return -90;
+  } catch (error) {
+    console.warn('Failed to detect watermark rotation:', error);
+    return -90; // Default to vertical
+  }
+}
+
+/**
+ * Adds watermark to a chart image
+ * Returns a new data URL with the watermark applied
+ */
+async function addWatermarkToChartImage(
+  imageDataUrl: string,
+  logoUrl: string = DEFAULT_LOGO,
+  chartType?: string,
+  selector?: string,
+  rotation: number = 0
+): Promise<string> {
+  try {
+    // Load the chart image
+    const chartImg = new Image();
+    chartImg.src = imageDataUrl;
+    await new Promise<void>((resolve, reject) => {
+      if (chartImg.complete) {
+        resolve();
+      } else {
+        chartImg.onload = () => resolve();
+        chartImg.onerror = reject;
+      }
+    });
+
+    // Load the logo
+    const logoResponse = await fetch(logoUrl);
+    const logoBlob = await logoResponse.blob();
+    const logoDataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(logoBlob);
+    });
+
+    const logoImg = new Image();
+    logoImg.src = logoDataUrl;
+    await new Promise<void>((resolve, reject) => {
+      if (logoImg.complete) {
+        resolve();
+      } else {
+        logoImg.onload = () => resolve();
+        logoImg.onerror = reject;
+      }
+    });
+
+    // Create canvas with original image dimensions (no scaling)
+    const canvas = document.createElement('canvas');
+    canvas.width = chartImg.width;
+    canvas.height = chartImg.height;
+    const ctx = canvas.getContext('2d', { 
+      willReadFrequently: false,
+      alpha: true 
+    });
+    if (!ctx) {
+      throw new Error('Failed to get canvas context');
+    }
+
+    // Enable high-quality image rendering
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
+    // Draw the chart image
+    ctx.drawImage(chartImg, 0, 0);
+
+    // Determine watermark size and position based on chart type
+    // STANDARDIZE: All watermarks use the same size (12% of smaller dimension, max 150px)
+    let logoSize = Math.min(chartImg.width, chartImg.height) * 0.12; // 12% of smaller dimension
+    let maxLogoSize = 150; // Max 150px (standardized across all charts)
+    let paddingXPercent = 0.08; // 8% from right (default)
+    let paddingYPercent = 0.15; // 15% from bottom (default)
+
+    // Normalize selector for matching (convert to lowercase for case-insensitive matching)
+    const normalizedSelector = (selector || '').toLowerCase();
+    const normalizedChartType = (chartType || '').toLowerCase();
+
+    // Chart-specific adjustments
+    // Note: paddingXPercent is distance from RIGHT edge, so decreasing it moves logo RIGHT
+    // paddingYPercent is distance from BOTTOM edge, so increasing it moves logo UP
+    // "to the left" = increase paddingXPercent (move away from right edge)
+    // "downwards" = decrease paddingYPercent (move away from bottom edge, lower on image)
+    
+    // Check if watermark is flat (0 degrees) or vertical (-90 degrees)
+    const isFlat = rotation === 0;
+    
+    // When flat, the logo is wider but shorter, so we need to account for that in positioning
+    // Also need to ensure paddingYPercent doesn't go negative (which would place it outside image)
+    
+    // Check for Proximity Analysis charts first (more specific)
+    if (normalizedSelector.includes('actionable-conversions') || normalizedSelector.includes('actionableconversions') || normalizedSelector.includes('actionable_conversions')) {
+      // Proximity Analysis (second - actionable conversions)
+      logoSize = Math.min(chartImg.width, chartImg.height) * 0.12; // 12% of smaller dimension (standardized)
+      maxLogoSize = 150; // Max 150px (standardized)
+      if (isFlat) {
+        // Flat position: 40% downwards, 20% to the left, then move right 15 units, then 5 more units right
+        // For flat, logo is wider, so "to the left" means more padding from right edge
+        // "5 units to the right" means decrease paddingXPercent by 0.05
+        paddingXPercent = 0.08 + 0.20 - 0.15 - 0.05; // 8% from right (moved 20% to the left, then 15% back right, then 5% more right)
+        paddingYPercent = 0.05; // 5% from bottom (moved 40% down from 15% = much lower)
+        console.log('Proximity Analysis second pic (FLAT) - position: 40% down, 20% left, then 15 units right, then 5 more right', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
+      } else {
+        // Vertical position: moved 10 positions left, then halfway back (5 positions right), then a wee bit more right
+        paddingXPercent = 0.08 - 0.10 + 0.10 - 0.05 - 0.02; // 1% from right (moved 10% left, then 5% back right, then 2% more right)
+        paddingYPercent = 0.15; // Keep same vertical position
+        console.log('Proximity Analysis second pic (VERTICAL) - position: 10 positions left, then 5 positions back right, then a wee bit more right', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
+      }
+    } else if ((normalizedSelector.includes('proximity') && normalizedSelector.includes('distribution-card')) || 
+               (normalizedChartType === 'proximity' && !normalizedSelector.includes('actionable'))) {
+      // Proximity Analysis (first - distribution card)
+      logoSize = Math.min(chartImg.width, chartImg.height) * 0.12; // 12% of smaller dimension (standardized)
+      maxLogoSize = 150; // Max 150px (standardized)
+      if (isFlat) {
+        // Flat position: 40% downwards, 15% to the left, then move up 30 units, then 5 units down and 5 units right
+        // "5 units down" means decrease paddingYPercent by 0.05
+        // "5 units to the right" means decrease paddingXPercent by 0.05
+        paddingXPercent = 0.08 + 0.15 - 0.05; // 18% from right (moved 15% to the left, then 5% back right)
+        paddingYPercent = 0.05 + 0.30 - 0.05; // 30% from bottom (moved 40% down from 15%, then 30% back up, then 5% back down)
+        console.log('Proximity Analysis first pic (FLAT) - position: 40% down, 15% left, then 30 units up, then 5 down and 5 right', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
+      } else {
+        // Vertical position: 20% higher, 5% to the right, then 10 positions left, then halfway back (5 positions right), then a wee bit more right
+        paddingXPercent = 0.08 - 0.05 + 0.10 - 0.05 - 0.02; // 6% from right (moved 5% right, then 10% left, then 5% back right, then 2% more right)
+        paddingYPercent = 0.15 + 0.20; // 35% from bottom (moved 20% up)
+        console.log('Proximity Analysis first pic (VERTICAL) - position: 20% up, 5% right, then 10 positions left, then 5 back right, then a wee bit more right', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
+      }
+    } else if (normalizedChartType === 'concentration' || normalizedSelector.includes('response-concentration') || normalizedSelector.includes('concentration')) {
+      // Response Concentration
+      logoSize = Math.min(chartImg.width, chartImg.height) * 0.12; // 12% of smaller dimension (standardized)
+      maxLogoSize = 150; // Max 150px (standardized)
+      if (isFlat) {
+        // Flat position: 40% downwards, 10% to the left, then move up 15 units
+        // "15 units up" means increase paddingYPercent by 0.15
+        paddingXPercent = 0.08 + 0.10; // 18% from right (moved 10% to the left)
+        paddingYPercent = 0.05 + 0.15; // 20% from bottom (moved 40% down from 15%, then 15% back up)
+        console.log('Response Concentration (FLAT) - position: 40% down, 10% left, then 15 units up', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
+      } else {
+        // Vertical position: 5% to the right, 20% up (existing settings)
+        paddingXPercent = 0.08 - 0.05; // 3% from right (moved 5% to the right)
+        paddingYPercent = 0.15 + 0.20; // 35% from bottom (moved 20% up)
+        console.log('Response Concentration (VERTICAL) - position: 5% right, 20% up', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
+      }
+    } else if (normalizedChartType === 'distribution' || normalizedSelector.includes('distribution')) {
+      // Customer Distribution
+      if (isFlat) {
+        // Flat position: 30% downwards, 5% to the left
+        logoSize = Math.min(chartImg.width, chartImg.height) * 0.15; // 15% of smaller dimension (same size as vertical)
+        maxLogoSize = 180; // Max 180px (same size as vertical)
+        paddingXPercent = 0.08 + 0.05; // 13% from right (moved 5% to the left)
+        paddingYPercent = 0.10; // 10% from bottom (moved 30% down from 15% = 5% remaining, but use 10% to be safe)
+        console.log('Customer Distribution (FLAT) - position: 30% down, 5% left', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
+      } else {
+        // Vertical position: 5% to the right, INCREASED SIZE (existing settings)
+        logoSize = Math.min(chartImg.width, chartImg.height) * 0.15; // 15% of smaller dimension (increased from 12%)
+        maxLogoSize = 180; // Max 180px (increased from 150px)
+        paddingXPercent = 0.08 - 0.05; // 3% from right (moved 5% to the right)
+        paddingYPercent = 0.15; // Keep same vertical position
+        console.log('Customer Distribution (VERTICAL) - size increased to 15%/180px max, 5% right', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
+      }
+    }
+
+    // Apply max size limit
+    logoSize = Math.min(logoSize, maxLogoSize);
+
+    // Calculate watermark position (bottom-right)
+    // For flat watermarks, the logo is wider, so we need to account for that in positioning
+    const logoAspectRatio = logoImg.height / logoImg.width;
+    
+    // Determine actual visual dimensions after rotation
+    let visualWidth: number;
+    let visualHeight: number;
+    
+    if (isFlat) {
+      // When flat (rotation = 0), logo is drawn wider: width = logoSize, height = logoSize * aspectRatio
+      visualWidth = logoSize; // Visual width when flat (wider)
+      visualHeight = logoSize * logoAspectRatio; // Visual height when flat (shorter)
+    } else {
+      // When vertical (rotation = -90), logo is drawn then rotated
+      // After rotation, visual width = original height, visual height = original width
+      visualWidth = logoSize * logoAspectRatio; // Visual width when vertical (narrower)
+      visualHeight = logoSize; // Visual height when vertical (taller)
+    }
+    
+    // Calculate X position - account for visual width
+    // paddingXPercent is distance from RIGHT edge
+    // If negative, it moves RIGHT (closer to or beyond right edge)
+    const finalLogoX = chartImg.width - visualWidth - (chartImg.width * paddingXPercent);
+    
+    // Calculate Y position - ensure paddingYPercent is positive to keep watermark visible
+    // paddingYPercent is distance from BOTTOM edge
+    const safePaddingY = Math.max(0.02, paddingYPercent); // Ensure at least 2% from bottom to keep visible
+    const logoY = chartImg.height - visualHeight - (chartImg.height * safePaddingY);
+
+    // Use the rotation passed as parameter (mirrors main chart rotation for supporting charts)
+    // rotation: 0 = flat, -90 = vertical
+    // Canvas rotate() rotates counter-clockwise, so -90 degrees rotates clockwise 90 degrees
+
+    // Save context, apply rotation if needed, draw logo, restore context
+    ctx.save();
+    // Always apply rotation (even if 0, to ensure no default rotation is applied)
+    // Use visual dimensions for center calculation (after rotation)
+    const centerX = finalLogoX + visualWidth / 2;
+    const centerY = logoY + visualHeight / 2;
+    ctx.translate(centerX, centerY);
+    ctx.rotate((rotation * Math.PI) / 180); // rotation in degrees converted to radians
+    ctx.translate(-centerX, -centerY);
+    
+    // Draw logo with full opacity (no transparency)
+    // Draw with original dimensions (logoSize for width, logoSize * aspectRatio for height)
+    // The rotation will handle the visual appearance
+    ctx.globalAlpha = 1.0;
+    // Enable high-quality rendering for the logo
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(logoImg, finalLogoX, logoY, logoSize, logoSize * logoAspectRatio);
+    ctx.restore();
+
+    // Return the watermarked image as data URL with high quality
+    // Use quality 1.0 for PNG (though PNG doesn't use quality parameter, it's lossless)
+    return canvas.toDataURL('image/png', 1.0);
+  } catch (error) {
+    console.warn('Failed to add watermark to chart image:', error);
+    // Return original image if watermarking fails
+    return imageDataUrl;
+  }
+}
+
+/**
+ * Adds a customer table to the PDF
+ * Returns the new yPosition after the table
+ * Note: yPosition is passed by reference through a getter/setter to allow checkPageBreak to update it
+ */
+function addCustomerTable(
+  pdf: jsPDF,
+  customers: Array<{
+    id: string;
+    name?: string;
+    email?: string;
+    satisfaction?: number;
+    loyalty?: number;
+    position?: string;
+    distance?: number;
+    chances?: number;
+    riskScore?: number;
+  }>,
+  yPositionRef: { value: number }, // Pass by reference using an object
+  margin: number,
+  contentWidth: number,
+  pageHeight: number,
+  footerHeight: number,
+  checkPageBreak: (requiredHeight: number, yPositionRef?: { value: number }) => void,
+  isQuadrantBased?: boolean,
+  hasDistance?: boolean,
+  hasChances?: boolean
+): void {
+  if (!customers || customers.length === 0) {
+    return;
+  }
+
+  const rowHeight = 6; // mm per row
+  const headerHeight = 8; // mm for header
+  const tableMargin = 2; // mm margin around table
+  const cellPadding = 2; // mm padding in cells
+  
+  // Determine columns based on data
+  const hasEmail = customers.some(c => c.email);
+  const hasPosition = customers.some(c => c.position);
+  const showDistance = hasDistance && customers.some(c => c.distance !== undefined);
+  const showChances = hasChances && customers.some(c => c.chances !== undefined);
+  const showSatisfactionLoyalty = isQuadrantBased && customers.some(c => c.satisfaction !== undefined && c.loyalty !== undefined);
+  
+  // Calculate column widths
+  const idWidth = 15;
+  const nameWidth = 30;
+  const emailWidth = hasEmail ? 35 : 0;
+  const positionWidth = hasPosition ? 25 : 0;
+  const distanceWidth = showDistance ? 20 : 0;
+  const chancesWidth = showChances ? 20 : 0;
+  const satisfactionWidth = showSatisfactionLoyalty ? 20 : 0;
+  const loyaltyWidth = showSatisfactionLoyalty ? 20 : 0;
+  
+  const totalWidth = idWidth + nameWidth + emailWidth + positionWidth + distanceWidth + chancesWidth + satisfactionWidth + loyaltyWidth;
+  const tableStartX = margin + (contentWidth - totalWidth) / 2; // Center the table
+  
+  // Check if we need a new page - this will update yPositionRef.value if a new page is added
+  const estimatedHeight = headerHeight + (customers.length * rowHeight) + (tableMargin * 2);
+  checkPageBreak(estimatedHeight, yPositionRef);
+  
+  // Get the current yPosition (which may have been updated by checkPageBreak)
+  let yPosition = yPositionRef.value;
+  
+  // Draw header background
+  pdf.setFillColor(240, 240, 240);
+  pdf.rect(tableStartX - tableMargin, yPosition, totalWidth + (tableMargin * 2), headerHeight, 'F');
+  
+  // Draw header text
+  pdf.setFontSize(8);
+  pdf.setFont('helvetica', 'bold');
+  let xPos = tableStartX;
+  pdf.text('ID', xPos, yPosition + 5);
+  xPos += idWidth;
+  pdf.text('Name', xPos, yPosition + 5);
+  xPos += nameWidth;
+  if (hasEmail) {
+    pdf.text('Email', xPos, yPosition + 5);
+    xPos += emailWidth;
+  }
+  if (hasPosition) {
+    pdf.text('Position', xPos, yPosition + 5);
+    xPos += positionWidth;
+  }
+  if (showDistance) {
+    pdf.text('Distance', xPos, yPosition + 5);
+    xPos += distanceWidth;
+  }
+  if (showChances) {
+    pdf.text('Chances', xPos, yPosition + 5);
+    xPos += chancesWidth;
+  }
+  if (showSatisfactionLoyalty) {
+    pdf.text('Satisfaction', xPos, yPosition + 5);
+    xPos += satisfactionWidth;
+    pdf.text('Loyalty', xPos, yPosition + 5);
+    xPos += loyaltyWidth;
+  }
+  
+  yPosition += headerHeight;
+  
+  // Draw table rows with page break handling
+  pdf.setFontSize(7);
+  pdf.setFont('helvetica', 'normal');
+  
+  const maxY = pageHeight - margin - footerHeight;
+  let rowsDrawn = 0;
+  let tableStartY = yPosition - headerHeight; // Track where table started for border drawing
+  
+  customers.forEach((customer, index) => {
+    // Check if we need a new page before drawing this row
+    if (yPosition + rowHeight > maxY) {
+      // Draw border for current page's portion
+      if (rowsDrawn > 0) {
+        pdf.setDrawColor(150, 150, 150);
+        pdf.setLineWidth(0.2);
+        pdf.rect(tableStartX - tableMargin, tableStartY, totalWidth + (tableMargin * 2), headerHeight + (rowsDrawn * rowHeight), 'S');
+      }
+      
+      // New page
+      pdf.addPage();
+      yPosition = margin + 10;
+      yPositionRef.value = yPosition;
+      
+      // Redraw header on new page
+      pdf.setFillColor(240, 240, 240);
+      pdf.rect(tableStartX - tableMargin, yPosition, totalWidth + (tableMargin * 2), headerHeight, 'F');
+      
+      pdf.setFontSize(8);
+      pdf.setFont('helvetica', 'bold');
+      xPos = tableStartX;
+      pdf.text('ID', xPos, yPosition + 5);
+      xPos += idWidth;
+      pdf.text('Name', xPos, yPosition + 5);
+      xPos += nameWidth;
+      if (hasEmail) {
+        pdf.text('Email', xPos, yPosition + 5);
+        xPos += emailWidth;
+      }
+      if (hasPosition) {
+        pdf.text('Position', xPos, yPosition + 5);
+        xPos += positionWidth;
+      }
+      if (showDistance) {
+        pdf.text('Distance', xPos, yPosition + 5);
+        xPos += distanceWidth;
+      }
+      if (showChances) {
+        pdf.text('Chances', xPos, yPosition + 5);
+        xPos += chancesWidth;
+      }
+      if (showSatisfactionLoyalty) {
+        pdf.text('Satisfaction', xPos, yPosition + 5);
+        xPos += satisfactionWidth;
+        pdf.text('Loyalty', xPos, yPosition + 5);
+        xPos += loyaltyWidth;
+      }
+      
+      yPosition += headerHeight;
+      tableStartY = yPosition - headerHeight;
+      rowsDrawn = 0;
+      
+      // Reset font to normal for table rows (was set to bold for header)
+      pdf.setFontSize(7);
+      pdf.setFont('helvetica', 'normal');
+    }
+    
+    // Alternate row colors
+    if (rowsDrawn % 2 === 0) {
+      pdf.setFillColor(255, 255, 255);
+    } else {
+      pdf.setFillColor(250, 250, 250);
+    }
+    pdf.rect(tableStartX - tableMargin, yPosition, totalWidth + (tableMargin * 2), rowHeight, 'F');
+    
+    // Draw cell borders
+    pdf.setDrawColor(200, 200, 200);
+    pdf.setLineWidth(0.1);
+    
+    // Draw row data
+    xPos = tableStartX;
+    pdf.text(customer.id || '—', xPos, yPosition + 4);
+    xPos += idWidth;
+    pdf.text(customer.name || '—', xPos, yPosition + 4);
+    xPos += nameWidth;
+    if (hasEmail) {
+      pdf.text(customer.email || '—', xPos, yPosition + 4);
+      xPos += emailWidth;
+    }
+    if (hasPosition) {
+      pdf.text(customer.position || '—', xPos, yPosition + 4);
+      xPos += positionWidth;
+    }
+    if (showDistance) {
+      pdf.text(customer.distance !== undefined ? customer.distance.toFixed(2) : '—', xPos, yPosition + 4);
+      xPos += distanceWidth;
+    }
+    if (showChances) {
+      pdf.text(customer.chances !== undefined ? `${customer.chances.toFixed(1)}%` : '—', xPos, yPosition + 4);
+      xPos += chancesWidth;
+    }
+    if (showSatisfactionLoyalty) {
+      pdf.text(customer.satisfaction !== undefined ? customer.satisfaction.toFixed(1) : '—', xPos, yPosition + 4);
+      xPos += satisfactionWidth;
+      pdf.text(customer.loyalty !== undefined ? customer.loyalty.toFixed(1) : '—', xPos, yPosition + 4);
+      xPos += loyaltyWidth;
+    }
+    
+    yPosition += rowHeight;
+    rowsDrawn++;
+  });
+  
+  // Draw final table border
+  pdf.setDrawColor(150, 150, 150);
+  pdf.setLineWidth(0.2);
+  pdf.rect(tableStartX - tableMargin, tableStartY, totalWidth + (tableMargin * 2), headerHeight + (rowsDrawn * rowHeight), 'S');
+  
+  yPosition += tableMargin;
+  
+  // Update the reference with the new yPosition
+  yPositionRef.value = yPosition;
+}
+
+/**
+ * Adds watermark and footer to a PDF page
+ */
+function addPageWatermarkAndFooter(
+  pdf: jsPDF,
+  pageNumber: number,
+  totalPages: number,
+  logoInfo: { dataUrl: string; width: number; height: number } | null,
+  bodyFont?: string
+): void {
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  
+  // Set current page
+  pdf.setPage(pageNumber);
+  
+  // Add attribution text and logo at top right
+  if (logoInfo) {
+    try {
+      // Text first, then logo below
+      pdf.setFontSize(7);
+      pdf.setTextColor(100, 100, 100); // Gray color
+      // Try to use Montserrat, fallback to helvetica if not loaded
+      try {
+        const fontsLoaded = (pdf as any).__fontsLoaded;
+        if (fontsLoaded && fontsLoaded.has('Montserrat-bold')) {
+          pdf.setFont('Montserrat', 'bold');
+        } else {
+          pdf.setFont('helvetica', 'bold');
+        }
+      } catch {
+        pdf.setFont('helvetica', 'bold'); // Fallback if Montserrat not loaded
+      }
+      const textY = 10; // 10mm from top
+      // Position text to the left of logo
+      const logoWidth = 25; // mm width
+      const logoX = pageWidth - logoWidth - 10; // 10mm from right edge
+      // Position text - moved 15mm left, then 6mm right = net 9mm to the left
+      const logoCenterX = logoX + (logoWidth / 2); // Center of logo
+      const estimatedTextWidth = 40; // Approximate width of "Generated using" text
+      const textX = logoCenterX + (estimatedTextWidth / 2) - 9; // Move 9mm to the left (was 15mm, now 6mm to the right)
+      pdf.text('Generated using', textX, textY, { align: 'right' });
+      
+      // Logo below text
+      const logoHeight = logoWidth * (logoInfo.height / logoInfo.width); // Maintain aspect ratio
+      const logoY = textY + 4; // 4mm below text
+      pdf.addImage(logoInfo.dataUrl, 'PNG', logoX, logoY, logoWidth, logoHeight);
+    } catch (error) {
+      console.warn('Failed to add logo watermark to PDF page:', error);
+    }
+  }
+  
+  // Add page number (above disclaimer)
+  pdf.setFontSize(8);
+  pdf.setTextColor(100, 100, 100); // Gray color
+  pdf.setFont(bodyFont || 'helvetica', 'normal');
+  const pageNumberY = pageHeight - 10; // 10mm from bottom
+  pdf.text(`Page ${pageNumber} of ${totalPages}`, pageWidth - 20, pageNumberY, { align: 'right' });
+  
+  // Add footer with disclaimer (below page number)
+  pdf.setFontSize(7);
+  pdf.setFont('helvetica', 'italic');
+  const footerLines = pdf.splitTextToSize(DISCLAIMER_TEXT, pageWidth - 40);
+  const disclaimerStartY = pageNumberY - (footerLines.length * 3); // Start above, accounting for all lines
+  // Render lines in correct order (top to bottom, first line at top)
+  footerLines.forEach((line: string, index: number) => {
+    pdf.text(line, 20, disclaimerStartY + (index * 3));
+  });
+  
+  // Reset text color
+  pdf.setTextColor(0, 0, 0);
+}
+
+/**
+ * Exports Actions Report as PDF
+ */
+interface PDFExportOptions {
+  fontFamily?: 'montserrat' | 'lato' | 'arial' | 'helvetica' | 'times';
+  showWatermarks?: boolean;
+}
+
+// Helper function to get the correct font name for body text
+function getBodyFont(fontFamily: string): string {
+  // Map user-friendly names to jsPDF font names
+  // Note: We only have Montserrat-Bold.ttf, not Regular, so for body text we use Lato or helvetica
+  const fontMap: Record<string, string> = {
+    'montserrat': 'Lato', // Use Lato since we don't have Montserrat Regular
+    'lato': 'Lato',
+    'arial': 'helvetica', // jsPDF uses helvetica for Arial
+    'helvetica': 'helvetica',
+    'times': 'times'
+  };
+  return fontMap[fontFamily] || 'Lato'; // Default to Lato since we have Lato-Regular.ttf
+}
+
+export async function exportActionPlanToPDF(
+  actionPlan: ActionPlanReport,
+  options?: PDFExportOptions
+): Promise<void> {
+  const { fontFamily = 'montserrat', showWatermarks = true } = options || {};
+  const bodyFont = getBodyFont(fontFamily);
+  
+  // Load logo for watermark (only if watermarks are enabled)
+  const logoInfo = showWatermarks ? await loadLogoForPDF(DEFAULT_LOGO) : null;
+  
+  const pdf = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4'
+  });
+
+  // Load custom fonts based on selection
+  // These are embedded in the PDF, so users don't need them installed
+  await ensureFontsLoaded(pdf, bodyFont);
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 20;
+  const footerHeight = 15; // Space for footer
+  const contentWidth = pageWidth - (margin * 2);
+  let yPosition = margin + 10; // Extra space at top for watermark
+
+  // Helper to add a new page if needed
+  // Also accepts optional yPositionRef to update when page break occurs
+  const checkPageBreak = (requiredHeight: number, yPositionRef?: { value: number }) => {
+    // Sync yPositionRef with outer yPosition if provided
+    if (yPositionRef) {
+      yPositionRef.value = yPosition;
+    }
+    
+    if (yPosition + requiredHeight > pageHeight - margin - footerHeight) {
+      pdf.addPage();
+      yPosition = margin + 10; // Start at top of new page
+      // Also update the reference if provided
+      if (yPositionRef) {
+        yPositionRef.value = yPosition;
+      }
+    }
+  };
+
+  // Helper to estimate if content will fit on current page
+  // Returns true if content fits, false if new page is needed
+  const wouldContentFit = (estimatedHeight: number): boolean => {
+    return yPosition + estimatedHeight <= pageHeight - margin - footerHeight;
+  };
+
+  // Helper to break page only if content won't fit
+  const smartPageBreak = (estimatedContentHeight: number) => {
+    // Only break if content won't fit on current page
+    // Use a threshold: if less than 30mm would remain, start new page
+    const remainingSpace = pageHeight - margin - footerHeight - yPosition;
+    if (estimatedContentHeight > remainingSpace - 30) {
+      pdf.addPage();
+      yPosition = margin + 10;
+    }
+  };
+
+  // Title - Use styled header with decoration (Montserrat + green decoration)
+  yPosition = addStyledSectionHeader(pdf, 'Actions Report', yPosition, margin);
+
+  pdf.setFontSize(10);
+  pdf.setFont(bodyFont, 'normal');
+  pdf.text(`Generated: ${new Date(actionPlan.date).toLocaleDateString('en-GB')}`, margin, yPosition);
+  yPosition += 15;
+
+  // Findings Section
+  // Filter out placeholder findings
+  const validFindings = actionPlan.findings.filter(finding => {
+    // Remove HTML tags and check if it's the placeholder text
+    const textContent = finding.statement.replace(/<[^>]*>/g, '').trim();
+    return textContent !== 'New finding. Click to edit.';
+  });
+
+  if (validFindings.length > 0) {
+    // Estimate content height for Findings section (title + description + first finding)
+    // Title: 10mm, description: 8mm, first finding estimate: 30mm
+    const findingsEstimate = 10 + 8 + 30;
+    smartPageBreak(findingsEstimate);
+    
+    // Use styled section header
+    yPosition = addSimpleSectionHeader(pdf, 'Findings', yPosition, margin);
+
+    pdf.setFontSize(10);
+    pdf.setFont(bodyFont, 'normal');
+    pdf.text('Key observations and facts from the analysis of your customer data.', margin, yPosition);
+    yPosition += 8;
+
+    // Track current category for section titles
+    let currentCategory: string | null = null;
+    let findingNumber = 1;
+    
+    for (let index = 0; index < validFindings.length; index++) {
+      const finding = validFindings[index];
+      
+      // Add section title if category changed
+      if (finding.category && finding.category !== currentCategory) {
+        // Estimate content height for subsection (title: 8mm + next finding: 30mm)
+        const subsectionEstimate = 8 + 30;
+        smartPageBreak(subsectionEstimate);
+        
+        currentCategory = finding.category;
+        const sectionTitle = getSectionTitle(finding.category);
+        
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(sectionTitle, margin, yPosition);
+        yPosition += 8;
+        
+        pdf.setFontSize(10);
+        pdf.setFont(bodyFont, 'normal');
+      }
+      
+      checkPageBreak(30);
+      
+      // Finding statement
+      const lines = pdf.splitTextToSize(`${findingNumber}. ${finding.statement}`, contentWidth);
+      pdf.text(lines, margin, yPosition);
+      yPosition += lines.length * 5 + 3;
+      findingNumber++;
+
+      // Chart image if available
+      const chartImage = actionPlan.supportingImages?.find(img => img.selector === finding.chartSelector);
+      if (chartImage) {
+        // For Recommendation Score Simulator, add explanatory text before the image
+        if (finding.id === 'chart-recommendation-simulator' && chartImage.caption) {
+          checkPageBreak(15);
+          pdf.setFontSize(9);
+          pdf.setFont('helvetica', 'italic');
+          const explanationLines = pdf.splitTextToSize(chartImage.caption, contentWidth);
+          explanationLines.forEach((line: string, lineIndex: number) => {
+            pdf.text(line, margin, yPosition + (lineIndex * 4));
+          });
+          yPosition += explanationLines.length * 4 + 3;
+          pdf.setFontSize(10);
+          pdf.setFont(bodyFont, 'normal');
+        }
+        try {
+          // For Brand+ users, main chart is captured without watermark
+          // So we add watermark to ALL images (including main chart) if showWatermarks is true
+          let imageDataUrl = chartImage.dataUrl;
+          if (showWatermarks) {
+            // Add watermark to all chart images (mirror main chart rotation)
+            const mainChartRotation = getMainChartWatermarkRotation();
+            imageDataUrl = await addWatermarkToChartImage(
+              chartImage.dataUrl,
+              DEFAULT_LOGO,
+              chartImage.chartType,
+              chartImage.selector,
+              mainChartRotation
+            );
+          }
+          // If showWatermarks is false, use image as-is (no watermark added)
+          
+          // Convert data URL to image and wait for it to load
+          const img = new Image();
+          img.src = imageDataUrl;
+          await new Promise<void>((resolve, reject) => {
+            if (img.complete) {
+              resolve();
+            } else {
+              img.onload = () => resolve();
+              img.onerror = reject;
+            }
+          });
+          
+          // Check if this is Response Concentration (isMainVisualization already declared above)
+          const isResponseConcentration = chartImage.chartType === 'concentration' ||
+                                         finding.id === 'chart-response-concentration' ||
+                                         finding.chartSelector?.includes('response-concentration') ||
+                                         finding.chartSelector?.includes('concentration');
+          
+          // Calculate dimensions to fit page
+          const availableHeight = pageHeight - margin - footerHeight - yPosition - 15; // Leave 15mm buffer
+          
+          // Convert pixels to mm
+          // Images are captured at scale: 2 (2x resolution), so we need to divide by 2
+          // to get back to CSS pixels, then convert to mm (0.264583 mm per CSS pixel at 96 DPI)
+          const captureScale = 2; // html2canvas scale factor
+          let imgWidth = (img.width / captureScale) * 0.264583;
+          let imgHeight = (img.height / captureScale) * 0.264583;
+          
+          // Check if this is the main visualization chart (for sizing purposes)
+          const isMainVisualization = chartImage.chartType === 'main' ||
+                                     finding.id === 'chart-main-visualisation' || 
+                                     finding.chartSelector === '.chart-container';
+          
+          if (isMainVisualization) {
+            // Main visualization: Scale to fit width while preserving aspect ratio
+            // Use 85% of content width to ensure labels and scales are fully visible (not zoomed in)
+            // The image capture includes extra padding for data points, so we need to account for that
+            const maxWidth = contentWidth * 0.85; // 85% of content width (~144mm) to show full chart
+            const maxHeight = Math.min(140, availableHeight); // Allow up to 140mm height
+            
+            // Scale proportionally to fit width, but don't force exact width
+            // This ensures the entire chart (including labels) is visible
+            if (imgWidth > maxWidth) {
+              const widthScale = maxWidth / imgWidth;
+              imgWidth = maxWidth;
+              imgHeight *= widthScale;
+            }
+            
+            // If height still exceeds max, scale down proportionally
+            if (imgHeight > maxHeight) {
+              const heightScale = maxHeight / imgHeight;
+              imgWidth *= heightScale;
+              imgHeight *= heightScale;
+            }
+          } else if (isResponseConcentration) {
+            // Response Concentration: Make it much bigger (use 90% of content width)
+            const maxWidth = contentWidth * 0.9; // 90% of content width (~153mm)
+            const maxHeight = Math.min(120, availableHeight); // Allow up to 120mm height
+            
+            // Scale to fit width first
+            const widthScale = maxWidth / imgWidth;
+            imgWidth = maxWidth;
+            imgHeight *= widthScale;
+            
+            // If height exceeds max after scaling, scale down proportionally
+            if (imgHeight > maxHeight) {
+              const heightScale = maxHeight / imgHeight;
+              imgWidth *= heightScale;
+              imgHeight *= heightScale;
+            }
+          } else {
+            // Other charts: Use smaller max width (70% of content width) for better proportions
+            const otherMaxWidth = contentWidth * 0.7; // 70% of content width (~119mm)
+            const maxHeight = Math.min(100, availableHeight);
+            let scale = 1;
+            
+            // Scale to fit the smaller width if image is larger
+            if (imgWidth > otherMaxWidth) {
+              scale = otherMaxWidth / imgWidth;
+            }
+            
+            // Apply scale
+            imgWidth *= scale;
+            imgHeight *= scale;
+            
+            // If height exceeds max after scaling, scale down proportionally
+            if (imgHeight > maxHeight) {
+              const heightScale = maxHeight / imgHeight;
+              imgWidth *= heightScale;
+              imgHeight *= heightScale;
+            }
+          }
+          
+          // Ensure we have space for the image and caption (10mm for caption)
+          checkPageBreak(imgHeight + 10);
+
+          // Center the image horizontally
+          const imgX = (pageWidth - imgWidth) / 2;
+          pdf.addImage(imageDataUrl, 'PNG', imgX, yPosition, imgWidth, imgHeight);
+          yPosition += imgHeight + 5;
+          
+          // Caption (left-aligned, constrained to content width)
+          pdf.setFontSize(8);
+          const captionLines = pdf.splitTextToSize(chartImage.caption, contentWidth);
+          captionLines.forEach((line: string, index: number) => {
+            pdf.text(line, margin, yPosition + (index * 3));
+          });
+          yPosition += captionLines.length * 3 + 2;
+          yPosition += 5;
+          pdf.setFontSize(10);
+        } catch (error) {
+          console.warn('Failed to add chart image to PDF:', error);
+        }
+      }
+
+      yPosition += 5;
+    }
+
+    yPosition += 5;
+  }
+
+  // Opportunities & Risks Section
+  if (actionPlan.opportunities.length > 0 || actionPlan.risks.length > 0) {
+    // Estimate content height: title (10mm) + description (8mm) + first item (30mm)
+    const oppRisksEstimate = 10 + 8 + 30;
+    smartPageBreak(oppRisksEstimate);
+    
+    // Use styled section header
+    yPosition = addSimpleSectionHeader(pdf, 'Opportunities & Risks', yPosition, margin);
+
+    pdf.setFontSize(10);
+    pdf.setFont(bodyFont, 'normal');
+    pdf.text('Strategic insights highlighting potential growth areas and areas requiring attention.', margin, yPosition);
+    yPosition += 8;
+
+    // Opportunities
+    if (actionPlan.opportunities.length > 0) {
+      // Estimate content height: subsection title (8mm) + first opportunity (30mm)
+      const opportunitiesEstimate = 8 + 30;
+      smartPageBreak(opportunitiesEstimate);
+      
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(5, 150, 105); // Green
+      pdf.text('Opportunities', margin, yPosition);
+      pdf.setTextColor(0, 0, 0); // Black
+      yPosition += 8;
+
+      pdf.setFontSize(10);
+      pdf.setFont(bodyFont, 'normal');
+      actionPlan.opportunities.forEach((opportunity, index) => {
+        checkPageBreak(25);
+        pdf.setFont(bodyFont, 'normal');
+        const lines = pdf.splitTextToSize(`${index + 1}. ${opportunity.statement}`, contentWidth);
+        pdf.text(lines, margin, yPosition);
+        yPosition += lines.length * 5 + 5;
+        
+        // Add customer table if available
+        if (opportunity.supportingData?.customers && opportunity.supportingData.customers.length > 0) {
+          pdf.setFontSize(9);
+          pdf.setFont('helvetica', 'italic');
+          const customerCount = opportunity.supportingData.count || opportunity.supportingData.customerCount || opportunity.supportingData.customers.length;
+          pdf.text(`${customerCount} customer${customerCount !== 1 ? 's' : ''}:`, margin, yPosition);
+          yPosition += 5;
+          
+          const yPositionRef = { value: yPosition };
+          addCustomerTable(
+            pdf,
+            opportunity.supportingData.customers,
+            yPositionRef,
+            margin,
+            contentWidth,
+            pageHeight,
+            footerHeight,
+            checkPageBreak,
+            opportunity.supportingData?.quadrant,
+            !opportunity.supportingData?.quadrant,
+            false
+          );
+          // yPosition is updated by reference in addCustomerTable, so read it back
+          yPosition = yPositionRef.value;
+          yPosition += 3;
+        }
+      });
+      yPosition += 5;
+    }
+
+    // Risks
+    if (actionPlan.risks.length > 0) {
+      // Estimate content height: subsection title (8mm) + first risk (30mm)
+      const risksEstimate = 8 + 30;
+      smartPageBreak(risksEstimate);
+      
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(220, 38, 38); // Red
+      pdf.text('Risks', margin, yPosition);
+      pdf.setTextColor(0, 0, 0); // Black
+      yPosition += 8;
+
+      pdf.setFontSize(10);
+      pdf.setFont(bodyFont, 'normal');
+      actionPlan.risks.forEach((risk, index) => {
+        checkPageBreak(25);
+        pdf.setFont(bodyFont, 'normal');
+        const lines = pdf.splitTextToSize(`${index + 1}. ${risk.statement}`, contentWidth);
+        pdf.text(lines, margin, yPosition);
+        yPosition += lines.length * 5 + 5;
+        
+        // Add customer table if available
+        if (risk.supportingData?.customers && risk.supportingData.customers.length > 0) {
+          pdf.setFontSize(9);
+          pdf.setFont('helvetica', 'italic');
+          const customerCount = risk.supportingData.count || risk.supportingData.customerCount || risk.supportingData.customers.length;
+          pdf.text(`${customerCount} customer${customerCount !== 1 ? 's' : ''}:`, margin, yPosition);
+          yPosition += 5;
+          
+          const yPositionRef = { value: yPosition };
+          addCustomerTable(
+            pdf,
+            risk.supportingData.customers,
+            yPositionRef,
+            margin,
+            contentWidth,
+            pageHeight,
+            footerHeight,
+            checkPageBreak,
+            risk.supportingData?.quadrant,
+            !risk.supportingData?.quadrant,
+            false
+          );
+          // yPosition is updated by reference in addCustomerTable, so read it back
+          yPosition = yPositionRef.value;
+          yPosition += 3;
+        }
+      });
+      yPosition += 5;
+    }
+  }
+
+  // Actions Section
+  if (actionPlan.actions.length > 0) {
+    // Estimate content height: title (10mm) + first action (30mm)
+    const actionsEstimate = 10 + 30;
+    smartPageBreak(actionsEstimate);
+    
+    // Use styled section header
+    yPosition = addSimpleSectionHeader(pdf, 'Actions', yPosition, margin);
+
+    pdf.setFontSize(10);
+    pdf.setFont(bodyFont, 'normal');
+    pdf.text('Recommended strategies and actions, prioritised by impact and ease of implementation.', margin, yPosition);
+    yPosition += 8;
+
+    const sortedActions = [...actionPlan.actions].sort((a, b) => a.priority - b.priority);
+    
+    for (let index = 0; index < sortedActions.length; index++) {
+      const action = sortedActions[index];
+      checkPageBreak(35);
+      
+      // Action header
+      pdf.setFontSize(11);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(`Action ${index + 1}`, margin, yPosition);
+      yPosition += 6;
+
+      // Meta info
+      pdf.setFontSize(9);
+      pdf.setFont(bodyFont, 'normal');
+      const metaParts: string[] = [];
+      if (action.quadrant) metaParts.push(`Quadrant: ${action.quadrant}`);
+      metaParts.push(`Actionability: ${action.actionability}`);
+      metaParts.push(`Impact: ${action.expectedImpact}`);
+      metaParts.push(`ROI: ${action.roi}`);
+      pdf.text(metaParts.join(' | '), margin, yPosition);
+      yPosition += 6;
+
+      // Statement
+      pdf.setFontSize(10);
+      const lines = pdf.splitTextToSize(action.statement, contentWidth);
+      pdf.text(lines, margin, yPosition);
+      yPosition += lines.length * 5 + 5;
+
+      // Add customer table if available
+      if (action.supportingData?.customers && action.supportingData.customers.length > 0) {
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'italic');
+        const customerCount = action.supportingData.count || action.supportingData.customerCount || action.supportingData.customers.length;
+        pdf.text(`${customerCount} customer${customerCount !== 1 ? 's' : ''}:`, margin, yPosition);
+        yPosition += 5;
+        
+        const yPositionRef = { value: yPosition };
+        addCustomerTable(
+          pdf,
+          action.supportingData.customers,
+          yPositionRef,
+          margin,
+          contentWidth,
+          pageHeight,
+          footerHeight,
+          checkPageBreak,
+          action.supportingData?.quadrant && !action.supportingData?.conversionType,
+          !action.supportingData?.quadrant || action.supportingData?.conversionType === 'opportunity',
+          action.supportingData?.conversionType === 'opportunity'
+        );
+        // yPosition is updated by reference in addCustomerTable, so read it back
+        yPosition = yPositionRef.value;
+        yPosition += 3;
+      }
+
+      // Chart if available
+      const chartImage = actionPlan.supportingImages?.find(img => img.selector === action.chartSelector);
+      if (chartImage) {
+        try {
+          // Handle watermark for action chart images
+          let imageDataUrl = chartImage.dataUrl;
+          // For Brand+ users, main chart is captured without watermark
+          // So we add watermark to ALL images (including main chart) if showWatermarks is true
+          if (showWatermarks) {
+            // Add watermark to all chart images (mirror main chart rotation)
+            const mainChartRotation = getMainChartWatermarkRotation();
+            imageDataUrl = await addWatermarkToChartImage(
+              chartImage.dataUrl,
+              DEFAULT_LOGO,
+              chartImage.chartType,
+              chartImage.selector,
+              mainChartRotation
+            );
+          }
+          // If showWatermarks is false, use image as-is (no watermark added)
+          
+          const img = new Image();
+          img.src = imageDataUrl;
+          
+          // Wait for image to load
+          await new Promise<void>((resolve, reject) => {
+            if (img.complete) {
+              resolve();
+            } else {
+              img.onload = () => resolve();
+              img.onerror = reject;
+            }
+          });
+          
+          // Use 95% of content width to leave a bit of breathing room, but make images larger
+          const maxWidth = contentWidth * 0.95; // ~161mm for A4 (95% of ~170mm)
+          // Use more vertical space - allow up to 110mm height to give images room to breathe
+          const availableHeight = pageHeight - margin - footerHeight - yPosition - 15; // Leave 15mm buffer
+          const maxHeight = Math.min(110, availableHeight);
+          
+          // Convert pixels to mm
+          // Images are captured at scale: 2 (2x resolution), so we need to divide by 2
+          // to get back to CSS pixels, then convert to mm (0.264583 mm per CSS pixel at 96 DPI)
+          const captureScale = 2; // html2canvas scale factor
+          let imgWidth = (img.width / captureScale) * 0.264583;
+          let imgHeight = (img.height / captureScale) * 0.264583;
+          
+          // Scale to use full width - always scale to maxWidth if possible
+          // This ensures images use maximum horizontal space
+          let scale = maxWidth / imgWidth; // Scale to fill width
+          
+          // Apply width-based scale
+          imgWidth = maxWidth; // Set to exact max width
+          imgHeight *= scale;
+          
+          // If height exceeds max after width scaling, scale down proportionally
+          if (imgHeight > maxHeight) {
+            const heightScale = maxHeight / imgHeight;
+            imgWidth *= heightScale;
+            imgHeight *= heightScale;
+          }
+          
+          // For Recommendation Score Simulator, add explanatory text before the image
+          if (chartImage.caption && chartImage.selector?.includes('recommendation-score-simulator')) {
+            checkPageBreak(15);
+            pdf.setFontSize(9);
+            pdf.setFont('helvetica', 'italic');
+            const explanationLines = pdf.splitTextToSize(chartImage.caption, contentWidth);
+            explanationLines.forEach((line: string, lineIndex: number) => {
+              pdf.text(line, margin, yPosition + (lineIndex * 4));
+            });
+            yPosition += explanationLines.length * 4 + 3;
+            pdf.setFontSize(10);
+            pdf.setFont(bodyFont, 'normal');
+          }
+          
+          // Ensure we have space for the image and caption (10mm for caption)
+          checkPageBreak(imgHeight + 10);
+
+          // Center the image horizontally
+          const imgX = (pageWidth - imgWidth) / 2;
+          pdf.addImage(imageDataUrl, 'PNG', imgX, yPosition, imgWidth, imgHeight);
+          yPosition += imgHeight + 5;
+          
+          // Caption (left-aligned, constrained to content width)
+          // For simulator, we already added the explanation above, so skip caption here
+          if (!chartImage.selector?.includes('recommendation-score-simulator')) {
+            pdf.setFontSize(8);
+            const captionLines = pdf.splitTextToSize(chartImage.caption, contentWidth);
+            captionLines.forEach((line: string, index: number) => {
+              pdf.text(line, margin, yPosition + (index * 3));
+            });
+            yPosition += captionLines.length * 3 + 2;
+          }
+          yPosition += 5;
+          pdf.setFontSize(10);
+        } catch (error) {
+          console.warn('Failed to add chart image to PDF:', error);
+        }
+      }
+
+      yPosition += 8;
+    }
+  }
+
+  // Add watermark and footer to all pages (only if watermarks enabled)
+  const totalPages = pdf.getNumberOfPages();
+  for (let i = 1; i <= totalPages; i++) {
+    pdf.setPage(i);
+    if (showWatermarks) {
+      addPageWatermarkAndFooter(pdf, i, totalPages, logoInfo, bodyFont);
+    } else {
+      // Still add footer (page number and disclaimer) but no watermark
+      addPageWatermarkAndFooter(pdf, i, totalPages, null, bodyFont);
+    }
+  }
+
+  // Save PDF
+  const filename = `actions-report-${new Date().toISOString().split('T')[0]}.pdf`;
+  pdf.save(filename);
+}
+
+/**
+ * Creates a customer sheet in the workbook
+ */
+function createCustomerSheet(
+  workbook: XLSX.WorkBook,
+  customers: Array<Record<string, any>>,
+  sheetName: string
+): void {
+  if (!customers || customers.length === 0) {
+    return;
+  }
+
+  try {
+    // Collect all unique keys from all customers to determine columns
+    const allKeys = new Set<string>();
+    customers.forEach(customer => {
+      Object.keys(customer).forEach(key => allKeys.add(key));
+    });
+
+    // Standard columns that should appear first
+    const standardColumns = ['id', 'name', 'email', 'position', 'satisfaction', 'loyalty', 'distance', 'chances', 'riskScore'];
+    const additionalColumns: string[] = [];
+
+    // Separate standard and additional columns
+    allKeys.forEach(key => {
+      if (!standardColumns.includes(key.toLowerCase())) {
+        additionalColumns.push(key);
+      }
+    });
+
+    // Build column order: standard columns (that exist) + additional columns
+    const columnOrder: string[] = [];
+    standardColumns.forEach(col => {
+      if (allKeys.has(col) || allKeys.has(col.charAt(0).toUpperCase() + col.slice(1))) {
+        const actualKey = Array.from(allKeys).find(k => k.toLowerCase() === col);
+        if (actualKey) columnOrder.push(actualKey);
+      }
+    });
+    additionalColumns.forEach(col => columnOrder.push(col));
+
+    // Create data array with headers
+    const data: any[][] = [columnOrder];
+
+    // Add customer rows
+    customers.forEach(customer => {
+      const row = columnOrder.map(col => {
+        const value = customer[col];
+        // Handle undefined/null values
+        if (value === undefined || value === null) return '';
+        // Format numbers appropriately
+        if (typeof value === 'number') {
+          return value;
+        }
+        return String(value);
+      });
+      data.push(row);
+    });
+
+    // Create worksheet
+    const worksheet = XLSX.utils.aoa_to_sheet(data);
+
+    // Auto-size columns (approximate)
+    const colWidths = columnOrder.map((col, idx) => {
+      const maxLength = Math.max(
+        col.length,
+        ...data.slice(1).map(row => String(row[idx] || '').length)
+      );
+      return { wch: Math.min(Math.max(maxLength + 2, 10), 50) };
+    });
+    worksheet['!cols'] = colWidths;
+
+    // Add worksheet to workbook with truncated name
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+  } catch (error) {
+    console.error(`Failed to create sheet "${sheetName}":`, error);
+  }
+}
+
+/**
+ * Exports Actions Report as XLSX (Excel)
+ */
+export async function exportActionPlanToXLSX(
+  actionPlan: ActionPlanReport,
+  rawData?: Array<Record<string, any>>,
+  computeSegment?: (point: { satisfaction: number; loyalty: number }) => string
+): Promise<void> {
+  try {
+    const workbook = XLSX.utils.book_new();
+
+    // Add Raw Data sheet if provided
+    if (rawData && rawData.length > 0) {
+      try {
+        // Convert raw data to array of arrays
+        const allKeys = new Set<string>();
+        rawData.forEach(point => {
+          Object.keys(point).forEach(key => allKeys.add(key));
+        });
+
+        const columnOrder = Array.from(allKeys);
+        const data: any[][] = [columnOrder];
+
+        rawData.forEach(point => {
+          const row = columnOrder.map(col => {
+            const value = point[col];
+            if (value === undefined || value === null) return '';
+            if (typeof value === 'number') return value;
+            return String(value);
+          });
+          data.push(row);
+        });
+
+        const worksheet = XLSX.utils.aoa_to_sheet(data);
+        
+        // Auto-size columns
+        const colWidths = columnOrder.map((col, idx) => {
+          const maxLength = Math.max(
+            col.length,
+            ...data.slice(1).map(row => String(row[idx] || '').length)
+          );
+          return { wch: Math.min(Math.max(maxLength + 2, 10), 50) };
+        });
+        worksheet['!cols'] = colWidths;
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Raw Data');
+      } catch (error) {
+        console.error('Failed to create Raw Data sheet:', error);
+      }
+    }
+
+    // Add sheets for Actions with customer lists
+    actionPlan.actions.forEach((action, index) => {
+      if (action.supportingData?.customers && action.supportingData.customers.length > 0) {
+        const prefix = `Action ${index + 1} - `;
+        const maxTitleLength = 31 - prefix.length; // Excel sheet name limit is 31 chars
+        const title = action.statement
+          ? action.statement.replace(/<[^>]*>/g, '').substring(0, maxTitleLength)
+          : `Action ${index + 1}`;
+        const sheetName = `${prefix}${title}`;
+        createCustomerSheet(workbook, action.supportingData.customers, sheetName);
+      }
+    });
+
+    // Add sheets for Opportunities with customer lists
+    actionPlan.opportunities.forEach((opportunity, index) => {
+      if (opportunity.supportingData?.customers && opportunity.supportingData.customers.length > 0) {
+        const prefix = `Opp ${index + 1} - `;
+        const maxTitleLength = 31 - prefix.length;
+        const title = opportunity.statement
+          ? opportunity.statement.replace(/<[^>]*>/g, '').substring(0, maxTitleLength)
+          : `Opp ${index + 1}`;
+        const sheetName = `${prefix}${title}`;
+        createCustomerSheet(workbook, opportunity.supportingData.customers, sheetName);
+      }
+    });
+
+    // Add sheets for Risks with customer lists
+    actionPlan.risks.forEach((risk, index) => {
+      if (risk.supportingData?.customers && risk.supportingData.customers.length > 0) {
+        const prefix = `Risk ${index + 1} - `;
+        const maxTitleLength = 31 - prefix.length;
+        const title = risk.statement
+          ? risk.statement.replace(/<[^>]*>/g, '').substring(0, maxTitleLength)
+          : `Risk ${index + 1}`;
+        const sheetName = `${prefix}${title}`;
+        createCustomerSheet(workbook, risk.supportingData.customers, sheetName);
+      }
+    });
+
+    // Check if workbook has any sheets
+    if (workbook.SheetNames.length === 0) {
+      alert('No customer data found to export. Please ensure your Actions Report contains customer lists.');
+      return;
+    }
+
+    // Generate Excel file and download
+    const excelBuffer = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' });
+    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `actions-report-${new Date().toISOString().split('T')[0]}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Failed to export to Excel:', error);
+    alert('Failed to export to Excel. Please try again.');
+  }
+}
+
+/**
+ * Exports Actions Report as PPTX (PowerPoint)
+ * Note: pptxgenjs requires Node.js modules (fs, https) that don't work in browser
+ * This would need to be handled server-side or with a different browser-compatible library
+ */
+export async function exportActionPlanToPPTX(actionPlan: ActionPlanReport): Promise<void> {
+  // PPTX export is not available in browser due to Node.js dependencies
+  alert('PowerPoint (PPTX) export is currently not available in the browser version due to technical limitations. Please use PDF export instead, which provides the same content in a printable format with watermarks and footers.');
+  return;
+  
+  /* Disabled - pptxgenjs requires Node.js modules that don't work in browser webpack
+  try {
+    const PptxGenJS = (await import('pptxgenjs')).default;
+    const pptx = new PptxGenJS();
+
+    // Title slide
+    const titleSlide = pptx.addSlide();
+    titleSlide.addText('Actions Report', {
+      x: 0.5,
+      y: 1,
+      w: 9,
+      h: 1.5,
+      fontSize: 44,
+      bold: true,
+      align: 'center',
+      color: '1F2937'
+    });
+    titleSlide.addText(`Generated: ${new Date(actionPlan.date).toLocaleDateString('en-GB')}`, {
+      x: 0.5,
+      y: 2.8,
+      w: 9,
+      h: 0.5,
+      fontSize: 18,
+      align: 'center',
+      color: '6B7280'
+    });
+
+    // Findings slides
+    // Filter out placeholder findings
+    const validFindings = actionPlan.findings.filter(finding => {
+      // Remove HTML tags and check if it's the placeholder text
+      const textContent = finding.statement.replace(/<[^>]*>/g, '').trim();
+      return textContent !== 'New finding. Click to edit.';
+    });
+
+    if (validFindings.length > 0) {
+      const findingsSlide = pptx.addSlide();
+      findingsSlide.addText('Findings', {
+        x: 0.5,
+        y: 0.3,
+        w: 9,
+        h: 0.6,
+        fontSize: 32,
+        bold: true,
+        color: '1F2937'
+      });
+      findingsSlide.addText('Key observations and facts from the analysis', {
+        x: 0.5,
+        y: 0.9,
+        w: 9,
+        h: 0.4,
+        fontSize: 14,
+        color: '6B7280'
+      });
+
+      let yPos = 1.5;
+      let currentSlide = findingsSlide;
+      
+      validFindings.forEach((finding, index) => {
+        if (yPos > 6) {
+          // New slide if needed
+          currentSlide = pptx.addSlide();
+          currentSlide.addText('Findings (continued)', {
+            x: 0.5,
+            y: 0.3,
+            w: 9,
+            h: 0.6,
+            fontSize: 32,
+            bold: true,
+            color: '1F2937'
+          });
+          yPos = 1.5;
+        }
+        
+        currentSlide.addText(`${index + 1}. ${finding.statement}`, {
+          x: 0.5,
+          y: yPos,
+          w: 9,
+          h: 0.8,
+          fontSize: 12,
+          color: '374151',
+          bullet: true
+        });
+        yPos += 1;
+
+        // Add chart if available
+        const chartImage = actionPlan.supportingImages?.find(img => img.selector === finding.chartSelector);
+        if (chartImage && yPos < 6) {
+          try {
+            currentSlide.addImage({
+              data: chartImage.dataUrl,
+              x: 1,
+              y: yPos,
+              w: 8,
+              h: 3
+            });
+            currentSlide.addText(chartImage.caption, {
+              x: 1,
+              y: yPos + 3.2,
+              w: 8,
+              h: 0.3,
+              fontSize: 10,
+              italic: true,
+              color: '6B7280',
+              align: 'center'
+            });
+            yPos += 3.8;
+          } catch (error) {
+            console.warn('Failed to add chart to PPTX:', error);
+          }
+        }
+      });
+    }
+
+    // Opportunities & Risks slides
+    if (actionPlan.opportunities.length > 0 || actionPlan.risks.length > 0) {
+      // Opportunities
+      if (actionPlan.opportunities.length > 0) {
+        const oppSlide = pptx.addSlide();
+        oppSlide.addText('Opportunities', {
+          x: 0.5,
+          y: 0.3,
+          w: 9,
+          h: 0.6,
+          fontSize: 32,
+          bold: true,
+          color: '059669'
+        });
+
+        let yPos = 1.2;
+        let currentOppSlide = oppSlide;
+        
+        actionPlan.opportunities.forEach((opportunity, index) => {
+          if (yPos > 6.5) {
+            currentOppSlide = pptx.addSlide();
+            currentOppSlide.addText('Opportunities (continued)', {
+              x: 0.5,
+              y: 0.3,
+              w: 9,
+              h: 0.6,
+              fontSize: 32,
+              bold: true,
+              color: '059669'
+            });
+            yPos = 1.2;
+          }
+          
+          currentOppSlide.addText(`[${opportunity.impact.toUpperCase()}] ${opportunity.statement}`, {
+            x: 0.5,
+            y: yPos,
+            w: 9,
+            h: 1,
+            fontSize: 12,
+            color: '374151',
+            bullet: true
+          });
+          yPos += 1.2;
+        });
+      }
+
+      // Risks
+      if (actionPlan.risks.length > 0) {
+        const risksSlide = pptx.addSlide();
+        risksSlide.addText('Risks', {
+          x: 0.5,
+          y: 0.3,
+          w: 9,
+          h: 0.6,
+          fontSize: 32,
+          bold: true,
+          color: 'DC2626'
+        });
+
+        let yPos = 1.2;
+        let currentRisksSlide = risksSlide;
+        
+        actionPlan.risks.forEach((risk, index) => {
+          if (yPos > 6.5) {
+            currentRisksSlide = pptx.addSlide();
+            currentRisksSlide.addText('Risks (continued)', {
+              x: 0.5,
+              y: 0.3,
+              w: 9,
+              h: 0.6,
+              fontSize: 32,
+              bold: true,
+              color: 'DC2626'
+            });
+            yPos = 1.2;
+          }
+          
+          currentRisksSlide.addText(`[${risk.severity.toUpperCase()}] ${risk.statement}`, {
+            x: 0.5,
+            y: yPos,
+            w: 9,
+            h: 1,
+            fontSize: 12,
+            color: '374151',
+            bullet: true
+          });
+          yPos += 1.2;
+        });
+      }
+    }
+
+    // Actions slides
+    if (actionPlan.actions.length > 0) {
+      const sortedActions = [...actionPlan.actions].sort((a, b) => a.priority - b.priority);
+      
+      sortedActions.forEach((action, index) => {
+        const actionSlide = pptx.addSlide();
+        
+        actionSlide.addText(`Action ${index + 1}`, {
+          x: 0.5,
+          y: 0.3,
+          w: 9,
+          h: 0.6,
+          fontSize: 28,
+          bold: true,
+          color: '1F2937'
+        });
+
+        // Meta info
+        const metaParts: string[] = [];
+        if (action.quadrant) metaParts.push(action.quadrant);
+        metaParts.push(`Actionability: ${action.actionability}`);
+        metaParts.push(`Impact: ${action.expectedImpact}`);
+        metaParts.push(`ROI: ${action.roi}`);
+        
+        actionSlide.addText(metaParts.join(' • '), {
+          x: 0.5,
+          y: 1,
+          w: 9,
+          h: 0.4,
+          fontSize: 11,
+          color: '6B7280'
+        });
+
+        // Statement
+        actionSlide.addText(action.statement, {
+          x: 0.5,
+          y: 1.6,
+          w: 9,
+          h: 2,
+          fontSize: 14,
+          color: '374151'
+        });
+
+        // Chart if available
+        const chartImage = actionPlan.supportingImages?.find(img => img.selector === action.chartSelector);
+        if (chartImage) {
+          try {
+            actionSlide.addImage({
+              data: chartImage.dataUrl,
+              x: 1,
+              y: 4,
+              w: 8,
+              h: 3.5
+            });
+            actionSlide.addText(chartImage.caption, {
+              x: 1,
+              y: 7.6,
+              w: 8,
+              h: 0.3,
+              fontSize: 10,
+              italic: true,
+              color: '6B7280',
+              align: 'center'
+            });
+          } catch (error) {
+            console.warn('Failed to add chart to PPTX:', error);
+          }
+        }
+      });
+    }
+
+    // Save
+    const filename = `actions-report-${new Date().toISOString().split('T')[0]}.pptx`;
+    await pptx.writeFile({ fileName: filename });
+  } catch (error) {
+    console.error('Failed to export to PPTX:', error);
+    alert('Failed to export to PowerPoint. Please use PDF export instead.');
+  }
+  */
+}
+

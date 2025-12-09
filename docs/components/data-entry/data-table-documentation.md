@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Data Display component is a core part of the Apostles Model Builder application that presents entered data in a tabular format with advanced features including sorting, filtering, row editing, data deletion, row exclusion, and average calculation, all within a virtualized list for optimal performance.
+The Data Display component is a core part of the Segmentor application that presents entered data in a tabular format with advanced features including sorting, filtering, row editing, data deletion, row exclusion, and average calculation, all within a virtualized list for optimal performance.
 
 ## Architecture
 

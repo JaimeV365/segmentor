@@ -146,10 +146,15 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
             interactive={true}
             customColors={satisfactionColors}
             onColorChange={(value, color) => {
-              setSatisfactionColors(prev => ({
-                ...prev,
-                [value]: color
-              }));
+              console.log('[StatisticsSection] onColorChange called - satisfaction bar:', value, 'color:', color);
+              setSatisfactionColors(prev => {
+                const newColors = {
+                  ...prev,
+                  [value]: color
+                };
+                console.log('[StatisticsSection] Updating satisfactionColors:', newColors);
+                return newColors;
+              });
             }}
             title={`Satisfaction (${scales.satisfaction})`}
             showLegend={true}
@@ -173,10 +178,15 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
             interactive={true}
             customColors={loyaltyColors}
             onColorChange={(value, color) => {
-              setLoyaltyColors(prev => ({
-                ...prev,
-                [value]: color
-              }));
+              console.log('[StatisticsSection] onColorChange called - loyalty bar:', value, 'color:', color);
+              setLoyaltyColors(prev => {
+                const newColors = {
+                  ...prev,
+                  [value]: color
+                };
+                console.log('[StatisticsSection] Updating loyaltyColors:', newColors);
+                return newColors;
+              });
             }}
             title={`Loyalty (${scales.loyalty})`}
             showLegend={true}

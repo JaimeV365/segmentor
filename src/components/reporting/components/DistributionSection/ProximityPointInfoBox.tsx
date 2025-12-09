@@ -16,14 +16,31 @@ export const ProximityPointInfoBox: React.FC<{
   proximityType?: string;
   onClose: () => void;
   context?: 'distribution' | 'proximity';
-}> = ({ points, position, quadrant, proximityType, onClose, context = 'distribution' }) => {
+  isClassicModel?: boolean;
+  secondaryPoints?: DataPoint[];
+  secondaryQuadrant?: string;
+  secondaryProximityType?: string;
+}> = ({ 
+  points, 
+  position, 
+  quadrant, 
+  proximityType, 
+  onClose, 
+  context = 'distribution', 
+  isClassicModel = true,
+  secondaryPoints,
+  secondaryQuadrant,
+  secondaryProximityType
+}) => {
   const boxRef = useRef<HTMLDivElement>(null);
   const [showAll, setShowAll] = useState(false);
+  const [showAllSecondary, setShowAllSecondary] = useState(false);
   
   // Reset showAll when points change
   useEffect(() => {
     setShowAll(false);
-  }, [points]);
+    setShowAllSecondary(false);
+  }, [points, secondaryPoints]);
   
   // Colors based on quadrant
   const getQuadrantInfo = (): QuadrantOption => {
@@ -46,6 +63,19 @@ export const ProximityPointInfoBox: React.FC<{
     if (context === 'proximity' && proximityType) {
       // For proximity reports: "Loyalists near Mercenaries"
       const sourceQuadrant = quadrant.charAt(0).toUpperCase() + quadrant.slice(1);
+      
+      // Handle special zone proximity types first
+      if (proximityType === 'apostles') {
+        return `${sourceQuadrant} near ${isClassicModel ? 'Apostles' : 'Advocates'}`;
+      }
+      if (proximityType === 'near_apostles') {
+        return `${sourceQuadrant} near ${isClassicModel ? 'Near-Apostles' : 'Near-Advocates'}`;
+      }
+      if (proximityType === 'terrorists') {
+        return `${sourceQuadrant} near ${isClassicModel ? 'Terrorists' : 'Trolls'}`;
+      }
+      
+      // Handle regular quadrant proximity types
       const targetQuadrant = proximityType.replace('near_', '').charAt(0).toUpperCase() + 
                            proximityType.replace('near_', '').slice(1);
       return `${sourceQuadrant} near ${targetQuadrant}`;
@@ -57,13 +87,13 @@ export const ProximityPointInfoBox: React.FC<{
       
       // Handle special zone proximity types
       if (proximityType === 'apostles') {
-        return `${sourceQuadrant} nearly Apostles`;
+        return `${sourceQuadrant} nearly ${isClassicModel ? 'Apostles' : 'Advocates'}`;
       }
       if (proximityType === 'near_apostles') {
-        return `${sourceQuadrant} nearly Near-Apostles`;
+        return `${sourceQuadrant} nearly ${isClassicModel ? 'Near-Apostles' : 'Near-Advocates'}`;
       }
       if (proximityType === 'terrorists') {
-        return `${sourceQuadrant} nearly Terrorists`;
+        return `${sourceQuadrant} nearly ${isClassicModel ? 'Terrorists' : 'Trolls'}`;
       }
       
       // Handle regular quadrant proximity types
@@ -108,6 +138,44 @@ export const ProximityPointInfoBox: React.FC<{
   const quadrantInfo = getQuadrantInfo();
   const title = getFormattedTitle();
   
+  // Check if we have points (must be defined before use)
+  const hasPrimaryPoints = points && points.length > 0;
+  const hasSecondaryPoints = secondaryPoints && secondaryPoints.length > 0;
+  
+  // Get secondary title if secondary points exist
+  const getSecondaryTitle = (): string => {
+    if (!secondaryQuadrant || !secondaryProximityType) return '';
+    
+    // Format source quadrant name properly
+    let formattedSourceQuadrant: string;
+    if (secondaryQuadrant === 'near_apostles') {
+      formattedSourceQuadrant = isClassicModel ? 'Near-Apostles' : 'Near-Advocates';
+    } else {
+      formattedSourceQuadrant = secondaryQuadrant.charAt(0).toUpperCase() + secondaryQuadrant.slice(1);
+    }
+    
+    if (secondaryProximityType === 'apostles') {
+      return `${formattedSourceQuadrant} near ${isClassicModel ? 'Apostles' : 'Advocates'}`;
+    }
+    if (secondaryProximityType === 'near_apostles') {
+      return `${formattedSourceQuadrant} near ${isClassicModel ? 'Near-Apostles' : 'Near-Advocates'}`;
+    }
+    if (secondaryProximityType === 'terrorists') {
+      return `${formattedSourceQuadrant} near ${isClassicModel ? 'Terrorists' : 'Trolls'}`;
+    }
+    
+    if (secondaryProximityType === 'near_apostles') {
+      return `${formattedSourceQuadrant} near ${isClassicModel ? 'Near-Apostles' : 'Near-Advocates'}`;
+    }
+    
+    const targetQuadrant = secondaryProximityType.replace('near_', '').charAt(0).toUpperCase() + 
+                         secondaryProximityType.replace('near_', '').slice(1);
+    return `${formattedSourceQuadrant} near ${targetQuadrant}`;
+  };
+  
+  const secondaryTitle = getSecondaryTitle();
+  const hasTwoColumns = hasSecondaryPoints && hasPrimaryPoints;
+  
   // Handle click outside for modal
 useEffect(() => {
   const box = boxRef.current;
@@ -124,8 +192,7 @@ useEffect(() => {
   return () => document.removeEventListener('mousedown', handleClickOutside);
 }, [onClose]);
   
-  // Add a guard clause to prevent rendering if points array is empty
-  if (!points || points.length === 0) {
+  if (!hasPrimaryPoints && !hasSecondaryPoints) {
     return (
       <div
         ref={boxRef}
@@ -157,6 +224,149 @@ useEffect(() => {
     );
   }
   
+  // Helper function to render customer list
+  const renderCustomerList = (
+    customerPoints: DataPoint[],
+    isShowingAll: boolean,
+    setIsShowingAll: (value: boolean) => void,
+    titleText: string,
+    titleColor: string
+  ) => {
+    if (!customerPoints || customerPoints.length === 0) {
+      return (
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{
+            padding: '12px',
+            borderBottom: '1px solid #e5e7eb',
+            backgroundColor: '#f9fafb'
+          }}>
+            <div style={{
+              fontWeight: '600',
+              fontSize: '14px',
+              color: titleColor,
+              marginBottom: '4px'
+            }}>
+              {titleText}
+            </div>
+            <div style={{
+              fontSize: '12px',
+              color: '#6b7280'
+            }}>
+              0 customers
+            </div>
+          </div>
+          <div style={{
+            padding: '12px',
+            color: '#6b7280',
+            fontSize: '12px',
+            fontStyle: 'italic'
+          }}>
+            No customers in this proximity relationship
+          </div>
+        </div>
+      );
+    }
+    
+    const displayedPoints = isShowingAll ? customerPoints : customerPoints.slice(0, 5);
+    const maxDisplayed = Math.min(customerPoints.length, 5);
+    
+    return (
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          padding: '12px',
+          borderBottom: '1px solid #e5e7eb',
+          backgroundColor: '#f9fafb'
+        }}>
+          <div style={{
+            fontWeight: '600',
+            fontSize: '14px',
+            color: titleColor,
+            marginBottom: '4px'
+          }}>
+            {titleText}
+          </div>
+          <div style={{
+            fontSize: '12px',
+            color: '#6b7280'
+          }}>
+            {customerPoints.length} {customerPoints.length === 1 ? 'customer' : 'customers'}
+          </div>
+        </div>
+        <div className="data-point-info__list" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+          {displayedPoints.map((point, index) => (
+            <div key={point.id || index} className="data-point-info__list-item" style={{
+              padding: '8px 12px',
+              borderBottom: index < displayedPoints.length - 1 ? '1px solid #e5e7eb' : 'none'
+            }}>
+              <div className="data-point-info__customer-name" style={{
+                fontWeight: '600',
+                fontSize: '14px',
+                marginBottom: '4px'
+              }}>
+                {getCustomerDisplayName(point, index)}, ID: {point.id}
+              </div>
+              <div className="data-point-info__customer-coords" style={{
+                fontSize: '12px',
+                color: '#6b7280'
+              }}>
+                Satisfaction: {point.satisfaction}, Loyalty: {point.loyalty}
+              </div>
+            </div>
+          ))}
+        </div>
+        {customerPoints.length > 5 && (
+          <div className="data-point-info__more" style={{
+            padding: '8px 12px',
+            borderTop: '1px solid #e5e7eb',
+            backgroundColor: '#f9fafb'
+          }}>
+            {!isShowingAll ? (
+              <div>
+                <span style={{ color: '#6b7280', fontSize: '12px' }}>
+                  Showing {maxDisplayed} of {customerPoints.length} customers
+                </span>
+                <button
+                  onClick={() => setIsShowingAll(true)}
+                  style={{
+                    marginLeft: '8px',
+                    background: 'none',
+                    border: 'none',
+                    color: '#3b82f6',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    textDecoration: 'underline'
+                  }}
+                >
+                  Show All
+                </button>
+              </div>
+            ) : (
+              <div>
+                <span style={{ color: '#6b7280', fontSize: '12px' }}>
+                  Showing all {customerPoints.length} customers
+                </span>
+                <button
+                  onClick={() => setIsShowingAll(false)}
+                  style={{
+                    marginLeft: '8px',
+                    background: 'none',
+                    border: 'none',
+                    color: '#3b82f6',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    textDecoration: 'underline'
+                  }}
+                >
+                  Show Less
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const modalContent = (
     <div
       ref={boxRef}
@@ -170,8 +380,8 @@ useEffect(() => {
         border: '1px solid #e5e7eb',
         borderRadius: '8px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-        minWidth: '240px',
-        maxWidth: '400px',
+        minWidth: hasTwoColumns ? '600px' : '240px',
+        maxWidth: hasTwoColumns ? '800px' : '400px',
         maxHeight: '80vh',
         overflowY: 'auto',
         color: '#333',
@@ -179,93 +389,135 @@ useEffect(() => {
       }}
       onClick={e => e.stopPropagation()}
     >
-      <div className="data-point-info__header">
+      <div className="data-point-info__header" style={{
+        padding: '12px',
+        borderBottom: '1px solid #e5e7eb',
+        backgroundColor: '#f9fafb'
+      }}>
         <div className="data-point-info__title" style={{ 
-          color: quadrantInfo.color 
+          color: quadrantInfo.color,
+          fontSize: '16px',
+          fontWeight: '600',
+          marginBottom: '4px'
         }}>
-          {title}
+          {hasTwoColumns ? 'Near-Apostles Proximity' : title}
         </div>
-        <div className="data-point-info__id">
-          {points.length} {points.length === 1 ? 'point' : 'points'}
+        <div className="data-point-info__id" style={{
+          fontSize: '12px',
+          color: '#6b7280'
+        }}>
+          {hasTwoColumns 
+            ? `${(points?.length || 0) + (secondaryPoints?.length || 0)} total customers`
+            : `${points?.length || 0} ${(points?.length || 0) === 1 ? 'point' : 'points'}`
+          }
         </div>
       </div>
   
-     <div className="data-point-info__content">
-        
-        <div className="data-point-info__multiple">
-          <div className="data-point-info__list">
-            {(showAll ? points : points.slice(0, 5)).map((point, index) => (
-              <div key={index} className="data-point-info__list-item" style={{
-                padding: '8px 0',
-                borderBottom: index < (showAll ? points.length - 1 : Math.min(points.length, 5) - 1) ? '1px solid #e5e7eb' : 'none'
-              }}>
-                <div className="data-point-info__customer-name" style={{
-                  fontWeight: '600',
-                  fontSize: '14px',
-                  marginBottom: '4px'
+      <div className="data-point-info__content" style={{
+        display: hasTwoColumns ? 'flex' : 'block',
+        gap: hasTwoColumns ? '0' : '0',
+        borderTop: hasTwoColumns ? '1px solid #e5e7eb' : 'none'
+      }}>
+        {hasTwoColumns ? (
+          <>
+            {hasPrimaryPoints && renderCustomerList(
+              points,
+              showAll,
+              setShowAll,
+              title,
+              quadrantInfo.color
+            )}
+            {hasPrimaryPoints && hasSecondaryPoints && (
+              <div style={{
+                width: '1px',
+                backgroundColor: '#e5e7eb',
+                margin: '0'
+              }} />
+            )}
+            {hasSecondaryPoints && secondaryPoints && renderCustomerList(
+              secondaryPoints,
+              showAllSecondary,
+              setShowAllSecondary,
+              secondaryTitle,
+              '#10B981' // Near-Apostles color (emerald)
+            )}
+          </>
+        ) : (
+          <div className="data-point-info__multiple">
+            <div className="data-point-info__list">
+              {(showAll ? points : points.slice(0, 5)).map((point, index) => (
+                <div key={point.id || index} className="data-point-info__list-item" style={{
+                  padding: '8px 12px',
+                  borderBottom: index < (showAll ? points.length - 1 : Math.min(points.length, 5) - 1) ? '1px solid #e5e7eb' : 'none'
                 }}>
-                  {getCustomerDisplayName(point, index)}, ID: {point.id}
+                  <div className="data-point-info__customer-name" style={{
+                    fontWeight: '600',
+                    fontSize: '14px',
+                    marginBottom: '4px'
+                  }}>
+                    {getCustomerDisplayName(point, index)}, ID: {point.id}
+                  </div>
+                  <div className="data-point-info__customer-coords" style={{
+                    fontSize: '12px',
+                    color: '#6b7280'
+                  }}>
+                    Satisfaction: {point.satisfaction}, Loyalty: {point.loyalty}
+                  </div>
                 </div>
-                <div className="data-point-info__customer-coords" style={{
-                  fontSize: '12px',
-                  color: '#6b7280'
-                }}>
-                  Satisfaction: {point.satisfaction}, Loyalty: {point.loyalty}
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          {points.length > 5 && (
-            <div className="data-point-info__more" style={{
-              padding: '8px 0',
-              borderTop: '1px solid #e5e7eb',
-              marginTop: '8px'
-            }}>
-              {!showAll ? (
-                <div>
-                  <span style={{ color: '#6b7280', fontSize: '12px' }}>
-                    Showing 5 of {points.length} customers
-                  </span>
-                  <button
-                    onClick={() => setShowAll(true)}
-                    style={{
-                      marginLeft: '8px',
-                      background: 'none',
-                      border: 'none',
-                      color: '#3b82f6',
-                      cursor: 'pointer',
-                      fontSize: '12px',
-                      textDecoration: 'underline'
-                    }}
-                  >
-                    Show All
-                  </button>
-                </div>
-              ) : (
-                <div>
-                  <span style={{ color: '#6b7280', fontSize: '12px' }}>
-                    Showing all {points.length} customers
-                  </span>
-                  <button
-                    onClick={() => setShowAll(false)}
-                    style={{
-                      marginLeft: '8px',
-                      background: 'none',
-                      border: 'none',
-                      color: '#3b82f6',
-                      cursor: 'pointer',
-                      fontSize: '12px',
-                      textDecoration: 'underline'
-                    }}
-                  >
-                    Show Less
-                  </button>
-                </div>
-              )}
+              ))}
             </div>
-          )}
-        </div>
+            
+            {points.length > 5 && (
+              <div className="data-point-info__more" style={{
+                padding: '8px 12px',
+                borderTop: '1px solid #e5e7eb',
+                marginTop: '8px'
+              }}>
+                {!showAll ? (
+                  <div>
+                    <span style={{ color: '#6b7280', fontSize: '12px' }}>
+                      Showing 5 of {points.length} customers
+                    </span>
+                    <button
+                      onClick={() => setShowAll(true)}
+                      style={{
+                        marginLeft: '8px',
+                        background: 'none',
+                        border: 'none',
+                        color: '#3b82f6',
+                        cursor: 'pointer',
+                        fontSize: '12px',
+                        textDecoration: 'underline'
+                      }}
+                    >
+                      Show All
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <span style={{ color: '#6b7280', fontSize: '12px' }}>
+                      Showing all {points.length} customers
+                    </span>
+                    <button
+                      onClick={() => setShowAll(false)}
+                      style={{
+                        marginLeft: '8px',
+                        background: 'none',
+                        border: 'none',
+                        color: '#3b82f6',
+                        cursor: 'pointer',
+                        fontSize: '12px',
+                        textDecoration: 'underline'
+                      }}
+                    >
+                      Show Less
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

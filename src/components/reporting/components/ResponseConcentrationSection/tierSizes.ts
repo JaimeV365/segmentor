@@ -1,7 +1,7 @@
 export const TIER_SIZES = {
-  tier1: 1,
-  tier2: 0.9,
-  tier3: 0.85
+  tier1: 1.0,      // 100% - largest (16px)
+  tier2: 0.75,    // 75% - medium (12px)
+  tier3: 0.6      // 60% - smallest (9.6px)
 } as const;
 
 export type TierNumber = 1 | 2 | 3;

@@ -100,16 +100,16 @@ export function validateHeaders(headers: string[]): {
     loyaltyHeader = findHeader(['loy', 'loyalty', 'nps']);
     
     if (loyaltyHeader) {
-      // Special case for NPS
-      if (loyaltyHeader.toLowerCase() === 'nps') {
-        loyaltyScale = '0-10'; // Default scale for NPS
+      // Check for scale in header first (e.g., "NPS:1-5", "NPS-1-7")
+      const result = extractScaleFromHeader(loyaltyHeader, 'loyalty');
+      if (result.valid) {
+        loyaltyScale = result.scale;
+      } else if (loyaltyHeader.toLowerCase() === 'nps') {
+        // Special case for plain "NPS": scale will be determined by enhanced detection
+        // Don't set a default scale - let enhanced detection handle it
+        loyaltyScale = null; // Will trigger enhanced detection
       } else {
-        const result = extractScaleFromHeader(loyaltyHeader, 'loyalty');
-        if (result.valid) {
-          loyaltyScale = result.scale;
-        } else {
-          errors.push(result.error || `Invalid loyalty scale in header "${loyaltyHeader}"`);
-        }
+        errors.push(result.error || `Invalid loyalty scale in header "${loyaltyHeader}"`);
       }
     } else {
       errors.push("Missing loyalty header (e.g., 'Loyalty:1-5', 'Loy-1-7', 'NPS')");

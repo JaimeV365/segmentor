@@ -165,13 +165,9 @@ export class LateralProximityCalculator {
       .filter(p => p.distance <= 2.0) // Then filter by distance threshold
       .map(p => p.pos);
     
-    // Use all positions for irrelevant dimension (no space cap)
-    const irrelevantPositions = irrelevantRange.filter(pos => {
-      const distance = relevantDimension === 'sat' 
-        ? Math.abs(pos - this.midpoint.loy) 
-        : Math.abs(pos - this.midpoint.sat);
-      return distance <= 2.0;
-    });
+    // Use all positions for irrelevant dimension (no space cap, no distance filter)
+    // The irrelevant dimension is only used to define the search area, not filtered by distance
+    const irrelevantPositions = irrelevantRange;
     
     // Return in correct order
     const satPositions = relevantDimension === 'sat' ? relevantPositions : irrelevantPositions;

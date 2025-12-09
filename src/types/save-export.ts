@@ -99,6 +99,105 @@ export interface ApostlesSaveData {
       effects: string[];
       watermarkSettings?: Record<string, any>;
     };
+    
+    // Report Visibility States
+    reportVisibility?: {
+      showRecommendationScore: boolean;
+      responseConcentrationExpanded: boolean;
+    };
+    
+    // Report Settings and Customizations
+    reportSettings?: {
+      // Response Concentration settings
+      responseConcentration?: {
+        miniPlot: {
+          useQuadrantColors: boolean;
+          customColors: Record<string, string>;
+          showAverageDot: boolean;
+          frequencyThreshold?: number;
+          showTiers?: boolean;
+          maxTiers?: number;
+          applyMainChartFrequencyFilter?: boolean;
+        };
+        list: {
+          useColorCoding: boolean;
+          maxItems: number;
+        };
+        dial: {
+          minValue: number;
+          maxValue: number;
+          customColors: {
+            satisfaction: string;
+            loyalty: string;
+          };
+        };
+      };
+      
+      // Recommendation Score settings
+      recommendationScore?: {
+        decimalPrecision: 0 | 1 | 2;
+        categoryChartType: 'bar' | 'pie';
+        displayFormat: 'count' | 'percentage' | 'both';
+        useCategoryColors: boolean;
+      };
+      
+      // Report customizations (highlighted KPIs, chart colors)
+      customizations?: {
+        highlightedKPIs: string[];
+        chartColors: {
+          satisfaction: Record<number, string>;
+          loyalty: Record<number, string>;
+        };
+      };
+      
+      // Proximity Details display settings
+      proximityDisplay?: {
+        grouping: 'flat' | 'bySourceRegion' | 'byStrategicPriority' | 'byDistance';
+        showOpportunities: boolean;
+        showWarnings: boolean;
+        showEmptyCategories: boolean;
+        highlightHighImpact: boolean;
+        highImpactMethod: 'smart' | 'highBar' | 'standard' | 'sensitive';
+        sortBy: 'customerCount' | 'averageDistance' | 'strategicImpact' | 'alphabetical';
+      };
+      
+      // Action Reports customizations
+      actionReports?: {
+        // Editable text content (all editable-text-* localStorage items)
+        editableTexts?: Record<string, {
+          content: string;
+          backgroundColor?: string | null;
+        }>;
+        // Section collapse state
+        expandedSections?: {
+          findings: boolean;
+          opportunitiesRisks: boolean;
+          actions: boolean;
+        };
+      };
+    };
+    
+    // Individual Report Filter States
+    // Each report can have its own filter state when disconnected from main filters
+    reportFilterStates?: Record<string, {
+      dateRange: {
+        startDate: string | null;
+        endDate: string | null;
+        preset?: string;
+      };
+      attributes: Array<{
+        field: string;
+        values: Array<string | number>;
+        availableValues?: Array<{
+          value: string | number;
+          count: number;
+        }>;
+        expanded?: boolean;
+      }>;
+      isActive: boolean;
+      frequencyFilterEnabled?: boolean;
+      frequencyThreshold?: number;
+    }>;
   };
 }
 

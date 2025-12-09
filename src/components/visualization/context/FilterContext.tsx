@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import { DataPoint } from '@/types/base';
+import { useQuadrantAssignmentSafe } from './UnifiedQuadrantContext';
+import { parseDateString } from '../../../utils/dateFilterUtils';
 
 // Filter state interfaces
 export interface DateRange {
@@ -52,6 +54,7 @@ export interface FilterContextType {
   
   // Report filter connection system
   reportFilterStates: Record<string, FilterState>; // e.g., { "barChart": FilterState }
+  reportActiveFilterCounts: Record<string, number>; // e.g., { "barChart": 3 }
   // Note: Connection status is derived from state comparison, not stored separately
   
   // Report filter methods
@@ -59,6 +62,7 @@ export interface FilterContextType {
   syncReportToMaster: (reportId: string) => void; // Copy main → report
   getReportFilterState: (reportId: string) => FilterState;
   setReportFilterState: (reportId: string, state: FilterState) => void;
+  getReportActiveFilterCount: (reportId: string) => number; // Get badge count for a report
   getReportFilteredData: (reportId: string, data: DataPoint[]) => DataPoint[];
   compareFilterStates: (state1: FilterState, state2: FilterState) => boolean; // Compare two filter states
   isSyncingFromMain: boolean; // Flag to prevent false disconnect notifications during sync
@@ -81,6 +85,13 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
   initialFilterState,
   onShowNotification
 }) => {
+  // CRITICAL: Log FilterProvider initialization
+  console.warn('🔄 [FilterContext] FilterProvider INITIALIZED', {
+    timestamp: Date.now(),
+    initialDataLength: initialData.length,
+    currentDataLength: currentData?.length || 0
+  });
+
   const [data, setData] = useState<DataPoint[]>(initialData);
   const [filteredData, setFilteredData] = useState<DataPoint[]>(initialData);
   const [activeFilterCount, setActiveFilterCount] = useState(0);
@@ -102,10 +113,58 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
   // Report filter connection system state
   // Note: Connection status is derived from comparing filter states, not stored separately
   const [reportFilterStates, setReportFilterStates] = useState<Record<string, FilterState>>({});
+  const [reportActiveFilterCounts, setReportActiveFilterCounts] = useState<Record<string, number>>({});
   
   // Flag to track when main filter changes are syncing to reports
   // This prevents false disconnect notifications during sync
   const [isSyncingFromMain, setIsSyncingFromMain] = useState(false);
+  
+  // Helper function to calculate active filter count from a filter state
+  const calculateActiveFilterCount = useCallback((state: FilterState): number => {
+    // CRITICAL: Respect isActive flag - if explicitly false (e.g., after reset), count should be 0
+    if (state.isActive === false) {
+      return 0;
+    }
+    
+    let count = 0;
+    
+    // Date range counts as one filter if active (preset must not be 'all')
+    if (state.dateRange.preset && 
+        state.dateRange.preset !== 'all' && 
+        state.dateRange.preset !== 'custom' &&
+        (state.dateRange.startDate || state.dateRange.endDate)) {
+      count += 1;
+    } else if (state.dateRange.preset === 'custom' && 
+               (state.dateRange.startDate || state.dateRange.endDate)) {
+      // Custom date range is active
+      count += 1;
+    }
+    
+    // Count selected attribute values
+    state.attributes.forEach(attr => {
+      count += attr.values.size;
+    });
+    
+    return count;
+  }, []);
+
+  // Note: We can't access quadrantContext here because FilterProvider wraps QuadrantAssignmentProvider
+  // Segment filtering will be handled by FilterPanel which has access to quadrantContext
+  // This function will only handle segment filtering if a getQuadrantForPoint function is provided
+  // via the filter state or if we can access it through a different mechanism
+  
+  // Try to access quadrant context (may be null if providers aren't in right order)
+  const quadrantContext = useQuadrantAssignmentSafe();
+  
+  // Log quadrant context availability
+  console.warn('🔄 [FilterContext] Quadrant context check:', {
+    hasQuadrantContext: !!quadrantContext,
+    hasMidpoint: !!quadrantContext?.midpoint,
+    midpoint: quadrantContext?.midpoint,
+    hasGetQuadrantForPoint: !!quadrantContext?.getQuadrantForPoint,
+    apostlesZoneSize: quadrantContext?.apostlesZoneSize,
+    terroristsZoneSize: quadrantContext?.terroristsZoneSize
+  });
 
   // Apply filters to data with memoization
   const applyFilters = useCallback((dataToFilter: DataPoint[], currentFilterState: FilterState) => {
@@ -136,19 +195,32 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     // FIRST: Always exclude items marked as excluded
     filtered = filtered.filter(item => !item.excluded);
 
-    // Apply date filter
-    if (currentFilterState.dateRange.preset && currentFilterState.dateRange.preset !== 'all') {
-      const { startDate, endDate } = currentFilterState.dateRange;
+    // Apply date filter (works for both presets and custom date ranges)
+    const { startDate, endDate, preset } = currentFilterState.dateRange;
+    // Apply filter if dates are set (either through preset or custom range)
+    // Skip if preset is 'all' and no dates are set
+    if ((preset && preset !== 'all') || startDate || endDate) {
       if (startDate || endDate) {
         filtered = filtered.filter(item => {
           if (!item.date) return false;
           
-          // Parse the date
-          const itemDate = new Date(item.date);
-          if (isNaN(itemDate.getTime())) return false;
+          // Parse the date using the proper parser that handles dd/mm/yyyy format
+          const itemDate = parseDateString(item.date);
+          if (!itemDate) return false;
           
-          if (startDate && itemDate < startDate) return false;
-          if (endDate && itemDate > endDate) return false;
+          // Compare dates (normalize to start of day for accurate comparison)
+          const itemDateStart = new Date(itemDate.getFullYear(), itemDate.getMonth(), itemDate.getDate());
+          
+          if (startDate) {
+            const startDateStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+            if (itemDateStart < startDateStart) return false;
+          }
+          
+          if (endDate) {
+            const endDateStart = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+            // For endDate, we want to include the entire end date, so compare with <= instead of <
+            if (itemDateStart > endDateStart) return false;
+          }
           
           return true;
         });
@@ -169,15 +241,93 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       });
     }
 
+    // Track items processed for debug logging
+    let segmentFilterDebugCount = 0;
+    const MAX_DEBUG_ITEMS = 5;
+    
     // Apply attribute filters
     currentFilterState.attributes.forEach(attr => {
       if (attr.values.size > 0) {
+        // Skip segment filtering in FilterContext if quadrantContext is not available
+        // FilterPanel (which has access to quadrantContext) already handles segment filtering
+        if (attr.field === 'segment' && !quadrantContext?.getQuadrantForPoint) {
+          console.warn(`🔍 [FilterContext] Segment filter: quadrantContext not available - skipping segment filter. FilterPanel should have already filtered by segment.`);
+          // Skip this attribute filter - FilterPanel already applied it
+          return; // Skip to next attribute
+        }
+        
         filtered = filtered.filter(item => {
-          const value = (item as any)[attr.field];
-          return attr.values.has(value);
+          // Handle computed segment field differently
+          let itemValue: any;
+          if (attr.field === 'segment') {
+            // Segment is a computed field, get it from quadrant context
+            if (quadrantContext?.getQuadrantForPoint) {
+              itemValue = quadrantContext.getQuadrantForPoint(item);
+              
+              // Debug logging for first few items
+              if (segmentFilterDebugCount < MAX_DEBUG_ITEMS) {
+                console.log(`🔍 [FilterContext] Segment filter: Point ${item.id} (${item.satisfaction},${item.loyalty}) -> segment: "${itemValue}"`);
+                segmentFilterDebugCount++;
+              }
+            } else {
+              // This shouldn't happen since we checked above, but handle gracefully
+              console.error(`🔍 [FilterContext] Segment filter: quadrantContext not available for item ${item.id}`);
+              return false;
+            }
+            
+            if (itemValue === undefined || itemValue === null) {
+              console.warn(`🔍 [FilterContext] Segment filter: No segment found for point ${item.id}, excluding`);
+              // If segment can't be determined, exclude the item
+              return false;
+            }
+          } else {
+            // Standard field from data
+            itemValue = (item as any)[attr.field];
+          }
+          
+          // Convert both values to strings for comparison to handle type mismatches
+          const itemValueStr = String(itemValue);
+          const selectedValues = Array.from(attr.values).map(v => String(v));
+          const hasMatch = selectedValues.includes(itemValueStr);
+          
+          // Debug logging for segment filter (first few items only)
+          if (attr.field === 'segment' && segmentFilterDebugCount <= MAX_DEBUG_ITEMS) {
+            console.log(`🔍 [FilterContext] Segment filter: Comparing "${itemValueStr}" with selected:`, selectedValues, '-> match:', hasMatch);
+          }
+          
+          if (!hasMatch) {
+            return false;
+          }
+          
+          return true;
         });
       }
     });
+
+    // Log segment filtering results for debugging
+    const segmentFilter = currentFilterState.attributes.find(attr => attr.field === 'segment' && attr.values.size > 0);
+    if (segmentFilter) {
+      console.log(`🔍 [FilterContext] Segment filter applied:`, {
+        selectedSegments: Array.from(segmentFilter.values),
+        originalCount: dataToFilter.filter(item => !item.excluded).length,
+        filteredCount: filtered.length,
+        hasQuadrantContext: !!quadrantContext,
+        hasGetQuadrantForPoint: !!quadrantContext?.getQuadrantForPoint
+      });
+      
+      // If filter resulted in 0 items, log sample segments from actual data
+      if (filtered.length === 0) {
+        const sampleData = dataToFilter.filter(item => !item.excluded).slice(0, 10);
+        const sampleSegments = sampleData.map(item => {
+          if (quadrantContext?.getQuadrantForPoint) {
+            return { id: item.id, segment: quadrantContext.getQuadrantForPoint(item) };
+          }
+          return { id: item.id, segment: 'unknown' };
+        });
+        console.warn(`🔍 [FilterContext] Segment filter: No items matched! Sample segments from data:`, sampleSegments);
+        console.warn(`🔍 [FilterContext] Selected segments were:`, Array.from(segmentFilter.values));
+      }
+    }
 
     console.log('🔄 FilterContext: Filter applied', { 
       originalLength: dataToFilter.length, 
@@ -186,7 +336,138 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     });
 
     return filtered;
-  }, []);
+  }, [quadrantContext]);
+
+  // Track previous quadrant assignments to detect changes
+  const prevQuadrantDepsRef = React.useRef<{
+    midpointSat: number | null;
+    midpointLoy: number | null;
+    apostlesZoneSize: number | null;
+    terroristsZoneSize: number | null;
+    manualAssignmentsSize: number | null;
+  }>({
+    midpointSat: null,
+    midpointLoy: null,
+    apostlesZoneSize: null,
+    terroristsZoneSize: null,
+    manualAssignmentsSize: null
+  });
+
+  // Re-apply segment filters when quadrant assignments change (midpoint moved, zones resized, points reassigned)
+  // This MUST be in FilterContext (not FilterPanel) because FilterContext is always mounted,
+  // while FilterPanel unmounts when the controls panel is closed
+  useEffect(() => {
+    // ALWAYS log entry - this is critical
+    console.warn('🔄 [FilterContext] useEffect for quadrant changes - ENTRY', {
+      timestamp: Date.now(),
+      hasQuadrantContext: !!quadrantContext,
+      hasMidpoint: !!quadrantContext?.midpoint,
+      currentMidpoint: quadrantContext?.midpoint,
+      filterStateAttributes: filterState.attributes.map(a => ({ field: a.field, valuesSize: a.values.size }))
+    });
+
+    const prevDeps = prevQuadrantDepsRef.current;
+    const currentMidpoint = quadrantContext?.midpoint;
+    const currentDeps = {
+      midpointSat: currentMidpoint?.sat ?? null,
+      midpointLoy: currentMidpoint?.loy ?? null,
+      apostlesZoneSize: quadrantContext?.apostlesZoneSize ?? null,
+      terroristsZoneSize: quadrantContext?.terroristsZoneSize ?? null,
+      manualAssignmentsSize: quadrantContext?.manualAssignments?.size ?? null
+    };
+
+    console.warn('🔄 [FilterContext] Dependency check:', {
+      prevDeps,
+      currentDeps,
+      midpointChanged: prevDeps.midpointSat !== currentDeps.midpointSat || prevDeps.midpointLoy !== currentDeps.midpointLoy,
+      apostlesZoneChanged: prevDeps.apostlesZoneSize !== currentDeps.apostlesZoneSize,
+      terroristsZoneChanged: prevDeps.terroristsZoneSize !== currentDeps.terroristsZoneSize,
+      manualAssignmentsChanged: prevDeps.manualAssignmentsSize !== currentDeps.manualAssignmentsSize
+    });
+
+    // Detect if any quadrant-related dependency changed
+    const changed = 
+      prevDeps.midpointSat !== currentDeps.midpointSat ||
+      prevDeps.midpointLoy !== currentDeps.midpointLoy ||
+      prevDeps.apostlesZoneSize !== currentDeps.apostlesZoneSize ||
+      prevDeps.terroristsZoneSize !== currentDeps.terroristsZoneSize ||
+      prevDeps.manualAssignmentsSize !== currentDeps.manualAssignmentsSize;
+
+    if (!changed) {
+      console.warn('🔄 [FilterContext] No quadrant changes detected, skipping');
+      prevQuadrantDepsRef.current = currentDeps;
+      return;
+    }
+
+    // Check if there's an active segment filter
+    const hasSegmentFilter = filterState.attributes.some(
+      attr => attr.field === 'segment' && attr.values.size > 0
+    );
+
+    console.warn('🔄 [FilterContext] Checking segment filter:', {
+      hasSegmentFilter,
+      hasGetQuadrantForPoint: !!quadrantContext?.getQuadrantForPoint,
+      segmentFilterAttributes: filterState.attributes.filter(a => a.field === 'segment').map(a => ({
+        field: a.field,
+        values: Array.from(a.values),
+        valuesSize: a.values.size
+      }))
+    });
+
+    if (!hasSegmentFilter || !quadrantContext?.getQuadrantForPoint) {
+      console.warn('🔄 [FilterContext] EARLY RETURN:', {
+        reason: !hasSegmentFilter ? 'No segment filter active' : 'No getQuadrantForPoint function',
+        hasSegmentFilter,
+        hasGetQuadrantForPoint: !!quadrantContext?.getQuadrantForPoint
+      });
+      prevQuadrantDepsRef.current = currentDeps;
+      return;
+    }
+
+    console.warn('🔄 [FilterContext] Quadrant assignments changed, re-applying segment filter', {
+      changedDeps: {
+        midpointSat: prevDeps.midpointSat !== currentDeps.midpointSat,
+        midpointLoy: prevDeps.midpointLoy !== currentDeps.midpointLoy,
+        apostlesZoneSize: prevDeps.apostlesZoneSize !== currentDeps.apostlesZoneSize,
+        terroristsZoneSize: prevDeps.terroristsZoneSize !== currentDeps.terroristsZoneSize,
+        manualAssignmentsSize: prevDeps.manualAssignmentsSize !== currentDeps.manualAssignmentsSize
+      },
+      currentMidpoint: currentMidpoint,
+      selectedSegments: Array.from(
+        filterState.attributes.find(attr => attr.field === 'segment')?.values || []
+      )
+    });
+
+    // STEP 1: Reset to unfiltered state
+    const unfilteredData = data.filter(item => !item.excluded);
+    setFilteredData(unfilteredData);
+
+    console.warn('🔄 [FilterContext] Reset filteredData to unfiltered state:', {
+      unfilteredCount: unfilteredData.length,
+      originalCount: data.length
+    });
+
+    // STEP 2: Re-apply filters with current state (this will use the new quadrant assignments)
+    // The applyFilters function will recalculate segments using getQuadrantForPoint
+    const recalculatedFilteredData = applyFilters(unfilteredData, filterState);
+    setFilteredData(recalculatedFilteredData);
+
+    console.warn('🔄 [FilterContext] Re-applied segment filter after quadrant change:', {
+      filteredCount: recalculatedFilteredData.length,
+      originalCount: unfilteredData.length
+    });
+
+    prevQuadrantDepsRef.current = currentDeps;
+  }, [
+    quadrantContext?.midpoint?.sat,
+    quadrantContext?.midpoint?.loy,
+    quadrantContext?.apostlesZoneSize,
+    quadrantContext?.terroristsZoneSize,
+    quadrantContext?.manualAssignments,
+    filterState,
+    data,
+    applyFilters
+  ]);
 
   // Update date range
   const updateDateRange = useCallback((dateRangeUpdate: Partial<DateRange>) => {
@@ -199,18 +480,32 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       }
     };
     
+    // Recalculate isActive based on new date range
+    // Always recalculate when date range changes (don't preserve false from previous state)
+    // This ensures that when a new preset is selected, isActive is recalculated correctly
+    const hasDateFilter = newState.dateRange.preset && newState.dateRange.preset !== 'all' && 
+                          (newState.dateRange.startDate !== null || newState.dateRange.endDate !== null);
+    const hasAttributeFilters = newState.attributes.some(attr => attr.values.size > 0);
+    newState.isActive = hasDateFilter || hasAttributeFilters;
+    
     // Automatically recalculate filtered data when date range changes
     const newFilteredData = applyFilters(data, newState);
     setFilteredData(newFilteredData);
     
     // Update active filter count
-    const hasDateFilter = newState.dateRange.preset && newState.dateRange.preset !== 'all';
-    const hasAttributeFilters = newState.attributes.some(attr => attr.values.size > 0);
-    const newActiveFilterCount = (hasDateFilter ? 1 : 0) + newState.attributes.filter(attr => attr.values.size > 0).length;
+    // CRITICAL: Respect isActive flag - if explicitly false (e.g., after reset), count should be 0
+    let newActiveFilterCount = 0;
+    if (newState.isActive !== false) {
+      const hasDateFilter = newState.dateRange.preset && newState.dateRange.preset !== 'all';
+      const hasAttributeFilters = newState.attributes.some(attr => attr.values.size > 0);
+      newActiveFilterCount = (hasDateFilter ? 1 : 0) + newState.attributes.filter(attr => attr.values.size > 0).length;
+    }
     setActiveFilterCount(newActiveFilterCount);
     
     // Use handleSetFilterState to get sync logic
     handleSetFilterState(newState);
+    // NOTE: handleSetFilterState is not in dependencies because it's declared later
+    // and is stable (doesn't change between renders)
   }, [data, applyFilters, filterState]);
 
   // Update attribute filter
@@ -256,18 +551,18 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       isActive: false
     };
     
-    setFilterState(newState);
-    
-    // Automatically recalculate filtered data (should be all data since filters are reset)
-    const newFilteredData = applyFilters(data, newState);
-    setFilteredData(newFilteredData);
+    // Set active filter count to 0 (all filters cleared)
     setActiveFilterCount(0);
     
+    // Use handleSetFilterState to get sync logic - this prevents false disconnect notifications
+    // by syncing connected reports BEFORE updating main state
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    handleSetFilterState(newState);
+    
     console.log('🔄 FilterContext: Filters reset, showing all data', { 
-      dataLength: data.length,
-      filteredDataLength: newFilteredData.length
+      dataLength: data.length
     });
-  }, [data, filterState.attributes, applyFilters]);
+  }, [filterState.attributes]);
 
   // Update data and recalculate using existing filters (do not clear)
   const handleSetData = useCallback((newData: DataPoint[]) => {
@@ -424,19 +719,66 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       (state1.frequencyThreshold || 1) === (state2.frequencyThreshold || 1)
     );
     
-    // Compare attributes (order-independent)
+    // Compare attributes (order-independent, lenient comparison)
+    // Create maps for easy lookup
     const state1AttrMap = new Map(state1.attributes.map(a => [a.field, Array.from(a.values).sort()]));
     const state2AttrMap = new Map(state2.attributes.map(a => [a.field, Array.from(a.values).sort()]));
-    const attributesMatch = (
-      state1.attributes.length === state2.attributes.length &&
-      state1.attributes.every(attr => {
-        const state2Values = state2AttrMap.get(attr.field);
-        const state1Values = state1AttrMap.get(attr.field);
-        return JSON.stringify(state1Values) === JSON.stringify(state2Values);
-      })
-    );
     
-    return dateRangeMatches && freqMatches && attributesMatch;
+    // Get all unique attribute fields from both states
+    const allFields = new Set([...state1.attributes.map(a => a.field), ...state2.attributes.map(a => a.field)]);
+    
+    // Compare only attributes that have values selected OR exist in both states
+    // If an attribute exists in one state but not the other AND has no values, ignore it
+    const attributesMatch = Array.from(allFields).every(field => {
+      const state1Values = state1AttrMap.get(field) || [];
+      const state2Values = state2AttrMap.get(field) || [];
+      
+      // If attribute doesn't exist in one state, it's OK as long as the other has no values
+      const existsInState1 = state1AttrMap.has(field);
+      const existsInState2 = state2AttrMap.has(field);
+      
+      if (!existsInState1 && existsInState2) {
+        // Only in state2 - OK if state2 has no values
+        const match = state2Values.length === 0;
+        if (!match) {
+          console.log(`🔍 [FilterContext] compareFilterStates: Field "${field}" only in state2 with values:`, state2Values);
+        }
+        return match;
+      }
+      if (existsInState1 && !existsInState2) {
+        // Only in state1 - OK if state1 has no values
+        const match = state1Values.length === 0;
+        if (!match) {
+          console.log(`🔍 [FilterContext] compareFilterStates: Field "${field}" only in state1 with values:`, state1Values);
+        }
+        return match;
+      }
+      
+      // Exists in both - values must match
+      const match = JSON.stringify(state1Values) === JSON.stringify(state2Values);
+      if (!match) {
+        console.log(`🔍 [FilterContext] compareFilterStates: Field "${field}" values differ:`, {
+          state1Values,
+          state2Values
+        });
+      }
+      return match;
+    });
+    
+    const result = dateRangeMatches && freqMatches && attributesMatch;
+    if (!result) {
+      console.log(`🔍 [FilterContext] compareFilterStates: States don't match:`, {
+        dateRangeMatches,
+        freqMatches,
+        attributesMatch,
+        state1AttributeCount: state1.attributes.length,
+        state2AttributeCount: state2.attributes.length,
+        state1Fields: state1.attributes.map(a => a.field),
+        state2Fields: state2.attributes.map(a => a.field)
+      });
+    }
+    
+    return result;
   }, []);
 
   /**
@@ -450,6 +792,16 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       newFilterState,
       dataLength: data.length
     });
+    
+    // Check if this filter state includes segment filtering
+    const hasSegmentFilter = newFilterState.attributes.some(attr => attr.field === 'segment' && attr.values.size > 0);
+    const canHandleSegmentFilter = quadrantContext?.getQuadrantForPoint !== undefined;
+    
+    // If we have segment filter but can't handle it, skip recalculation
+    // FilterPanel will set the filtered data directly via setFilteredData
+    if (hasSegmentFilter && !canHandleSegmentFilter) {
+      console.log('🔄 FilterContext: Segment filter detected but quadrantContext unavailable - skipping recalculation. FilterPanel will set filteredData directly.');
+    }
     
     // Set sync flag to prevent false disconnect notifications
     console.log('🔄 FilterContext: Setting isSyncingFromMain to true');
@@ -485,6 +837,24 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       return updatedStates;
     });
     
+    // Update report filter counts for connected reports (they now match main)
+    const mainCount = calculateActiveFilterCount(newFilterState);
+    setReportActiveFilterCounts(prevCounts => {
+      const updatedCounts = { ...prevCounts };
+      
+      // Update counts for all connected reports
+      Object.keys(reportFilterStates).forEach(reportId => {
+        const reportState = reportFilterStates[reportId];
+        const isConnected = compareFilterStates(reportState, filterState); // Compare with OLD main state
+        
+        if (isConnected) {
+          updatedCounts[reportId] = mainCount;
+        }
+      });
+      
+      return updatedCounts;
+    });
+    
     // NOW update main state (after syncing reports)
     setFilterState(newFilterState);
     
@@ -494,21 +864,42 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
       setIsSyncingFromMain(false);
     }, 100);
     
-    // Automatically recalculate filtered data
-    const newFilteredData = applyFilters(data, newFilterState);
-    setFilteredData(newFilteredData);
+    // Automatically recalculate filtered data UNLESS segment filter is present and we can't handle it
+    let newFilteredData: DataPoint[] | undefined;
+    if (!hasSegmentFilter || canHandleSegmentFilter) {
+      newFilteredData = applyFilters(data, newFilterState);
+      setFilteredData(newFilteredData);
+    } else {
+      console.log('🔄 FilterContext: Skipping filteredData recalculation - FilterPanel will set it directly');
+      // Don't recalculate - FilterPanel will set filteredData directly via setFilteredData
+    }
     
-    // Update active filter count
-    const hasDateFilter = newFilterState.dateRange.preset && newFilterState.dateRange.preset !== 'all';
-    const hasAttributeFilters = newFilterState.attributes.some(attr => attr.values.size > 0);
-    const newActiveFilterCount = (hasDateFilter ? 1 : 0) + newFilterState.attributes.filter(attr => attr.values.size > 0).length;
+    // Update active filter count using the same calculation as reports
+    // CRITICAL: Use calculateActiveFilterCount for consistency with report filters
+    const newActiveFilterCount = calculateActiveFilterCount(newFilterState);
     setActiveFilterCount(newActiveFilterCount);
     
-    console.log('🔄 FilterContext: Filter state update complete', { 
-      filteredDataLength: newFilteredData.length,
-      activeFilterCount: newActiveFilterCount
+    console.log('🔄 [FilterContext] Main filter count updated:', {
+      activeFilterCount: newActiveFilterCount,
+      isActive: newFilterState.isActive,
+      datePreset: newFilterState.dateRange.preset,
+      hasDates: !!(newFilterState.dateRange.startDate || newFilterState.dateRange.endDate),
+      attributesWithValues: newFilterState.attributes
+        .filter(attr => attr.values.size > 0)
+        .map(attr => ({ field: attr.field, count: attr.values.size }))
     });
-  }, [data, applyFilters, compareFilterStates, filterState]);
+    
+    if (!hasSegmentFilter || canHandleSegmentFilter) {
+      console.log('🔄 FilterContext: Filter state update complete', { 
+        filteredDataLength: newFilteredData?.length || 0,
+        activeFilterCount: newActiveFilterCount
+      });
+    } else {
+      console.log('🔄 FilterContext: Filter state update complete (segment filter - FilterPanel will set filteredData)', { 
+        activeFilterCount: newActiveFilterCount
+      });
+    }
+  }, [data, applyFilters, compareFilterStates, filterState, quadrantContext, reportFilterStates, calculateActiveFilterCount]);
 
   // Report filter connection system methods
   
@@ -519,28 +910,40 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
    */
   const syncReportToMaster = useCallback((reportId: string) => {
     console.log(`🔌 [FilterContext] syncReportToMaster called for ${reportId}`);
+    // Create deep copy of main filter state
+    const mainStateCopy: FilterState = {
+      ...filterState,
+      dateRange: {
+        ...filterState.dateRange,
+        startDate: filterState.dateRange.startDate ? new Date(filterState.dateRange.startDate) : null,
+        endDate: filterState.dateRange.endDate ? new Date(filterState.dateRange.endDate) : null
+      },
+      attributes: filterState.attributes.map(attr => ({
+        ...attr,
+        values: new Set(attr.values)
+      }))
+    };
+    
     setReportFilterStates(prev => {
-      // Create deep copy of main filter state
-      const mainStateCopy: FilterState = {
-        ...filterState,
-        dateRange: {
-          ...filterState.dateRange,
-          startDate: filterState.dateRange.startDate ? new Date(filterState.dateRange.startDate) : null,
-          endDate: filterState.dateRange.endDate ? new Date(filterState.dateRange.endDate) : null
-        },
-        attributes: filterState.attributes.map(attr => ({
-          ...attr,
-          values: new Set(attr.values)
-        }))
-      };
-      
       console.log(`🔌 [FilterContext] syncReportToMaster updating reportFilterStates for ${reportId}`);
       return {
         ...prev,
         [reportId]: mainStateCopy
       };
     });
-  }, [filterState]);
+    
+    // Calculate and store the active filter count for this report (same as main)
+    const count = calculateActiveFilterCount(mainStateCopy);
+    setReportActiveFilterCounts(prev => ({
+      ...prev,
+      [reportId]: count
+    }));
+    
+    console.log(`🔌 [FilterContext] syncReportToMaster updated report filter count:`, {
+      reportId,
+      activeFilterCount: count
+    });
+  }, [filterState, calculateActiveFilterCount]);
   
   // Set connection status for a report (deprecated - maintained for backward compatibility)
   // Connection is now derived from state comparison, use syncReportToMaster directly instead
@@ -573,12 +976,17 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
    */
   const setReportFilterState = useCallback((reportId: string, state: FilterState) => {
     console.log(`🔌 [FilterContext] setReportFilterState called:`, {
-      reportId
+      reportId,
+      state: {
+        hasSegmentFilter: state.attributes.some(attr => attr.field === 'segment' && attr.values.size > 0),
+        selectedSegments: state.attributes.find(attr => attr.field === 'segment')?.values ? Array.from(state.attributes.find(attr => attr.field === 'segment')!.values) : []
+      }
     });
     
-    // IMPORTANT: This method ONLY updates report local state
-    // It NEVER writes to main filters - this is the architectural rule
+    // CRITICAL ARCHITECTURAL RULE: This method ONLY updates report local state
+    // It NEVER writes to main filters or main filteredData - this is the architectural rule
     // Connection status will be derived by comparing this state with main filter state
+    // Main filteredData MUST remain unchanged when report filters change
     setReportFilterStates(prev => ({
       ...prev,
       [reportId]: {
@@ -594,7 +1002,42 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
         }))
       }
     }));
-  }, []);
+    
+    // Calculate and store the active filter count for this report
+    const count = calculateActiveFilterCount(state);
+    
+    // CRITICAL DEBUG: Log detailed count calculation
+    const dateCount = (state.dateRange.preset && 
+                       state.dateRange.preset !== 'all' && 
+                       state.dateRange.preset !== 'custom' &&
+                       (state.dateRange.startDate || state.dateRange.endDate)) ? 1 :
+                      (state.dateRange.preset === 'custom' && 
+                       (state.dateRange.startDate || state.dateRange.endDate)) ? 1 : 0;
+    const attributeCount = state.attributes.reduce((sum, attr) => sum + attr.values.size, 0);
+    
+    console.log(`🔌 [FilterContext] Report filter count updated:`, {
+      reportId,
+      activeFilterCount: count,
+      isActive: state.isActive,
+      dateCount,
+      attributeCount,
+      datePreset: state.dateRange.preset,
+      hasDates: !!(state.dateRange.startDate || state.dateRange.endDate),
+      attributesWithValues: state.attributes
+        .filter(attr => attr.values.size > 0)
+        .map(attr => ({ field: attr.field, count: attr.values.size }))
+    });
+    
+    setReportActiveFilterCounts(prev => ({
+      ...prev,
+      [reportId]: count
+    }));
+  }, [calculateActiveFilterCount]);
+  
+  // Get active filter count for a report (returns 0 if report doesn't exist)
+  const getReportActiveFilterCount = useCallback((reportId: string): number => {
+    return reportActiveFilterCounts[reportId] ?? 0;
+  }, [reportActiveFilterCounts]);
   
   // Define updateFrequencySettings here after handleSetFilterState is declared
   const updateFrequencySettings = useCallback((enabled: boolean, threshold: number) => {
@@ -607,10 +1050,56 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
   }, [filterState, handleSetFilterState]);
   
   // Get filtered data for a report (uses appropriate filter state)
+  // CRITICAL: When connected, use main filteredData directly (already filtered)
+  // When disconnected, filter from original data using report filter state
   const getReportFilteredData = useCallback((reportId: string, dataToFilter: DataPoint[]): DataPoint[] => {
     const reportFilterState = getReportFilterState(reportId);
-    return applyFilters(dataToFilter, reportFilterState);
-  }, [getReportFilterState, applyFilters]);
+    const mainState = filterState;
+    
+    // Check if report is connected (states match)
+    const isConnected = compareFilterStates(reportFilterState, mainState);
+    
+    if (isConnected) {
+      // Connected: Use main filteredData directly (already filtered by main filters)
+      // This ensures bar charts show the same filtered data as main visualization
+      console.log(`🔌 [FilterContext] getReportFilteredData: Report ${reportId} is connected - using main filteredData`, {
+        filteredDataLength: filteredData.length,
+        originalDataLength: dataToFilter.length
+      });
+      return filteredData;
+    } else {
+      // Disconnected: Filter from original data using report filter state
+      const hasSegmentFilter = reportFilterState.attributes.some(attr => attr.field === 'segment' && attr.values.size > 0);
+      const canHandleSegmentFilter = quadrantContext?.getQuadrantForPoint !== undefined;
+      
+      console.log(`🔌 [FilterContext] getReportFilteredData: Report ${reportId} is disconnected - applying report filters`, {
+        reportFilterState: {
+          hasSegmentFilter,
+          canHandleSegmentFilter,
+          attributeFilters: reportFilterState.attributes.filter(attr => attr.values.size > 0).map(attr => ({
+            field: attr.field,
+            values: Array.from(attr.values)
+          }))
+        },
+        originalDataLength: dataToFilter.length
+      });
+      
+      // CRITICAL: If we have a segment filter but can't handle it (no quadrantContext),
+      // we MUST return original data and let FilterPanel handle the filtering
+      // FilterPanel has access to quadrantContext and will filter correctly
+      // The filtered result will be passed to BarChart via onFilterChange callback
+      if (hasSegmentFilter && !canHandleSegmentFilter) {
+        console.warn(`🚨 [FilterContext] getReportFilteredData: Report ${reportId} has segment filter but quadrantContext unavailable - returning original data. FilterPanel will handle filtering.`, {
+          selectedSegments: Array.from(reportFilterState.attributes.find(attr => attr.field === 'segment')?.values || [])
+        });
+        // Return original data - FilterPanel will filter it correctly with its quadrantContext
+        // BarChart should use the filtered data from FilterPanel's onFilterChange callback
+        return dataToFilter.filter(item => !item.excluded);
+      }
+      
+      return applyFilters(dataToFilter, reportFilterState);
+    }
+  }, [getReportFilterState, applyFilters, filterState, filteredData, compareFilterStates, quadrantContext]);
 
   const contextValue: FilterContextType = {
     filterState,
@@ -627,14 +1116,59 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({
     setData: handleSetData,
     // Report filter connection system
     reportFilterStates,
+    reportActiveFilterCounts,
     setReportConnection, // Deprecated but kept for backward compatibility
     syncReportToMaster,
     getReportFilterState,
     setReportFilterState,
+    getReportActiveFilterCount,
     getReportFilteredData,
     compareFilterStates,
     isSyncingFromMain
   };
+
+  // Restore report filter states from localStorage on mount (if saved from .seg file)
+  // This runs after all the functions are defined
+  useEffect(() => {
+    try {
+      const savedReportFilterStates = localStorage.getItem('savedReportFilterStates');
+      if (savedReportFilterStates) {
+        const parsed = JSON.parse(savedReportFilterStates);
+        const restoredStates: Record<string, FilterState> = {};
+        const restoredCounts: Record<string, number> = {};
+        
+        Object.entries(parsed).forEach(([reportId, savedState]: [string, any]) => {
+          const filterState: FilterState = {
+            dateRange: {
+              startDate: savedState.dateRange.startDate ? new Date(savedState.dateRange.startDate) : null,
+              endDate: savedState.dateRange.endDate ? new Date(savedState.dateRange.endDate) : null,
+              preset: savedState.dateRange.preset || 'all'
+            },
+            attributes: savedState.attributes.map((attr: any) => ({
+              field: attr.field,
+              values: new Set(attr.values),
+              availableValues: attr.availableValues,
+              expanded: attr.expanded
+            })),
+            isActive: savedState.isActive,
+            frequencyFilterEnabled: savedState.frequencyFilterEnabled,
+            frequencyThreshold: savedState.frequencyThreshold
+          };
+          restoredStates[reportId] = filterState;
+          restoredCounts[reportId] = calculateActiveFilterCount(filterState);
+        });
+        
+        // Restore all states at once
+        setReportFilterStates(restoredStates);
+        setReportActiveFilterCounts(restoredCounts);
+        
+        // Clear the saved states from localStorage after restoring
+        localStorage.removeItem('savedReportFilterStates');
+      }
+    } catch (e) {
+      console.warn('Failed to restore report filter states from localStorage:', e);
+    }
+  }, [calculateActiveFilterCount]); // Run once on mount, but include calculateActiveFilterCount for completeness
 
   return (
     <FilterContext.Provider value={contextValue}>

@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
+import { Users, FolderOpen } from 'lucide-react';
 import './ProximityList.css';
-import ProximityDisplayMenu, { ProximityDisplaySettings } from './ProximityDisplayMenu';
+import { ProximityDisplaySettings, createDefaultProximityDisplaySettings } from './ProximityDisplayMenu';
 
 interface ProximityDetail {
   customerCount: number;
@@ -60,7 +61,8 @@ interface ProximityItem {
   groupItems?: ProximityItem[];
 }
 
-const RELATION_LABELS: Record<string, string> = {
+// Function to get relation labels based on terminology
+const getRelationLabels = (isClassicModel: boolean): Record<string, string> => ({
   // Lateral proximity relationships
   loyalists_close_to_hostages: 'Loyalists Nearly Hostages',
   loyalists_close_to_mercenaries: 'Loyalists Nearly Mercenaries',
@@ -75,12 +77,12 @@ const RELATION_LABELS: Record<string, string> = {
   mercenaries_close_to_hostages: 'Mercenaries Nearly Hostages',
   hostages_close_to_mercenaries: 'Hostages Nearly Mercenaries',
   defectors_close_to_loyalists: 'Defectors Nearly Loyalists',
-  // Special zone proximity relationships
-  loyalists_close_to_apostles: 'Loyalists Nearly Apostles',
-  loyalists_close_to_near_apostles: 'Loyalists Nearly Near Apostles',
-  near_apostles_close_to_apostles: 'Near Apostles Nearly Apostles',
-  defectors_close_to_terrorists: 'Defectors Nearly Terrorists'
-};
+  // Special zone proximity relationships - DYNAMIC based on terminology
+  loyalists_close_to_apostles: `Loyalists Nearly ${isClassicModel ? 'Apostles' : 'Advocates'}`,
+  loyalists_close_to_near_apostles: `Loyalists Nearly ${isClassicModel ? 'Near-Apostles' : 'Near-Advocates'}`,
+  near_apostles_close_to_apostles: `${isClassicModel ? 'Near-Apostles' : 'Near-Advocates'} Nearly ${isClassicModel ? 'Apostles' : 'Advocates'}`,
+  defectors_close_to_terrorists: `Defectors Nearly ${isClassicModel ? 'Terrorists' : 'Trolls'}`
+});
 
 // Strategic group classifications
 const WARNING_GROUPS = [
@@ -107,8 +109,8 @@ const OPPORTUNITY_GROUPS = [
   'defectors_close_to_loyalists'
 ];
 
-// Factual proximity explanations
-const PROXIMITY_EXPLANATIONS: Record<string, string> = {
+// Function to get proximity explanations based on terminology
+const getProximityExplanations = (isClassicModel: boolean): Record<string, string> => ({
   loyalists_close_to_mercenaries: 'These customers are positioned nearly the mercenaries boundary',
   loyalists_close_to_hostages: 'These customers are positioned nearly the hostages boundary',
   hostages_close_to_loyalists: 'These customers are positioned nearly the loyalists boundary',
@@ -122,12 +124,12 @@ const PROXIMITY_EXPLANATIONS: Record<string, string> = {
   mercenaries_close_to_hostages: 'These customers are positioned nearly the hostages boundary (disappointment diagonal)',
   hostages_close_to_mercenaries: 'These customers are positioned nearly the mercenaries boundary (switching diagonal)',
   defectors_close_to_loyalists: 'These customers are positioned nearly the loyalists boundary (redemption diagonal)',
-  // Special zone proximity explanations
-  loyalists_close_to_apostles: 'These customers are positioned nearly the apostles zone',
-  loyalists_close_to_near_apostles: 'These customers are positioned nearly the near apostles zone',
-  near_apostles_close_to_apostles: 'These customers are positioned nearly the apostles zone from the near apostles zone',
-  defectors_close_to_terrorists: 'These customers are positioned nearly the terrorists zone'
-};
+  // Special zone proximity explanations - DYNAMIC based on terminology
+  loyalists_close_to_apostles: `These customers are positioned nearly the ${isClassicModel ? 'apostles' : 'advocates'} zone`,
+  loyalists_close_to_near_apostles: `These customers are positioned nearly the ${isClassicModel ? 'near apostles' : 'near advocates'} zone`,
+  near_apostles_close_to_apostles: `These customers are positioned nearly the ${isClassicModel ? 'apostles' : 'advocates'} zone from the ${isClassicModel ? 'near apostles' : 'near advocates'} zone`,
+  defectors_close_to_terrorists: `These customers are positioned nearly the ${isClassicModel ? 'terrorists' : 'trolls'} zone`
+});
 
 // Brand colours rendered as subtle rgba for professional look
 const BASE_COLOURS: Record<string, string> = {
@@ -167,6 +169,14 @@ function getBaseQuadrantFromKey(key: string): string {
 
 function getTargetQuadrantFromKey(key: string): string {
   return key.split('_close_to_')[1];
+}
+
+// Helper function to format segment names (e.g., "near_apostles" -> "Near-Apostles")
+function formatSegmentName(region: string): string {
+  return region
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join('-');
 }
 
 // Custom Tooltip Component
@@ -220,6 +230,7 @@ export const ProximityList: React.FC<ProximityListProps> = ({
   displaySettings: externalDisplaySettings
 }) => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const [expandedGroupItem, setExpandedGroupItem] = useState<string | null>(null);
   const [showAllCustomers, setShowAllCustomers] = useState<Record<string, boolean>>({});
   const [tooltip, setTooltip] = useState<{ type: 'opportunity' | 'warning'; isVisible: boolean; position: { top: number; left: number } }>({
     type: 'opportunity',
@@ -229,17 +240,7 @@ export const ProximityList: React.FC<ProximityListProps> = ({
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Use external display settings if provided, otherwise use internal state
-  const defaultSettings: ProximityDisplaySettings = {
-    grouping: 'flat',
-    showOpportunities: true,
-    showWarnings: true,
-    showEmptyCategories: false,
-    highlightHighImpact: false,
-    highImpactMethod: 'smart',
-    sortBy: 'customerCount'
-  };
-
-  const [internalDisplaySettings, setInternalDisplaySettings] = useState<ProximityDisplaySettings>(defaultSettings);
+  const [internalDisplaySettings, setInternalDisplaySettings] = useState<ProximityDisplaySettings>(() => createDefaultProximityDisplaySettings());
   
   // Use external settings if provided, otherwise use internal state
   const displaySettings = externalDisplaySettings || internalDisplaySettings;
@@ -265,15 +266,7 @@ export const ProximityList: React.FC<ProximityListProps> = ({
       console.warn('Cannot reset display settings - they are controlled by parent component');
       return;
     }
-    setInternalDisplaySettings({
-      grouping: 'flat',
-      showOpportunities: true,
-      showWarnings: true,
-      showEmptyCategories: false,
-      highlightHighImpact: false,
-      highImpactMethod: 'smart',
-      sortBy: 'customerCount'
-    });
+    setInternalDisplaySettings(createDefaultProximityDisplaySettings());
   };
 
   // Tooltip handlers
@@ -311,6 +304,10 @@ export const ProximityList: React.FC<ProximityListProps> = ({
   const items = useMemo((): ProximityItem[] => {
     const entries = Object.entries(proximityAnalysis.analysis || {});
     
+    // Get relation labels and explanations based on terminology
+    const relationLabels = getRelationLabels(isClassicModel);
+    const proximityExplanations = getProximityExplanations(isClassicModel);
+    
     // Calculate high-impact threshold based on method
     let highImpactThreshold = 0;
     if (displaySettings.highlightHighImpact) {
@@ -341,17 +338,10 @@ export const ProximityList: React.FC<ProximityListProps> = ({
       const isWarning = WARNING_GROUPS.includes(key);
       const isOpportunity = OPPORTUNITY_GROUPS.includes(key);
       
-      // Show empty categories if setting is enabled
-      if (displaySettings.showEmptyCategories) {
-        return true;
-      }
-      
-      // Filter by count
-      if (count === 0) {
+      if (!displaySettings.showEmptyCategories && count === 0) {
         return false;
       }
       
-      // Filter by opportunity/warning settings
       if (!displaySettings.showOpportunities && isOpportunity) {
         return false;
       }
@@ -359,13 +349,13 @@ export const ProximityList: React.FC<ProximityListProps> = ({
       if (!displaySettings.showWarnings && isWarning) {
         return false;
       }
-      
+
       return true;
     });
     
     // Map to items with all properties
     const mapped = filtered.map(([key, detail]) => {
-      const label = RELATION_LABELS[key] || key;
+      const label = relationLabels[key] || key;
       const baseQuadrant = getBaseQuadrantFromKey(key);
       const targetQuadrant = getTargetQuadrantFromKey(key);
       const count = detail?.customerCount || 0;
@@ -377,7 +367,7 @@ export const ProximityList: React.FC<ProximityListProps> = ({
       // Determine strategic classification
       const isWarning = WARNING_GROUPS.includes(key);
       const isOpportunity = OPPORTUNITY_GROUPS.includes(key);
-      const explanation = PROXIMITY_EXPLANATIONS[key];
+      const explanation = proximityExplanations[key];
       
       // Calculate strategic impact score (higher is better)
       const strategicImpact = isOpportunity ? (count * 2) : (isWarning ? count * 0.5 : count);
@@ -443,7 +433,7 @@ export const ProximityList: React.FC<ProximityListProps> = ({
       
       return Object.entries(grouped).map(([region, items]) => ({
         key: `group_${region}`,
-        label: `${region.charAt(0).toUpperCase() + region.slice(1)} Region`,
+        label: `${formatSegmentName(region)} Segment`,
         count: items.reduce((sum, item) => sum + item.count, 0),
         pct: 0,
         baseQuadrant: region,
@@ -453,7 +443,7 @@ export const ProximityList: React.FC<ProximityListProps> = ({
         textColour: TEXT_COLOURS[region] || '#374151',
         isWarning: false,
         isOpportunity: false,
-        explanation: `All proximity relationships from ${region} region`,
+        explanation: `All proximity relationships from the ${region} segment`,
         detail: null,
         strategicImpact: 0,
         averageDistance: 0,
@@ -543,48 +533,105 @@ export const ProximityList: React.FC<ProximityListProps> = ({
       const oneStep = sorted.filter(item => item.averageDistance <= 1);
       const multiStep = sorted.filter(item => item.averageDistance > 1);
       
+      // Split one-step by positive/negative
+      const oneStepOpportunities = oneStep.filter(item => item.isOpportunity);
+      const oneStepWarnings = oneStep.filter(item => item.isWarning);
+      
+      // Split multi-step by positive/negative
+      const multiStepOpportunities = multiStep.filter(item => item.isOpportunity);
+      const multiStepWarnings = multiStep.filter(item => item.isWarning);
+      
       const groups = [];
-      if (oneStep.length > 0) {
+      
+      // One-Step Opportunities
+      if (oneStepOpportunities.length > 0) {
         groups.push({
-          key: 'group_one_step',
-          label: '1-Step Moves (Easy)',
-          count: oneStep.reduce((sum, item) => sum + item.count, 0),
+          key: 'group_one_step_opportunities',
+          label: '1-Step Moves - Conversion Opportunities',
+          count: oneStepOpportunities.reduce((sum, item) => sum + item.count, 0),
           pct: 0,
-          baseQuadrant: 'one_step',
+          baseQuadrant: 'one_step_opportunities',
           targetQuadrant: '',
-          baseColour: 'rgba(16, 185, 129, 0.30)',
+          baseColour: 'rgba(76, 175, 80, 0.30)',
           targetColour: '#9CA3AF',
-          textColour: '#10B981',
+          textColour: '#4CAF50',
           isWarning: false,
           isOpportunity: true,
-          explanation: 'Customers within 1 position of target boundary',
+          explanation: 'Easy positive movements toward better segments',
           detail: null,
           strategicImpact: 0,
           averageDistance: 0,
           isGroup: true,
-          groupItems: oneStep
+          groupItems: oneStepOpportunities
         });
       }
       
-      if (multiStep.length > 0) {
+      // One-Step Warnings
+      if (oneStepWarnings.length > 0) {
         groups.push({
-          key: 'group_multi_step',
-          label: 'Multi-Step Moves (Challenging)',
-          count: multiStep.reduce((sum, item) => sum + item.count, 0),
+          key: 'group_one_step_warnings',
+          label: '1-Step Moves - Risk Warnings',
+          count: oneStepWarnings.reduce((sum, item) => sum + item.count, 0),
           pct: 0,
-          baseQuadrant: 'multi_step',
+          baseQuadrant: 'one_step_warnings',
           targetQuadrant: '',
-          baseColour: 'rgba(245, 158, 11, 0.30)',
+          baseColour: 'rgba(220, 38, 38, 0.30)',
           targetColour: '#9CA3AF',
-          textColour: '#F59E0B',
-          isWarning: false,
+          textColour: '#DC2626',
+          isWarning: true,
           isOpportunity: false,
-          explanation: 'Customers requiring multiple position moves',
+          explanation: 'Easy negative movements toward worse segments',
           detail: null,
           strategicImpact: 0,
           averageDistance: 0,
           isGroup: true,
-          groupItems: multiStep
+          groupItems: oneStepWarnings
+        });
+      }
+      
+      // Multi-Step Opportunities
+      if (multiStepOpportunities.length > 0) {
+        groups.push({
+          key: 'group_multi_step_opportunities',
+          label: 'Multi-Step Moves - Conversion Opportunities',
+          count: multiStepOpportunities.reduce((sum, item) => sum + item.count, 0),
+          pct: 0,
+          baseQuadrant: 'multi_step_opportunities',
+          targetQuadrant: '',
+          baseColour: 'rgba(76, 175, 80, 0.30)',
+          targetColour: '#9CA3AF',
+          textColour: '#4CAF50',
+          isWarning: false,
+          isOpportunity: true,
+          explanation: 'Challenging positive movements toward better segments',
+          detail: null,
+          strategicImpact: 0,
+          averageDistance: 0,
+          isGroup: true,
+          groupItems: multiStepOpportunities
+        });
+      }
+      
+      // Multi-Step Warnings
+      if (multiStepWarnings.length > 0) {
+        groups.push({
+          key: 'group_multi_step_warnings',
+          label: 'Multi-Step Moves - Risk Warnings',
+          count: multiStepWarnings.reduce((sum, item) => sum + item.count, 0),
+          pct: 0,
+          baseQuadrant: 'multi_step_warnings',
+          targetQuadrant: '',
+          baseColour: 'rgba(220, 38, 38, 0.30)',
+          targetColour: '#9CA3AF',
+          textColour: '#DC2626',
+          isWarning: true,
+          isOpportunity: false,
+          explanation: 'Challenging negative movements toward worse segments',
+          detail: null,
+          strategicImpact: 0,
+          averageDistance: 0,
+          isGroup: true,
+          groupItems: multiStepWarnings
         });
       }
       
@@ -592,7 +639,7 @@ export const ProximityList: React.FC<ProximityListProps> = ({
     }
     
     return sorted;
-  }, [proximityAnalysis, totalCustomers, displaySettings]);
+  }, [proximityAnalysis, totalCustomers, displaySettings, isClassicModel]);
 
   const handleItemClick = (key: string) => {
     setExpandedItem(expandedItem === key ? null : key);
@@ -651,6 +698,116 @@ export const ProximityList: React.FC<ProximityListProps> = ({
     return pct >= 15 ? Math.round(pct) : 0;
   }, [proximityAnalysis]);
 
+  // Helper function to get grouping label
+  const getGroupingLabel = (): string => {
+    switch (displaySettings.grouping) {
+      case 'bySourceRegion':
+        return 'By Segment';
+      case 'byStrategicPriority':
+        return 'By Strategic Priority';
+      case 'byDistance':
+        return 'By Distance/Difficulty';
+      case 'flat':
+        return 'Full List';
+      default:
+        return 'Full List';
+    }
+  };
+
+  const renderGroupItem = (groupItem: ProximityItem) => (
+    <div 
+      key={groupItem.key} 
+      className={`group-item ${expandedGroupItem === groupItem.key ? 'expanded' : ''}`}
+      data-warning={groupItem.isWarning}
+      data-opportunity={groupItem.isOpportunity}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (expandedGroupItem === groupItem.key) {
+          setExpandedGroupItem(null);
+        } else {
+          setExpandedGroupItem(groupItem.key);
+        }
+      }}
+      style={{ cursor: 'pointer' }}
+    >
+      <div className="group-item-header">
+        <span className="group-item-label" style={{ color: groupItem.textColour }}>
+          {groupItem.label}
+        </span>
+        <span className="group-item-count">{groupItem.count} customers</span>
+      </div>
+      <div className="group-item-bar">
+        <div
+          className="group-item-bar-base"
+          style={{ backgroundColor: groupItem.baseColour }}
+        />
+        <div className="group-item-bar-gap" />
+        <div
+          className="group-item-bar-target"
+          style={{ backgroundColor: groupItem.targetColour }}
+        />
+      </div>
+      {expandedGroupItem === groupItem.key && (
+        <div className="group-item-expanded">
+          {groupItem.isWarning && (
+            <div className="warning-section">
+              <div className="warning-header">
+                <span className="warning-text">WARNING</span>
+              </div>
+              <p className="explanation">{groupItem.explanation}</p>
+            </div>
+          )}
+
+          {groupItem.isOpportunity && (
+            <div className="opportunity-section">
+              <div className="opportunity-header">
+                <span className="opportunity-text">OPPORTUNITY</span>
+              </div>
+              <p className="explanation">{groupItem.explanation}</p>
+            </div>
+          )}
+
+          {groupItem.detail && (
+            <div className="group-item-customers">
+              <div className="customers-header">
+                <Users size={18} className="customers-icon" style={{ color: groupItem.textColour }} />
+                <span className="customers-text">Customers ({groupItem.count})</span>
+              </div>
+              <div className="customers-list">
+                {(showAllCustomers[groupItem.key] ? groupItem.detail?.customers : groupItem.detail?.customers?.slice(0, 5))?.map((customer, index) => (
+                  <div key={customer.id || index} className="customer-item">
+                    <span className="customer-name">
+                      {getCustomerDisplayName(customer, index)}, ID: {customer.id}
+                    </span>
+                    <span className="customer-coords">
+                      ({customer.satisfaction}, {customer.loyalty})
+                    </span>
+                  </div>
+                ))}
+                {groupItem.detail?.customers && groupItem.detail.customers.length > 5 && (
+                  <div 
+                    className="customer-more"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleShowAllCustomers(groupItem.key);
+                    }}
+                    style={{ cursor: 'pointer', color: '#3b82f6', textDecoration: 'underline' }}
+                  >
+                    {!showAllCustomers[groupItem.key] ? (
+                      `+${groupItem.detail.customers.length - 5} more customers`
+                    ) : (
+                      'Show Less'
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="proximity-list">
       <CustomTooltip 
@@ -659,13 +816,7 @@ export const ProximityList: React.FC<ProximityListProps> = ({
         position={tooltip.position}
       />
       <div className="proximity-list-header">
-        <h4>Actionable Proximity Intelligence</h4>
-        <div className="header-controls">
-          <div className="tags">
-            {warning > 0 && <span className="tag warning">WARNING • {warning}%</span>}
-            {opportunity > 0 && <span className="tag opportunity">OPPORTUNITY • {opportunity}%</span>}
-          </div>
-        </div>
+        <h4>{getGroupingLabel()}</h4>
       </div>
 
       <div className="proximity-list-body">
@@ -677,8 +828,16 @@ export const ProximityList: React.FC<ProximityListProps> = ({
             data-opportunity={item.isOpportunity}
           >
             <div 
-              className={`proximity-list-row ${expandedItem === item.key ? 'expanded' : ''} ${item.isHighImpact ? 'high-impact' : ''} ${item.isOpportunity ? 'opportunity' : ''} ${item.isWarning ? 'warning' : ''}`}
-              onClick={() => handleItemClick(item.key)}
+              className={`proximity-list-row ${item.isGroup ? 'group-summary' : ''} ${expandedItem === item.key ? 'expanded' : ''} ${item.isHighImpact ? 'high-impact' : ''} ${item.isOpportunity ? 'opportunity' : ''} ${item.isWarning ? 'warning' : ''}`}
+              onClick={() => {
+                if (expandedItem === item.key) {
+                  setExpandedItem(null);
+                  setExpandedGroupItem(null); // Clear group item when parent closes
+                } else {
+                  setExpandedItem(item.key);
+                  setExpandedGroupItem(null); // Clear group item when opening new parent
+                }
+              }}
               onMouseEnter={(e) => {
                 if (item.isOpportunity) handleMouseEnter(e, 'opportunity');
                 else if (item.isWarning) handleMouseEnter(e, 'warning');
@@ -733,39 +892,44 @@ export const ProximityList: React.FC<ProximityListProps> = ({
                   )}
                   
                   {item.isGroup ? (
-                    <div className="group-section">
+                    <div className="group-section" onClick={(e) => e.stopPropagation()}>
                       <div className="group-header">
-                        <span className="group-icon">📁</span>
+                        <FolderOpen size={18} className="group-icon" style={{ color: item.textColour }} />
                         <span className="group-text">Group Contents ({item.groupItems?.length || 0} relationships)</span>
                       </div>
-                      <div className="group-items">
-                        {item.groupItems?.map((groupItem: ProximityItem) => (
-                          <div key={groupItem.key} className="group-item">
-                            <div className="group-item-header">
-                              <span className="group-item-label" style={{ color: groupItem.textColour }}>
-                                {groupItem.label}
-                              </span>
-                              <span className="group-item-count">{groupItem.count} customers</span>
-                            </div>
-                            <div className="group-item-bar">
-                              <div
-                                className="group-item-bar-base"
-                                style={{ backgroundColor: groupItem.baseColour }}
-                              />
-                              <div className="group-item-bar-gap" />
-                              <div
-                                className="group-item-bar-target"
-                                style={{ backgroundColor: groupItem.targetColour }}
-                              />
-                            </div>
+                      {(() => {
+                        const opportunityItems = item.groupItems?.filter(groupItem => groupItem.isOpportunity) || [];
+                        const warningItems = item.groupItems?.filter(groupItem => groupItem.isWarning) || [];
+                        const neutralItems = item.groupItems?.filter(groupItem => !groupItem.isOpportunity && !groupItem.isWarning) || [];
+                        
+                        return (
+                          <div className="group-items-columns">
+                            {opportunityItems.length > 0 && (
+                              <div className="group-items-column opportunity">
+                                <div className="group-category-header">Opportunities</div>
+                                {opportunityItems.map(renderGroupItem)}
+                              </div>
+                            )}
+                            {warningItems.length > 0 && (
+                              <div className="group-items-column warning">
+                                <div className="group-category-header">Warnings</div>
+                                {warningItems.map(renderGroupItem)}
+                              </div>
+                            )}
+                            {neutralItems.length > 0 && (
+                              <div className="group-items-column neutral">
+                                <div className="group-category-header">Neutral</div>
+                                {neutralItems.map(renderGroupItem)}
+                              </div>
+                            )}
                           </div>
-                        ))}
-                      </div>
+                        );
+                      })()}
                     </div>
                   ) : (
                     <div className="customers-section">
                       <div className="customers-header">
-                        <span className="customers-icon">👥</span>
+                        <Users size={18} className="customers-icon" style={{ color: item.textColour }} />
                         <span className="customers-text">Customers ({item.count})</span>
                       </div>
                       <div className="customers-list">

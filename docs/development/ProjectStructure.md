@@ -1,11 +1,11 @@
 # Project Structure Documentation
 
 ## Overview
-This document outlines the organization and structure of the Apostles Model project.
+This document outlines the organization and structure of the Segmentor project.
 
 ## Directory Structure
 ```
-apostles-model/
+segmentor/
 ├── docs/
 │   ├── architecture/
 │   ├── components/

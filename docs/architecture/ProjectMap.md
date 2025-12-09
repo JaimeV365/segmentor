@@ -1,4 +1,4 @@
-# Project Map - Apostles Model Builder
+# Project Map - Segmentor
 
 [Previous sections remain the same until Visualization Module...]
 

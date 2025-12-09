@@ -29,7 +29,8 @@ const ResponseSettings: React.FC<ResponseSettingsProps & { activeSection?: 'dist
   isPremium,
   activeSection = 'distribution',
   availableTiers,
-  availableItemsCount
+  availableItemsCount,
+  maxCombinationFrequency
 }) => {
     const [customHexInput, setCustomHexInput] = useState('');
     const [satHexInput, setSatHexInput] = useState('');
@@ -113,7 +114,7 @@ const ResponseSettings: React.FC<ResponseSettingsProps & { activeSection?: 'dist
 
     {/* Distribution Map Settings */}
     {(!activeSection || activeSection === 'distribution') && (
-      <div className="settings-section" style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+      <div className="settings-section">
         <h4>Response Distribution Map</h4>
         <div className="settings-group">
           <label className="settings-checkbox">
@@ -122,7 +123,7 @@ const ResponseSettings: React.FC<ResponseSettingsProps & { activeSection?: 'dist
     checked={settings.miniPlot.useQuadrantColors}
     onChange={(e) => handleSettingChange('miniPlot', 'useQuadrantColors', e.target.checked)}
   />
-  Use quadrant colors
+  Use segment colors
 </label>
 
 {!settings.miniPlot.useQuadrantColors && (
@@ -165,43 +166,40 @@ const ResponseSettings: React.FC<ResponseSettingsProps & { activeSection?: 'dist
   </div>
 )}
 
-{isPremium && (
-  <label className="settings-checkbox">
-    <input
-      type="checkbox"
-      checked={settings.miniPlot.showAverageDot}
-      onChange={(e) => handleSettingChange('miniPlot', 'showAverageDot', e.target.checked)}
-    />
-    Show average position
-  </label>
-)}
+<label className="settings-checkbox">
+  <input
+    type="checkbox"
+    checked={settings.miniPlot.showAverageDot}
+    onChange={(e) => handleSettingChange('miniPlot', 'showAverageDot', e.target.checked)}
+  />
+  Show average position
+</label>
         </div>
 
-        {/* Phase 2: Premium Frequency Controls */}
-        {isPremium && (
-          <div className="premium-section">
-            <div className="premium-section-header">
-              <h5>Advanced Frequency Controls</h5>
-            </div>
-            
-            <FrequencyThresholdSlider
-              value={settings.miniPlot.frequencyThreshold || 2}
-              onChange={(value) => handleSettingChange('miniPlot', 'frequencyThreshold', value)}
-              min={1}
-              max={10}
-              inPremiumSection={true}
-            />
-            
-            <TierToggle
-              showTiers={settings.miniPlot.showTiers || false}
-              maxTiers={settings.miniPlot.maxTiers || 2}
-              onShowTiersChange={(show) => handleSettingChange('miniPlot', 'showTiers', show)}
-              onMaxTiersChange={(tiers) => handleSettingChange('miniPlot', 'maxTiers', tiers)}
-              disabled={!isPremium}
-              availableTiers={availableTiers}
-            />
+        {/* Advanced Frequency Controls - Public for all users */}
+        <div className="premium-section">
+          <div className="premium-section-header">
+            <h5>Advanced Frequency Controls</h5>
           </div>
-        )}
+          
+          <FrequencyThresholdSlider
+            value={settings.miniPlot.frequencyThreshold || 2}
+            onChange={(value) => handleSettingChange('miniPlot', 'frequencyThreshold', value)}
+            min={1}
+            max={10}
+            maxAvailableFrequency={maxCombinationFrequency}
+            inPremiumSection={false}
+          />
+          
+          <TierToggle
+            showTiers={settings.miniPlot.showTiers || false}
+            maxTiers={settings.miniPlot.maxTiers || 2}
+            onShowTiersChange={(show) => handleSettingChange('miniPlot', 'showTiers', show)}
+            onMaxTiersChange={(tiers) => handleSettingChange('miniPlot', 'maxTiers', tiers)}
+            disabled={false}
+            availableTiers={availableTiers}
+          />
+        </div>
         
         <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
           <button
@@ -220,7 +218,7 @@ const ResponseSettings: React.FC<ResponseSettingsProps & { activeSection?: 'dist
 
     {/* Response List Settings */}
     {(!activeSection || activeSection === 'responses') && (
-      <div className="settings-section" style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+      <div className="settings-section">
         <h4>Frequent Responses</h4>
         <div className="settings-group">
           <label className="settings-checkbox">
@@ -271,7 +269,7 @@ const ResponseSettings: React.FC<ResponseSettingsProps & { activeSection?: 'dist
 
     {/* Response Intensity Settings */}
     {(!activeSection || activeSection === 'intensity') && (
-      <div className="settings-section" style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+      <div className="settings-section">
         <h4>Response Intensity</h4>
         <div className="settings-group">
           <div className="settings-row">

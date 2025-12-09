@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { Info } from 'lucide-react';
+import React, { useState, useEffect, useRef, useMemo, useLayoutEffect, useCallback } from 'react';
 import type { DataReport as DataReportType } from '../../types';
-import BarChart from '../BarChart';
-import type { BarChartData } from '../BarChart';
 import { HighlightableKPI } from '../HighlightableKPI';
-import { MiniPlot } from '../MiniPlot';
 import StatisticsSection from './StatisticsSection';
-import CombinationDial from '../CombinationDial';
-import { DEFAULT_SETTINGS, ResponseConcentrationSettings } from '../ResponseSettings/types';
-import ResponseConcentrationSection from '../ResponseConcentrationSection';
-import ResponseSettings from '../ResponseSettings';
+import { RecommendationScoreSection } from './RecommendationScoreSection';
 import { DataPoint } from '@/types/base';
 import type { QuadrantType } from '../../types';
+import { InfoRibbon } from '../InfoRibbon';
+import { Menu, X, Settings, Filter, Link2, Link2Off } from 'lucide-react';
+import FilterPanel from '../../../visualization/filters/FilterPanel';
+import { useFilterContextSafe } from '../../../visualization/context/FilterContext';
+import { ReportFilter } from '../../filters/ReportFilterPanel';
+import { useNotification } from '../../../data-entry/hooks/useNotification';
+import '../../../visualization/controls/UnifiedChartControls.css';
 
 interface DataReportProps {
   report: DataReportType | null;
@@ -32,27 +32,269 @@ export const DataReport: React.FC<DataReportProps> = ({
   isPremium = false,
   originalData = []
 }) => {
-  const [showSettings, setShowSettings] = useState(false);
-  const [settings, setSettings] = useState<ResponseConcentrationSettings>(DEFAULT_SETTINGS);
   const [selectedQuadrant, setSelectedQuadrant] = useState<QuadrantType | null>(null);
+  
+  // Type guard to ensure only basic quadrants are used for quadrantStats
+  const isBasicQuadrant = (quadrant: string | null): quadrant is QuadrantType => {
+    return quadrant === 'loyalists' || quadrant === 'hostages' || quadrant === 'mercenaries' || quadrant === 'defectors';
+  };
+  const [showRecommendationScore, setShowRecommendationScore] = useState(false);
+  const [showSettingsPanel, setShowSettingsPanel] = useState(false);
+  const [activeTab, setActiveTab] = useState<'settings' | 'filters'>('settings');
+  const [autoOpenRecommendationScorePanel, setAutoOpenRecommendationScorePanel] = useState(false);
+  const settingsPanelRef = useRef<HTMLDivElement>(null);
+  const settingsButtonRef = useRef<HTMLButtonElement>(null);
+  const recommendationScoreSectionRef = useRef<HTMLDivElement>(null);
+
+  // Filter system state
+  const filterContext = useFilterContextSafe();
+  const { showNotification } = useNotification();
+  const REPORT_ID = useMemo(() => 'dataReportStatistics', []);
+  const [activeFilters, setActiveFilters] = useState<ReportFilter[]>([]);
+  const [filteredDataFromPanel, setFilteredDataFromPanel] = useState<DataPoint[] | null>(null);
+  const [isConnected, setIsConnected] = useState(true);
+  const [showReconnectModal, setShowReconnectModal] = useState(false);
+  const [isManualReconnecting, setIsManualReconnecting] = useState(false);
+  const [hasLocalChanges, setHasLocalChanges] = useState(false);
+  
+  // Note: Section is hidden by default. User must manually enable it via the settings menu.
+  // We don't load from localStorage to ensure it's always hidden by default.
+  
+  // Persist showRecommendationScore to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('showRecommendationScore', showRecommendationScore.toString());
+  }, [showRecommendationScore]);
+
+  // Initialize report filter state - sync to main filters by default
+  useLayoutEffect(() => {
+    if (filterContext && !filterContext.reportFilterStates[REPORT_ID]) {
+      console.log('🔌 [DataReport] LAYOUT EFFECT INIT: Syncing report state to main state');
+      filterContext.syncReportToMaster(REPORT_ID);
+    }
+  }, [filterContext, REPORT_ID]);
+
+  // Backup initialization check (runs after first render)
+  useEffect(() => {
+    if (filterContext && !filterContext.reportFilterStates[REPORT_ID]) {
+      console.log('🔌 [DataReport] Backup init: Syncing report state to main state');
+      filterContext.syncReportToMaster(REPORT_ID);
+    }
+  }, [filterContext, REPORT_ID]);
+
+  // Derive connection status
+  const connectionStatus = useMemo(() => {
+    if (!filterContext) return true;
+    const reportState = filterContext.reportFilterStates[REPORT_ID];
+    const mainState = filterContext.filterState;
+    
+    // If report state doesn't exist, it's connected by default (uses main state)
+    if (!reportState) {
+      return true;
+    }
+    
+    // Compare states to determine if connected
+    return filterContext.compareFilterStates(reportState, mainState);
+  }, [filterContext, REPORT_ID, filterContext?.reportFilterStates?.[REPORT_ID], filterContext?.filterState]);
+
+  useEffect(() => {
+    setIsConnected(connectionStatus);
+  }, [connectionStatus]);
+
+  // Calculate filter count from appropriate state (main if connected, report if disconnected)
+  const filterCount = useMemo(() => {
+    if (!filterContext) return activeFilters?.length || 0;
+    
+    const stateToUse = isConnected 
+      ? filterContext.filterState 
+      : (filterContext.getReportFilterState(REPORT_ID) || filterContext.filterState);
+    
+    // Count active filters from FilterState
+    const hasDateFilter = stateToUse.dateRange?.preset && stateToUse.dateRange.preset !== 'all';
+    const attributeFilterCount = stateToUse.attributes?.filter((attr: any) => attr.values && attr.values.size > 0).length || 0;
+    const totalCount = (hasDateFilter ? 1 : 0) + attributeFilterCount;
+    
+    // Fallback to activeFilters array length if available and state count is 0
+    return totalCount > 0 ? totalCount : (activeFilters?.length || 0);
+  }, [filterContext, isConnected, REPORT_ID, activeFilters]);
+
+  // Clear filteredDataFromPanel when report reconnects
+  useEffect(() => {
+    if (isConnected && filteredDataFromPanel !== null) {
+      console.log(`🔌 [DataReport] Report reconnected - clearing filteredDataFromPanel and using main filteredData`);
+      setFilteredDataFromPanel(null);
+    }
+  }, [isConnected, filteredDataFromPanel]);
+
+  // Get effective filtered data for statistics
+  const effectiveDataForStatistics = useMemo(() => {
+    if (!filterContext) return originalData.filter(d => !d.excluded);
+    
+    // If disconnected and we have filtered data from panel, use it
+    if (!isConnected && filteredDataFromPanel !== null) {
+      return filteredDataFromPanel;
+    }
+    
+    // Otherwise, use report filter system
+    return filterContext.getReportFilteredData(REPORT_ID, originalData);
+  }, [originalData, filterContext, REPORT_ID, isConnected, filteredDataFromPanel]);
+
+  // Calculate filtered statistics
+  const filteredStatistics = useMemo(() => {
+    const activeData = effectiveDataForStatistics.filter((d: DataPoint) => !d.excluded);
+    if (activeData.length === 0) {
+      return report?.statistics || null;
+    }
+
+    // Calculate statistics from filtered data
+    const calculateStatistics = (values: number[]) => {
+      if (values.length === 0) {
+        return {
+          distribution: {} as Record<number, number>,
+          average: 0,
+          mode: 0,
+          max: 0,
+          min: 0
+        };
+      }
+
+      const distribution = values.reduce((acc, val) => {
+        acc[val] = (acc[val] || 0) + 1;
+        return acc;
+      }, {} as Record<number, number>);
+
+      const distributionValues = Object.values(distribution);
+      const maxFreq = distributionValues.length > 0 ? Math.max(...distributionValues) : 0;
+      const mode = maxFreq > 0 
+        ? Number(Object.keys(distribution).find(key => distribution[Number(key)] === maxFreq))
+        : 0;
+
+      return {
+        distribution,
+        average: values.reduce((a, b) => a + b, 0) / values.length,
+        mode,
+        max: Math.max(...values),
+        min: Math.min(...values)
+      };
+    };
+
+    return {
+      satisfaction: calculateStatistics(activeData.map((d: DataPoint) => d.satisfaction)),
+      loyalty: calculateStatistics(activeData.map((d: DataPoint) => d.loyalty))
+    };
+  }, [effectiveDataForStatistics, report?.statistics]);
+
+  // Handle filter changes from FilterPanel
+  const handleFilterChange = (filteredData: DataPoint[], newFilters: ReportFilter[]) => {
+    setFilteredDataFromPanel(filteredData);
+    setActiveFilters(newFilters || []);
+    
+    // Track local changes for connection status
+    if (!isManualReconnecting && filterContext) {
+      setHasLocalChanges(true);
+    }
+  };
+
+  // Handle connection toggle
+  const handleConnectionToggle = useCallback((confirmed: boolean) => {
+    if (!filterContext) return;
+    
+    if (confirmed) {
+      setIsManualReconnecting(true);
+      
+      console.log(`🔔 [DataReport] Manual reconnect - syncing to main state`);
+      
+      filterContext.syncReportToMaster(REPORT_ID);
+      setHasLocalChanges(false);
+      
+      setShowReconnectModal(false);
+      
+      // Show notification
+      console.log(`🔔 [DataReport] Showing notification`);
+      try {
+        showNotification({
+          title: 'Filters Connected',
+          message: 'Data Report statistics filters are now synced with the main chart.',
+          type: 'success',
+          icon: <Link2 size={18} style={{ color: '#166534' }} />
+        });
+      } catch (error) {
+        console.error('🔔 [DataReport] Error showing notification:', error);
+      }
+      
+      setTimeout(() => {
+        setIsManualReconnecting(false);
+      }, 100);
+    } else {
+      setShowReconnectModal(false);
+    }
+  }, [filterContext, REPORT_ID, showNotification]);
+  
+  // Close panel when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        settingsPanelRef.current &&
+        !settingsPanelRef.current.contains(event.target as Node) &&
+        settingsButtonRef.current &&
+        !settingsButtonRef.current.contains(event.target as Node)
+      ) {
+        setShowSettingsPanel(false);
+      }
+    };
+    
+    if (showSettingsPanel) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showSettingsPanel]);
+
+  // Handle escape key
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && showSettingsPanel) {
+        setShowSettingsPanel(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [showSettingsPanel]);
+
+  // Add/remove body class when panel is open/closed
+  useEffect(() => {
+    if (showSettingsPanel) {
+      document.body.classList.add('unified-controls-open');
+    } else {
+      document.body.classList.remove('unified-controls-open');
+    }
+
+    return () => {
+      document.body.classList.remove('unified-controls-open');
+    };
+  }, [showSettingsPanel]);
+
+  // Scroll to recommendation score section when it becomes visible
+  useEffect(() => {
+    if (showRecommendationScore && recommendationScoreSectionRef.current) {
+      // Use requestAnimationFrame to ensure DOM has updated
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          recommendationScoreSectionRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+          // Reset auto-open flag after scrolling
+          setTimeout(() => {
+            setAutoOpenRecommendationScorePanel(false);
+          }, 100);
+        }, 150);
+      });
+    }
+  }, [showRecommendationScore]);
    
   if (!report) return null;
-
-  const transformData = (distribution: Record<number, number>, maxValue: number): BarChartData[] => {
-    return Array.from({ length: maxValue }, (_, i) => ({
-      value: i + 1,
-      count: distribution[i + 1] || 0
-    }));
-  };
-
-  const getFilteredCombinations = () => {
-    return report.mostCommonCombos.slice(0, settings.list.maxItems);
-  };
-
-  const terminology = {
-    apostles: isClassicModel ? 'Apostles' : 'Advocates',
-    terrorists: isClassicModel ? 'Terrorists' : 'Trolls'
-  };
 
   const handleQuadrantMove = (fromIndex: number, toIndex: number) => {
     // This would handle reordering of quadrants in a premium version
@@ -65,17 +307,29 @@ export const DataReport: React.FC<DataReportProps> = ({
   
   return (
     <div className="report-card" onClick={(e) => e.stopPropagation()}>
-      <h3 className="report-title">Data Report</h3>
+      <div className="report-title-wrapper">
+        <h3 className="report-title">Data Report</h3>
+        <div className="data-report-controls">
+          <button
+            ref={settingsButtonRef}
+            className={`data-report-settings-button ${showSettingsPanel ? 'active' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              const newState = !showSettingsPanel;
+              setShowSettingsPanel(newState);
+              if (newState) {
+                setActiveTab('settings'); // Default to settings tab
+              }
+            }}
+            title="Data Report settings"
+          >
+            <Menu size={20} />
+          </button>
+        </div>
+      </div>
       {/* Introductory information specific to Data Report */}
       <div className="report-content" style={{ paddingTop: 0 }}>
-        <div className="info-ribbon">
-          <div className="info-ribbon-content">
-            <Info size={16} className="info-icon" />
-            <p className="info-text">
-              This Data Report provides an overview of your dataset with key statistics and distributions. Use it to identify overall response trends and the most common satisfaction–loyalty combinations to help you analyse and segment customer data.
-            </p>
-          </div>
-        </div>
+        <InfoRibbon text="This Data Report provides an overview of your dataset with key statistics and distributions. Use it to identify overall response trends and the most common satisfaction–loyalty combinations to help you analyse and segment customer data." />
       </div>
       <div className="report-content">
         {/* Basic Information section */}
@@ -138,33 +392,37 @@ export const DataReport: React.FC<DataReportProps> = ({
 
         {/* Statistics section */}
         <StatisticsSection 
-          statistics={report.statistics}
+          statistics={filteredStatistics || report.statistics}
           scales={{
             satisfaction: report.satisfactionScale,
             loyalty: report.loyaltyScale
           }}
-          totalEntries={report.totalEntries}
+          totalEntries={effectiveDataForStatistics.filter((d: DataPoint) => !d.excluded).length || report.totalEntries}
           isPremium={isPremium}
           originalData={originalData}
         />
 
-        {/* Response Concentration Section */}
-        <div className="report-section">
-          <ResponseConcentrationSection
-            report={report}
-            settings={settings}
-            onSettingsChange={setSettings}
-            isPremium={isPremium}
-            originalData={originalData}
-          />
-        </div>
+        {/* Recommendation Score section */}
+        {showRecommendationScore && (
+          <div ref={recommendationScoreSectionRef} id="recommendation-score-section" data-section-id="report-recommendation-score">
+            <RecommendationScoreSection
+              data={originalData.filter(d => !d.excluded)}
+              loyaltyScale={report.loyaltyScale}
+              isPremium={isPremium}
+              autoOpenPanel={autoOpenRecommendationScorePanel}
+              onPanelOpen={() => {
+                // Panel is now open, reset the flag
+                setAutoOpenRecommendationScorePanel(false);
+              }}
+            />
+          </div>
+        )}
 
-        
-
-        
-
-        {/* Selected Quadrant Details (if any) */}
-        {selectedQuadrant && report.quadrantStats && report.quadrantStats[selectedQuadrant] && (
+        {/* Selected Quadrant Details (if any) - only show for basic quadrants */}
+        {selectedQuadrant && 
+         isBasicQuadrant(selectedQuadrant) &&
+         report.quadrantStats && 
+         report.quadrantStats[selectedQuadrant] && (
           <div className="report-section">
             <h4 className="report-section-title">{selectedQuadrant.charAt(0).toUpperCase() + selectedQuadrant.slice(1)} Details</h4>
             <div className="bg-gray-50 p-4 rounded-lg">
@@ -213,17 +471,140 @@ export const DataReport: React.FC<DataReportProps> = ({
         
       </div>
 
-      {/* Settings Panel */}
-      {showSettings && (
-        <ResponseSettings
-          settings={settings}
-          onSettingsChange={setSettings}
-          onClose={() => setShowSettings(false)}
-          isPremium={isPremium}
-        />
+      {/* Contextual Menu Panel */}
+      {showSettingsPanel && (
+        <div className="unified-controls-panel data-report-panel" ref={settingsPanelRef}>
+          <div className="unified-controls-header">
+            <div className="bar-chart-panel-title">
+              Data Report
+            </div>
+            <div className="unified-controls-tabs">
+              <button 
+                className={`unified-tab ${activeTab === 'settings' ? 'active' : ''}`}
+                onClick={() => setActiveTab('settings')}
+              >
+                <Settings size={16} />
+                Settings
+              </button>
+              <button 
+                className={`unified-tab ${activeTab === 'filters' ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Only handle tab click if not clicking the connection icon
+                  if (!(e.target as HTMLElement).closest('.connection-status-icon')) {
+                    setActiveTab('filters');
+                  }
+                }}
+              >
+                <Filter size={16} />
+                Filters
+                {filterContext && (
+                  <span 
+                    className="connection-status-icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!isConnected) {
+                        // Show confirmation modal before reconnecting
+                        setShowReconnectModal(true);
+                      }
+                    }}
+                    title={isConnected ? 'Connected to main filters (will disconnect automatically when you change filters)' : 'Click to reconnect to main filters'}
+                    style={{ cursor: !isConnected ? 'pointer' : 'default' }}
+                  >
+                    {isConnected ? (
+                      <Link2 size={14} />
+                    ) : (
+                      <Link2Off size={14} />
+                    )}
+                  </span>
+                )}
+                {filterCount > 0 && (
+                  <span className="unified-filter-badge">{filterCount}</span>
+                )}
+              </button>
+            </div>
+            <button className="unified-close-button" onClick={() => setShowSettingsPanel(false)}>
+              <X size={20} />
+            </button>
+          </div>
+
+          <div className="unified-controls-content">
+            {activeTab === 'settings' && (
+              <div className="unified-tab-content">
+                <div className="unified-tab-body">
+                  <label className="data-report-settings-item">
+                    <input
+                      type="checkbox"
+                      checked={showRecommendationScore}
+                      onChange={(e) => {
+                        const isChecked = e.target.checked;
+                        setShowRecommendationScore(isChecked);
+                        // Close Data Report panel and auto-open Recommendation Score panel
+                        if (isChecked) {
+                          setShowSettingsPanel(false);
+                          setAutoOpenRecommendationScorePanel(true);
+                        }
+                      }}
+                    />
+                    <span>Show Recommendation Score</span>
+                  </label>
+                  <div style={{ marginTop: '0.5rem', marginLeft: '1rem', marginRight: '1rem' }}>
+                    <InfoRibbon text={`The Recommendation Score is based on the classic "How likely are you to recommend (...)" question.\n\nThis score segments your loyalty data into three groups:\n• Detractors (unlikely to recommend)\n• Passives (neutral)\n• Promoters (likely to recommend)`} />
+                  </div>
+                </div>
+              </div>
+            )}
+            {activeTab === 'filters' && (
+              <div className="unified-tab-content">
+                <div className="unified-tab-body">
+                  {filterContext && (
+                    <FilterPanel
+                      data={originalData.filter(d => !d.excluded)}
+                      onFilterChange={handleFilterChange}
+                      onClose={() => {}}
+                      isOpen={true}
+                      contentOnly={true}
+                      reportId={REPORT_ID}
+                      forceLocalState={true}
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
-      
+      {/* Reconnection Confirmation Modal */}
+      {showReconnectModal && (
+        <div className="filter-connection-modal-overlay" onClick={() => setShowReconnectModal(false)}>
+          <div className="filter-connection-modal reconnect-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Connect to Main Chart Filters?</h3>
+            </div>
+            <div className="modal-content">
+              <p>This will sync the Data Report statistics filters with the main chart filters. Any local filter changes will be lost.</p>
+            </div>
+            <div className="modal-actions">
+              <button 
+                className="modal-button secondary"
+                onClick={() => setShowReconnectModal(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="modal-button primary"
+                onClick={() => {
+                  setShowReconnectModal(false);
+                  handleConnectionToggle(true);
+                }}
+              >
+                Connect
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -21,7 +21,7 @@ const PremiumFeature: React.FC<PremiumFeatureProps> = ({
   isPremium,
   featureType,
   onPreview,
-  description = "Premium feature",
+  description = "Brand+ feature",
   previewDuration = 2,
   feature,
   onUpgrade,
@@ -50,6 +50,11 @@ const PremiumFeature: React.FC<PremiumFeatureProps> = ({
     return <>{children}</>;
   }
 
+  // For personalization features with premium, show enabled (no wrapper interference)
+  if (isPersonalizationFeature && isPremium) {
+    return <>{children}</>;
+  }
+
   // For personalization features, show with premium overlay if not premium
   if (isPersonalizationFeature && !isPremium) {
     return (
@@ -58,7 +63,7 @@ const PremiumFeature: React.FC<PremiumFeatureProps> = ({
           {children}
           <div className="premium-overlay">
             <Lock size={16} />
-            <span>{disabledMessage || 'Premium Feature'}</span>
+            <span>{disabledMessage || 'Brand+ Feature'}</span>
             {onUpgrade && (
               <button onClick={onUpgrade} className="upgrade-button">
                 Upgrade
@@ -78,7 +83,7 @@ const PremiumFeature: React.FC<PremiumFeatureProps> = ({
       onClick={handleClick}
       role="button"
       tabIndex={0}
-      aria-label={`${description}${!isEnabled ? ' (Premium feature)' : ''}`}
+      aria-label={`${description}${!isEnabled ? ' (Brand+ feature)' : ''}`}
     >
       {!isEnabled && !isPreview && (
         <div className="absolute -top-2 -right-2 z-10">
@@ -97,7 +102,7 @@ const PremiumFeature: React.FC<PremiumFeatureProps> = ({
           <span className="sr-only">{description}</span>
           {feature && (
             <span className="text-xs text-gray-600 bg-white px-2 py-1 rounded shadow-sm">
-              Premium Feature
+              Brand+ Feature
             </span>
           )}
         </div>

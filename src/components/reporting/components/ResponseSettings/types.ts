@@ -5,7 +5,7 @@ export interface ResponseConcentrationSettings {
       showAverageDot: boolean;
       // Phase 2 Premium Features
       frequencyThreshold?: number; // Premium: Custom frequency threshold
-showTiers?: boolean; // Premium: Multi-tier visualization
+showTiers?: boolean; // Tier-capped display (limits combinations shown)
 maxTiers?: number; // Premium: Number of tiers to show (1-3)
 applyMainChartFrequencyFilter?: boolean; // Apply main chart frequency filter
     };
@@ -37,6 +37,8 @@ applyMainChartFrequencyFilter?: boolean; // Apply main chart frequency filter
   onFrequencyThresholdChange?: (threshold: number) => void;
   // New prop for smart slider functionality
   availableItemsCount?: number;
+  // Maximum frequency of any combination in the data
+  maxCombinationFrequency?: number;
 }
   
   export const DEFAULT_SETTINGS: ResponseConcentrationSettings = {
@@ -46,7 +48,7 @@ applyMainChartFrequencyFilter?: boolean; // Apply main chart frequency filter
     showAverageDot: true,
     // Phase 2 Premium defaults
     frequencyThreshold: 2, // Show combinations appearing 2+ times (minimum allowed)
-showTiers: true, // Multi-tier display by default
+showTiers: false, // Tier-capped display off by default (show all combinations)
 maxTiers: 3, // Default to maximum tier (will be adjusted based on available data)
 applyMainChartFrequencyFilter: false // Don't apply main chart filter by default
   },

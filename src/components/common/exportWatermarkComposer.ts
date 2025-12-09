@@ -62,12 +62,20 @@ function parseWatermarkSettings(settings: WatermarkSettings) {
     const xValue = parseInt(xModifier.replace('LOGO_X:', ''), 10);
     if (!isNaN(xValue)) {
       logoX = xValue;
+      // When flat, move 5 units to the right (decrease logoX by 5) even if LOGO_X is set
+      if (isFlat) {
+        logoX = Math.max(0, logoX - 5);
+      }
     }
   } else {
     // Default position calculation (matching Watermark.tsx logic)
     const { chartContainerWidth } = settings;
     const effWidth = isFlat ? logoSize : logoSize * 0.3;
     logoX = Math.max(0, chartContainerWidth - effWidth - 60);
+    // When flat, move 5 units to the right (decrease logoX by 5)
+    if (isFlat) {
+      logoX = Math.max(0, logoX - 5);
+    }
   }
   
   const yModifier = Array.from(effects).find(e => e.startsWith('LOGO_Y:'));

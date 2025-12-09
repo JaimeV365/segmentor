@@ -111,7 +111,7 @@ export const ReportFilterPanel: React.FC<ReportFilterPanelProps> = ({
 
   const addFilter = () => {
     if (filters.length >= 3 && !isPremium) {
-      alert('Premium feature required for more than 3 filters');
+      alert('Brand+ feature required for more than 3 filters');
       return;
     }
     

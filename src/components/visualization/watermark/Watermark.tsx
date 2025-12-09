@@ -69,16 +69,20 @@ export const Watermark: React.FC<WatermarkProps> = ({
   let logoY = 0;
   
   const xModifier = Array.from(effects).find(e => e.startsWith('LOGO_X:'));
+  const isFlatCalc = effects?.has('LOGO_FLAT');
   if (xModifier) {
     const xValue = parseInt(xModifier.replace('LOGO_X:', ''), 10);
     if (!isNaN(xValue)) {
       logoX = xValue;
+      // When flat, move 5 units to the right (decrease logoX by 5) even if LOGO_X is set
+      if (isFlatCalc) {
+        logoX = Math.max(0, logoX - 5);
+      }
     }
   } else {
     const container = document.querySelector('.chart-container');
     if (container) {
       const rect = container.getBoundingClientRect();
-      const isFlatCalc = effects?.has('LOGO_FLAT');
       // For vertical: after rotation, visual height = containerWidth (2.8x logoSize)
       // Visual width = containerHeight (0.85 * logoSize)
       // Account for the visual footprint after rotation
@@ -88,6 +92,10 @@ export const Watermark: React.FC<WatermarkProps> = ({
       const baseSize = 90;
       const margin = Math.max(40, baseMargin * (baseSize / logoSize)); // Min 40px margin
       logoX = Math.max(0, rect.width - effWidth - margin);
+      // When flat, move 5 units to the right (decrease logoX by 5)
+      if (isFlatCalc) {
+        logoX = Math.max(0, logoX - 5);
+      }
     }
   }
   

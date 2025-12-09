@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting to Brand+...</title>
+    <meta http-equiv="refresh" content="0; url=/brand-plus.html">
+    <script>
+        // Immediate redirect
+        window.location.href = '/brand-plus.html';
+    </script>
+</head>
+<body>
+    <p>Redirecting to Brand+ pricing page...</p>
+    <script>
+        // Fallback redirect
+        setTimeout(() => {
+            window.location.href = '/brand-plus.html';
+        }, 1000);
+    </script>
+</body>
+</html>
+

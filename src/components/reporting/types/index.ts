@@ -39,6 +39,7 @@ export interface DataReport {
     apostles: number;
     nearApostles: number;
     terrorists: number;
+    neutrals?: number;
   };
   quadrantStats: {
     loyalists: QuadrantStatistics;
@@ -65,6 +66,7 @@ export interface ActionsReport {
   insights: string[];
   priorityActions: string[];
   isPremium: boolean;
+  actionPlan?: any; // Optional: Full Action Plan report structure
 }
 
 export interface RecommendationSection {
@@ -75,4 +77,5 @@ export interface RecommendationSection {
 }
 
 // Chart-specific types
+// Only the 4 basic quadrants for reporting (special zones are handled separately)
 export type QuadrantType = 'loyalists' | 'hostages' | 'mercenaries' | 'defectors';

@@ -125,6 +125,7 @@ body {
   gap: 8px;
   align-self: start;
   width: 100%;
+  align-items: flex-start; /* Ensure items align to the left */
 }
 
 .satisfaction-field .error-message,
@@ -138,8 +139,7 @@ body {
 
 .satisfaction-field .input-field-container,
 .loyalty-field .input-field-container {
-  width: 100%;
-  max-width: fit-content;
+  width: 200px; /* Match the scale selector width */
   display: block;
 }
 
@@ -177,6 +177,12 @@ body {
 
 /* Specific widths */
 .scale-selector select {
+  width: 200px !important;
+}
+
+/* Ensure value dropdowns match scale selector width */
+.satisfaction-field .input-field-container select,
+.loyalty-field .input-field-container select {
   width: 200px !important;
 }
 
@@ -389,4 +395,57 @@ select + .error-message,
 
 .input-field--warning:focus {
   box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1) !important; /* Amber shadow for focus state */
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 1024px) {
+  .data-input__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    row-gap: 24px;
+  }
+  
+  .satisfaction-field .input-field-container,
+  .loyalty-field .input-field-container,
+  .scale-selector select,
+  .satisfaction-field .input-field-container select,
+  .loyalty-field .input-field-container select {
+    width: 100% !important;
+    max-width: 200px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .data-input__grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    row-gap: 24px;
+  }
+  
+  .satisfaction-field,
+  .loyalty-field {
+    width: 100%;
+  }
+  
+  .satisfaction-field .input-field-container,
+  .loyalty-field .input-field-container,
+  .scale-selector select,
+  .satisfaction-field .input-field-container select,
+  .loyalty-field .input-field-container select {
+    width: 100% !important;
+    max-width: 100%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .data-input__grid {
+    gap: 12px;
+    row-gap: 20px;
+  }
+  
+  .scale-selector select,
+  .satisfaction-field .input-field-container select,
+  .loyalty-field .input-field-container select {
+    font-size: 14px !important;
+  }
 }

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The CSV Import system provides a robust mechanism for importing customer data from CSV files into the Apostles Model data entry system. It handles file validation, data processing, duplicate detection, scale compatibility checks, and intelligent scale detection with user confirmation when needed.
+The CSV Import system provides a robust mechanism for importing customer data from CSV files into the Segmentor data entry system. It handles file validation, data processing, duplicate detection, scale compatibility checks, and intelligent scale detection with user confirmation when needed.
 
 ## Key Features
 

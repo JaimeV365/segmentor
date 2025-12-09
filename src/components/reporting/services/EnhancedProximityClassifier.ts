@@ -944,16 +944,9 @@ console.log('🚨 Grouped customers available:', {
 
     console.log(`📊 After target zone exclusion: ${filteredCustomers.length} customers (excluded ${customers.length - filteredCustomers.length} already in ${toZone} zone)`);
 
-    // RULE 8: BOUNDARY CONFLICT EXCLUSION - Exclude customers already in quadrant boundary proximity
-    const finalFilteredCustomers = filteredCustomers.filter(customer => {
-      const isOnQuadrantBoundary = this.isCustomerOnQuadrantBoundary(customer);
-      if (isOnQuadrantBoundary) {
-        console.log(`🚫 EXCLUDING customer ${customer.id} at (${customer.satisfaction},${customer.loyalty}) - on quadrant boundary (Rule 8)`);
-      }
-      return !isOnQuadrantBoundary;
-    });
-
-    console.log(`📊 After boundary conflict exclusion: ${finalFilteredCustomers.length} customers (excluded ${filteredCustomers.length - finalFilteredCustomers.length} on quadrant boundaries)`);
+    // RULE 8 REMOVED: Boundary conflict exclusion removed - customers can appear in both quadrant boundary proximity 
+    // and special zone proximity. Summary deduplication will handle overlap by keeping highest risk score relationship.
+    const finalFilteredCustomers = filteredCustomers;
 
     // RULE 3: SIZE-AWARE PROXIMITY ANALYSIS - Skip if target zone is too small
     const zoneSize = this.calculateSpecialZoneSize(targetZoneBoundaries);

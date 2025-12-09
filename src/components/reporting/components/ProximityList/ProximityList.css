@@ -1,3 +1,12 @@
+:root {
+  --proximity-opportunity-accent: #38a169;
+  --proximity-opportunity-bg: rgba(56, 161, 105, 0.08);
+  --proximity-warning-accent: #dc2626;
+  --proximity-warning-bg: rgba(220, 38, 38, 0.08);
+  --proximity-neutral-accent: #9ca3af;
+  --proximity-neutral-bg: rgba(156, 163, 175, 0.08);
+}
+
 .proximity-list {
   display: flex;
   flex-direction: column;
@@ -8,7 +17,10 @@
   border-radius: 8px;
   padding: 16px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.10);
-  overflow: visible;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
 }
 
 .proximity-list-header {
@@ -61,6 +73,9 @@
   flex-direction: column; 
   gap: 8px; 
   padding: 2px 0;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .proximity-list-item {
@@ -127,6 +142,14 @@
 
 .proximity-list-row.expanded .expand-icon {
   transform: rotate(0deg);
+}
+
+.proximity-list-row.group-summary.opportunity {
+  border-left: 4px solid var(--proximity-opportunity-accent);
+}
+
+.proximity-list-row.group-summary.warning {
+  border-left: 4px solid var(--proximity-warning-accent);
 }
 
 /* Strategic icons as "stickers" positioned on the border/edge - DISABLED */
@@ -198,13 +221,13 @@
 }
 
 .warning-section {
-  background-color: rgba(220, 38, 38, 0.05);
-  border-left-color: #DC2626;
+  background-color: var(--proximity-warning-bg);
+  border-left-color: var(--proximity-warning-accent);
 }
 
 .opportunity-section {
-  background-color: rgba(58, 134, 62, 0.05);
-  border-left-color: #3a863e;
+  background-color: var(--proximity-opportunity-bg);
+  border-left-color: var(--proximity-opportunity-accent);
 }
 
 .warning-header,
@@ -228,11 +251,11 @@
 }
 
 .warning-text {
-  color: #DC2626;
+  color: var(--proximity-warning-accent);
 }
 
 .opportunity-text {
-  color: #3a863e;
+  color: var(--proximity-opportunity-accent);
 }
 
 .explanation {
@@ -322,9 +345,36 @@
 
 /* Group item styles */
 .group-item {
-  border-left: 3px solid #e5e7eb;
   padding-left: 12px;
   margin-bottom: 8px;
+  transition: background-color 120ms ease;
+}
+
+.group-item:hover {
+  background-color: rgba(0,0,0,0.02);
+  border-radius: 4px;
+}
+
+.group-item.expanded {
+  background-color: rgba(0,0,0,0.03);
+}
+
+.group-item[data-opportunity="true"],
+.group-item[data-warning="true"] {
+  background: none;
+}
+
+.group-item-customers {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.group-item-expanded {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
 }
 
 .group-indicator {
@@ -362,13 +412,11 @@
   transition: all 0.3s ease;
 }
 
-/* Colour-coded borders for opportunities and warnings */
-.proximity-list-row.opportunity {
-  border-left: 3px solid #4CAF50;
-}
-
+/* Remove extra row decorations */
+.proximity-list-row.opportunity,
 .proximity-list-row.warning {
-  border-left: 3px solid #DC2626;
+  border-left: none;
+  background: none;
 }
 
 /* Custom Tooltip Styling */
@@ -440,6 +488,14 @@
 
 .group-icon {
   font-size: 14px;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.customers-icon {
+  font-size: 14px;
+  color: #6b7280;
+  flex-shrink: 0;
 }
 
 .group-text {
@@ -450,6 +506,43 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.group-items-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.group-items-column {
+  flex: 1 1 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  min-width: 0;
+}
+
+.group-items-column.opportunity {
+  border-left: 4px solid var(--proximity-opportunity-accent);
+}
+
+.group-items-column.warning {
+  border-left: 4px solid var(--proximity-warning-accent);
+}
+
+.group-items-column.neutral {
+  border-left: 4px solid var(--proximity-neutral-accent);
+}
+
+.group-category-header {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.25rem;
 }
 
 .group-item-header {
@@ -505,6 +598,10 @@
     flex-direction: column;
     align-items: flex-end;
     gap: 8px;
+  }
+
+  .group-items-columns {
+    flex-direction: column;
   }
   
   .group-item-header {

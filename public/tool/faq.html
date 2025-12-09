@@ -6,7 +6,7 @@
     
     <!-- Basic SEO Meta Tags (Minimal as recommended) -->
     <title>FAQ - segmentor.app | Customer Segmentation Tool Help</title>
-    <meta name="description" content="Frequently asked questions about segmentor.app - the privacy-first customer segmentation tool. Get help with the Apostles Model, data upload, and tool features.">
+    <meta name="description" content="Frequently asked questions about segmentor.app - the privacy-first customer segmentation tool. Get help with Segmentor, data upload, and tool features.">
     <meta name="keywords" content="segmentor FAQ, customer segmentation help, apostles model questions, data upload help, privacy questions" />
     <meta name="author" content="segmentor.app" />
     <meta name="robots" content="index, follow" />
@@ -14,7 +14,7 @@
     
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="FAQ - segmentor.app Customer Segmentation Tool" />
-    <meta property="og:description" content="Get help with segmentor.app - the privacy-first customer segmentation tool using the Apostles Model." />
+    <meta property="og:description" content="Get help with segmentor.app - the privacy-first customer segmentation tool that starts with Apostles Model visualization." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://segmentor.app/faq.html" />
     <meta property="og:image" content="%PUBLIC_URL%/segmentor-logo.png" />
@@ -23,7 +23,7 @@
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="FAQ - segmentor.app Customer Segmentation Tool" />
-    <meta name="twitter:description" content="Get help with segmentor.app - the privacy-first customer segmentation tool using the Apostles Model." />
+    <meta name="twitter:description" content="Get help with segmentor.app - the privacy-first customer segmentation tool that starts with Apostles Model visualization." />
     <meta name="twitter:image" content="%PUBLIC_URL%/segmentor-logo.png" />
     
     <!-- Additional Meta Tags -->
@@ -186,7 +186,7 @@
             <section class="hero-section">
                 <h1>Frequently Asked Questions</h1>
                 <p class="hero-subtitle">
-                    Find answers to common questions about segmentor.app and the Apostles Model. 
+                    Find answers to common questions about segmentor.app and the customer segmentation tool. 
                     Can't find what you're looking for? <a href="/contact.html">Contact us</a>.
                 </p>
                 
@@ -207,6 +207,7 @@
                     <button class="category-btn" data-category="getting-started">Getting Started</button>
                     <button class="category-btn" data-category="using-tool">Using the Tool</button>
                     <button class="category-btn" data-category="saving-exporting">Saving & Exporting</button>
+                    <button class="category-btn" data-category="advanced-features">Advanced Features</button>
                     <button class="category-btn" data-category="privacy-security">Privacy & Security</button>
                     <button class="category-btn" data-category="understanding-model">Understanding the Model</button>
                 </div>
@@ -279,7 +280,7 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
                         </button>
                         <div class="faq-answer">
                             <p>Absolutely! We provide sample data so you can explore the tool before uploading your own data.</p>
-                            <p>Click the "Load Sample Data" button on the main page to see how the Apostles Model works with realistic customer data. This helps you understand the tool's capabilities and see what insights you can gain.</p>
+                            <p>Click the "Load Sample Data" button on the main page to see how Segmentor works with realistic customer data. This helps you understand the tool's capabilities and see what insights you can gain.</p>
                         </div>
                     </div>
                 </div>
@@ -349,12 +350,72 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
                         <div class="faq-answer">
                             <p>Yes! The tool offers several filtering options:</p>
                             <ul>
-                                <li><strong>Date filters:</strong> Analyze specific time periods</li>
-                                <li><strong>Attribute filters:</strong> Filter by country, language, or any custom attributes</li>
+                                <li><strong>Date filters:</strong> Analyse specific time periods with presets or custom ranges</li>
+                                <li><strong>Attribute filters:</strong> Filter by country, language, or any custom attributes in your data</li>
+                                <li><strong>Score filters:</strong> Filter by satisfaction or loyalty values</li>
                                 <li><strong>Exclude customers:</strong> Temporarily hide specific customers from analysis</li>
-                                <li><strong>Frequency filters:</strong> Focus on customers with multiple interactions</li>
                             </ul>
-                            <p>Use the filter panel on the left to narrow down your analysis to specific customer segments.</p>
+                            <p>Use the filter panel to combine multiple filters and narrow down your analysis to specific customer segments.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="adjust midpoint, move quadrants, reposition centre">
+                        <button class="faq-question">
+                            <span>Can I adjust the quadrant boundaries?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Yes! You can drag the midpoint (centre point) to reposition where the quadrants divide. This is useful when your data distribution suggests different thresholds would be more meaningful.</p>
+                            <p>You can also resize the Apostles and Terrorists zones using the resize handles in the top-right and bottom-left corners of the chart.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="manual reassignment, change quadrant, override classification">
+                        <button class="faq-question">
+                            <span>Can I manually reassign customers to different quadrants?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Yes, for points on quadrant boundaries. Click any data point to see its details. If the point sits on a boundary line, you'll see reassignment buttons to move it to an adjacent quadrant.</p>
+                            <p>Manual reassignments are automatically cleared if you move the midpoint and the point is no longer on a boundary.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="chart controls, visualisation settings, display options">
+                        <button class="faq-question">
+                            <span>What chart display options are available?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>The chart controls let you:</p>
+                            <ul>
+                                <li>Toggle between Classic (Apostles/Terrorists) and Modern (Advocates/Trolls) terminology</li>
+                                <li>Show or hide Near-Apostles zones</li>
+                                <li>Control label visibility (all, quadrants only, or none)</li>
+                                <li>Toggle grid lines and scale numbers</li>
+                                <li>Show or hide axis legends</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="edit data, modify entries, update customer">
+                        <button class="faq-question">
+                            <span>Can I edit or delete customer entries?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Yes. In the data table, click the edit icon to modify satisfaction or loyalty scores. Click the delete icon to remove individual entries, or use "Delete All Rows" to clear everything.</p>
+                            <p>You can also exclude entries from analysis without deleting them—they'll remain in your data but won't appear in calculations.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="click points, view details, customer information">
+                        <button class="faq-question">
+                            <span>How do I see details about a specific customer?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Click any point on the chart to open an information box showing the customer's name, scores, quadrant assignment, and any additional data you've uploaded. For overlapping points, you'll see a frequency count.</p>
                         </div>
                     </div>
                 </div>
@@ -398,18 +459,49 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
 
                     <div class="faq-item" data-keywords="export reports, download reports, share results">
                         <button class="faq-question">
-                            <span>Can I export reports?</span>
+                            <span>What export formats are available?</span>
                             <span class="faq-icon">+</span>
                         </button>
                         <div class="faq-answer">
-                            <p>Yes! You can export your analysis in several ways:</p>
+                            <p>You can export in multiple formats:</p>
                             <ul>
-                                <li><strong>Project files (.seg):</strong> Complete analysis with all settings</li>
-                                <li><strong>CSV export:</strong> Customer data with segment assignments</li>
-                                <li><strong>Chart images:</strong> Visual representations of your segments</li>
-                                <li><strong>Summary reports:</strong> Key insights and recommendations</li>
+                                <li><strong>PNG:</strong> Chart images for presentations</li>
+                                <li><strong>PDF:</strong> Complete reports with charts and analysis</li>
+                                <li><strong>CSV:</strong> Raw customer data with segment assignments</li>
+                                <li><strong>Excel (XLSX):</strong> Action plans with multiple worksheets</li>
                             </ul>
-                            <p>Use the export options in the reporting section to share your findings with your team.</p>
+                            <p>Export options are available in the reporting section and chart controls.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="generate reports, action plan, data report">
+                        <button class="faq-question">
+                            <span>What types of reports can I generate?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>The tool generates two main reports:</p>
+                            <ul>
+                                <li><strong>Data Report:</strong> Statistics, distributions, and quadrant breakdowns</li>
+                                <li><strong>Action Plan:</strong> Strategic recommendations, proximity analysis, conversion opportunities, and risk warnings</li>
+                            </ul>
+                            <p>Both reports include visual charts and can be customised before export.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="proximity analysis, recommendation score, response concentration">
+                        <button class="faq-question">
+                            <span>What advanced analysis features are included?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>The Action Plan includes:</p>
+                            <ul>
+                                <li><strong>Proximity Analysis:</strong> Identifies customers close to quadrant boundaries who could be converted</li>
+                                <li><strong>Recommendation Score:</strong> Calculates your overall NPS-style score</li>
+                                <li><strong>Response Concentration:</strong> Shows where most responses cluster</li>
+                                <li><strong>Strategic Priorities:</strong> Highlights high-impact opportunities</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -500,6 +592,47 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
                             </ul>
                             
                             <p>You can even disconnect from the internet after loading the page and continue working—proof that nothing is being sent anywhere.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Features Section -->
+                <div class="faq-section" data-category="advanced-features">
+                    <h2>⚙️ Advanced Features</h2>
+                    
+                    <div class="faq-item" data-keywords="premium, brand plus, custom branding, logo">
+                        <button class="faq-question">
+                            <span>What is Brand+ and what does it include?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Brand+ (Premium) adds custom branding to your reports:</p>
+                            <ul>
+                                <li>Replace the watermark with your company logo</li>
+                                <li>Apply your brand colours to charts and reports</li>
+                                <li>Control logo size, position, and orientation</li>
+                            </ul>
+                            <p>Perfect for consultants and agencies presenting to clients. All core features remain free—Brand+ is purely visual customisation.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="scale detection, automatic normalisation, different scales">
+                        <button class="faq-question">
+                            <span>Does the tool work with different satisfaction scales?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Yes. The tool automatically detects and normalises 1-5, 1-7, and 1-10 scales. You can mix different scales in the same dataset—the tool will handle the conversion automatically.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="frequency clustering, overlapping points, multiple responses">
+                        <button class="faq-question">
+                            <span>How does the tool handle overlapping data points?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>When multiple customers share the same satisfaction and loyalty scores, they're displayed as a single point with a frequency indicator. Click the point to see all customers at that position and their details.</p>
                         </div>
                     </div>
                 </div>
@@ -1051,11 +1184,23 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
             { question: "How do I interpret Apostles vs Terrorists?", category: "using-tool", keywords: "apostles vs terrorists, interpret results, understand segments" },
             { question: "How do I identify Near-Apostles?", category: "using-tool", keywords: "near apostles, identify near apostles, almost apostles" },
             { question: "Can I filter or exclude certain customers?", category: "using-tool", keywords: "filter customers, exclude customers, hide customers" },
+            { question: "Can I adjust the quadrant boundaries?", category: "using-tool", keywords: "adjust midpoint, move quadrants, reposition centre" },
+            { question: "Can I manually reassign customers to different quadrants?", category: "using-tool", keywords: "manual reassignment, change quadrant, override classification" },
+            { question: "What chart display options are available?", category: "using-tool", keywords: "chart controls, visualisation settings, display options" },
+            { question: "Can I edit or delete customer entries?", category: "using-tool", keywords: "edit data, modify entries, update customer" },
+            { question: "How do I see details about a specific customer?", category: "using-tool", keywords: "click points, view details, customer information" },
             
             // Saving & Exporting
             { question: "Can I save my work?", category: "saving-exporting", keywords: "save work, save project, save analysis" },
             { question: "How do I load a previous project?", category: "saving-exporting", keywords: "load project, open project, continue work" },
-            { question: "Can I export reports?", category: "saving-exporting", keywords: "export reports, download reports, share results" },
+            { question: "What export formats are available?", category: "saving-exporting", keywords: "export reports, download reports, share results, PNG, PDF, CSV, Excel" },
+            { question: "What types of reports can I generate?", category: "saving-exporting", keywords: "generate reports, action plan, data report" },
+            { question: "What advanced analysis features are included?", category: "saving-exporting", keywords: "proximity analysis, recommendation score, response concentration" },
+            
+            // Advanced Features
+            { question: "What is Brand+ and what does it include?", category: "advanced-features", keywords: "premium, brand plus, custom branding, logo" },
+            { question: "Does the tool work with different satisfaction scales?", category: "advanced-features", keywords: "scale detection, automatic normalisation, different scales" },
+            { question: "How does the tool handle overlapping data points?", category: "advanced-features", keywords: "frequency clustering, overlapping points, multiple responses" },
             
             // Privacy & Security
             { question: "Is my data safe?", category: "privacy-security", keywords: "data safe, data security, privacy protection" },
@@ -1168,6 +1313,7 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
                 'getting-started': 'Getting Started',
                 'using-tool': 'Using the Tool',
                 'saving-exporting': 'Saving & Exporting',
+                'advanced-features': 'Advanced Features',
                 'privacy-security': 'Privacy & Security',
                 'understanding-model': 'Understanding the Model'
             };

@@ -1,0 +1,1554 @@
+Error: Not allowed to define cross-origin object as property on [Object] or [Array] XrayWrapper 3 content-script.js:376:604
+Feature Policy: Skipping unsupported feature name “clipboard-read”. content-script.js:39:3880
+Feature Policy: Skipping unsupported feature name “clipboard-write”. content-script.js:39:3880
+Feature Policy: Skipping unsupported feature name “clipboard-read”. content-script.js:39:89374
+Feature Policy: Skipping unsupported feature name “clipboard-write”. content-script.js:39:89374
+Error: Not allowed to define cross-origin object as property on [Object] or [Array] XrayWrapper 3 content-script.js:376:604
+Feature Policy: Skipping unsupported feature name “clipboard-read”. bundle.js:84633:24
+Feature Policy: Skipping unsupported feature name “clipboard-write”. bundle.js:84633:24
+Feature Policy: Skipping unsupported feature name “clipboard-read”. bundle.js:84633:24
+Feature Policy: Skipping unsupported feature name “clipboard-write”. bundle.js:84633:24
+Feature Policy: Skipping unsupported feature name “clipboard-read”. bundle.js:84633:24
+Feature Policy: Skipping unsupported feature name “clipboard-write”. bundle.js:84633:24
+Feature Policy: Skipping unsupported feature name “clipboard-read”. bundle.js:84633:24
+Feature Policy: Skipping unsupported feature name “clipboard-write”. bundle.js:84633:24
+Feature Policy: Skipping unsupported feature name “clipboard-read”. bundle.js:84633:24
+Feature Policy: Skipping unsupported feature name “clipboard-write”. bundle.js:84633:24
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_90 at (2,2) - sat: true (2 in [1,2,3]), loy: false (2 in [5,4]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_90 not in potential search area for hostages bundle.js:46060:17
+   🔍 Customer DEMO_90: isProximity=false, targets=[], looking for mercenaries bundle.js:44776:15
+📊 FINAL RESULT for defectors -> mercenaries: 0 customers, 0 positions bundle.js:44801:13
+🔍 analyzeQuadrantProximity: defectors -> hostages | customers: 16 | threshold: 2 bundle.js:44758:13
+🔍 DEBUGGING defectors -> hostages: bundle.js:44765:13
+   Customer 1: DEMO_2 at (1, 2) bundle.js:44767:15
+   Customer 2: DEMO_3 at (1, 3) bundle.js:44767:15
+   Customer 3: DEMO_4 at (1, 4) bundle.js:44767:15
+   Customer 4: DEMO_12 at (2, 2) bundle.js:44767:15
+   Customer 5: DEMO_13 at (2, 3) bundle.js:44767:15
+   Customer 6: DEMO_14 at (2, 4) bundle.js:44767:15
+   Customer 7: DEMO_81 at (2, 2) bundle.js:44767:15
+   Customer 8: DEMO_82 at (2, 2) bundle.js:44767:15
+   Customer 9: DEMO_83 at (2, 2) bundle.js:44767:15
+   Customer 10: DEMO_84 at (2, 2) bundle.js:44767:15
+   Customer 11: DEMO_85 at (2, 2) bundle.js:44767:15
+   Customer 12: DEMO_86 at (2, 2) bundle.js:44767:15
+   Customer 13: DEMO_87 at (2, 2) bundle.js:44767:15
+   Customer 14: DEMO_88 at (2, 2) bundle.js:44767:15
+   Customer 15: DEMO_89 at (2, 2) bundle.js:44767:15
+   Customer 16: DEMO_90 at (2, 2) bundle.js:44767:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[0,1,2,3,4,5] bundle.js:45937:13
+   📏 Lateral search area: sat=[3], loy=[0,1,2,3,4,5] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_2 at (1,2) - sat: false (1 in [3]), loy: true (2 in [0,1,2,3,4,5]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_2 not in potential search area for mercenaries bundle.js:46060:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:45937:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_2 at (1,2) - sat: true (1 in [1,2,3]), loy: false (2 in [5,4]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_2 not in potential search area for hostages bundle.js:46060:17
+   🔍 Customer DEMO_2: isProximity=false, targets=[], looking for hostages bundle.js:44776:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[0,1,2,3,4,5] bundle.js:45937:13
+   📏 Lateral search area: sat=[3], loy=[0,1,2,3,4,5] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_3 at (1,3) - sat: false (1 in [3]), loy: true (3 in [0,1,2,3,4,5]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_3 not in potential search area for mercenaries bundle.js:46060:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:45937:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_3 at (1,3) - sat: true (1 in [1,2,3]), loy: false (3 in [5,4]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_3 not in potential search area for hostages bundle.js:46060:17
+   🔍 Customer DEMO_3: isProximity=false, targets=[], looking for hostages bundle.js:44776:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[0,1,2,3,4,5] bundle.js:45937:13
+   📏 Lateral search area: sat=[3], loy=[0,1,2,3,4,5] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_4 at (1,4) - sat: false (1 in [3]), loy: true (4 in [0,1,2,3,4,5]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_4 not in potential search area for mercenaries bundle.js:46060:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:45937:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 LATERAL DISTANCE: Customer DEMO_4 at (1,4) to hostages boundary = 1 bundle.js:46049:17
+   ✅ LATERAL PROXIMITY: Customer DEMO_4 qualifies for hostages (distance: 1) bundle.js:46055:19
+   🔍 Customer DEMO_4: isProximity=true, targets=[hostages], looking for hostages bundle.js:44776:15
+   ✅ Customer DEMO_4 matches proximity criteria for hostages bundle.js:44780:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[0,1,2,3,4,5] bundle.js:45937:13
+   📏 Lateral search area: sat=[3], loy=[0,1,2,3,4,5] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_12 at (2,2) - sat: false (2 in [3]), loy: true (2 in [0,1,2,3,4,5]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_12 not in potential search area for mercenaries bundle.js:46060:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:45937:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_12 at (2,2) - sat: true (2 in [1,2,3]), loy: false (2 in [5,4]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_12 not in potential search area for hostages bundle.js:46060:17
+   🔍 Customer DEMO_12: isProximity=false, targets=[], looking for hostages bundle.js:44776:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[0,1,2,3,4,5] bundle.js:45937:13
+   📏 Lateral search area: sat=[3], loy=[0,1,2,3,4,5] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_13 at (2,3) - sat: false (2 in [3]), loy: true (3 in [0,1,2,3,4,5]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_13 not in potential search area for mercenaries bundle.js:46060:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:45937:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_13 at (2,3) - sat: true (2 in [1,2,3]), loy: false (3 in [5,4]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_13 not in potential search area for hostages bundle.js:46060:17
+   🔍 Customer DEMO_13: isProximity=false, targets=[], looking for hostages bundle.js:44776:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[0,1,2,3,4,5] bundle.js:45937:13
+   📏 Lateral search area: sat=[3], loy=[0,1,2,3,4,5] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_14 at (2,4) - sat: false (2 in [3]), loy: true (4 in [0,1,2,3,4,5]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_14 not in potential search area for mercenaries bundle.js:46060:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:45937:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 LATERAL DISTANCE: Customer DEMO_14 at (2,4) to hostages boundary = 1 bundle.js:46049:17
+   ✅ LATERAL PROXIMITY: Customer DEMO_14 qualifies for hostages (distance: 1) bundle.js:46055:19
+   🔍 Customer DEMO_14: isProximity=true, targets=[hostages], looking for hostages bundle.js:44776:15
+   ✅ Customer DEMO_14 matches proximity criteria for hostages bundle.js:44780:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[0,1,2,3,4,5] bundle.js:45937:13
+   📏 Lateral search area: sat=[3], loy=[0,1,2,3,4,5] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_81 at (2,2) - sat: false (2 in [3]), loy: true (2 in [0,1,2,3,4,5]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_81 not in potential search area for mercenaries bundle.js:46060:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:45937:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_81 at (2,2) - sat: true (2 in [1,2,3]), loy: false (2 in [5,4]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_81 not in potential search area for hostages bundle.js:46060:17
+   🔍 Customer DEMO_81: isProximity=false, targets=[], looking for hostages bundle.js:44776:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[0,1,2,3,4,5] bundle.js:45937:13
+   📏 Lateral search area: sat=[3], loy=[0,1,2,3,4,5] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_82 at (2,2) - sat: false (2 in [3]), loy: true (2 in [0,1,2,3,4,5]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_82 not in potential search area for mercenaries bundle.js:46060:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:45937:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_82 at (2,2) - sat: true (2 in [1,2,3]), loy: false (2 in [5,4]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_82 not in potential search area for hostages bundle.js:46060:17
+   🔍 Customer DEMO_82: isProximity=false, targets=[], looking for hostages bundle.js:44776:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[0,1,2,3,4,5] bundle.js:45937:13
+   📏 Lateral search area: sat=[3], loy=[0,1,2,3,4,5] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_83 at (2,2) - sat: false (2 in [3]), loy: true (2 in [0,1,2,3,4,5]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_83 not in potential search area for mercenaries bundle.js:46060:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:45937:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_83 at (2,2) - sat: true (2 in [1,2,3]), loy: false (2 in [5,4]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_83 not in potential search area for hostages bundle.js:46060:17
+   🔍 Customer DEMO_83: isProximity=false, targets=[], looking for hostages bundle.js:44776:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[0,1,2,3,4,5] bundle.js:45937:13
+   📏 Lateral search area: sat=[3], loy=[0,1,2,3,4,5] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_84 at (2,2) - sat: false (2 in [3]), loy: true (2 in [0,1,2,3,4,5]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_84 not in potential search area for mercenaries bundle.js:46060:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:45937:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_84 at (2,2) - sat: true (2 in [1,2,3]), loy: false (2 in [5,4]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_84 not in potential search area for hostages bundle.js:46060:17
+   🔍 Customer DEMO_84: isProximity=false, targets=[], looking for hostages bundle.js:44776:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[0,1,2,3,4,5] bundle.js:45937:13
+   📏 Lateral search area: sat=[3], loy=[0,1,2,3,4,5] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_85 at (2,2) - sat: false (2 in [3]), loy: true (2 in [0,1,2,3,4,5]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_85 not in potential search area for mercenaries bundle.js:46060:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:45937:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_85 at (2,2) - sat: true (2 in [1,2,3]), loy: false (2 in [5,4]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_85 not in potential search area for hostages bundle.js:46060:17
+   🔍 Customer DEMO_85: isProximity=false, targets=[], looking for hostages bundle.js:44776:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[0,1,2,3,4,5] bundle.js:45937:13
+   📏 Lateral search area: sat=[3], loy=[0,1,2,3,4,5] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_86 at (2,2) - sat: false (2 in [3]), loy: true (2 in [0,1,2,3,4,5]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_86 not in potential search area for mercenaries bundle.js:46060:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:45937:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_86 at (2,2) - sat: true (2 in [1,2,3]), loy: false (2 in [5,4]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_86 not in potential search area for hostages bundle.js:46060:17
+   🔍 Customer DEMO_86: isProximity=false, targets=[], looking for hostages bundle.js:44776:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[0,1,2,3,4,5] bundle.js:45937:13
+   📏 Lateral search area: sat=[3], loy=[0,1,2,3,4,5] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_87 at (2,2) - sat: false (2 in [3]), loy: true (2 in [0,1,2,3,4,5]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_87 not in potential search area for mercenaries bundle.js:46060:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:45937:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_87 at (2,2) - sat: true (2 in [1,2,3]), loy: false (2 in [5,4]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_87 not in potential search area for hostages bundle.js:46060:17
+   🔍 Customer DEMO_87: isProximity=false, targets=[], looking for hostages bundle.js:44776:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[0,1,2,3,4,5] bundle.js:45937:13
+   📏 Lateral search area: sat=[3], loy=[0,1,2,3,4,5] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_88 at (2,2) - sat: false (2 in [3]), loy: true (2 in [0,1,2,3,4,5]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_88 not in potential search area for mercenaries bundle.js:46060:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:45937:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_88 at (2,2) - sat: true (2 in [1,2,3]), loy: false (2 in [5,4]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_88 not in potential search area for hostages bundle.js:46060:17
+   🔍 Customer DEMO_88: isProximity=false, targets=[], looking for hostages bundle.js:44776:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[0,1,2,3,4,5] bundle.js:45937:13
+   📏 Lateral search area: sat=[3], loy=[0,1,2,3,4,5] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_89 at (2,2) - sat: false (2 in [3]), loy: true (2 in [0,1,2,3,4,5]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_89 not in potential search area for mercenaries bundle.js:46060:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:45937:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_89 at (2,2) - sat: true (2 in [1,2,3]), loy: false (2 in [5,4]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_89 not in potential search area for hostages bundle.js:46060:17
+   🔍 Customer DEMO_89: isProximity=false, targets=[], looking for hostages bundle.js:44776:15
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=mercenaries, relevantDimension=sat bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[3], irrelevantPositions=[0,1,2,3,4,5] bundle.js:45937:13
+   📏 Lateral search area: sat=[3], loy=[0,1,2,3,4,5] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_90 at (2,2) - sat: false (2 in [3]), loy: true (2 in [0,1,2,3,4,5]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_90 not in potential search area for mercenaries bundle.js:46060:17
+   📏 Lateral potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45935:13
+   📏 Lateral debug: fromQuadrant=defectors, toQuadrant=hostages, relevantDimension=loy bundle.js:45936:13
+   📏 Lateral debug: relevantPositions=[5,4], irrelevantPositions=[1,2,3] bundle.js:45937:13
+   📏 Lateral search area: sat=[1,2,3], loy=[5,4] bundle.js:45938:13
+   📏 Lateral search area check: DEMO_90 at (2,2) - sat: true (2 in [1,2,3]), loy: false (2 in [5,4]) bundle.js:46007:15
+   ❌ LATERAL SEARCH AREA: Customer DEMO_90 not in potential search area for hostages bundle.js:46060:17
+   🔍 Customer DEMO_90: isProximity=false, targets=[], looking for hostages bundle.js:44776:15
+📊 FINAL RESULT for defectors -> hostages: 2 customers, 2 positions bundle.js:44801:13
+🔥🔥🔥 CALLING analyzeDiagonalProximity: loyalists -> defectors bundle.js:44585:17
+🔍 Diagonal analysis: loyalists -> defectors (31 customers) bundle.js:44828:13
+✅ DIAGONAL: Customer DEMO_26 at (3,6) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_27 at (3,7) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_28 at (3,8) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_29 at (3,9) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_30 at (3,10) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_35 at (4,5) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_36 at (4,6) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_37 at (4,7) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_38 at (4,8) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_45 at (5,5) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_46 at (5,6) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_47 at (5,7) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_48 at (5,8) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_55 at (5,5) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_56 at (5,6) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_57 at (5,7) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_58 at (5,8) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_65 at (4,5) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_66 at (4,6) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_67 at (4,7) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_68 at (4,8) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_71 at (4,6) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_72 at (4,6) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_73 at (4,6) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_74 at (4,6) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_75 at (4,6) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_76 at (4,6) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_77 at (4,6) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_78 at (4,6) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_79 at (4,6) belongs to loyalists (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_80 at (4,6) belongs to loyalists (context assignment) bundle.js:44999:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_26 at (3,6) to defectors boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📐 DIAGONAL DISTANCE: Customer DEMO_27 at (3,7) to defectors boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_27 at (3,7) - sat: true (3 in [3]), loy: false (7 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_27 at (3,7) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_28 at (3,8) to defectors boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_28 at (3,8) - sat: true (3 in [3]), loy: false (8 in [5,6]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_29 at (3,9) to defectors boundary (3,5) = 4 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_29 at (3,9) - sat: true (3 in [3]), loy: false (9 in [5,6]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_30 at (3,10) to defectors boundary (3,5) = 5 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_30 at (3,10) - sat: true (3 in [3]), loy: false (10 in [5,6]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_35 at (4,5) to defectors boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_35 at (4,5) - sat: false (4 in [3]), loy: true (5 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_35 at (4,5) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_36 at (4,6) to defectors boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_36 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_36 at (4,6) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_37 at (4,7) to defectors boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_37 at (4,7) - sat: false (4 in [3]), loy: false (7 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_37 at (4,7) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_38 at (4,8) to defectors boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_38 at (4,8) - sat: false (4 in [3]), loy: false (8 in [5,6]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_45 at (5,5) to defectors boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_45 at (5,5) - sat: false (5 in [3]), loy: true (5 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_45 at (5,5) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_46 at (5,6) to defectors boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_46 at (5,6) - sat: false (5 in [3]), loy: true (6 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_46 at (5,6) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_47 at (5,7) to defectors boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_47 at (5,7) - sat: false (5 in [3]), loy: false (7 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_47 at (5,7) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_48 at (5,8) to defectors boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_48 at (5,8) - sat: false (5 in [3]), loy: false (8 in [5,6]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_55 at (5,5) to defectors boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_55 at (5,5) - sat: false (5 in [3]), loy: true (5 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_55 at (5,5) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_56 at (5,6) to defectors boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_56 at (5,6) - sat: false (5 in [3]), loy: true (6 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_56 at (5,6) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_57 at (5,7) to defectors boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_57 at (5,7) - sat: false (5 in [3]), loy: false (7 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_57 at (5,7) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_58 at (5,8) to defectors boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_58 at (5,8) - sat: false (5 in [3]), loy: false (8 in [5,6]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_65 at (4,5) to defectors boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_65 at (4,5) - sat: false (4 in [3]), loy: true (5 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_65 at (4,5) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_66 at (4,6) to defectors boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_66 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_66 at (4,6) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_67 at (4,7) to defectors boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_67 at (4,7) - sat: false (4 in [3]), loy: false (7 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_67 at (4,7) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_68 at (4,8) to defectors boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_68 at (4,8) - sat: false (4 in [3]), loy: false (8 in [5,6]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_71 at (4,6) to defectors boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_71 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_71 at (4,6) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_72 at (4,6) to defectors boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_72 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_72 at (4,6) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_73 at (4,6) to defectors boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_73 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_73 at (4,6) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_74 at (4,6) to defectors boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_74 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_74 at (4,6) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_75 at (4,6) to defectors boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_75 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_75 at (4,6) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_76 at (4,6) to defectors boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_76 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_76 at (4,6) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_77 at (4,6) to defectors boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_77 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_77 at (4,6) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_78 at (4,6) to defectors boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_78 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_78 at (4,6) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_79 at (4,6) to defectors boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_79 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_79 at (4,6) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_80 at (4,6) to defectors boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_80 at (4,6) - sat: false (4 in [3]), loy: true (6 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_80 at (4,6) meets distance (1) but fails search area bundle.js:44869:17
+   - Qualifying customers: 1 bundle.js:44899:13
+🔥🔥🔥 CALLING analyzeDiagonalProximity: mercenaries -> hostages bundle.js:44589:17
+🔍 Diagonal analysis: mercenaries -> hostages (20 customers) bundle.js:44828:13
+✅ DIAGONAL: Customer DEMO_21 at (3,1) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_22 at (3,2) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_23 at (3,3) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_24 at (3,4) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_31 at (4,1) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_32 at (4,2) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_33 at (4,3) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_34 at (4,4) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_41 at (5,1) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_42 at (5,2) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_43 at (5,3) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_44 at (5,4) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_51 at (5,1) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_52 at (5,2) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_53 at (5,3) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_54 at (5,4) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_61 at (4,1) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_62 at (4,2) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_63 at (4,3) belongs to mercenaries (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_64 at (4,4) belongs to mercenaries (context assignment) bundle.js:44999:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_21 at (3,1) to hostages boundary (3,5) = 4 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_21 at (3,1) - sat: true (3 in [3]), loy: false (1 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_22 at (3,2) to hostages boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_22 at (3,2) - sat: true (3 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_23 at (3,3) to hostages boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_23 at (3,3) - sat: true (3 in [3]), loy: false (3 in [5,4]) bundle.js:45151:15
+   🔍 Customer DEMO_23 at (3,3) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_24 at (3,4) to hostages boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📐 DIAGONAL DISTANCE: Customer DEMO_31 at (4,1) to hostages boundary (3,5) = 4 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_31 at (4,1) - sat: false (4 in [3]), loy: false (1 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_32 at (4,2) to hostages boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_32 at (4,2) - sat: false (4 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_33 at (4,3) to hostages boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_33 at (4,3) - sat: false (4 in [3]), loy: false (3 in [5,4]) bundle.js:45151:15
+   🔍 Customer DEMO_33 at (4,3) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_34 at (4,4) to hostages boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_34 at (4,4) - sat: false (4 in [3]), loy: true (4 in [5,4]) bundle.js:45151:15
+   🔍 Customer DEMO_34 at (4,4) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_41 at (5,1) to hostages boundary (3,5) = 4 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_41 at (5,1) - sat: false (5 in [3]), loy: false (1 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_42 at (5,2) to hostages boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_42 at (5,2) - sat: false (5 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_43 at (5,3) to hostages boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_43 at (5,3) - sat: false (5 in [3]), loy: false (3 in [5,4]) bundle.js:45151:15
+   🔍 Customer DEMO_43 at (5,3) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_44 at (5,4) to hostages boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_44 at (5,4) - sat: false (5 in [3]), loy: true (4 in [5,4]) bundle.js:45151:15
+   🔍 Customer DEMO_44 at (5,4) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_51 at (5,1) to hostages boundary (3,5) = 4 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_51 at (5,1) - sat: false (5 in [3]), loy: false (1 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_52 at (5,2) to hostages boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_52 at (5,2) - sat: false (5 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_53 at (5,3) to hostages boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_53 at (5,3) - sat: false (5 in [3]), loy: false (3 in [5,4]) bundle.js:45151:15
+   🔍 Customer DEMO_53 at (5,3) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_54 at (5,4) to hostages boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_54 at (5,4) - sat: false (5 in [3]), loy: true (4 in [5,4]) bundle.js:45151:15
+   🔍 Customer DEMO_54 at (5,4) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_61 at (4,1) to hostages boundary (3,5) = 4 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_61 at (4,1) - sat: false (4 in [3]), loy: false (1 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_62 at (4,2) to hostages boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_62 at (4,2) - sat: false (4 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_63 at (4,3) to hostages boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_63 at (4,3) - sat: false (4 in [3]), loy: false (3 in [5,4]) bundle.js:45151:15
+   🔍 Customer DEMO_63 at (4,3) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_64 at (4,4) to hostages boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[3,4,5], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_64 at (4,4) - sat: false (4 in [3]), loy: true (4 in [5,4]) bundle.js:45151:15
+   🔍 Customer DEMO_64 at (4,4) meets distance (1) but fails search area bundle.js:44869:17
+   - Qualifying customers: 1 bundle.js:44899:13
+🔥🔥🔥 CALLING analyzeDiagonalProximity: hostages -> mercenaries bundle.js:44593:17
+🔍 Diagonal analysis: hostages -> mercenaries (12 customers) bundle.js:44828:13
+✅ DIAGONAL: Customer DEMO_5 at (1,5) belongs to hostages (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_6 at (1,6) belongs to hostages (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_7 at (1,7) belongs to hostages (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_8 at (1,8) belongs to hostages (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_9 at (1,9) belongs to hostages (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_10 at (1,10) belongs to hostages (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_15 at (2,5) belongs to hostages (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_16 at (2,6) belongs to hostages (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_17 at (2,7) belongs to hostages (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_18 at (2,8) belongs to hostages (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_19 at (2,9) belongs to hostages (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_20 at (2,10) belongs to hostages (context assignment) bundle.js:44999:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_5 at (1,5) to mercenaries boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_5 at (1,5) - sat: false (1 in [3]), loy: true (5 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_5 at (1,5) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_6 at (1,6) to mercenaries boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_6 at (1,6) - sat: false (1 in [3]), loy: true (6 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_6 at (1,6) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_7 at (1,7) to mercenaries boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_7 at (1,7) - sat: false (1 in [3]), loy: false (7 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_7 at (1,7) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_8 at (1,8) to mercenaries boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_8 at (1,8) - sat: false (1 in [3]), loy: false (8 in [5,6]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_9 at (1,9) to mercenaries boundary (3,5) = 4 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_9 at (1,9) - sat: false (1 in [3]), loy: false (9 in [5,6]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_10 at (1,10) to mercenaries boundary (3,5) = 5 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_10 at (1,10) - sat: false (1 in [3]), loy: false (10 in [5,6]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_15 at (2,5) to mercenaries boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_15 at (2,5) - sat: false (2 in [3]), loy: true (5 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_15 at (2,5) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_16 at (2,6) to mercenaries boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_16 at (2,6) - sat: false (2 in [3]), loy: true (6 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_16 at (2,6) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_17 at (2,7) to mercenaries boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_17 at (2,7) - sat: false (2 in [3]), loy: false (7 in [5,6]) bundle.js:45151:15
+   🔍 Customer DEMO_17 at (2,7) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_18 at (2,8) to mercenaries boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_18 at (2,8) - sat: false (2 in [3]), loy: false (8 in [5,6]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_19 at (2,9) to mercenaries boundary (3,5) = 4 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_19 at (2,9) - sat: false (2 in [3]), loy: false (9 in [5,6]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_20 at (2,10) to mercenaries boundary (3,5) = 5 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[5,6,7,8,9,10] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,6] bundle.js:45145:13
+   📏 Search area check: DEMO_20 at (2,10) - sat: false (2 in [3]), loy: false (10 in [5,6]) bundle.js:45151:15
+   - Qualifying customers: 0 bundle.js:44899:13
+🔥🔥🔥 CALLING analyzeDiagonalProximity: defectors -> loyalists bundle.js:44597:17
+🔍 Diagonal analysis: defectors -> loyalists (16 customers) bundle.js:44828:13
+✅ DIAGONAL: Customer DEMO_2 at (1,2) belongs to defectors (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_3 at (1,3) belongs to defectors (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_4 at (1,4) belongs to defectors (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_12 at (2,2) belongs to defectors (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_13 at (2,3) belongs to defectors (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_14 at (2,4) belongs to defectors (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_81 at (2,2) belongs to defectors (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_82 at (2,2) belongs to defectors (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_83 at (2,2) belongs to defectors (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_84 at (2,2) belongs to defectors (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_85 at (2,2) belongs to defectors (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_86 at (2,2) belongs to defectors (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_87 at (2,2) belongs to defectors (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_88 at (2,2) belongs to defectors (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_89 at (2,2) belongs to defectors (context assignment) bundle.js:44999:17
+✅ DIAGONAL: Customer DEMO_90 at (2,2) belongs to defectors (context assignment) bundle.js:44999:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_2 at (1,2) to loyalists boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_2 at (1,2) - sat: false (1 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_3 at (1,3) to loyalists boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_3 at (1,3) - sat: false (1 in [3]), loy: false (3 in [5,4]) bundle.js:45151:15
+   🔍 Customer DEMO_3 at (1,3) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_4 at (1,4) to loyalists boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_4 at (1,4) - sat: false (1 in [3]), loy: true (4 in [5,4]) bundle.js:45151:15
+   🔍 Customer DEMO_4 at (1,4) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_12 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_12 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_13 at (2,3) to loyalists boundary (3,5) = 2 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_13 at (2,3) - sat: false (2 in [3]), loy: false (3 in [5,4]) bundle.js:45151:15
+   🔍 Customer DEMO_13 at (2,3) meets distance (2) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_14 at (2,4) to loyalists boundary (3,5) = 1 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_14 at (2,4) - sat: false (2 in [3]), loy: true (4 in [5,4]) bundle.js:45151:15
+   🔍 Customer DEMO_14 at (2,4) meets distance (1) but fails search area bundle.js:44869:17
+   📐 DIAGONAL DISTANCE: Customer DEMO_81 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_81 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_82 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_82 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_83 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_83 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_84 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_84 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_85 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_85 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_86 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_86 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_87 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_87 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_88 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_88 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_89 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_89 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   📐 DIAGONAL DISTANCE: Customer DEMO_90 at (2,2) to loyalists boundary (3,5) = 3 bundle.js:44921:13
+   📏 Potential ranges: sat=[1,2,3], loy=[0,1,2,3,4,5] bundle.js:45144:13
+   📏 Search area: sat=[3], loy=[5,4] bundle.js:45145:13
+   📏 Search area check: DEMO_90 at (2,2) - sat: false (2 in [3]), loy: false (2 in [5,4]) bundle.js:45151:15
+   - Qualifying customers: 0 bundle.js:44899:13
+🔍 CALCULATING loyalists_close_to_apostles: 
+Object { loyalistsCount: 31, showSpecialZones: true, showNearApostles: false }
+bundle.js:44602:17
+🔍 analyzeSpecialZoneProximity: loyalists -> apostles | customers: 31 | showSpecialZones: true | showNearApostles: false bundle.js:45241:13
+🔍 shouldAnalyzeSpecialZoneProximity result for loyalists -> apostles: true bundle.js:45245:13
+📊 After target zone exclusion: 31 customers (excluded 0 already in apostles zone) bundle.js:45271:13
+🎯 loyalists customer DEMO_28 at (3,8) is 1 positions from apostles zone bundle.js:45305:17
+🎯 loyalists customer DEMO_29 at (3,9) is 1 positions from apostles zone bundle.js:45305:17
+🎯 loyalists customer DEMO_30 at (3,10) is 1 positions from apostles zone bundle.js:45305:17
+🎯 loyalists customer DEMO_38 at (4,8) is 1 positions from apostles zone bundle.js:45305:17
+🎯 loyalists customer DEMO_48 at (5,8) is 1 positions from apostles zone bundle.js:45305:17
+🎯 loyalists customer DEMO_58 at (5,8) is 1 positions from apostles zone bundle.js:45305:17
+🎯 loyalists customer DEMO_68 at (4,8) is 1 positions from apostles zone bundle.js:45305:17
+📊 Special zone proximity result: loyalists -> apostles: 7 customers, 5 positions, avg distance: 1.00 bundle.js:45324:13
+🔍 CALCULATING loyalists_close_to_near_apostles: 
+Object { loyalistsCount: 31, showSpecialZones: true, showNearApostles: false }
+bundle.js:44610:17
+🔍 analyzeSpecialZoneProximity: loyalists -> near_apostles | customers: 31 | showSpecialZones: true | showNearApostles: false bundle.js:45241:13
+🔍 shouldAnalyzeSpecialZoneProximity result for loyalists -> near_apostles: false bundle.js:45245:13
+❌ Special zone proximity analysis skipped for loyalists -> near_apostles (conditions not met) bundle.js:45252:15
+🔍 CALCULATING near_apostles_close_to_apostles: 
+Object { near_apostlesCount: 0, showSpecialZones: true, showNearApostles: false }
+bundle.js:44618:17
+🔍 analyzeSpecialZoneProximity: near_apostles -> apostles | customers: 0 | showSpecialZones: true | showNearApostles: false bundle.js:45241:13
+🔍 shouldAnalyzeSpecialZoneProximity result for near_apostles -> apostles: false bundle.js:45245:13
+🔍 CALCULATING defectors_close_to_terrorists: 
+Object { defectorsCount: 16, showSpecialZones: true, showNearApostles: false }
+bundle.js:44626:17
+🔍 analyzeSpecialZoneProximity: defectors -> terrorists | customers: 16 | showSpecialZones: true | showNearApostles: false bundle.js:45241:13
+🔍 shouldAnalyzeSpecialZoneProximity result for defectors -> terrorists: true bundle.js:45245:13
+📊 After target zone exclusion: 16 customers (excluded 0 already in terrorists zone) bundle.js:45271:13
+🎯 defectors customer DEMO_2 at (1,2) is 1 positions from terrorists zone bundle.js:45305:17
+🎯 defectors customer DEMO_12 at (2,2) is 1 positions from terrorists zone bundle.js:45305:17
+🎯 defectors customer DEMO_81 at (2,2) is 1 positions from terrorists zone bundle.js:45305:17
+🎯 defectors customer DEMO_82 at (2,2) is 1 positions from terrorists zone bundle.js:45305:17
+🎯 defectors customer DEMO_83 at (2,2) is 1 positions from terrorists zone bundle.js:45305:17
+🎯 defectors customer DEMO_84 at (2,2) is 1 positions from terrorists zone bundle.js:45305:17
+🎯 defectors customer DEMO_85 at (2,2) is 1 positions from terrorists zone bundle.js:45305:17
+🎯 defectors customer DEMO_86 at (2,2) is 1 positions from terrorists zone bundle.js:45305:17
+🎯 defectors customer DEMO_87 at (2,2) is 1 positions from terrorists zone bundle.js:45305:17
+🎯 defectors customer DEMO_88 at (2,2) is 1 positions from terrorists zone bundle.js:45305:17
+🎯 defectors customer DEMO_89 at (2,2) is 1 positions from terrorists zone bundle.js:45305:17
+🎯 defectors customer DEMO_90 at (2,2) is 1 positions from terrorists zone bundle.js:45305:17
+📊 Special zone proximity result: defectors -> terrorists: 12 customers, 2 positions, avg distance: 1.00 bundle.js:45324:13
+🔍 analyzeSpecialZoneProximity: apostles -> loyalists | customers: 8 | showSpecialZones: true | showNearApostles: false bundle.js:45241:13
+🔍 shouldAnalyzeSpecialZoneProximity result for apostles -> loyalists: true bundle.js:45245:13
+❌ No boundaries found for target zone: loyalists bundle.js:45259:15
+🔍 analyzeSpecialZoneProximity: near_apostles -> loyalists | customers: 0 | showSpecialZones: true | showNearApostles: false bundle.js:45241:13
+🔍 shouldAnalyzeSpecialZoneProximity result for near_apostles -> loyalists: false bundle.js:45245:13
+🔍 analyzeSpecialZoneProximity: terrorists -> defectors | customers: 2 | showSpecialZones: true | showNearApostles: false bundle.js:45241:13
+🔍 shouldAnalyzeSpecialZoneProximity result for terrorists -> defectors: true bundle.js:45245:13
+❌ No boundaries found for target zone: defectors bundle.js:45259:15
+🔍 DEBUGGING SUMMARY CALCULATION - About to call calculateSummaryMetrics bundle.js:44646:13
+🔍 Analysis details: 
+Object { loyalists_close_to_mercenaries: 19, loyalists_close_to_hostages: 5, mercenaries_close_to_loyalists: 5, mercenaries_close_to_defectors: 2, hostages_close_to_loyalists: 0, hostages_close_to_defectors: 4, defectors_close_to_mercenaries: 0, defectors_close_to_hostages: 2 }
+bundle.js:44647:13
+🔍 Special zones details: 
+Object { apostles_close_to_loyalists: 0, near_apostles_close_to_loyalists: 0, terrorists_close_to_defectors: 0 }
+bundle.js:44659:15
+🚨 SUMMARY CALCULATION RESULT: 
+Object { totalProximityCustomers: 58, totalProximityPositions: 30 }
+bundle.js:44668:13
+🔍 Detecting crossroads customers... bundle.js:45621:13
+🎯 Crossroads customer DEMO_26 appears in 3 relationships: loyalists_close_to_mercenaries_hostages, loyalists_close_to_mercenaries_hostages, loyalists_close_to_defectors bundle.js:45653:17
+🎯 Crossroads customer DEMO_28 appears in 2 relationships: loyalists_close_to_hostages, loyalists_close_to_apostles bundle.js:45653:17
+🎯 Crossroads customer DEMO_29 appears in 2 relationships: loyalists_close_to_hostages, loyalists_close_to_apostles bundle.js:45653:17
+🎯 Crossroads customer DEMO_30 appears in 2 relationships: loyalists_close_to_hostages, loyalists_close_to_apostles bundle.js:45653:17
+🎯 Crossroads customer DEMO_24 appears in 3 relationships: mercenaries_close_to_loyalists_defectors, mercenaries_close_to_loyalists_defectors, mercenaries_close_to_hostages bundle.js:45653:17
+📊 Crossroads detection complete: 5 total, 5 high-value bundle.js:45683:13
+🚨 CROSSROADS DETECTION RESULT: 
+Object { totalCrossroads: 5, highValueCrossroads: 5 }
+bundle.js:44675:13
+🚨 ENHANCED PROXIMITY CLASSIFIER FINAL RESULT: 
+Object { loyalists_close_to_apostles: 7, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 12, showSpecialZones: true, showNearApostles: false }
+bundle.js:44691:13
+🚀🚀🚀 ENHANCED PROXIMITY CLASSIFIER - analyzeProximity COMPLETE bundle.js:44698:13
+🚀 FINAL RESULTS: bundle.js:44699:13
+   - Total proximity customers: 58 bundle.js:44700:13
+   - Total proximity positions: 30 bundle.js:44701:13
+   - Average risk score: 54 bundle.js:44702:13
+   - Defectors close to loyalists: 0 customers bundle.js:44703:13
+   - Defectors close to loyalists positions: 
+Array []
+bundle.js:44704:13
+🎯 Proximity Analysis Result: 
+Object { analysis: {…}, specialZones: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:44705:13
+🔍 DISTRIBUTION SECTION: EnhancedProximityClassifier result: 
+Object { loyalists_close_to_apostles: 7, loyalists_close_to_near_apostles: 0, defectors_close_to_terrorists: 12, showSpecialZones: true, mode: "MAIN_AREAS" }
+bundle.js:31130:15
+🚨 DISTRIBUTION SECTION RETURNING RESULT: 
+Object { analysis: {…}, specialZones: {…}, summary: {…}, crossroads: {…}, settings: {…} }
+bundle.js:31137:15
+🔍 DISTRIBUTION SECTION proximityAnalysis result: 
+Object { loyalists_close_to_mercenaries: 19, isAvailable: true, totalCustomers: 90 }
+bundle.js:31244:11
+🚨 DISTRIBUTION SECTION PROXIMITY CALCULATIONS: 
+Object { loyalists_near_mercenaries: 19, loyalists_near_hostages: 5, hostages_near_loyalists: 0, hostages_near_defectors: 4 }
+bundle.js:31308:11
+🔍 DISTRIBUTION USING CONTEXT DIRECTLY: 
+Object { showSpecialZones: true, showNearApostles: false, contextDistribution: {…}, finalDistribution: {…} }
+bundle.js:31316:11
+🔍 Special Groups Debug: 
+Object { showNearApostles: false, apostles: 8, near_apostles: 0, terrorists: 2, totalSpecial: 10 }
+bundle.js:31511:11
+🔍 Full Distribution Object: 
+Object { loyalists: 50, defectors: 14, mercenaries: 10, hostages: 16, apostles: 38, nearApostles: 12, terrorists: 1, neutrals: 0 }
+bundle.js:31518:11
+🔍 Effective Distribution: 
+Object { loyalists: 31, mercenaries: 20, hostages: 12, defectors: 16, apostles: 8, terrorists: 2, nearApostles: 0 }
+bundle.js:31519:11
+🎯 ProximitySection: Using context distribution: 
+Object { loyalists: 31, mercenaries: 20, hostages: 12, defectors: 16, apostles: 8, terrorists: 2, near_apostles: 0, neutral: 0 }
+bundle.js:36457:11
+🔍 Context distribution totals: 
+Object { loyalists: 31, apostles: 8, total_loyalist_area: 39, totalFromContext: 89 }
+bundle.js:36461:11
+🔍 ABOUT TO USE proximityAnalysis.summary: 
+Object { totalProximityCustomers: 58, isAvailable: true, source: "proximityAnalysis.summary" }
+bundle.js:37011:11
+🎯 ProximitySection: Using context distribution: 
+Object { loyalists: 31, mercenaries: 20, hostages: 12, defectors: 16, apostles: 8, terrorists: 2, near_apostles: 0, neutral: 0 }
+bundle.js:36457:11
+🔍 Context distribution totals: 
+Object { loyalists: 31, apostles: 8, total_loyalist_area: 39, totalFromContext: 89 }
+bundle.js:36461:11
+🔍 ABOUT TO USE proximityAnalysis.summary: 
+Object { totalProximityCustomers: 58, isAvailable: true, source: "proximityAnalysis.summary" }
+bundle.js:37011:11
+[ActionsReport] Setting fresh action plan: 
+Object { opportunities: 4, risks: 6, findings: 23, actions: 25 }
+main.9d2a6dfe9efd478e15b0.hot-update.js:117:15
+🔍 ReportingSection Premium Check: bundle.js:11700:11
+  activeEffects: 
+Array [ "premium" ]
+bundle.js:11701:11
+  activeEffects.has("premium"): true bundle.js:11702:11
+  isPremium result: true bundle.js:11703:11
+🚨🚨🚨 REPORTING SECTION RENDERING - THIS SHOULD APPEAR bundle.js:11704:11
+🚨🚨🚨 About to render DistributionSection with: 
+Object { dataLength: 90, showSpecialZones: true, showNearApostles: false, dataReportExists: true, distributionExists: true }
+bundle.js:11705:11
+🔍 ReportingSection Premium Check: bundle.js:11700:11
+  activeEffects: 
+Array [ "premium" ]
+bundle.js:11701:11
+  activeEffects.has("premium"): true bundle.js:11702:11
+  isPremium result: true bundle.js:11703:11
+🚨🚨🚨 REPORTING SECTION RENDERING - THIS SHOULD APPEAR bundle.js:11704:11
+🚨🚨🚨 About to render DistributionSection with: 
+Object { dataLength: 90, showSpecialZones: true, showNearApostles: false, dataReportExists: true, distributionExists: true }
+bundle.js:11705:11
+[ActionsReport] Setting fresh action plan: 
+Object { opportunities: 4, risks: 6, findings: 23, actions: 25 }
+main.9d2a6dfe9efd478e15b0.hot-update.js:117:15
+[BarChart satisfaction] Clearing selection - click outside chart (not in any panel or color palette) bundle.js:24167:15
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart loyalty] Clearing selection - click outside chart (not in any panel or color palette) bundle.js:24167:15
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+Document click: 
+<button class="action-button">
+bundle.js:24187:15
+Document click: 
+<button class="action-button">
+bundle.js:24187:15
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart satisfaction] Clearing selection - click outside chart (not in any panel or color palette) bundle.js:24167:15
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart loyalty] Clearing selection - click outside chart (not in any panel or color palette) bundle.js:24167:15
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+Document click: 
+<button class="action-button">
+bundle.js:24187:15
+Document click: 
+<button class="action-button">
+bundle.js:24187:15
+XLSX Export: actionPlan structure: 
+Object { actionsCount: 25, opportunitiesCount: 4, risksCount: 6, firstActionHasCustomers: 1, firstOpportunityHasCustomers: 12, firstRiskHasCustomers: 19 }
+main.9d2a6dfe9efd478e15b0.hot-update.js:367:15
+XLSX Export: Checking actions for customer data... bundle.js:15814:13
+XLSX Export: Total actions: 25 bundle.js:15815:13
+XLSX Export: Action 1 (action-crisis-prevention): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 1 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 1 - 1 Loyalist is at risk of with 1 customers bundle.js:15831:17
+Failed to create sheet "Action 1 - 1 Loyalist is at risk of": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 2 (action-hostages-dont-ignore): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 12 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 2 - Dont ignore Hostagess Rem with 12 customers bundle.js:15831:17
+Failed to create sheet "Action 2 - Dont ignore Hostagess Rem": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 3 (action-apostles-celebrate): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 4 (action-loyalists-strengthen-loyalty): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 40 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 4 - You might implement reten with 40 customers bundle.js:15831:17
+Failed to create sheet "Action 4 - You might implement reten": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 5 (action-mercenaries-know-customers): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 6 (action-defectors-prevent): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 7 (action-defectors-damage-control): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 8 (action-loyalists-encourage-advocacy): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 9 (action-mercenaries-know-competitors): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 10 (action-hostages-understand): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 12 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 10 - For Hostagess you might c with 12 customers bundle.js:15831:17
+Failed to create sheet "Action 10 - For Hostagess you might c": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 11 (action-apostles-leverage): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 12 (action-conversion-mercenaries-to-loyalists): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 5 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 12 - Focus on converting 5 cus with 5 customers bundle.js:15831:17
+Failed to create sheet "Action 12 - Focus on converting 5 cus": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 13 (action-loyalists-reward-loyalty): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 14 (action-hostages-address): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 12 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 14 - You could address dissati with 12 customers bundle.js:15831:17
+Failed to create sheet "Action 14 - You could address dissati": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 15 (action-apostles-maintain): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 16 (action-mercenaries-build-relationships): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 17 (action-conversion-defectors-to-hostages): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 2 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 17 - Focus on converting 2 cus with 2 customers bundle.js:15831:17
+Failed to create sheet "Action 17 - Focus on converting 2 cus": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 18 (action-defectors-win-back): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 19 (action-loyalists-involve-them-in-your-success): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 20 (action-mercenaries-reward): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 21 (action-defectors-learn): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 22 (action-hostages-create-path): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 12 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 22 - You might create a path t with 12 customers bundle.js:15831:17
+Failed to create sheet "Action 22 - You might create a path t": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 23 (action-hostages-support): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 12 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 23 - You could offer support t with 12 customers bundle.js:15831:17
+Failed to create sheet "Action 23 - You could offer support t": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 24 (action-mercenaries-differentiate): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 25 (action-mercenaries-simplify): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Checking opportunities for customer data... bundle.js:15837:13
+XLSX Export: Total opportunities: 4 bundle.js:15838:13
+XLSX Export: Opportunity 1 (opportunity-hostages): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 12 }
+bundle.js:15841:15
+XLSX Export: Creating sheet for opportunity: Opportunity 1 - You have 12 Hostages 133 with 12 customers bundle.js:15850:17
+Failed to create sheet "Opportunity 1 - You have 12 Hostages 133": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1506
+    exportActionPlanToXLSX actionPlanExporter.ts:1492
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Opportunity 2 (opportunity-mercenaries): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 20 }
+bundle.js:15841:15
+XLSX Export: Creating sheet for opportunity: Opportunity 2 - Your Mercenaries segment with 20 customers bundle.js:15850:17
+Failed to create sheet "Opportunity 2 - Your Mercenaries segment": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1506
+    exportActionPlanToXLSX actionPlanExporter.ts:1492
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Opportunity 3 (opportunity-mercenaries_close_to_loyalists): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 5 }
+bundle.js:15841:15
+XLSX Export: Creating sheet for opportunity: Opportunity 3 - You have 5 customers in t with 5 customers bundle.js:15850:17
+Failed to create sheet "Opportunity 3 - You have 5 customers in t": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1506
+    exportActionPlanToXLSX actionPlanExporter.ts:1492
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Opportunity 4 (opportunity-promoters-growing): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15841:15
+XLSX Export: Checking risks for customer data... bundle.js:15856:13
+XLSX Export: Total risks: 6 bundle.js:15857:13
+XLSX Export: Risk 1 (risk-loyalists-losing-loyalty): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 19 }
+bundle.js:15860:15
+XLSX Export: Creating sheet for risk: Risk 1 - You have 19 Loyalists who with 19 customers bundle.js:15869:17
+Failed to create sheet "Risk 1 - You have 19 Loyalists who": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1527
+    exportActionPlanToXLSX actionPlanExporter.ts:1513
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Risk 2 (risk-crisis): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 1 }
+bundle.js:15860:15
+XLSX Export: Creating sheet for risk: Risk 2 - Theres a critical risk wi with 1 customers bundle.js:15869:17
+Failed to create sheet "Risk 2 - Theres a critical risk wi": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1527
+    exportActionPlanToXLSX actionPlanExporter.ts:1513
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Risk 3 (risk-crisis-indicators): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15860:15
+XLSX Export: Risk 4 (risk-detractors): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 62 }
+bundle.js:15860:15
+XLSX Export: Creating sheet for risk: Risk 4 - You have 62 Detractors 68 with 62 customers bundle.js:15869:17
+Failed to create sheet "Risk 4 - You have 62 Detractors 68": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1527
+    exportActionPlanToXLSX actionPlanExporter.ts:1513
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Risk 5 (risk-negative-nps): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15860:15
+XLSX Export: Risk 6 (risk-loyalists_close_to_mercenaries): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 19 }
+bundle.js:15860:15
+XLSX Export: Creating sheet for risk: Risk 6 - You have 19 customers in with 19 customers bundle.js:15869:17
+Failed to create sheet "Risk 6 - You have 19 customers in": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1527
+    exportActionPlanToXLSX actionPlanExporter.ts:1513
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart satisfaction] Clearing selection - click outside chart (not in any panel or color palette) bundle.js:24167:15
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart loyalty] Clearing selection - click outside chart (not in any panel or color palette) bundle.js:24167:15
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+Document click: 
+<button class="action-button">
+bundle.js:24187:15
+Document click: 
+<button class="action-button">
+bundle.js:24187:15
+XLSX Export: actionPlan structure: 
+Object { actionsCount: 25, opportunitiesCount: 4, risksCount: 6, firstActionHasCustomers: 1, firstOpportunityHasCustomers: 12, firstRiskHasCustomers: 19 }
+main.9d2a6dfe9efd478e15b0.hot-update.js:367:15
+XLSX Export: Checking actions for customer data... bundle.js:15814:13
+XLSX Export: Total actions: 25 bundle.js:15815:13
+XLSX Export: Action 1 (action-crisis-prevention): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 1 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 1 - 1 Loyalist is at risk of with 1 customers bundle.js:15831:17
+Failed to create sheet "Action 1 - 1 Loyalist is at risk of": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 2 (action-hostages-dont-ignore): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 12 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 2 - Dont ignore Hostagess Rem with 12 customers bundle.js:15831:17
+Failed to create sheet "Action 2 - Dont ignore Hostagess Rem": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 3 (action-apostles-celebrate): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 4 (action-loyalists-strengthen-loyalty): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 40 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 4 - You might implement reten with 40 customers bundle.js:15831:17
+Failed to create sheet "Action 4 - You might implement reten": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 5 (action-mercenaries-know-customers): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 6 (action-defectors-prevent): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 7 (action-defectors-damage-control): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 8 (action-loyalists-encourage-advocacy): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 9 (action-mercenaries-know-competitors): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 10 (action-hostages-understand): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 12 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 10 - For Hostagess you might c with 12 customers bundle.js:15831:17
+Failed to create sheet "Action 10 - For Hostagess you might c": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 11 (action-apostles-leverage): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 12 (action-conversion-mercenaries-to-loyalists): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 5 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 12 - Focus on converting 5 cus with 5 customers bundle.js:15831:17
+Failed to create sheet "Action 12 - Focus on converting 5 cus": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 13 (action-loyalists-reward-loyalty): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 14 (action-hostages-address): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 12 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 14 - You could address dissati with 12 customers bundle.js:15831:17
+Failed to create sheet "Action 14 - You could address dissati": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 15 (action-apostles-maintain): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 16 (action-mercenaries-build-relationships): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 17 (action-conversion-defectors-to-hostages): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 2 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 17 - Focus on converting 2 cus with 2 customers bundle.js:15831:17
+Failed to create sheet "Action 17 - Focus on converting 2 cus": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 18 (action-defectors-win-back): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 19 (action-loyalists-involve-them-in-your-success): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 20 (action-mercenaries-reward): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 21 (action-defectors-learn): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 22 (action-hostages-create-path): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 12 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 22 - You might create a path t with 12 customers bundle.js:15831:17
+Failed to create sheet "Action 22 - You might create a path t": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 23 (action-hostages-support): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 12 }
+bundle.js:15819:15
+XLSX Export: Creating sheet for action: Action 23 - You could offer support t with 12 customers bundle.js:15831:17
+Failed to create sheet "Action 23 - You could offer support t": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1485
+    exportActionPlanToXLSX actionPlanExporter.ts:1470
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Action 24 (action-mercenaries-differentiate): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Action 25 (action-mercenaries-simplify): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15819:15
+XLSX Export: Checking opportunities for customer data... bundle.js:15837:13
+XLSX Export: Total opportunities: 4 bundle.js:15838:13
+XLSX Export: Opportunity 1 (opportunity-hostages): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 12 }
+bundle.js:15841:15
+XLSX Export: Creating sheet for opportunity: Opportunity 1 - You have 12 Hostages 133 with 12 customers bundle.js:15850:17
+Failed to create sheet "Opportunity 1 - You have 12 Hostages 133": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1506
+    exportActionPlanToXLSX actionPlanExporter.ts:1492
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Opportunity 2 (opportunity-mercenaries): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 20 }
+bundle.js:15841:15
+XLSX Export: Creating sheet for opportunity: Opportunity 2 - Your Mercenaries segment with 20 customers bundle.js:15850:17
+Failed to create sheet "Opportunity 2 - Your Mercenaries segment": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1506
+    exportActionPlanToXLSX actionPlanExporter.ts:1492
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Opportunity 3 (opportunity-mercenaries_close_to_loyalists): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 5 }
+bundle.js:15841:15
+XLSX Export: Creating sheet for opportunity: Opportunity 3 - You have 5 customers in t with 5 customers bundle.js:15850:17
+Failed to create sheet "Opportunity 3 - You have 5 customers in t": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1506
+    exportActionPlanToXLSX actionPlanExporter.ts:1492
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Opportunity 4 (opportunity-promoters-growing): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15841:15
+XLSX Export: Checking risks for customer data... bundle.js:15856:13
+XLSX Export: Total risks: 6 bundle.js:15857:13
+XLSX Export: Risk 1 (risk-loyalists-losing-loyalty): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 19 }
+bundle.js:15860:15
+XLSX Export: Creating sheet for risk: Risk 1 - You have 19 Loyalists who with 19 customers bundle.js:15869:17
+Failed to create sheet "Risk 1 - You have 19 Loyalists who": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1527
+    exportActionPlanToXLSX actionPlanExporter.ts:1513
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Risk 2 (risk-crisis): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 1 }
+bundle.js:15860:15
+XLSX Export: Creating sheet for risk: Risk 2 - Theres a critical risk wi with 1 customers bundle.js:15869:17
+Failed to create sheet "Risk 2 - Theres a critical risk wi": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1527
+    exportActionPlanToXLSX actionPlanExporter.ts:1513
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Risk 3 (risk-crisis-indicators): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15860:15
+XLSX Export: Risk 4 (risk-detractors): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 62 }
+bundle.js:15860:15
+XLSX Export: Creating sheet for risk: Risk 4 - You have 62 Detractors 68 with 62 customers bundle.js:15869:17
+Failed to create sheet "Risk 4 - You have 62 Detractors 68": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1527
+    exportActionPlanToXLSX actionPlanExporter.ts:1513
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+XLSX Export: Risk 5 (risk-negative-nps): 
+Object { hasSupportingData: true, hasCustomers: false, isArray: false, customerCount: 0 }
+bundle.js:15860:15
+XLSX Export: Risk 6 (risk-loyalists_close_to_mercenaries): 
+Object { hasSupportingData: true, hasCustomers: true, isArray: true, customerCount: 19 }
+bundle.js:15860:15
+XLSX Export: Creating sheet for risk: Risk 6 - You have 19 customers in with 19 customers bundle.js:15869:17
+Failed to create sheet "Risk 6 - You have 19 customers in": Error: Sheet names cannot exceed 31 chars
+    check_ws_name xlsx.mjs:16546
+    book_append_sheet xlsx.mjs:24346
+    createCustomerSheet actionPlanExporter.ts:1459
+    exportActionPlanToXLSX actionPlanExporter.ts:1527
+    exportActionPlanToXLSX actionPlanExporter.ts:1513
+    handleExportXLSX index.tsx:375
+    React 15
+bundle.js:15809:17
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart satisfaction] Clearing selection - click outside chart (not in any panel or color palette) bundle.js:24167:15
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart loyalty] Clearing selection - click outside chart (not in any panel or color palette) bundle.js:24167:15
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21
+[BarChart] Rendering ColorPalette - isPremium: true selectedBars.size: 0 disabled: true bundle.js:24803:15
+[BarChart] Rendering bar value: 1 customColors: 
+Object {  }
+ barColor: #3a863e bundle.js:25189:21

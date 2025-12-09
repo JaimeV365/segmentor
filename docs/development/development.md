@@ -18,8 +18,8 @@
 ### Initial Setup
 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/apostles-model.git
-cd apostles-model
+git clone https://github.com/your-username/segmentor.git
+cd segmentor
 ```
 
 2. Install dependencies

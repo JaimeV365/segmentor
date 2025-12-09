@@ -1,4 +1,4 @@
-# Contributing to Apostles Model Builder
+# Contributing to Segmentor
 
 ## Table of Contents
 1. [Code of Conduct](#code-of-conduct)
@@ -34,11 +34,11 @@ We are committed to providing a friendly, safe, and welcoming environment for al
 1. Fork the repository
 2. Clone your fork:
 ```bash
-git clone https://github.com/your-username/apostles-model.git
+git clone https://github.com/your-username/segmentor.git
 ```
 3. Add upstream remote:
 ```bash
-git remote add upstream https://github.com/original/apostles-model.git
+git remote add upstream https://github.com/original/segmentor.git
 ```
 4. Install dependencies:
 ```bash

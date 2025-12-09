@@ -218,6 +218,13 @@ export const DataPointRenderer: React.FC<DataPointRendererProps> = React.memo(({
         const boundaryKey = `${point.satisfaction}-${point.loyalty}-${point.id}`;
         const availableOptions = boundaryOptionsCache.get(boundaryKey) || [];
 
+        // Calculate inner ring properties based on count (no shadow - inner ring provides differentiation)
+        // Cap inner ring width to 80% of radius to prevent export rendering issues (stars/squares)
+        const radius = size / 2;
+        const maxRingWidth = radius * 0.8; // Cap at 80% of radius to ensure proper rendering
+        const innerRingWidth = Math.min(maxRingWidth, Math.max(1, 1 + (count - 1) * 0.08));
+        const innerRingOpacity = Math.min(0.3, 0.1 + (count - 1) * 0.003); // Slightly more visible
+
         return (
           <div key={`${point.id}-${index}`}>
             <div
@@ -228,12 +235,13 @@ export const DataPointRenderer: React.FC<DataPointRendererProps> = React.memo(({
                 bottom: `${positionXY.y}%`,
                 width: `${size}px`,
                 height: `${size}px`,
-                backgroundColor: quadrantInfo.color,
                 transform: `translate(-50%, 50%) scale(${count > 1 ? 1.1 : 1})`,
                 transition: 'all 0.2s ease',
                 cursor: 'pointer',
                 border: '2px solid rgba(255, 255, 255, 0.9)',
                 borderRadius: '50%',
+                backgroundColor: quadrantInfo.color,
+                boxShadow: `inset 0 0 0 ${innerRingWidth}px rgba(0, 0, 0, ${innerRingOpacity})`,
                 zIndex: isSelected ? 35 : count > 1 ? 32 : 30,
                 pointerEvents: 'auto'
               }}

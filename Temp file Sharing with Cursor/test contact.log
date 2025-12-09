@@ -1,0 +1,83 @@
+Initializing Qualtrics Site Intercept... contact.html:628:21
+Qualtrics loader initialized contact.html:711:25
+Qualtrics handler script loaded contact.html:952:17
+Feature Policy: Skipping unsupported feature name “clipboard-read”. content-script.js:39:3880
+Feature Policy: Skipping unsupported feature name “clipboard-write”. content-script.js:39:3880
+Feature Policy: Skipping unsupported feature name “clipboard-read”. content-script.js:39:89374
+Feature Policy: Skipping unsupported feature name “clipboard-write”. content-script.js:39:89374
+DOM loaded, setting up button listeners contact.html:902:21
+Found buttons: 3 contact.html:905:21
+Setting up listener for button with block: web contact.html:909:25
+Setting up listener for button with block: Brand+ contact.html:909:25
+Setting up listener for button with block: TM contact.html:909:25
+Loading Qualtrics script from: https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_11X8CuCOswXGKnC contact.html:633:29
+Error: Not allowed to define cross-origin object as property on [Object] or [Array] XrayWrapper 6 content-script.js:376:604
+✓ Qualtrics script loaded successfully contact.html:648:33
+Loading failed for the <script> with source “https://siteintercept.qualtrics.com/dxjsmodule/11.c2e75a52515479d0a5cc.chunk.js?Q_CLIENTVERSION=2.39.0&Q_CLIENTTYPE=web&Q_BRANDID=localhost%3A3000”. contact.html:1:1
+❌ Qualtrics chunk failed to load: https://siteintercept.qualtrics.com/dxjsmodule/11.c2e75a52515479d0a5cc.chunk.js?Q_CLIENTVERSION=2.39.0&Q_CLIENTTYPE=web&Q_BRANDID=localhost%3A3000 contact.html:652:41
+   This usually means the domain is not whitelisted in Qualtrics. contact.html:653:41
+   Current domain: localhost contact.html:654:41
+Loading failed for the <script> with source “https://siteintercept.qualtrics.com/dxjsmodule/10.7aea34b0491dd894cc3b.chunk.js?Q_CLIENTVERSION=2.39.0&Q_CLIENTTYPE=web&Q_BRANDID=localhost%3A3000”. contact.html:1:1
+❌ Qualtrics chunk failed to load: https://siteintercept.qualtrics.com/dxjsmodule/10.7aea34b0491dd894cc3b.chunk.js?Q_CLIENTVERSION=2.39.0&Q_CLIENTTYPE=web&Q_BRANDID=localhost%3A3000 contact.html:652:41
+   This usually means the domain is not whitelisted in Qualtrics. contact.html:653:41
+   Current domain: localhost contact.html:654:41
+Uncaught (in promise) Error: Loading chunk 11 failed.
+(error: https://siteintercept.qualtrics.com/dxjsmodule/11.c2e75a52515479d0a5cc.chunk.js?Q_CLIENTVERSION=2.39.0&Q_CLIENTTYPE=web&Q_BRANDID=localhost%3A3000)
+    e https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_11X8CuCOswXGKnC:39
+    <anonymous> https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_11X8CuCOswXGKnC:39
+    i https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_11X8CuCOswXGKnC:39
+    <anonymous> https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_11X8CuCOswXGKnC:39
+    i https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_11X8CuCOswXGKnC:39
+    <anonymous> https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_11X8CuCOswXGKnC:39
+    <anonymous> https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_11X8CuCOswXGKnC:39
+SIE:39:1369
+⚠ Qualtrics object not yet available contact.html:669:41
+=== Qualtrics Status Check === contact.html:734:21
+Current domain: localhost contact.html:735:21
+Qualtrics object exists: false contact.html:736:21
+Target div exists: true contact.html:741:21
+Target div content: <!--DO NOT REMOVE-CONTENTS PLACED HERE--><div style="padding: 24px; background: rgb(254, 242, 242); border: 1px solid rgb(254, 202, 202); border-radius: 8px; color: rgb(153, 27, 27);"><strong>⚠️ Qualtrics form unavailable</strong><br><br>The contact form is currently unavailable. This may be because:<br>• The domain needs to be whitelisted in Qualtrics settings<br>• You are testing on localhost (forms work on production domains)<br><br>Please contact support or try again from the production website.</div> contact.html:744:25
+Target div has children: 1 contact.html:745:25
+============================ contact.html:751:21
+Button clicked! Block value: web contact.html:779:21
+Stored in sessionStorage: web contact.html:786:21
+Survey section element: 
+<div id="survey-section" class="section" style="display: block;">
+contact.html:790:21
+Button clicked via event listener, block: web contact.html:914:29
+Button clicked! Block value: web contact.html:779:21
+Stored in sessionStorage: web contact.html:786:21
+Survey section element: 
+<div id="survey-section" class="section" style="display: block;">
+contact.html:790:21
+Scrolled to title element contact.html:812:33
+Checking Qualtrics status... contact.html:822:29
+=== Qualtrics Status Check === contact.html:734:21
+Current domain: localhost contact.html:735:21
+Qualtrics object exists: false contact.html:736:21
+Target div exists: true contact.html:741:21
+Target div content: <!--DO NOT REMOVE-CONTENTS PLACED HERE--><div style="padding: 24px; background: rgb(254, 242, 242); border: 1px solid rgb(254, 202, 202); border-radius: 8px; color: rgb(153, 27, 27);"><strong>⚠️ Qualtrics form unavailable</strong><br><br>The contact form is currently unavailable. This may be because:<br>• The domain needs to be whitelisted in Qualtrics settings<br>• You are testing on localhost (forms work on production domains)<br><br>Please contact support or try again from the production website.</div> contact.html:744:25
+Target div has children: 1 contact.html:745:25
+============================ contact.html:751:21
+Setting Qualtrics embedded data: web contact.html:826:29
+setQualtricsEmbeddedData called with: web contact.html:841:21
+Qualtrics object available: false contact.html:842:21
+Qualtrics.SiteIntercept not available yet contact.html:853:25
+Stored in window.QualtricsBlock: web contact.html:858:21
+Scrolled to title element contact.html:812:33
+Checking Qualtrics status... contact.html:822:29
+=== Qualtrics Status Check === contact.html:734:21
+Current domain: localhost contact.html:735:21
+Qualtrics object exists: false contact.html:736:21
+Target div exists: true contact.html:741:21
+Target div content: <!--DO NOT REMOVE-CONTENTS PLACED HERE--><div style="padding: 24px; background: rgb(254, 242, 242); border: 1px solid rgb(254, 202, 202); border-radius: 8px; color: rgb(153, 27, 27);"><strong>⚠️ Qualtrics form unavailable</strong><br><br>The contact form is currently unavailable. This may be because:<br>• The domain needs to be whitelisted in Qualtrics settings<br>• You are testing on localhost (forms work on production domains)<br><br>Please contact support or try again from the production website.</div> contact.html:744:25
+Target div has children: 1 contact.html:745:25
+============================ contact.html:751:21
+Setting Qualtrics embedded data: web contact.html:826:29
+setQualtricsEmbeddedData called with: web contact.html:841:21
+Qualtrics object available: false contact.html:842:21
+Qualtrics.SiteIntercept not available yet contact.html:853:25
+Stored in window.QualtricsBlock: web contact.html:858:21
+❌ Qualtrics failed to initialize. Domain may not be whitelisted. contact.html:673:49
+Qualtrics did not load within 10 seconds. This may be due to domain restrictions. Make sure your domain is whitelisted in Qualtrics settings. contact.html:942:25
+Qualtrics not available after button click. Domain may not be whitelisted. 2 contact.html:893:29

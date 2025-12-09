@@ -76,6 +76,119 @@ export const useSaveLoad = (params: UseSaveLoadParams) => {
     });
     
     try {
+      // Collect report visibility states from localStorage
+      const showRecommendationScore = localStorage.getItem('showRecommendationScore') === 'true';
+      const responseConcentrationExpanded = localStorage.getItem('responseConcentrationExpanded') === 'true';
+      
+      // Collect report customizations from localStorage
+      let reportCustomizations: any = undefined;
+      try {
+        const savedCustomizations = localStorage.getItem('report-customization');
+        if (savedCustomizations) {
+          const parsed = JSON.parse(savedCustomizations);
+          reportCustomizations = {
+            highlightedKPIs: parsed.highlightedKPIs || [],
+            chartColors: parsed.chartColors || {
+              satisfaction: {},
+              loyalty: {}
+            }
+          };
+        }
+      } catch (e) {
+        console.warn('Failed to parse report customizations from localStorage:', e);
+      }
+      
+      // Collect Response Concentration settings from localStorage (if stored)
+      let responseConcentrationSettings: any = undefined;
+      try {
+        const savedRCSettings = localStorage.getItem('responseConcentrationSettings');
+        if (savedRCSettings) {
+          responseConcentrationSettings = JSON.parse(savedRCSettings);
+        }
+      } catch (e) {
+        console.warn('Failed to parse Response Concentration settings from localStorage:', e);
+      }
+      
+      // Collect Recommendation Score settings from localStorage (if stored)
+      let recommendationScoreSettings: any = undefined;
+      try {
+        const savedRSSettings = localStorage.getItem('recommendationScoreSettings');
+        if (savedRSSettings) {
+          recommendationScoreSettings = JSON.parse(savedRSSettings);
+        }
+      } catch (e) {
+        console.warn('Failed to parse Recommendation Score settings from localStorage:', e);
+      }
+      
+      // Collect Proximity display settings from localStorage
+      let proximityDisplaySettings: any = undefined;
+      try {
+        const savedProximitySettings = localStorage.getItem('proximityDisplaySettings');
+        if (savedProximitySettings) {
+          proximityDisplaySettings = JSON.parse(savedProximitySettings);
+        }
+      } catch (e) {
+        console.warn('Failed to parse Proximity display settings from localStorage:', e);
+      }
+      
+      // Collect Action Reports customizations from localStorage
+      let actionReportsSettings: any = undefined;
+      try {
+        // Collect all editable-text-* items
+        const editableTexts: Record<string, { content: string; backgroundColor?: string | null }> = {};
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('editable-text-')) {
+            try {
+              const saved = localStorage.getItem(key);
+              if (saved) {
+                const parsed = JSON.parse(saved);
+                editableTexts[key] = {
+                  content: parsed.content || '',
+                  backgroundColor: parsed.backgroundColor || null
+                };
+              }
+            } catch (e) {
+              console.warn(`Failed to parse editable-text item ${key}:`, e);
+            }
+          }
+        }
+        
+        // Collect section collapse state
+        const savedExpandedSections = localStorage.getItem('actionReportsExpandedSections');
+        let expandedSections: any = undefined;
+        if (savedExpandedSections) {
+          expandedSections = JSON.parse(savedExpandedSections);
+        }
+        
+        if (Object.keys(editableTexts).length > 0 || expandedSections) {
+          actionReportsSettings = {
+            editableTexts: Object.keys(editableTexts).length > 0 ? editableTexts : undefined,
+            expandedSections: expandedSections
+          };
+        }
+      } catch (e) {
+        console.warn('Failed to collect Action Reports settings from localStorage:', e);
+      }
+      
+      // Collect report filter states from FilterContext
+      // Pass them as-is - the service will handle serialization
+      const reportFilterStates = filterContext?.reportFilterStates || {};
+      
+      // Collect main filter state - pass as-is, service will handle serialization
+      // IMPORTANT: Always include filterState, even if empty, so it gets saved
+      const mainFilterState = filterContext?.filterState || params.filterState || {
+        dateRange: {
+          startDate: null,
+          endDate: null,
+          preset: 'all'
+        },
+        attributes: [],
+        isActive: false,
+        frequencyFilterEnabled: false,
+        frequencyThreshold: 1
+      };
+      
       const saveDataParams: CreateSaveDataParams = {
         // Core Data
         data: params.data,
@@ -102,12 +215,30 @@ export const useSaveLoad = (params: UseSaveLoadParams) => {
         frequencyFilterEnabled: params.frequencyFilterEnabled,
         frequencyThreshold: params.frequencyThreshold,
         
-        // Filter State (use context if available, otherwise fallback to params)
-        filterState: filterContext?.filterState || params.filterState,
+        // Filter State (use serialized main filter state)
+        filterState: mainFilterState,
         
         // Premium
         isPremium: params.isPremium,
-        effects: params.effects
+        effects: params.effects,
+        
+        // Report Visibility States
+        reportVisibility: {
+          showRecommendationScore,
+          responseConcentrationExpanded
+        },
+        
+        // Report Settings and Customizations
+        reportSettings: (responseConcentrationSettings || recommendationScoreSettings || reportCustomizations || proximityDisplaySettings || actionReportsSettings) ? {
+          responseConcentration: responseConcentrationSettings,
+          recommendationScore: recommendationScoreSettings,
+          customizations: reportCustomizations,
+          proximityDisplay: proximityDisplaySettings,
+          actionReports: actionReportsSettings
+        } : undefined,
+        
+        // Individual Report Filter States
+        reportFilterStates: Object.keys(reportFilterStates).length > 0 ? reportFilterStates : undefined
       };
 
       const saveData = comprehensiveSaveLoadService.createSaveData(saveDataParams);
@@ -115,7 +246,7 @@ export const useSaveLoad = (params: UseSaveLoadParams) => {
       
       showNotification({
         title: 'Success',
-        message: 'Progress saved successfully!',
+        message: 'Progress saved successfully! The file has been downloaded to your Downloads folder.',
         type: 'success'
       });
       
@@ -238,7 +369,19 @@ export const useSaveLoad = (params: UseSaveLoadParams) => {
             effects: new Set(context.premium?.effects || []),
             
             // Manual Assignments
-            manualAssignments: new Map(context.manualAssignments.map((ma: any) => [ma.pointId, ma.quadrant]))
+            manualAssignments: new Map(context.manualAssignments.map((ma: any) => [ma.pointId, ma.quadrant])),
+            
+            // Report Visibility States
+            reportVisibility: context.reportVisibility || {
+              showRecommendationScore: false,
+              responseConcentrationExpanded: false
+            },
+            
+            // Report Settings and Customizations
+            reportSettings: context.reportSettings || undefined,
+            
+            // Individual Report Filter States
+            reportFilterStates: context.reportFilterStates || undefined
           });
         }
         
@@ -304,7 +447,19 @@ export const useSaveLoad = (params: UseSaveLoadParams) => {
             effects: new Set((saveData as any).premium?.effects || []),
             
             // Manual Assignments
-            manualAssignments: new Map((saveData as any).data?.manualAssignments?.map((ma: any) => [ma.pointId, ma.quadrant]) || [])
+            manualAssignments: new Map((saveData as any).data?.manualAssignments?.map((ma: any) => [ma.pointId, ma.quadrant]) || []),
+            
+            // Report Visibility States (legacy format - may not exist)
+            reportVisibility: (saveData as any).context?.reportVisibility || {
+              showRecommendationScore: false,
+              responseConcentrationExpanded: false
+            },
+            
+            // Report Settings and Customizations (legacy format - may not exist)
+            reportSettings: (saveData as any).context?.reportSettings || undefined,
+            
+            // Individual Report Filter States (legacy format - may not exist)
+            reportFilterStates: (saveData as any).context?.reportFilterStates || undefined
           });
         }
       }

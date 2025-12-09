@@ -69,7 +69,7 @@
     
     <!-- Basic SEO Meta Tags (Minimal as recommended) -->
     <title>FAQ - segmentor.app</title>
-    <meta name="description" content="Frequently asked questions about segmentor.app and the Apostles Model customer segmentation tool.">
+    <meta name="description" content="Frequently asked questions about segmentor.app - the professional customer segmentation tool that starts with Apostles Model visualization.">
     <meta name="robots" content="noindex, nofollow" />
     
     <!-- Branding -->
@@ -93,6 +93,7 @@
       <a href="/" class="nav-link">Home</a>
       <a href="/about.html" class="nav-link">About</a>
       <a href="/faq.html" class="nav-link">FAQ</a>
+      <a href="/contact.html" class="nav-link">Contact</a>
       <a href="/tool/" class="nav-link nav-link-primary">Use Tool</a>
     </div>
   </div>
@@ -553,6 +554,112 @@ CUST002,6,4,Jane Doe</pre>
                             </div>
                         </div>
                     </div>
+
+                    <div class="faq-item" data-keywords="adjust midpoint, move quadrants, reposition centre">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I adjust the quadrant boundaries?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes! You can drag the midpoint (centre point) to reposition where the quadrants divide. This is useful when your data distribution suggests different thresholds would be more meaningful.</p>
+                            <p>You can also resize the Apostles and Terrorists zones using the resize handles in the top-right and bottom-left corners of the chart.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="manual reassignment, change quadrant, override classification">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I manually reassign customers to different quadrants?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes, for points on quadrant boundaries. Click any data point to see its details. If the point sits on a boundary line, you'll see reassignment buttons to move it to an adjacent quadrant.</p>
+                            <p>Manual reassignments are automatically cleared if you move the midpoint and the point is no longer on a boundary.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="chart controls, visualisation settings, display options">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What chart display options are available?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>The chart controls let you:</p>
+                            <ul>
+                                <li>Toggle between Classic (Apostles/Terrorists) and Modern (Advocates/Trolls) terminology</li>
+                                <li>Show or hide Near-Apostles zones</li>
+                                <li>Control label visibility (all, quadrants only, or none)</li>
+                                <li>Toggle grid lines and scale numbers</li>
+                                <li>Show or hide axis legends</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="edit data, modify entries, update customer">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I edit or delete customer entries?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes. In the data table, click the edit icon to modify satisfaction or loyalty scores. Click the delete icon to remove individual entries, or use "Delete All Rows" to clear everything.</p>
+                            <p>You can also exclude entries from analysis without deleting them—they'll remain in your data but won't appear in calculations.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="click points, view details, customer information">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>How do I see details about a specific customer?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Click any point on the chart to open an information box showing the customer's name, scores, quadrant assignment, and any additional data you've uploaded. For overlapping points, you'll see a frequency count.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="filter customers, exclude customers, date filters">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I filter my data by date or other attributes?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes! The tool offers comprehensive filtering:</p>
+                            <ul>
+                                <li><strong>Date filters:</strong> Analyse specific time periods with presets or custom ranges</li>
+                                <li><strong>Attribute filters:</strong> Filter by country, language, or any custom attributes in your data</li>
+                                <li><strong>Score filters:</strong> Filter by satisfaction or loyalty values</li>
+                            </ul>
+                            <p>You can combine multiple filters to narrow down your analysis to specific customer segments.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="scale detection, automatic normalisation, different scales, satisfaction scale">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Does the tool work with different satisfaction scales?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes. The tool automatically detects and normalises 1-5, 1-7, and 1-10 satisfaction scales. You can mix different scales in the same dataset—the tool will handle the conversion automatically.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="loyalty scale, different loyalty scales, automatic detection">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Does the tool work with different loyalty scales?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes. The tool automatically detects and normalises 1-5, 1-7, and 1-10 loyalty scales. Your satisfaction and loyalty scales can be different—the tool handles each independently.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="frequency clustering, overlapping points, multiple responses">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>How does the tool handle overlapping data points?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>When multiple customers share the same satisfaction and loyalty scores, they're displayed as a single point with a frequency indicator. Click the point to see all customers at that position and their details.</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Getting Support Section -->
@@ -606,22 +713,19 @@ CUST002,6,4,Jane Doe</pre>
                         </div>
                     </div>
 
-                    <div class="faq-item" data-keywords="premium features custom branding">
+                    <div class="faq-item" data-keywords="brand plus custom branding">
                         <div class="faq-question" onclick="toggleFAQ(this)">
-                            <h3>What's included in Premium?</h3>
+                            <h3>What's included in Brand+?</h3>
                             <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer">
-                            <p><strong>Premium gives you two key customisation options:</strong></p>
+                            <p>Brand+ adds custom branding to your reports:</p>
                             <ul>
-                                <li><strong>Custom Branding</strong> – Replace our watermark with your company logo</li>
-                                <li><strong>Branded Colours</strong> – Apply your organisation's colour palette to all reports</li>
+                                <li>Replace the watermark with your company logo</li>
+                                <li>Apply your brand colours to charts and reports</li>
+                                <li>Control logo size, position, and orientation</li>
                             </ul>
-                            <p>Perfect for consultants, agencies, and businesses presenting to clients or stakeholders who need reports that match their brand identity.</p>
-                            <p><strong>All core features remain identical—Premium is purely about visual customisation.</strong></p>
-                            <div style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
-                                <a href="#" style="color: #3a863e; text-decoration: none; font-weight: 600;">Learn more about Premium →</a>
-                            </div>
+                            <p><a href="/brand-plus.html" style="color: #3a863e; text-decoration: none; font-weight: 600;">Learn more about Brand+ →</a></p>
                         </div>
                     </div>
                 </div>
@@ -656,16 +760,48 @@ CUST002,6,4,Jane Doe</pre>
 
                     <div class="faq-item" data-keywords="export reports download">
                         <div class="faq-question" onclick="toggleFAQ(this)">
-                            <h3>Can I export reports or results?</h3>
+                            <h3>What export formats are available?</h3>
                             <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer">
-                            <p><strong>Yes, you can export your results in multiple formats:</strong></p>
+                            <p>You can export in multiple formats:</p>
                             <ul>
-                                <li><strong>CSV Export:</strong> Download your segmented customer data</li>
-                                <li><strong>Summary Report:</strong> Get key statistics and insights</li>
-                                <li><strong>Visual Charts:</strong> Export charts as images</li>
-                                <li><strong>Project File:</strong> Save everything for later use</li>
+                                <li><strong>PNG:</strong> Chart images for presentations</li>
+                                <li><strong>PDF:</strong> Complete reports with charts and analysis</li>
+                                <li><strong>CSV:</strong> Raw customer data with segment assignments</li>
+                                <li><strong>Excel (XLSX):</strong> Action plans with multiple worksheets</li>
+                            </ul>
+                            <p>Export options are available in the reporting section and chart controls.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="generate reports, action plan, data report">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What types of reports can I generate?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>The tool generates two main reports:</p>
+                            <ul>
+                                <li><strong>Data Report:</strong> Statistics, distributions, and quadrant breakdowns</li>
+                                <li><strong>Action Plan:</strong> Strategic recommendations, proximity analysis, conversion opportunities, and risk warnings</li>
+                            </ul>
+                            <p>Both reports include visual charts and can be customised before export.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="proximity analysis, recommendation score, response concentration">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What advanced analysis features are included?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>The Action Plan includes:</p>
+                            <ul>
+                                <li><strong>Proximity Analysis:</strong> Identifies customers close to quadrant boundaries who could be converted</li>
+                                <li><strong>Recommendation Score:</strong> Calculates your overall NPS-style score</li>
+                                <li><strong>Response Concentration:</strong> Shows where most responses cluster</li>
+                                <li><strong>Strategic Priorities:</strong> Highlights high-impact opportunities</li>
                             </ul>
                         </div>
                     </div>
@@ -1120,11 +1256,11 @@ CUST002,6,4,Jane Doe</pre>
                 // Switch to Premium Mode
                 isPremium = true;
                 badge.className = 'mode-badge mode-badge--premium';
-                badge.innerHTML = '👑 Premium Mode';
-                badge.title = 'Click to disable premium mode (testing)';
+                badge.innerHTML = '⭐ Brand+';
+                badge.title = 'Click to disable Brand+ mode (testing)';
                 
                 // Show notification
-                showNotification('Premium Mode Enabled', 'All premium features are now available.', 'success');
+                showNotification('Brand+ Enabled', 'Custom branding features are now available.', 'success');
             }
         }
         

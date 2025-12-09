@@ -1,0 +1,43 @@
+# Trademark & Domain Protection – Simple UK SaaS Playbook  
+(December 2025 – for a UK limited company)
+
+## Your situation
+- You want to protect the **word mark** for your software/tool  
+- The perfect .com costs £20,000+ → you’re buying a cheaper alternative (.app/.io etc.)  
+- You are a UK company, early stage, not yet big in the EU
+
+## What a **UK registered trademark** gives you (for £170–£220)
+
+| Protects you against | Scope | How strong | Cost to enforce |
+|----------------------|------|-------------|-----------------|
+| Anyone using your exact name in the **UK** (online or offline) | Whole United Kingdom | 100 % – you win in court | Court or UKIPO |
+| Anyone in the **world** registering **yourname.com**, .io, .app, .co, .ai, .net etc. | Global (all generic TLDs) | 85–95 % win rate | UDRP complaint – £1,000–£1,500, 60 days |
+| Anyone registering **yourname.co.uk** or **yourname.uk** | UK only | 100 % win rate | Nominet DRS – £200 + VAT, 30–60 days |
+
+## What a **UK trademark does NOT stop** (without an EUTM)
+- Someone in Germany running **yourname.de** and selling worldwide  
+- Someone in France running **yourname.fr**  
+- Any EU competitor using your exact name across the entire EU-27
+
+## Recommended step-by-step plan (what 99 % of UK SaaS founders actually do)
+
+1. **This week** – File UK trademark in your company’s name  
+   Classes 9 + 42 (software & SaaS)  
+   Cost: £220 online at gov.uk (or £600–£1,000 via attorney)
+
+2. **Today** – Buy your cheap alternative domain (.app/.io etc.)
+
+3. **Today** – Set a free watch on the exact .com (Namecheap, MarkMonitor, or attorney service)
+
+4. **4–6 months later** – UK registration certificate arrives  
+   → You can now take **yourname.com** from anyone, anywhere in the world, for ~£1,500 instead of £20,000
+
+5. **Only when you have real EU revenue or a real EU competitor**  
+   → Add an EU trademark (EUTM) for €850–€1,200 – takes one afternoon
+
+## Bottom line
+- **UK trademark only** = you own the UK + you control the .com (and all global domains) worldwide  
+- No need to spend £20,000 on the .com today  
+- Add EU protection later when it actually matters  
+
+File the UK one now. You’re done.

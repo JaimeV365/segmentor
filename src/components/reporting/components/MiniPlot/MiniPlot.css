@@ -1,15 +1,16 @@
-.mini-plot {
+  .mini-plot {
     position: relative;
-    width: 280px;  /* Increased size */
+    width: 320px;  /* Increased width to give more space for right-side dots */
     height: 220px; /* Increased size */
     margin: 0;
     display: grid;
     grid-template-areas:
       "y-axis plot"
       "blank x-axis";
-    grid-template-columns: 30px 1fr;
-    grid-template-rows: 1fr 20px;
+    grid-template-columns: 35px 1fr; /* Increased to accommodate y-axis numbers */
+    grid-template-rows: 1fr 35px; /* Increased to accommodate x-axis numbers and label */
     gap: 5px;
+    overflow: visible; /* Allow scale numbers outside plot area */
   }
   
   /* Plot Area */
@@ -19,6 +20,8 @@
   border-left: 1px solid #cbd5e1;
   border-bottom: 1px solid #cbd5e1;
   background: white;
+  overflow: visible; /* Changed to visible to prevent dots from being cropped */
+  padding-right: 4px; /* Small padding to prevent dots from touching border */
 }
   
   /* Grid */
@@ -42,8 +45,8 @@
   /* Points */
   .mini-plot-point {
   position: absolute;
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
   transform: translate(-50%, 50%);
   border-radius: 50%;
   border: 2px solid white;
@@ -58,11 +61,12 @@
   
   /* Axes */
   .mini-plot-y-axis {
-    width: 30px;
+    width: 35px; /* Match grid column width */
     grid-area: y-axis;
     display: flex;
     flex-direction: row;
     align-items: stretch;
+    overflow: visible; /* Allow scale numbers to show */
   }
   
   .mini-plot-x-axis {
@@ -70,6 +74,8 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    overflow: visible; /* Allow scale numbers to show */
+    min-height: 35px; /* Ensure enough space for numbers and label */
   }
   
   .mini-plot-y-label, .mini-plot-x-label {
@@ -89,23 +95,27 @@
     margin-top: 2px;
   }
   
-  .mini-plot-y-ticks, .mini-plot-x-ticks {
+  .mini-plot-y-ticks,   .mini-plot-x-ticks {
     display: flex;
     justify-content: space-between;
     font-size: 0.65rem;
     color: #64748b;
+    align-items: flex-start;
+    padding-bottom: 2px; /* Space from border */
   }
   
   .mini-plot-y-ticks {
     flex-direction: column-reverse;
-    padding-right: 8px;
-    margin-right: 4px;
+    padding-right: 4px;
+    margin-right: 2px;
+    align-items: flex-end;
+    justify-content: space-between;
   }
 
   /* Average Point Styles */
 .mini-plot-point--average {
-  width: 8px;
-  height: 8px;
+  width: 12px;
+  height: 12px;
   background-color: white;
   border: 2px solid #dc2626;
   filter: drop-shadow(0 0 3px rgba(220, 38, 38, 0.6));
@@ -115,47 +125,36 @@
 
 /* 
  * Tier sizing values should match tierSizes.ts:
- * tier1: 1, tier2: 0.9, tier3: 0.85 
+ * tier1: 1.0 (100%), tier2: 0.75 (75%), tier3: 0.6 (60%)
+ * Note: Size and opacity are now applied via inline styles from the component,
+ * but we keep these classes for hover effects and ensure CSS doesn't override inline styles
  */
 .mini-plot-point--tier1 {
-  opacity: 1;
-  transform: translate(-50%, 50%) scale(1);
+  /* Size and opacity handled by inline styles */
+  width: 16px !important;
+  height: 16px !important;
 }
 
 .mini-plot-point--tier2 {
-  opacity: 0.7;
-  transform: translate(-50%, 50%) scale(0.9);
+  /* Size and opacity handled by inline styles */
+  width: 12px !important;
+  height: 12px !important;
 }
 
 .mini-plot-point--tier3 {
-  opacity: 0.5;
-  transform: translate(-50%, 50%) scale(0.85);
-}
-
-/* Tier-based styling for multi-tier display */
-.mini-plot-point--tier1 {
-  opacity: 1;
-  transform: translate(-50%, 50%) scale(1);
-}
-
-.mini-plot-point--tier2 {
-  opacity: 0.7;
-  transform: translate(-50%, 50%) scale(0.9);
-}
-
-.mini-plot-point--tier3 {
-  opacity: 0.5;
-  transform: translate(-50%, 50%) scale(0.85);
+  /* Size and opacity handled by inline styles */
+  width: 9.6px !important;
+  height: 9.6px !important;
 }
 
 .mini-plot-point--tier1:hover {
-  transform: translate(-50%, 50%) scale(1.2);
+  transform: translate(-50%, 50%) scale(1.2) !important;
 }
 
 .mini-plot-point--tier2:hover {
-  transform: translate(-50%, 50%) scale(1.1);
+  transform: translate(-50%, 50%) scale(1.1) !important;
 }
 
 .mini-plot-point--tier3:hover {
-  transform: translate(-50%, 50%) scale(1.05);
+  transform: translate(-50%, 50%) scale(1.05) !important;
 }

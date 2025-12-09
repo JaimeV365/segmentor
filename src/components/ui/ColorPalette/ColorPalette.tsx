@@ -26,9 +26,17 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
   customHexValue = '',
   onCustomHexChange
 }) => {
-  const handleColorClick = (color: string) => {
-    if (!disabled && (isPremium || !disabled)) {
+  console.log('[ColorPalette] RENDERING - disabled:', disabled, 'isPremium:', isPremium, 'colors count:', colors.length);
+  
+  const handleColorClick = (color: string, event: React.MouseEvent<HTMLButtonElement>) => {
+    console.log('[ColorPalette] handleColorClick CALLED for color:', color);
+    event.stopPropagation();
+    console.log('[ColorPalette] Color clicked:', color, 'disabled:', disabled, 'isPremium:', isPremium);
+    if (!disabled && isPremium) {
+      console.log('[ColorPalette] Calling onColorSelect with:', color);
       onColorSelect(color);
+    } else {
+      console.log('[ColorPalette] Click ignored - disabled:', disabled, 'isPremium:', isPremium);
     }
   };
 
@@ -50,9 +58,15 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
                 backgroundColor: color,
                 opacity: !isPremium ? 0.6 : 1
               }}
-              onClick={() => handleColorClick(color)}
+              onClick={(e) => {
+                console.log('[ColorPalette] Button onClick FIRED for color:', color, 'button disabled:', disabled || !isPremium);
+                handleColorClick(color, e);
+              }}
+              onMouseDown={(e) => {
+                console.log('[ColorPalette] Button onMouseDown for color:', color);
+              }}
               disabled={disabled || !isPremium}
-              title={!isPremium ? 'Premium feature' : `Select ${color}`}
+              title={!isPremium ? 'Brand+ feature' : `Select ${color}`}
             />
           </PremiumFeature>
         ))}

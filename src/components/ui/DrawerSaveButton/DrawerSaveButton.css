@@ -142,3 +142,77 @@
   outline: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(58, 134, 62, 0.2);
 }
+
+/* Unsaved changes indicator */
+.drawer-save-button.has-unsaved {
+  border-color: var(--yellow, #F7B731);
+  background: #fffbeb;
+}
+
+.drawer-save-button.has-unsaved .drawer-save-button__icon {
+  background: var(--yellow, #F7B731);
+}
+
+/* Keyboard shortcut hint (Option 5) */
+.drawer-save-button__keyboard-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  opacity: 0.6;
+  font-size: 11px;
+}
+
+.keyboard-key {
+  background: var(--background-light, #f9fafb);
+  border: 1px solid var(--border-color, #e5e7eb);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  color: var(--text-secondary, #6b7280);
+  font-weight: var(--font-semibold, 600);
+}
+
+/* Status indicator (Option 6) */
+.drawer-save-button__status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: var(--background-light, #f9fafb);
+  border-radius: 6px;
+  font-size: var(--text-xs, 12px);
+  color: var(--text-secondary, #6b7280);
+  font-family: var(--font-primary, 'Lato', sans-serif);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot--saved {
+  background: var(--primary-green, #3a863e);
+}
+
+.status-dot--unsaved {
+  background: var(--yellow, #F7B731);
+  animation: statusBlink 1.5s infinite;
+}
+
+@keyframes statusBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.status-text {
+  font-weight: var(--font-normal, 400);
+}

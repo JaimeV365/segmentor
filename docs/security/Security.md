@@ -1,7 +1,7 @@
-# Security Documentation - Apostles Model Builder
+# Security Documentation - Segmentor
 
 ## Overview
-This document outlines security considerations and implementation guidelines for the Apostles Model Builder project, with particular focus on protecting secret features and sensitive configurations.
+This document outlines security considerations and implementation guidelines for the Segmentor project, with particular focus on protecting secret features and sensitive configurations.
 
 ## Secret Features System
 

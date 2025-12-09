@@ -5,7 +5,7 @@ import QuadrantChart from './QuadrantChart';
 import { UnifiedChartControls } from '../controls/UnifiedChartControls';
 import { exportCapture } from '../../common/exportCapture';
 import { exportCsv } from '../../common/exportCsv';
-import { useQuadrantAssignment } from '../context/QuadrantAssignmentContext';
+import { useQuadrantAssignment, useQuadrantAssignmentSafe } from '../context/QuadrantAssignmentContext';
 import UnifiedLoadingPopup from '../../ui/UnifiedLoadingPopup';
 import { useFilterContextSafe } from '../context/FilterContext';
 import './FilteredChart.css';
@@ -59,9 +59,166 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
   // Try to access filter context if available
   const filterContext = useFilterContextSafe();
   
+  // Access quadrant context for quadrant change detection
+  const quadrantContext = useQuadrantAssignmentSafe();
+  
   // Use filter context data directly - no local state caching
+  // CRITICAL: Main visualization MUST use main filteredData, never report filtered data
   const effectiveFilteredData = filterContext?.filteredData || data;
   const effectiveActiveFilterCount = filterContext?.activeFilterCount || 0;
+  
+  // DEFENSIVE CHECK: Log when filteredData changes to help debug issues
+  React.useEffect(() => {
+    if (filterContext?.filteredData) {
+      const segmentFilter = filterContext.filterState.attributes.find(
+        attr => attr.field === 'segment' && attr.values.size > 0
+      );
+      if (segmentFilter) {
+        const selectedSegments = Array.from(segmentFilter.values);
+        console.log(`🔍 [FilteredChart] Main filteredData updated:`, {
+          filteredDataLength: filterContext.filteredData.length,
+          selectedSegments,
+          sampleIds: filterContext.filteredData.slice(0, 5).map(item => item.id),
+          loyaltyRange: filterContext.filteredData.length > 0 ? {
+            min: Math.min(...filterContext.filteredData.map(item => item.loyalty)),
+            max: Math.max(...filterContext.filteredData.map(item => item.loyalty))
+          } : null,
+          satisfactionRange: filterContext.filteredData.length > 0 ? {
+            min: Math.min(...filterContext.filteredData.map(item => item.satisfaction)),
+            max: Math.max(...filterContext.filteredData.map(item => item.satisfaction))
+          } : null
+        });
+      }
+    }
+  }, [filterContext?.filteredData, filterContext?.filterState]);
+  
+  // Track previous quadrant assignments to detect changes
+  const prevQuadrantDepsRef = React.useRef<{
+    midpointSat: number | null;
+    midpointLoy: number | null;
+    apostlesZoneSize: number | null;
+    terroristsZoneSize: number | null;
+    manualAssignmentsSize: number | null;
+  }>({
+    midpointSat: null,
+    midpointLoy: null,
+    apostlesZoneSize: null,
+    terroristsZoneSize: null,
+    manualAssignmentsSize: null
+  });
+
+  // Re-apply segment filters when quadrant assignments change
+  // This component is always mounted and has access to both contexts
+  React.useEffect(() => {
+    console.warn('🔍 [FilteredChart] useEffect for quadrant changes - ENTRY', {
+      timestamp: Date.now(),
+      hasFilterContext: !!filterContext,
+      hasQuadrantContext: !!quadrantContext,
+      filterStateAttributes: filterContext?.filterState?.attributes?.map(a => ({ field: a.field, valuesSize: a.values.size })) || []
+    });
+
+    if (!filterContext || !quadrantContext?.getQuadrantForPoint) {
+      return;
+    }
+
+    const prevDeps = prevQuadrantDepsRef.current;
+    const currentMidpoint = quadrantContext.midpoint;
+    const currentDeps = {
+      midpointSat: currentMidpoint?.sat ?? null,
+      midpointLoy: currentMidpoint?.loy ?? null,
+      apostlesZoneSize: quadrantContext.apostlesZoneSize ?? null,
+      terroristsZoneSize: quadrantContext.terroristsZoneSize ?? null,
+      manualAssignmentsSize: quadrantContext.manualAssignments?.size ?? null
+    };
+
+    // Detect if any quadrant-related dependency changed
+    const changed = 
+      prevDeps.midpointSat !== currentDeps.midpointSat ||
+      prevDeps.midpointLoy !== currentDeps.midpointLoy ||
+      prevDeps.apostlesZoneSize !== currentDeps.apostlesZoneSize ||
+      prevDeps.terroristsZoneSize !== currentDeps.terroristsZoneSize ||
+      prevDeps.manualAssignmentsSize !== currentDeps.manualAssignmentsSize;
+
+    if (!changed) {
+      prevQuadrantDepsRef.current = currentDeps;
+      return;
+    }
+
+    // Check if there's an active segment filter
+    const hasSegmentFilter = filterContext.filterState.attributes.some(
+      attr => attr.field === 'segment' && attr.values.size > 0
+    );
+
+    if (!hasSegmentFilter) {
+      prevQuadrantDepsRef.current = currentDeps;
+      return;
+    }
+
+    console.warn('🔍 [FilteredChart] Quadrant assignments changed, re-applying segment filter', {
+      changedDeps: {
+        midpointSat: prevDeps.midpointSat !== currentDeps.midpointSat,
+        midpointLoy: prevDeps.midpointLoy !== currentDeps.midpointLoy,
+        apostlesZoneSize: prevDeps.apostlesZoneSize !== currentDeps.apostlesZoneSize,
+        terroristsZoneSize: prevDeps.terroristsZoneSize !== currentDeps.terroristsZoneSize,
+        manualAssignmentsSize: prevDeps.manualAssignmentsSize !== currentDeps.manualAssignmentsSize
+      },
+      currentMidpoint: currentMidpoint,
+      selectedSegments: Array.from(
+        filterContext.filterState.attributes.find(attr => attr.field === 'segment')?.values || []
+      )
+    });
+
+    // STEP 1: Reset to unfiltered state
+    const originalData = filterContext.data || data;
+    const unfilteredData = originalData.filter(item => !item.excluded);
+    filterContext.setFilteredData(unfilteredData);
+
+    console.warn('🔍 [FilteredChart] Reset filteredData to unfiltered state:', {
+      unfilteredCount: unfilteredData.length,
+      originalCount: originalData.length
+    });
+
+    // STEP 2: Re-apply segment filter by calling FilterPanel's applyFiltersWithState logic
+    // We need to manually filter using the current quadrant assignments
+    const segmentFilter = filterContext.filterState.attributes.find(
+      attr => attr.field === 'segment' && attr.values.size > 0
+    );
+
+    if (segmentFilter) {
+      const selectedSegments = Array.from(segmentFilter.values).map(v => String(v));
+      const filteredData = unfilteredData.filter(item => {
+        const segment = quadrantContext.getQuadrantForPoint(item);
+        return selectedSegments.includes(String(segment));
+      });
+
+      filterContext.setFilteredData(filteredData);
+
+      console.warn('🔍 [FilteredChart] Re-applied segment filter after quadrant change:', {
+        filteredCount: filteredData.length,
+        originalCount: unfilteredData.length,
+        selectedSegments
+      });
+    }
+
+    prevQuadrantDepsRef.current = currentDeps;
+  }, [
+    filterContext,
+    quadrantContext?.midpoint?.sat,
+    quadrantContext?.midpoint?.loy,
+    quadrantContext?.apostlesZoneSize,
+    quadrantContext?.terroristsZoneSize,
+    quadrantContext?.manualAssignments,
+    data
+  ]);
+  
+  // Debug logging for filtered data
+  console.log('🔍 FilteredChart: effectiveFilteredData:', {
+    hasFilterContext: !!filterContext,
+    contextFilteredDataLength: filterContext?.filteredData?.length,
+    effectiveFilteredDataLength: effectiveFilteredData.length,
+    originalDataLength: data.length,
+    areSame: effectiveFilteredData === data
+  });
 
   // Determine if we have filterable data
   const hasFilterableData = useMemo(() => {
@@ -90,10 +247,14 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
   useEffect(() => {
     const opener = (e: Event) => {
       const detail = (e as CustomEvent).detail || { tab: 'filters' };
-      if (detail.tab === 'export') {
-        document.body.setAttribute('data-unified-initial-tab', 'export');
+      // Set the tab attribute synchronously BEFORE opening to ensure it's read correctly
+      if (detail.tab) {
+        document.body.setAttribute('data-unified-initial-tab', detail.tab);
+        console.log('🔍 FilteredChart: Set tab attribute to', detail.tab, 'before opening panel');
       }
+      // Open immediately - the attribute is already set
       setIsUnifiedControlsOpen(true);
+      console.log('🔍 FilteredChart: Opening unified panel, tab should be:', detail.tab);
     };
     window.addEventListener('open-unified-panel', opener as EventListener);
     return () => window.removeEventListener('open-unified-panel', opener as EventListener);
@@ -111,7 +272,15 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
             const q = quadrantCtx.getQuadrantForPoint(p);
             return quadrantCtx.getDisplayNameForQuadrant(q);
           };
-          exportCsv({ data: (filterContext?.filteredData || data) as any, computeSegment });
+          // Export all data with "Filtered out" column if filter context is available
+          const allData = filterContext?.data || data;
+          const filteredData = filterContext?.filteredData || data;
+          exportCsv({ 
+            data: filteredData as any, // Keep for backward compatibility
+            computeSegment,
+            allData: allData as any, // All unfiltered data
+            filteredData: filteredData as any // Filtered data to determine "Filtered out" status
+          });
         } else {
           console.log('📥 Starting image export...');
           // Get chart container dimensions for watermark positioning

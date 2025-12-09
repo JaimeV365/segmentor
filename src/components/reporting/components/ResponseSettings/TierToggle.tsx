@@ -34,7 +34,7 @@ export const TierToggle: React.FC<TierToggleProps> = ({
             onChange={(e) => onShowTiersChange(e.target.checked)}
             disabled={disabled}
           />
-          Multi-tier visualization
+          Tier-capped display
         </label>
       </div>
       

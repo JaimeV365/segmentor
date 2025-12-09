@@ -1,4 +1,4 @@
-# Apostles Model Builder - Architecture Documentation
+# Segmentor - Architecture Documentation
 
 ## System Overview
 

@@ -73,7 +73,7 @@ const SegFileLoader: React.FC<SegFileLoaderProps> = ({ onSegFileLoad }) => {
     <div className="seg-file-loader-wrapper">
       <div className="seg-file-loader">
         <div className="seg-file-loader__header">
-          <div>
+          <div className="seg-file-loader__header-content">
             <div className="seg-file-loader__title">Load Previous Project</div>
             <div className="seg-file-loader__description">
               Load a previously saved .seg file to continue your work.
@@ -93,9 +93,6 @@ const SegFileLoader: React.FC<SegFileLoaderProps> = ({ onSegFileLoad }) => {
           <div className="seg-file-loader__dropzone-text">
             Drop your .seg file here or click to browse
           </div>
-          <div className="seg-file-loader__dropzone-subtext">
-            Supports .seg files
-          </div>
         </div>
         
         <input 
@@ -106,13 +103,6 @@ const SegFileLoader: React.FC<SegFileLoaderProps> = ({ onSegFileLoad }) => {
           className="seg-file-loader__file-input"
           disabled={isLoading}
         />
-        
-        <div className="seg-file-loader__note">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>
-          </svg>
-          <span>Supported file format: .seg (segmentor project files). What's included: Your data, settings, filters, and customisations.</span>
-        </div>
       </div>
       
       <UnifiedLoadingPopup 

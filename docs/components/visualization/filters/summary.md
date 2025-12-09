@@ -1,7 +1,7 @@
-# Data Filtering Feature for Apostles Model
+# Data Filtering Feature for Segmentor
 
 ## Implementation Summary
-I've created a set of components that add powerful filtering capabilities to the Apostles Model visualization. These filters allow users to:
+I've created a set of components that add powerful filtering capabilities to the Segmentor visualization. These filters allow users to:
 
 1. **Filter by date ranges** with convenient presets and custom date selection
 2. **Filter by any attribute** in the data, automatically detecting available fields
@@ -53,7 +53,7 @@ The design follows UX best practices:
 - Or use individual "Clear" buttons next to each filter section
 
 ## Benefits
-This filtering system enhances the Apostles Model by:
+This filtering system enhances Segmentor by:
 - **Enabling data exploration** from different angles and time periods
 - **Supporting deeper analysis** by isolating specific segments
 - **Improving insights** through focused visualization of related data points

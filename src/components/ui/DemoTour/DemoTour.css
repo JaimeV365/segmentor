@@ -1,0 +1,375 @@
+/* Demo Tour Overlay */
+.demo-tour-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.6);
+  /* backdrop-filter: blur(2px); */ /* Removed blur per user request */
+  pointer-events: auto;
+}
+
+/* Spotlight - highlights the target element */
+.demo-tour-spotlight {
+  position: absolute;
+  border: 3px solid #3a863e;
+  border-radius: 8px;
+  box-shadow: 
+    0 0 0 9999px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(58, 134, 62, 0.4),
+    inset 0 0 20px rgba(58, 134, 62, 0.1);
+  z-index: 10001;
+  pointer-events: none; /* Allow clicks through spotlight to highlighted element */
+  transition: all 0.3s ease;
+  animation: spotlight-pulse 2s ease-in-out infinite;
+}
+
+@keyframes spotlight-pulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 0 9999px rgba(0, 0, 0, 0.6),
+      0 0 20px rgba(58, 134, 62, 0.4),
+      inset 0 0 20px rgba(58, 134, 62, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 0 0 9999px rgba(0, 0, 0, 0.6),
+      0 0 30px rgba(58, 134, 62, 0.6),
+      inset 0 0 30px rgba(58, 134, 62, 0.2);
+  }
+}
+
+/* Tooltip */
+.demo-tour-tooltip {
+  position: fixed;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 90%;
+  max-width: 400px;
+  z-index: 10002;
+  pointer-events: auto;
+  animation: tooltip-fade-in 0.3s ease;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+@keyframes tooltip-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.demo-tour-tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.demo-tour-progress {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.demo-tour-skip-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 6px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.demo-tour-skip-button:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.demo-tour-skip-button:focus {
+  outline: 2px solid #3a863e;
+  outline-offset: 2px;
+}
+
+.demo-tour-tooltip-body {
+  padding: 16px 20px;
+}
+
+.demo-tour-title {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  color: #1f2937;
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.demo-tour-title-icon {
+  display: inline-flex;
+  align-items: center;
+  color: #3a863e;
+  flex-shrink: 0;
+}
+
+.demo-tour-description {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #4b5563;
+  margin: 0;
+}
+
+.demo-tour-tooltip-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 20px 14px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.demo-tour-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  min-height: 44px; /* Accessibility: minimum touch target */
+}
+
+.demo-tour-button:focus {
+  outline: 2px solid #3a863e;
+  outline-offset: 2px;
+}
+
+.demo-tour-button--primary {
+  background: #3a863e;
+  color: white;
+}
+
+.demo-tour-button--primary:hover:not(:disabled) {
+  background: #2d6a31;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(58, 134, 62, 0.3);
+}
+
+.demo-tour-button--primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.demo-tour-button--secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.demo-tour-button--secondary:hover:not(:disabled) {
+  background: #e5e7eb;
+  border-color: #d1d5db;
+}
+
+.demo-tour-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Keyboard hints */
+.demo-tour-keyboard-hints {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 20px 12px;
+  font-size: 11px;
+  color: #9ca3af;
+  border-top: 1px solid #f3f4f6;
+  gap: 12px;
+}
+
+.demo-tour-keyboard-hints span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .demo-tour-tooltip {
+    max-width: calc(100vw - 40px);
+    width: calc(100vw - 40px);
+  }
+
+  .demo-tour-tooltip-body {
+    padding: 16px;
+  }
+
+  .demo-tour-title {
+    font-size: 16px;
+  }
+
+  .demo-tour-description {
+    font-size: 13px;
+  }
+
+  .demo-tour-button {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .demo-tour-keyboard-hints {
+    display: none; /* Hide on mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .demo-tour-tooltip {
+    max-width: calc(100vw - 20px);
+    width: calc(100vw - 20px);
+  }
+
+  .demo-tour-tooltip-header {
+    padding: 12px 16px 8px;
+  }
+
+  .demo-tour-tooltip-body {
+    padding: 12px;
+  }
+
+  .demo-tour-tooltip-actions {
+    padding: 8px 12px 12px;
+    flex-direction: column;
+  }
+
+  .demo-tour-button {
+    width: 100%;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .demo-tour-spotlight {
+    animation: none;
+    transition: none;
+  }
+
+  .demo-tour-tooltip {
+    animation: none;
+  }
+
+  .demo-tour-button {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .demo-tour-spotlight {
+    border-width: 4px;
+    border-color: #000;
+  }
+
+  .demo-tour-tooltip {
+    border: 2px solid #000;
+  }
+
+  .demo-tour-button--primary {
+    border: 2px solid #000;
+  }
+}
+
+/* Visual Indicators for upload tabs */
+.demo-tour-indicators {
+  position: fixed;
+  z-index: 10003;
+  pointer-events: none;
+}
+
+.demo-tour-indicator {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  animation: indicator-bounce 1.5s ease-in-out infinite;
+  max-width: 200px; /* Prevent indicators from going too far right */
+}
+
+.demo-tour-indicator-label {
+  background: #3a863e;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes indicator-bounce {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+}
+
+/* Visual Indicators for quadrants */
+.demo-tour-quadrant-indicator {
+  position: fixed;
+  z-index: 10003;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: indicator-bounce 1.5s ease-in-out infinite;
+}
+
+.demo-tour-quadrant-indicator-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #3a863e;
+  border-radius: 50%;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.demo-tour-quadrant-indicator-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.demo-tour-quadrant-indicator-label {
+  background: #3a863e;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+

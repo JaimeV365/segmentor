@@ -6,6 +6,7 @@ import { ScaleFormat } from '../../../../types/base';
 import WatermarkPanel from '../../panels/WatermarkPanel';
 import './ChartControls.css';
 import { ExportButton } from '../../../common/ExportButton';
+import { CustomLogoModal } from '../CustomLogoModal';
 
 // Compass Icon Component
 const CompassIcon: React.FC<{ size?: number; className?: string }> = ({ size = 24, className = '' }) => (
@@ -180,6 +181,17 @@ export const ChartControls: React.FC<ChartControlsProps> = ({
   const [showWatermarkPanel, setShowWatermarkPanel] = useState(false);
   const [watermarkDragOn, setWatermarkDragOn] = useState(false);
   const [unifiedOpenedBy, setUnifiedOpenedBy] = useState<'filter' | 'export' | null>(null);
+  const [showCustomLogoModal, setShowCustomLogoModal] = useState(false);
+
+  // Helper functions for logo selection
+  const getCurrentLogo = () => {
+    // Check HIDE_WATERMARK first - it takes precedence
+    if (effects.has('HIDE_WATERMARK')) return 'none';
+    if (effects.has('CUSTOM_LOGO')) return 'custom';
+    return 'default'; // segmentor.app is default
+  };
+
+  const isWatermarkVisible = !effects.has('HIDE_WATERMARK');
 
   // DnD always on; no DOM flags
   // DnD gating removed; always-on for stability
@@ -556,7 +568,7 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* Watermark Controls (Always visible, but disabled in Standard mode) */}
+        {/* Watermark Controls (Public - all users can access) */}
         <div className={`control-group watermark-group ${isPremium ? 'premium-mode' : 'standard-mode'}`}>
           <div className="control-section-title">
             <CompassIcon size={16} className="control-section-icon" />
@@ -565,9 +577,9 @@ useEffect(() => {
           <div className="control-group-content">
             <button 
               className="watermark-toggle-button"
-              disabled={!isPremium}
+              disabled={effects.has('HIDE_WATERMARK')}
               onClick={() => {
-                if (!isPremium) return; // Don't do anything in Standard mode
+                if (effects.has('HIDE_WATERMARK')) return; // Don't open if logo is hidden
                 
                 console.log('🔍 ChartControls: Watermark button clicked, current state:', showWatermarkPanel);
                 setShowWatermarkPanel(!showWatermarkPanel);
@@ -592,38 +604,91 @@ useEffect(() => {
               style={{
                 width: '100%',
                 padding: '6px 8px',
-                backgroundColor: showWatermarkPanel ? '#3a863e' : 'white',
-                color: showWatermarkPanel ? 'white' : '#3a863e',
-                border: '1px solid #3a863e',
+                backgroundColor: effects.has('HIDE_WATERMARK') 
+                  ? '#f3f4f6' 
+                  : showWatermarkPanel ? '#3a863e' : 'white',
+                color: effects.has('HIDE_WATERMARK') 
+                  ? '#9ca3af' 
+                  : showWatermarkPanel ? 'white' : '#3a863e',
+                border: `1px solid ${effects.has('HIDE_WATERMARK') ? '#d1d5db' : '#3a863e'}`,
                 borderRadius: '6px',
                 fontSize: '11px',
                 fontWeight: '500',
-                cursor: isPremium ? 'pointer' : 'not-allowed',
+                cursor: effects.has('HIDE_WATERMARK') ? 'not-allowed' : 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '4px',
                 transition: 'all 0.2s ease',
-                opacity: isPremium ? 1 : 0.7,
                 whiteSpace: 'nowrap',
-                minHeight: '32px'
+                minHeight: '32px',
+                opacity: effects.has('HIDE_WATERMARK') ? 0.6 : 1
               }}
               onMouseEnter={(e) => {
-                if (!showWatermarkPanel && isPremium) {
+                if (!showWatermarkPanel && !effects.has('HIDE_WATERMARK')) {
                   e.currentTarget.style.backgroundColor = '#f0f9f0';
                 }
               }}
               onMouseLeave={(e) => {
-                if (!showWatermarkPanel && isPremium) {
+                if (!showWatermarkPanel && !effects.has('HIDE_WATERMARK')) {
                   e.currentTarget.style.backgroundColor = 'white';
                 }
               }}
-              title={isPremium ? "Watermark Controls" : "Watermark Controls - Premium Feature"}
+              title={effects.has('HIDE_WATERMARK') ? "Watermark Controls (Logo must be visible)" : "Watermark Controls"}
             >
               <CompassIcon size={16} />
               Watermark Controls
-              {!isPremium && <CrownIcon size={12} className="premium-crown" />}
             </button>
+
+            {/* Logo Selection Buttons - Premium Only */}
+            {isPremium && (
+              <>
+                <div className="logo-selection-title">
+                  <span>Select Logo</span>
+                </div>
+                <div className="vertical-buttons logo-selection-buttons">
+                  <button
+                    className={`label-button ${getCurrentLogo() === 'default' ? 'active' : ''}`}
+                    onClick={() => {
+                      const newEffects = new Set(effects);
+                      newEffects.delete('CUSTOM_LOGO');
+                      newEffects.delete('HIDE_WATERMARK');
+                      const urlEffect = Array.from(newEffects).find((e: string) => e.startsWith('CUSTOM_LOGO_URL:'));
+                      if (urlEffect) newEffects.delete(urlEffect);
+                      onEffectsChange(newEffects);
+                    }}
+                  >
+                    segmentor.app
+                  </button>
+                  <button
+                    className={`label-button ${getCurrentLogo() === 'custom' ? 'active' : ''}`}
+                    onClick={() => {
+                      setShowCustomLogoModal(true);
+                    }}
+                  >
+                    Custom
+                  </button>
+                  <button
+                    className={`label-button ${getCurrentLogo() === 'none' ? 'active' : ''}`}
+                    onClick={() => {
+                      const newEffects = new Set(effects);
+                      newEffects.add('HIDE_WATERMARK');
+                      // Also remove CUSTOM_LOGO and its URL when hiding watermark
+                      newEffects.delete('CUSTOM_LOGO');
+                      const urlEffect = Array.from(newEffects).find((e: string) => e.startsWith('CUSTOM_LOGO_URL:'));
+                      if (urlEffect) newEffects.delete(urlEffect);
+                      onEffectsChange(newEffects);
+                      // Close watermark panel if it's open
+                      if (showWatermarkPanel) {
+                        setShowWatermarkPanel(false);
+                      }
+                    }}
+                  >
+                    No Logo
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -642,6 +707,7 @@ useEffect(() => {
         onToggleDrag={() => setWatermarkDragOn(v => !v)}
       />
     )}
+
     </>
   );
 };

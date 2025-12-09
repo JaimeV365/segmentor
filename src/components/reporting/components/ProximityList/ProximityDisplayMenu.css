@@ -1,11 +1,17 @@
 .proximity-display-menu {
   position: relative;
   display: flex;
-  align-items: center;
-  margin: 0;
+  flex-direction: column;
+  width: 100%;
   padding: 0;
-  width: auto;
-  flex-shrink: 0; /* Prevent shrinking in flexbox */
+}
+
+/* When used inside unified panel */
+.unified-tab-body .proximity-display-menu {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding: 16px;
 }
 
 /* Control button styling to match established pattern */
@@ -120,6 +126,34 @@
   color: #111827;
 }
 
+.filter-panel-tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.filter-panel-tab {
+  flex: 1;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-panel-tab.active {
+  color: #1f2937;
+  border-bottom: 2px solid #3a863e;
+  background: #ffffff;
+}
+
+.filter-panel-tab:not(.active):hover {
+  color: #374151;
+}
+
 .filter-panel-content {
   flex: 1;
   overflow-y: auto;
@@ -137,6 +171,37 @@
   color: #374151;
   border-bottom: 1px solid #e5e7eb;
   padding-bottom: 6px;
+}
+
+.menu-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 6px;
+}
+
+.menu-section-header h4 {
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: #3a863e;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.link-button:hover {
+  text-decoration: underline;
 }
 
 .menu-option {
@@ -215,6 +280,56 @@
   outline: none;
   border-color: #3a863e;
   box-shadow: 0 0 0 2px rgba(58, 134, 62, 0.2);
+}
+
+.filter-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.filter-checkbox input {
+  margin: 0;
+}
+
+.filter-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-chip {
+  border: 1px solid #d1d5db;
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: white;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-chip.active {
+  background: #3a863e;
+  border-color: #3a863e;
+  color: white;
+  box-shadow: 0 4px 10px rgba(58, 134, 62, 0.25);
 }
 
 .option-content {

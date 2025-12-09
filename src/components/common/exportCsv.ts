@@ -4,28 +4,56 @@ export function exportCsv(options: {
   data: DataPoint[];
   computeSegment: (p: DataPoint) => string;
   filename?: string;
+  allData?: DataPoint[]; // Optional: all unfiltered data to export
+  filteredData?: DataPoint[]; // Optional: filtered data to determine "Filtered out" status
 }) {
-  const { data, computeSegment, filename = defaultFilename() } = options;
-  if (!Array.isArray(data) || data.length === 0) return;
+  const { data, computeSegment, filename = defaultFilename(), allData, filteredData } = options;
+  
+  // Use allData if provided, otherwise use data
+  const dataToExport = allData && allData.length > 0 ? allData : data;
+  if (!Array.isArray(dataToExport) || dataToExport.length === 0) return;
+
+  // Create a Set of filtered data IDs for quick lookup
+  const filteredIds = new Set<string>();
+  if (filteredData && filteredData.length > 0) {
+    filteredData.forEach(row => {
+      if (row.id) filteredIds.add(row.id);
+    });
+  } else if (!allData) {
+    // If allData wasn't provided, assume all rows in data are filtered (not filtered out)
+    data.forEach(row => {
+      if (row.id) filteredIds.add(row.id);
+    });
+  }
 
   // Collect all keys across the dataset to preserve additional fields
   const fieldSet = new Set<string>();
-  for (const row of data) {
+  for (const row of dataToExport) {
     Object.keys(row).forEach(k => fieldSet.add(k));
   }
 
-  // Ensure common fields first
+  // Ensure common fields first, including "Filtered Out" if applicable
   const preferredOrder = ['id', 'name', 'email', 'group', 'date', 'dateFormat', 'satisfaction', 'loyalty'];
   const remaining = Array.from(fieldSet).filter(k => !preferredOrder.includes(k));
-  const headers = [...preferredOrder, ...remaining, 'segment'];
+  
+  // Add "Filtered Out" column before "segment" if we have filtering information
+  const headers = [...preferredOrder, ...remaining];
+  if (allData && filteredData) {
+    headers.push('Filtered Out');
+  }
+  headers.push('segment');
 
   const lines: string[] = [];
   lines.push(headers.map(csvEscape).join(','));
 
-  for (const row of data) {
+  for (const row of dataToExport) {
     const segment = computeSegment(row);
+    // If row ID is in filteredIds, it passes the filters (shown in chart = "No" for Filtered column)
+    // If row ID is NOT in filteredIds, it's filtered out (hidden = "Yes" for Filtered column)
+    const isFiltered = allData && filteredData ? !filteredIds.has(row.id) : false;
     const values = headers.map(h => {
       if (h === 'segment') return csvEscape(segment);
+      if (h === 'Filtered Out') return csvEscape(isFiltered ? 'Yes' : 'No');
       const v = (row as any)[h];
       return csvEscape(v);
     });

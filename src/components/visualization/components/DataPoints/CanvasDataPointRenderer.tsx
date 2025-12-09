@@ -154,33 +154,56 @@ export const CanvasDataPointRenderer: React.FC<CanvasDataPointRendererProps> = R
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Render all points
+    // Group points by location to render single shadow per location (prevents pixelation)
+    const locationGroups = new Map<string, CanvasPoint[]>();
     canvasPoints.forEach(point => {
-      const canvasX = (point.x / 100) * canvas.width;
-      const canvasY = canvas.height - (point.y / 100) * canvas.height; // Flip Y axis
+      // Round to nearest pixel to group nearby points
+      const key = `${Math.round(point.x * 10) / 10}-${Math.round(point.y * 10) / 10}`;
+      if (!locationGroups.has(key)) {
+        locationGroups.set(key, []);
+      }
+      locationGroups.get(key)!.push(point);
+    });
 
-      // Draw subtle shadow for depth (modern UI design)
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
-      ctx.shadowBlur = 2;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 1;
+    // Render each location group
+    locationGroups.forEach((points, locationKey) => {
+      // Get max count for this location to scale shadow
+      const maxCount = Math.max(...points.map(p => p.count));
       
-      // Draw main circle
-      ctx.fillStyle = point.color;
-      ctx.beginPath();
-      ctx.arc(canvasX, canvasY, point.size, 0, 2 * Math.PI);
-      ctx.fill();
+      // Render all dots at this location (no shadow - inner ring provides differentiation)
+      points.forEach(point => {
+        const dotX = (point.x / 100) * canvas.width;
+        const dotY = canvas.height - (point.y / 100) * canvas.height;
 
-      // Reset shadow for border
-      ctx.shadowColor = 'transparent';
-      ctx.shadowBlur = 0;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 0;
+        // Draw main circle
+        ctx.fillStyle = point.color;
+        ctx.beginPath();
+        ctx.arc(dotX, dotY, point.size, 0, 2 * Math.PI);
+        ctx.fill();
 
-      // Draw modern white border with subtle transparency
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
-      ctx.lineWidth = 2; // Slightly thicker for better visibility
-      ctx.stroke();
+        // Draw inner ring based on count (for visual differentiation)
+        // Cap inner ring width to 40% of radius to prevent export rendering issues (stars/squares)
+        // Reduced from 60% because html2canvas has trouble with large strokes
+        const maxRingWidth = point.size * 0.4; // Cap at 40% of radius to ensure proper rendering
+        const innerRingWidth = Math.min(maxRingWidth, Math.max(1, 1 + (point.count - 1) * 0.08));
+        const innerRingOpacity = Math.min(0.3, 0.1 + (point.count - 1) * 0.003);
+        
+        // Draw the ring so the entire stroke stays inside the circle
+        // Use a more conservative calculation to prevent rendering artifacts
+        const arcRadius = Math.max(2, point.size - innerRingWidth);
+        ctx.strokeStyle = `rgba(0, 0, 0, ${innerRingOpacity})`;
+        ctx.lineWidth = innerRingWidth;
+        ctx.beginPath();
+        ctx.arc(dotX, dotY, arcRadius, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        // Draw modern white border with subtle transparency
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(dotX, dotY, point.size, 0, 2 * Math.PI);
+        ctx.stroke();
+      });
     });
   }, [canvasPoints]);
 

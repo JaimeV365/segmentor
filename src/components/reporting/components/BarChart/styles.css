@@ -368,6 +368,28 @@
   z-index: 998 !important; /* Lower than main unified controls panel (999) */
 }
 
+/* Panel title to identify which chart the menu belongs to */
+.bar-chart-panel-title {
+  position: absolute;
+  top: 8px;
+  left: 16px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2937;
+  z-index: 1003;
+  background: #ffffff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 2px solid #3a863e;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-transform: capitalize;
+}
+
+.bar-chart-container .unified-controls-header {
+  position: relative;
+  padding-top: 40px !important; /* Extra space for title */
+}
+
 /* Filter Panel - Unified contextual menu styling */
 .bar-chart-container .filter-panel {
   position: fixed !important;
@@ -1103,4 +1125,89 @@ input[type="checkbox"]:focus {
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+/* Reconnection Confirmation Modal */
+.filter-connection-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.filter-connection-modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 400px;
+  width: 90%;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.filter-connection-modal .modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.filter-connection-modal .modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.filter-connection-modal .modal-content {
+  padding: 16px 24px;
+}
+
+.filter-connection-modal .modal-content p {
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.filter-connection-modal .modal-actions {
+  padding: 16px 24px 20px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.filter-connection-modal .modal-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.filter-connection-modal .cancel-btn {
+  background: #f9fafb;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.filter-connection-modal .cancel-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.filter-connection-modal .confirm-btn {
+  background: #3a863e;
+  color: white;
+  border-color: #3a863e;
+}
+
+.filter-connection-modal .confirm-btn:hover {
+  background: #2d6a31;
+  border-color: #2d6a31;
 }

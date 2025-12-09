@@ -120,7 +120,9 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ targetSelector, labe
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>
       <button
-        onClick={() => {
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
           if (onOpenOptions) {
             onOpenOptions();
             return;

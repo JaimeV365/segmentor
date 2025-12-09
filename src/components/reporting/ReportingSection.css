@@ -1,18 +1,46 @@
 /* Report Structure */
+.reports-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.reports-container > div {
+  display: flex;
+  flex-direction: column;
+}
+
 .report-card {
     background: white;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     overflow: hidden;
+    border: none;
+  }
+
+/* Advanced section uses its own border styling */
+.report-card.advanced-section {
+  border: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+  
+  .report-title-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem;
+    padding-bottom: 1.25rem;
   }
   
   .report-title {
     font-size: 1.25rem;
     font-weight: 600;
     color: #1f2937;
-    padding: 1.25rem;
+    padding: 0;
     margin: 0;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 0px solid #e5e7eb;
+    flex: 1;
   }
   
   .report-content {
@@ -457,5 +485,169 @@
 
 .report-stats-column .report-stat-item:hover .hover-tooltip {
   opacity: 1;
+}
+
+/* Advanced Section Styles */
+.advanced-section {
+  margin-top: 0;
+  border: 1px solid #e5e7eb;
+  border-top: 1px solid #e5e7eb;
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #f9fafb; /* Grey-ish background when collapsed */
+  transition: all 0.3s ease;
+}
+
+.advanced-section:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Ensure no border between header and content - no green lines */
+.advanced-section-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem;
+  background: #f9fafb; /* Grey-ish background - matches collapsed state */
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  outline: none !important;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: left;
+  box-shadow: none !important;
+}
+
+.advanced-section-header:focus,
+.advanced-section-header:focus-visible,
+.advanced-section-header:active {
+  outline: none !important;
+  border: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+.advanced-section-content {
+  border-top: none !important;
+  border: none !important;
+}
+
+.advanced-section-header:hover {
+  background-color: #f3f4f6; /* Slightly darker grey on hover when collapsed */
+}
+
+.advanced-section.expanded .advanced-section-header:hover {
+  background-color: #f9fafb; /* Lighter hover when expanded */
+}
+
+.advanced-section-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.advanced-chevron-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.advanced-chevron {
+  color: #6b7280;
+  transition: transform 0.3s ease, color 0.2s ease;
+}
+
+.advanced-section-header:hover .advanced-chevron {
+  color: #374151;
+}
+
+.advanced-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  background-color: rgba(58, 134, 62, 0.1);
+  border: 1px solid rgba(58, 134, 62, 0.3);
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #3a863e;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  flex-shrink: 0;
+}
+
+.advanced-title {
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  border-bottom: none !important; /* Ensure no border */
+}
+
+/* Ensure no border on report-title when inside advanced section */
+.advanced-section-header .report-title,
+.advanced-section .report-title {
+  border-bottom: none !important;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.advanced-section-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.advanced-section-header-right > div {
+  display: flex;
+  align-items: center;
+}
+
+.section-preview {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+  padding: 0.25rem 0.625rem;
+  background-color: #f9fafb;
+  border-radius: 0.375rem;
+  white-space: nowrap;
+}
+
+.advanced-section-content {
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  animation: slideDown 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  background: white; /* White background when expanded */
+}
+
+/* When section is expanded, change background to white */
+.advanced-section.expanded {
+  background-color: white;
+}
+
+.advanced-section.expanded .advanced-section-header {
+  background: white;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 2000px;
+  }
 }
 

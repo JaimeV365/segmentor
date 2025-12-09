@@ -168,16 +168,23 @@ const calculateStatistics = (values: number[]): StatisticsData => {
 const calculateDistribution = (data: DataPoint[]) => {
   const midpoint = 2.5; // This should come from visualization settings
   
+  // Count neutrals (exactly at midpoint) separately
+  const neutrals = data.filter(d => d.satisfaction === midpoint && d.loyalty === midpoint).length;
+  
+  // Exclude neutrals from quadrant calculations
+  const nonNeutralData = data.filter(d => !(d.satisfaction === midpoint && d.loyalty === midpoint));
+  
   return {
-    loyalists: data.filter(d => d.satisfaction >= midpoint && d.loyalty >= midpoint).length,
-    defectors: data.filter(d => d.satisfaction < midpoint && d.loyalty < midpoint).length,
-    mercenaries: data.filter(d => d.satisfaction >= midpoint && d.loyalty < midpoint).length,
-    hostages: data.filter(d => d.satisfaction < midpoint && d.loyalty >= midpoint).length,
-    apostles: data.filter(d => d.satisfaction >= midpoint + 1 && d.loyalty >= midpoint + 1).length,
-    nearApostles: data.filter(d => 
+    loyalists: nonNeutralData.filter(d => d.satisfaction >= midpoint && d.loyalty >= midpoint).length,
+    defectors: nonNeutralData.filter(d => d.satisfaction < midpoint && d.loyalty < midpoint).length,
+    mercenaries: nonNeutralData.filter(d => d.satisfaction >= midpoint && d.loyalty < midpoint).length,
+    hostages: nonNeutralData.filter(d => d.satisfaction < midpoint && d.loyalty >= midpoint).length,
+    apostles: nonNeutralData.filter(d => d.satisfaction >= midpoint + 1 && d.loyalty >= midpoint + 1).length,
+    nearApostles: nonNeutralData.filter(d => 
       d.satisfaction >= midpoint && d.loyalty >= midpoint &&
       !(d.satisfaction >= midpoint + 1 && d.loyalty >= midpoint + 1)
     ).length,
-    terrorists: data.filter(d => d.satisfaction <= midpoint - 1 && d.loyalty <= midpoint - 1).length
+    terrorists: nonNeutralData.filter(d => d.satisfaction <= midpoint - 1 && d.loyalty <= midpoint - 1).length,
+    neutrals: neutrals
   };
 };

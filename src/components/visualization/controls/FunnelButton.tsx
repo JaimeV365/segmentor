@@ -23,7 +23,7 @@ const FunnelButton: React.FC<FunnelButtonProps> = ({
       title="Filter data"
     >
       <div className="funnel-icon-container">
-        <Filter size={16} />
+        <Filter size={22} />
         {filterCount > 0 && (
           <span className="filter-count-badge">
             {filterCount}

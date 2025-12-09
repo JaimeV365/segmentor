@@ -4,27 +4,45 @@ import type { DataReport, ActionsReport } from '../types';
 import { generateDataReport } from '../utils/dataReportGenerator';
 import { generateActionsReport } from '../utils/actionsReportGenerator';
 import { formatDataReportForExport, formatActionsReportForExport, downloadAsFile } from '../utils/exportHelpers';
+import { useQuadrantAssignment } from '../../visualization/context/QuadrantAssignmentContext';
 
 interface UseReportGeneratorProps {
   data: DataPoint[];
   satisfactionScale: ScaleFormat;
   loyaltyScale: ScaleFormat;
   activeEffects: Set<string>;
+  showNearApostles?: boolean;
+  midpoint?: { sat: number; loy: number };
 }
 
 export const useReportGenerator = ({
   data,
   satisfactionScale,
   loyaltyScale,
-  activeEffects
+  activeEffects,
+  showNearApostles = false,
+  midpoint
 }: UseReportGeneratorProps) => {
+  // Get context distribution and quadrant function to match graph display
+  const { distribution: contextDistribution, getQuadrantForPoint } = useQuadrantAssignment();
+  
   const [dataReport, setDataReport] = useState<DataReport | null>(null);
   const [actionsReport, setActionsReport] = useState<ActionsReport | null>(null);
   const [isOutOfSync, setIsOutOfSync] = useState(false);
   const [lastGeneratedHash, setLastGeneratedHash] = useState<string>('');
 
   const getCurrentStateHash = useCallback(() => {
+    // Create a comprehensive hash that includes actual data content
+    // This ensures Actions Report is invalidated when data is added, edited, deleted, or substituted
+    const dataFingerprint = data.map(d => ({
+      id: d.id,
+      satisfaction: d.satisfaction,
+      loyalty: d.loyalty,
+      excluded: d.excluded
+    })).sort((a, b) => a.id.localeCompare(b.id));
+    
     return JSON.stringify({
+      dataFingerprint, // Actual data content, not just length
       dataLength: data.length,
       excluded: data.filter(d => d.excluded).length,
       scales: `${satisfactionScale}-${loyaltyScale}`,
@@ -40,10 +58,7 @@ export const useReportGenerator = ({
     console.log('🔄 Current state hash:', getCurrentStateHash());
     
     const dataReportContent = await generateDataReport(data, satisfactionScale, loyaltyScale);
-      const actionsReportContent = await generateActionsReport(data, activeEffects);
-      
       setDataReport(dataReportContent);
-      setActionsReport(actionsReportContent);
       setLastGeneratedHash(getCurrentStateHash());
       setIsOutOfSync(false);
     } catch (error) {
@@ -51,18 +66,89 @@ export const useReportGenerator = ({
     }
   }, [data, satisfactionScale, loyaltyScale, activeEffects, getCurrentStateHash]);
 
-  // Auto-regenerate reports when data changes
-useEffect(() => {
-  if (data.length > 0) {
-    handleGenerateReports();
-  }
-}, [data, satisfactionScale, loyaltyScale, activeEffects, handleGenerateReports]);
+  const handleGenerateActionPlan = useCallback(async () => {
+    // Convert contextDistribution to the format expected by the aggregator
+    const contextDist = contextDistribution ? {
+      loyalists: contextDistribution.loyalists || 0,
+      mercenaries: contextDistribution.mercenaries || 0,
+      hostages: contextDistribution.hostages || 0,
+      defectors: contextDistribution.defectors || 0,
+      apostles: contextDistribution.apostles || 0,
+      terrorists: contextDistribution.terrorists || 0,
+      near_apostles: contextDistribution.near_apostles || 0
+    } : null;
 
-  // Check for out of sync state
+    // Determine isPremium from activeEffects
+    const isPremium = activeEffects.has('premium') || activeEffects.has('PREMIUM');
+    console.log('🔍 useReportGenerator: isPremium =', isPremium, 'activeEffects:', Array.from(activeEffects));
+
+    if (!dataReport) {
+      // Generate data report first if needed
+      const dataReportContent = await generateDataReport(data, satisfactionScale, loyaltyScale);
+      setDataReport(dataReportContent);
+      
+      const actionsReportContent = await generateActionsReport(
+        data, 
+        activeEffects,
+        dataReportContent,
+        satisfactionScale,
+        loyaltyScale,
+        getQuadrantForPoint, // Pass directly - generateActionsReport now accepts VisualizationQuadrantType
+        midpoint, // Pass the actual user-adjusted midpoint
+        isPremium, // CRITICAL FIX: Pass isPremium instead of false!
+        false, // showSpecialZones
+        showNearApostles,
+        1, // apostlesZoneSize
+        1, // terroristsZoneSize
+        contextDist
+      );
+      setActionsReport(actionsReportContent);
+      // Update hash to mark Actions Report as in sync with current data
+      setLastGeneratedHash(getCurrentStateHash());
+      setIsOutOfSync(false);
+    } else {
+      const actionsReportContent = await generateActionsReport(
+        data, 
+        activeEffects,
+        dataReport,
+        satisfactionScale,
+        loyaltyScale,
+        getQuadrantForPoint, // Pass directly - generateActionsReport now accepts VisualizationQuadrantType
+        midpoint, // Pass the actual user-adjusted midpoint
+        isPremium, // CRITICAL FIX: Pass isPremium instead of false!
+        false, // showSpecialZones
+        showNearApostles,
+        1, // apostlesZoneSize
+        1, // terroristsZoneSize
+        contextDist
+      );
+      setActionsReport(actionsReportContent);
+      // Update hash to mark Actions Report as in sync with current data
+      setLastGeneratedHash(getCurrentStateHash());
+      setIsOutOfSync(false);
+    }
+  }, [data, activeEffects, dataReport, satisfactionScale, loyaltyScale, contextDistribution, getCurrentStateHash, midpoint, showNearApostles]);
+
+  // Auto-regenerate data report when data changes (but not action plan)
+  useEffect(() => {
+    if (data.length > 0) {
+      handleGenerateReports();
+    }
+  }, [data, satisfactionScale, loyaltyScale, activeEffects, handleGenerateReports]);
+
+  // Check for out of sync state and invalidate Actions Report when data changes
   useEffect(() => {
     const currentHash = getCurrentStateHash();
-    setIsOutOfSync(currentHash !== lastGeneratedHash);
-  }, [getCurrentStateHash, lastGeneratedHash]);
+    const isOutOfSyncNow = currentHash !== lastGeneratedHash;
+    setIsOutOfSync(isOutOfSyncNow);
+    
+    // If data has changed and Actions Report exists, clear it to force regeneration
+    // This ensures old screenshots don't persist when data is added, edited, deleted, or substituted
+    if (isOutOfSyncNow && actionsReport) {
+      console.log('🔄 Data changed - invalidating Actions Report to prevent stale screenshots');
+      setActionsReport(null);
+    }
+  }, [getCurrentStateHash, lastGeneratedHash, actionsReport]);
 
   const handleCustomizeReport = useCallback((reportType: 'data' | 'actions') => {
     console.log('Customizing report:', reportType);
@@ -88,6 +174,7 @@ useEffect(() => {
     isOutOfSync,
     setIsOutOfSync,
     handleGenerateReports,
+    handleGenerateActionPlan,
     handleCustomizeReport,
     handleExportReport,
     handleShareReport

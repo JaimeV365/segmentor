@@ -35,6 +35,10 @@ interface DataProcessingContextType {
   // Auto-reassignment functions
   autoReassignPointsOnMidpointChange: () => void;
   clearAllManualAssignments: () => void;
+  
+  // Areas mode (for filter options)
+  showSpecialZones: boolean;
+  showNearApostles: boolean;
 }
 
 const DataProcessingContext = createContext<DataProcessingContextType | undefined>(undefined);
@@ -440,7 +444,9 @@ export const DataProcessingProvider: React.FC<DataProcessingProviderProps> = ({
     getHierarchicalClassification,
     getBoundaryOptions,
     autoReassignPointsOnMidpointChange,
-    clearAllManualAssignments
+    clearAllManualAssignments,
+    showSpecialZones,
+    showNearApostles
   }), [
     manualAssignments,
     getQuadrantForPoint,
@@ -450,7 +456,9 @@ export const DataProcessingProvider: React.FC<DataProcessingProviderProps> = ({
     getHierarchicalClassification,
     getBoundaryOptions,
     autoReassignPointsOnMidpointChange,
-    clearAllManualAssignments
+    clearAllManualAssignments,
+    showSpecialZones,
+    showNearApostles
   ]);
 
   return (

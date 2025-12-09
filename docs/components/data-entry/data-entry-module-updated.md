@@ -1,7 +1,7 @@
 # DataEntryModule
 
 ## Overview
-The DataEntryModule is a core component of the Apostles Model Builder that handles all data input functionality. It provides both manual data entry and CSV file import capabilities, with built-in validation and scale management.
+The DataEntryModule is a core component of Segmentor that handles all data input functionality. It provides both manual data entry and CSV file import capabilities, with built-in validation and scale management.
 
 ## Features
 - Manual data entry form with validation

@@ -38,6 +38,10 @@ interface QuadrantAssignmentContextType {
   // Terminology management
   isClassicModel: boolean;
   
+  // Areas mode (for filter options)
+  showSpecialZones: boolean;
+  showNearApostles: boolean;
+  
   // Enhanced classification functions
   getDisplayNameForQuadrant: (quadrantType: import('./DataProcessingContext').QuadrantType) => string;
   getBoundaryOptions: (point: DataPoint) => import('../components/DataPoints/DataPointInfoBox').QuadrantOption[];
@@ -132,6 +136,8 @@ const UnifiedContextWrapper: React.FC<{ children: React.ReactNode }> = ({ childr
     getHierarchicalClassification: dataProcessing.getHierarchicalClassification,
     autoReassignPointsOnMidpointChange: dataProcessing.autoReassignPointsOnMidpointChange,
     clearAllManualAssignments: dataProcessing.clearAllManualAssignments,
+    showSpecialZones: dataProcessing.showSpecialZones,
+    showNearApostles: dataProcessing.showNearApostles,
   };
 
   return (

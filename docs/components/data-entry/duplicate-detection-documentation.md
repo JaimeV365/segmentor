@@ -378,7 +378,7 @@ The duplicate detection system provides a robust, user-friendly solution for pre
 
 ## Overview
 
-The duplicate detection system prevents users from inadvertently creating duplicate entries in the Apostles Model Builder application. It provides sophisticated matching algorithms to identify potential duplicates and a user-friendly interface for resolving conflicts.
+The duplicate detection system prevents users from inadvertently creating duplicate entries in the Segmentor application. It provides sophisticated matching algorithms to identify potential duplicates and a user-friendly interface for resolving conflicts.
 
 ## Core Components
 

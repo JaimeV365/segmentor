@@ -582,7 +582,7 @@ describe('Color Synchronization Integration', () => {
 // Cypress/Playwright test
 describe('Color Synchronization E2E', () => {
   it('maintains color consistency across all visualizations', () => {
-    cy.visit('/apostles-model');
+    cy.visit('/segmentor');
     
     // Change midpoint
     cy.get('[data-testid="midpoint-handle"]').drag(100, 100);

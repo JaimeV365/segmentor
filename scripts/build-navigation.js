@@ -16,6 +16,7 @@ const navigationHTML = `
       <a href="/" class="nav-link">Home</a>
       <a href="/about.html" class="nav-link">About</a>
       <a href="/faq.html" class="nav-link">FAQ</a>
+      <a href="/contact.html" class="nav-link">Contact</a>
       <a href="/tool/" class="nav-link nav-link-primary">Use Tool</a>
     </div>
   </div>
@@ -144,6 +145,7 @@ function buildNavigation() {
     'index.html',
     'about.html', 
     'faq.html',
+    'contact.html',
     '404.html'
   ];
   

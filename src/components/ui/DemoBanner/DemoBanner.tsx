@@ -17,7 +17,7 @@ export const DemoBanner: React.FC<DemoBannerProps> = ({ onDismiss, onLoadRealDat
         <div className="demo-banner__text">
           <div className="demo-banner__title">Live Demo Mode</div>
           <div className="demo-banner__description">
-            Exploring with sample data • Premium features enabled
+            Exploring with sample data • Brand+ features enabled
           </div>
         </div>
         <div className="demo-banner__actions">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { MessageCircleQuestion } from 'lucide-react';
 import DataEntryModule from './components/data-entry/DataEntryModule';
 import DataDisplay from './components/data-entry/table/DataDisplay';
 import { DataPoint, ScaleFormat, ScaleState } from './types/base';
@@ -10,9 +11,14 @@ import FilteredChart from './components/visualization/components/FilteredChart';
 import { ReportingSection } from './components/reporting/ReportingSection';
 import LeftDrawer from './components/ui/LeftDrawer/LeftDrawer';
 import DrawerSaveButton from './components/ui/DrawerSaveButton/DrawerSaveButton';
+import { SectionNavigation } from './components/ui/SectionNavigation/SectionNavigation';
 import ScreenSizeWarning from './components/ui/ScreenSizeWarning/ScreenSizeWarning';
 import DemoBanner from './components/ui/DemoBanner/DemoBanner';
 import WelcomeBanner from './components/ui/WelcomeBanner/WelcomeBanner';
+import { DemoTour } from './components/ui/DemoTour';
+import { UnifiedLoadingPopup } from './components/ui/UnifiedLoadingPopup';
+import { UnsavedChangesModal } from './components/ui/UnsavedChangesModal/UnsavedChangesModal';
+import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 import './App.css';
 import './components/visualization/controls/ResponsiveDesign.css';
 
@@ -43,30 +49,78 @@ const visualizationRef = useRef<HTMLDivElement>(null);
   const [isPremium, setIsPremium] = useState(false);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [showWelcomeBanner, setShowWelcomeBanner] = useState(true);
+  const [showDemoTour, setShowDemoTour] = useState(false);
+  const [isLoadingDemo, setIsLoadingDemo] = useState(false);
 
   // Demo data loading function
   const handleDemoDataLoad = async () => {
     try {
+      setIsLoadingDemo(true);
       setIsDemoMode(true);
       setIsPremium(true); // Auto-enable Premium mode for demo
       
-      const response = await fetch('/apostles_model_template.csv');
+      const response = await fetch('/segmentor-demo.csv');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch demo data: ${response.status} ${response.statusText}`);
+      }
       const csvText = await response.text();
+      
+      if (!csvText || csvText.trim().length === 0) {
+        throw new Error('Demo data file is empty');
+      }
       
       // Parse CSV data
       const lines = csvText.split('\n');
-      const headers = lines[0].split(',');
+      const headers = lines[0].split(',').map(h => h.trim());
       const dataRows = lines.slice(1).filter(line => line.trim());
       
+      // Find column indices
+      const dateIndex = headers.findIndex(h => h.toLowerCase() === 'date');
+      const nameIndex = headers.findIndex(h => h.toLowerCase().includes('name') || h.toLowerCase().includes('email'));
+      const satisfactionIndex = headers.findIndex(h => h.toLowerCase().includes('satisfaction'));
+      const loyaltyIndex = headers.findIndex(h => h.toLowerCase().includes('loyalty'));
+      
+      // Helper function to convert date format from yyyy-mm-dd to dd/mm/yyyy
+      const convertDateFormat = (dateStr: string): string => {
+        if (!dateStr || dateStr.trim() === '') return '';
+        
+        // Check if already in dd/mm/yyyy format
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr.trim())) {
+          return dateStr.trim();
+        }
+        
+        // Convert from yyyy-mm-dd to dd/mm/yyyy
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr.trim())) {
+          const [year, month, day] = dateStr.trim().split('-');
+          return `${day}/${month}/${year}`;
+        }
+        
+        // Return as-is if format is unrecognized
+        return dateStr.trim();
+      };
+      
       const demoData: DataPoint[] = dataRows.slice(0, 90).map((row, index) => {
-        const values = row.split(',');
+        const values = row.split(',').map(v => v.trim());
+        
+        // Get date from CSV or generate fallback
+        let dateValue: string;
+        if (dateIndex >= 0 && values[dateIndex] && values[dateIndex].trim() !== '') {
+          dateValue = convertDateFormat(values[dateIndex]);
+        } else {
+          // Fallback to generated date if column missing or empty
+          dateValue = new Date(2024, 0, 1 + (index % 30)).toISOString().split('T')[0];
+          // Convert fallback to dd/mm/yyyy format
+          const [year, month, day] = dateValue.split('-');
+          dateValue = `${day}/${month}/${year}`;
+        }
+        
         return {
           id: `DEMO_${index + 1}`,
-          name: values[1] || `Demo User ${index + 1}`,
-          satisfaction: parseInt(values[2]) || 1,
-          loyalty: parseInt(values[3]) || 1,
+          name: (nameIndex >= 0 ? values[nameIndex] : null) || `Demo User ${index + 1}`,
+          satisfaction: (satisfactionIndex >= 0 ? parseInt(values[satisfactionIndex]) : parseInt(values[2])) || 1,
+          loyalty: (loyaltyIndex >= 0 ? parseInt(values[loyaltyIndex]) : parseInt(values[3])) || 1,
           email: `demo${index + 1}@example.com`,
-          date: new Date(2024, 0, 1 + (index % 30)).toISOString().split('T')[0],
+          date: dateValue,
           group: ['Apostles', 'Loyalists', 'Defectors', 'Terrorists'][index % 4],
           additionalAttributes: {
             country: ['USA', 'Canada', 'UK', 'Australia'][index % 4],
@@ -88,6 +142,19 @@ const visualizationRef = useRef<HTMLDivElement>(null);
         message: '90 sample entries loaded. You can add up to 10 more entries manually.',
         type: 'success'
       });
+
+      // Check if we should auto-start the tour (from trial parameter)
+      const urlParams = new URLSearchParams(window.location.search);
+      const isTrial = urlParams.get('trial') === 'true';
+      const hasSeenTour = sessionStorage.getItem('demo-tour-completed');
+      
+      if (isTrial && !hasSeenTour) {
+        // Wait for DOM to settle, then start tour
+        setTimeout(() => {
+          setShowDemoTour(true);
+          setShowWelcomeBanner(false); // Hide welcome banner when tour starts
+        }, 1500);
+      }
     } catch (error) {
       console.error('Error loading demo data:', error);
       notification.showNotification({
@@ -97,8 +164,25 @@ const visualizationRef = useRef<HTMLDivElement>(null);
       });
       setIsDemoMode(false);
       setIsPremium(false);
+    } finally {
+      setIsLoadingDemo(false);
     }
   };
+
+  // Check for trial parameter on mount and auto-load demo
+  const trialAutoLoadRef = useRef(false);
+  useEffect(() => {
+    if (trialAutoLoadRef.current) return; // Only run once
+    const urlParams = new URLSearchParams(window.location.search);
+    const isTrial = urlParams.get('trial') === 'true';
+    const hasSeenTour = sessionStorage.getItem('demo-tour-completed');
+    
+    if (isTrial && !hasSeenTour && data.length === 0) {
+      trialAutoLoadRef.current = true;
+      // Auto-load demo data
+      handleDemoDataLoad();
+    }
+  }, [data.length]); // Run when data changes or on mount
 
   // Demo banner handlers
   const handleDismissDemo = () => {
@@ -116,9 +200,12 @@ const visualizationRef = useRef<HTMLDivElement>(null);
   };
 
   const handleStartTour = () => {
-    // For now, just dismiss the banner
-    // In the future, we can implement the actual tour highlighting
     setShowWelcomeBanner(false);
+    setShowDemoTour(true);
+  };
+
+  const handleCloseTour = () => {
+    setShowDemoTour(false);
   };
 
   const handleUploadData = () => {
@@ -173,6 +260,58 @@ useEffect(() => {
 
   // Drawer state
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // Exit confirmation modal state
+  const [showExitModal, setShowExitModal] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
+  const saveButtonRef = useRef<{ triggerSave: () => Promise<void> } | null>(null);
+
+  // Track unsaved changes for exit confirmation
+  const { hasUnsavedChanges } = useUnsavedChanges({
+    data,
+    satisfactionScale: scales.satisfactionScale,
+    loyaltyScale: scales.loyaltyScale,
+    showGrid,
+    showScaleNumbers: true,
+    showLegends: true,
+    showNearApostles,
+    showSpecialZones,
+    isAdjustableMidpoint,
+    labelMode: 1,
+    labelPositioning: 'below-dots',
+    areasDisplayMode: showNearApostles ? 3 : 2,
+    frequencyFilterEnabled,
+    frequencyThreshold,
+    isPremium,
+    effects: activeEffects,
+    midpoint: midpoint || undefined,
+    apostlesZoneSize,
+    terroristsZoneSize,
+    isClassicModel
+  });
+
+  // Browser beforeunload warning (Option 4)
+  // IMPORTANT: The browser's native beforeunload dialog CANNOT be styled - this is a browser security feature.
+  // However, we DO have our own styled UnsavedChangesModal component that we can show for navigation attempts.
+  // The beforeunload is ONLY a fallback for when users try to close the tab/window - we can't intercept that.
+  // For navigation within the app (links, etc.), we should intercept and show our styled modal instead.
+  useEffect(() => {
+    // Only show browser warning if:
+    // 1. There are actual unsaved changes AND
+    // 2. There's actual data loaded (no warning if just on the loader page with no data)
+    if (!hasUnsavedChanges || !data || data.length === 0) return;
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // This shows the browser's native dialog (cannot be styled)
+      // It only appears when user tries to close tab/window
+      e.preventDefault();
+      e.returnValue = ''; // Required for Chrome - shows browser's native dialog
+      return ''; // Required for some browsers
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges, data]);
 
   // Load progress handler
   const handleLoadProgress = async (file: File) => {
@@ -274,6 +413,51 @@ useEffect(() => {
         setFrequencyThreshold(context.uiState.frequencyThreshold);
         setIsPremium(context.premium?.isPremium || false);
         setActiveEffects(new Set(context.premium?.effects || []));
+        
+        // Load report visibility states
+        if (context.reportVisibility) {
+          localStorage.setItem('showRecommendationScore', context.reportVisibility.showRecommendationScore.toString());
+          localStorage.setItem('responseConcentrationExpanded', context.reportVisibility.responseConcentrationExpanded.toString());
+        }
+        
+        // Load report settings and customizations
+        if (context.reportSettings) {
+          if (context.reportSettings.responseConcentration) {
+            localStorage.setItem('responseConcentrationSettings', JSON.stringify(context.reportSettings.responseConcentration));
+          }
+          if (context.reportSettings.recommendationScore) {
+            localStorage.setItem('recommendationScoreSettings', JSON.stringify(context.reportSettings.recommendationScore));
+          }
+          if (context.reportSettings.customizations) {
+            localStorage.setItem('report-customization', JSON.stringify({
+              highlightedKPIs: context.reportSettings.customizations.highlightedKPIs,
+              chartColors: context.reportSettings.customizations.chartColors
+            }));
+          }
+          if (context.reportSettings.proximityDisplay) {
+            localStorage.setItem('proximityDisplaySettings', JSON.stringify(context.reportSettings.proximityDisplay));
+          }
+          if (context.reportSettings.actionReports) {
+            // Restore editable text items
+            if (context.reportSettings.actionReports.editableTexts) {
+              Object.entries(context.reportSettings.actionReports.editableTexts).forEach(([key, value]: [string, any]) => {
+                localStorage.setItem(key, JSON.stringify({
+                  content: value.content,
+                  backgroundColor: value.backgroundColor
+                }));
+              });
+            }
+            // Restore section collapse state
+            if (context.reportSettings.actionReports.expandedSections) {
+              localStorage.setItem('actionReportsExpandedSections', JSON.stringify(context.reportSettings.actionReports.expandedSections));
+            }
+          }
+        }
+        
+        // Load individual report filter states - store in localStorage to be restored by FilterProvider
+        if (context.reportFilterStates) {
+          localStorage.setItem('savedReportFilterStates', JSON.stringify(context.reportFilterStates));
+        }
         
       } else {
         // Old format: Handle legacy structure (for backward compatibility during transition)
@@ -432,8 +616,12 @@ const handleTerroristsZoneSizeChange = (size: number) => {
   
 
   return (
+    <>
     <div className="app">
-      {/* <ScreenSizeWarning /> */}
+      {/* Loading screen for demo data */}
+      <UnifiedLoadingPopup isVisible={isLoadingDemo} text="segmenting" size="medium" />
+      
+      <ScreenSizeWarning />
       
       {/* App Header - Removed redundant header, mode indicator moved to welcome banner */}
       
@@ -454,8 +642,16 @@ const handleTerroristsZoneSizeChange = (size: number) => {
             onLoadRealData={handleLoadRealData}
           />
         )}
+
+        {/* Demo Tour - Shows when trial=true and demo data is loaded */}
+        <DemoTour
+          isOpen={showDemoTour}
+          onClose={handleCloseTour}
+          isPremium={isPremium}
+          dataLength={data.length}
+        />
             
-            <div className="section data-entry-section" ref={dataEntryRef}>
+            <div className="section data-entry-section" ref={dataEntryRef} data-section-id="data-entry">
               <DataEntryModule 
                 onDataChange={handleDataChange}
                 satisfactionScale={scales.satisfactionScale}
@@ -468,7 +664,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
             </div>
 
             {data.length > 0 && (
-              <div className="section data-table-section">
+              <div className="section data-table-section" data-section-id="data-table">
                 <DataDisplay 
                   data={data}
                   satisfactionScale={scales.satisfactionScale}
@@ -501,7 +697,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
                   apostlesZoneSize={apostlesZoneSize}
                   terroristsZoneSize={terroristsZoneSize}
                 >
-                <div className="section visualization-section" ref={visualizationRef}>
+                <div className="section visualization-section" ref={visualizationRef} data-section-id="main-chart">
                   <h1 className="customer-segmentation-title">Customer Segmentation</h1>
                   <div className="visualization-content visualization-container">
                     <FilteredChart
@@ -538,7 +734,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
                   </div>
                 </div>
 
-                <div className="section reporting-section">
+                <div className="section reporting-section" data-section-id="reports">
                   <ReportingSection
   data={data}
   satisfactionScale={scales.satisfactionScale}
@@ -551,26 +747,30 @@ const handleTerroristsZoneSizeChange = (size: number) => {
 />
                 </div>
                 
-                {/* Left Drawer with Save Button and Premium Toggle - Inside providers for context access */}
+                {/* Left Drawer with Save Button and Brand+ Indicator - Inside providers for context access */}
                 <LeftDrawer
                   isOpen={isDrawerOpen} 
                   onToggle={() => setIsDrawerOpen(!isDrawerOpen)}
+                  isPremium={isPremium}
                 >
-                  {/* Premium Toggle Button */}
-                  <div style={{
-                    marginBottom: '12px',
-                    padding: '8px',
-                    background: isPremium ? '#3a863e' : '#6b7280',
-                    color: 'white',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    textAlign: 'center',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                  }} onClick={() => setIsPremium(!isPremium)}>
-                    {isPremium ? '⭐ Premium Mode' : '🔒 Standard Mode'}
+                  {/* Section Navigation */}
+                  <SectionNavigation dataLength={data.length} />
+                  
+                  {/* Spacer to push bottom content down */}
+                  <div style={{ flex: 1 }} />
+                  
+                  {/* Support Section - Always at bottom */}
+                  <div className="drawer-section">
+                    <a
+                      href="/contact.html"
+                      className="drawer-item"
+                      title="Get help and support"
+                    >
+                      <span className="drawer-item-icon">
+                        <MessageCircleQuestion size={18} />
+                      </span>
+                      <span className="drawer-item-text">Help</span>
+                    </a>
                   </div>
                   
                   {/* Save Button - Only show when there's data */}
@@ -600,6 +800,33 @@ const handleTerroristsZoneSizeChange = (size: number) => {
             )}
           </main>
         </div>
+        
+        {/* Exit Confirmation Modal (Option 4) */}
+        <UnsavedChangesModal
+          isOpen={showExitModal}
+          onSaveAndLeave={async () => {
+            // Note: In a real implementation, you'd need to expose a save function
+            // from DrawerSaveButton or use a context. For now, we'll just close.
+            // The user can manually save before leaving.
+            setShowExitModal(false);
+            if (pendingNavigation) {
+              pendingNavigation();
+              setPendingNavigation(null);
+            }
+          }}
+          onLeaveWithoutSaving={() => {
+            setShowExitModal(false);
+            if (pendingNavigation) {
+              pendingNavigation();
+              setPendingNavigation(null);
+            }
+          }}
+          onCancel={() => {
+            setShowExitModal(false);
+            setPendingNavigation(null);
+          }}
+        />
+    </>
   );
 };
 

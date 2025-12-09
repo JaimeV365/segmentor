@@ -324,3 +324,25 @@
   margin-left: 4px;
   opacity: 0.8;
 }
+
+/* Logo selection title with premium badge */
+.logo-selection-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  margin-top: 8px;
+  margin-bottom: 6px;
+  padding-left: 4px;
+}
+
+.premium-crown-inline {
+  color: #f59e0b;
+  opacity: 0.8;
+}
+
+.logo-selection-buttons {
+  margin-top: 0;
+}

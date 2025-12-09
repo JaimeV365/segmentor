@@ -11,6 +11,11 @@
   overflow: hidden;
 }
 
+/* Adjust top position when screen warning is active */
+body.screen-warning-active .demo-banner {
+  top: 32px; /* Match the warning height */
+}
+
 .demo-banner::before {
   content: '';
   position: absolute;

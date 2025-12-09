@@ -79,57 +79,28 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
 
   // Helper functions for UI
   const isWatermarkVisible = currentState.isVisible;
-  const getCurrentLogo = () => currentState.logoType;
   const getCurrentSize = () => currentState.size;
   const getCurrentPosition = () => currentState.position;
-  const getCustomLogoUrl = () => currentState.customUrl;
-  const isLogoFlat = currentState.isFlat;
+
 
   // Event handlers
-  const handleVisibilityToggle = (checked: boolean) => {
-    updateEffects(effects => {
-      if (checked) {
-        effects.delete('HIDE_WATERMARK');
-      } else {
-        effects.add('HIDE_WATERMARK');
-      }
-    });
-  };
-
-  const handleLogoChange = (logoType: string) => {
-    updateEffects(effects => {
-      effects.delete('SHOW_TM_LOGO');
-      effects.delete('CUSTOM_LOGO');
-      if (logoType === 'tm') effects.add('SHOW_TM_LOGO');
-      else if (logoType === 'custom') effects.add('CUSTOM_LOGO');
-    });
-  };
-
   const handleSizeChange = (size: number) => {
     setLogoSize(size);
   };
 
-  const handleCustomLogoChange = (url: string) => {
-    updateEffects(effects => {
-      // Remove existing custom URL effect
-      const urlEffect = Array.from(effects).find(e => e.startsWith('CUSTOM_LOGO_URL:'));
-      if (urlEffect) effects.delete(urlEffect);
-      // Add new custom URL effect
-      if (url) effects.add(`CUSTOM_LOGO_URL:${url}`);
-    });
-  };
-
-  const handleFlatToggle = (checked: boolean) => {
-    toggleFlat(checked);
-  };
-
   const handleReset = () => {
     updateEffects(effects => {
-      // Remove all watermark-related effects
-      const watermarkEffects = Array.from(effects).filter(e => 
-        e.startsWith('LOGO_') || e.startsWith('SHOW_') || e.startsWith('CUSTOM_') || e === 'HIDE_WATERMARK'
+      // Only reset control-related effects (position, size, transparency, rotation)
+      // Keep logo selection (CUSTOM_LOGO, CUSTOM_LOGO_URL, HIDE_WATERMARK) intact
+      const controlEffects = Array.from(effects).filter(e => 
+        e.startsWith('LOGO_SIZE:') || 
+        e.startsWith('LOGO_X:') || 
+        e.startsWith('LOGO_Y:') || 
+        e.startsWith('LOGO_OPACITY:') || 
+        e === 'LOGO_FLAT' ||
+        e === 'WM_DRAG_ENABLED'
       );
-      watermarkEffects.forEach(effect => effects.delete(effect));
+      controlEffects.forEach(effect => effects.delete(effect));
     });
   };
 
@@ -188,20 +159,8 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
 
       {/* Content */}
       <div className="watermark-panel-content">
-        {/* Visibility Toggle */}
-        <div className="watermark-control-group">
-          <label className="watermark-control-label">
-            <Switch
-              checked={isWatermarkVisible}
-              onChange={handleVisibilityToggle}
-              leftLabel="Show Watermark"
-            />
-          </label>
-        </div>
-
         {isWatermarkVisible && (
           <>
-            
             {/* Opacity Control */}
             <div className="watermark-control-group">
               <label className="watermark-control-label">Transparency</label>
@@ -232,32 +191,6 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
                 })()) * 100)}%</span>
               </div>
             </div>
-            {/* Logo Selection */}
-            <div className="watermark-control-group">
-              <label className="watermark-control-label">Logo Type</label>
-              <select 
-                value={getCurrentLogo()} 
-                onChange={(e) => handleLogoChange(e.target.value)}
-                className="watermark-control-select"
-              >
-                <option value="default">segmentor.app</option>
-                <option value="custom">Custom Logo</option>
-              </select>
-            </div>
-
-            {/* Custom URL Input */}
-            {getCurrentLogo() === 'custom' && (
-              <div className="watermark-control-group">
-                <label className="watermark-control-label">Custom Logo URL</label>
-                <input
-                  type="url"
-                  placeholder="https://example.com/logo.png"
-                  value={getCustomLogoUrl()}
-                  onChange={(e) => handleCustomLogoChange(e.target.value)}
-                  className="watermark-control-input"
-                />
-              </div>
-            )}
 
             {/* Size Control */}
             <div className="watermark-control-group">
@@ -356,34 +289,32 @@ const WatermarkPanel: React.FC<WatermarkPanelProps> = ({
                   >
                     <RotateCw size={16} />
                   </button>
-                  {isPremium && (
-                    <button 
-                      className="arrow-button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (onToggleDrag) onToggleDrag();
-                        updateEffects(next => {
-                          if (dragEnabled) next.delete('WM_DRAG_ENABLED');
-                          else next.add('WM_DRAG_ENABLED');
-                        });
-                      }}
-                      title={dragEnabled ? 'Disable drag to move' : 'Enable drag to move'}
-                      aria-pressed={dragEnabled}
-                    >
-                      {(() => {
-                        const muted = !dragEnabled;
-                        return (
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={muted ? '#9ca3af' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2" />
-                            <path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2" />
-                            <path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8" />
-                            <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
-                            {muted && <path d="M3 21L21 3" />}
-                          </svg>
-                        );
-                      })()}
-                    </button>
-                  )}
+                  <button 
+                    className="arrow-button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (onToggleDrag) onToggleDrag();
+                      updateEffects(next => {
+                        if (dragEnabled) next.delete('WM_DRAG_ENABLED');
+                        else next.add('WM_DRAG_ENABLED');
+                      });
+                    }}
+                    title={dragEnabled ? 'Disable drag to move' : 'Enable drag to move'}
+                    aria-pressed={dragEnabled}
+                  >
+                    {(() => {
+                      const muted = !dragEnabled;
+                      return (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={muted ? '#9ca3af' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2" />
+                          <path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2" />
+                          <path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8" />
+                          <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+                          {muted && <path d="M3 21L21 3" />}
+                        </svg>
+                      );
+                    })()}
+                  </button>
                 </div>
               </div>
             </div>
