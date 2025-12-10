@@ -11,25 +11,36 @@
  * 5. Save and deploy
  */
 
-// List of Brand+ user emails (exact matches)
-// TODO: Replace this with your actual Brand+ user list
-// For production, consider using Cloudflare KV storage or external database
-const BRAND_PLUS_USERS = [
-  // Add your Brand+ user emails here
-  // Example: 'user@example.com',
-  // Example: 'premium@company.com',
-];
-
-// Brand+ email domains (any email ending with these domains)
-const BRAND_PLUS_DOMAINS = [
-  '@teresamonroe.com',
-];
-
 // Brand+ user groups (if using Cloudflare Access groups)
+// Groups can stay as hardcoded since they're not sensitive customer data
 const BRAND_PLUS_GROUPS = [
   'brand-plus',
   'premium',
 ];
+
+// KV lookup functions for Brand+ users
+// Customer emails are stored in Cloudflare KV, not in code
+async function isEmailInKV(email, env) {
+  try {
+    const value = await env.BRAND_PLUS_USERS.get(`user:${email}`);
+    return value !== null;
+  } catch (error) {
+    console.error('KV lookup error for email:', error);
+    return false;
+  }
+}
+
+async function isDomainInKV(email, env) {
+  try {
+    // Extract domain from email (e.g., @company.com)
+    const domain = '@' + email.split('@')[1];
+    const value = await env.BRAND_PLUS_USERS.get(`domain:${domain}`);
+    return value !== null;
+  } catch (error) {
+    console.error('KV lookup error for domain:', error);
+    return false;
+  }
+}
 
 export default {
   async fetch(request, env, ctx) {
@@ -117,13 +128,11 @@ export default {
       }
 
     // Check if user has Brand+ access
-    // Method 1: Check exact email match
-    const isEmailPremium = BRAND_PLUS_USERS.includes(email);
+    // Method 1: Check exact email match in KV
+    const isEmailPremium = await isEmailInKV(email, env);
     
-    // Method 2: Check email domain (any email ending with @teresamonroe.com, etc.)
-    const isDomainPremium = BRAND_PLUS_DOMAINS.some(domain => 
-      email.toLowerCase().endsWith(domain.toLowerCase())
-    );
+    // Method 2: Check email domain in KV
+    const isDomainPremium = await isDomainInKV(email, env);
     
     // Method 3: Check groups (if using Cloudflare Access groups)
     const isGroupPremium = groups.some(group => 
