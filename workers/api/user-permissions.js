@@ -67,6 +67,7 @@ export default {
         groups,
         hasEmail: !!email,
         userAgent: request.headers.get('User-Agent'),
+        allHeaders: Object.fromEntries(request.headers.entries()),
       });
 
       // Check if user is authenticated
