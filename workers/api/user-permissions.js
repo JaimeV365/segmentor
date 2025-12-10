@@ -22,7 +22,15 @@ const BRAND_PLUS_GROUPS = [
 // Customer emails are stored in Cloudflare KV, not in code
 async function isEmailInKV(email, env) {
   try {
-    const value = await env.BRAND_PLUS_USERS.get(`user:${email}`);
+    const key = `user:${email}`;
+    const value = await env.BRAND_PLUS_USERS.get(key);
+    console.log('KV Email lookup:', { 
+      email, 
+      key, 
+      value, 
+      found: value !== null,
+      keyExists: value !== null && value !== undefined
+    });
     return value !== null;
   } catch (error) {
     console.error('KV lookup error for email:', error);
