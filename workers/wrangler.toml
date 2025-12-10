@@ -20,8 +20,9 @@ enabled = true
 # [vars]
 # ENVIRONMENT = "production"
 
-# KV namespaces (if you want to store Brand+ users in KV instead of hardcoding)
-# [[kv_namespaces]]
-# binding = "BRAND_PLUS_USERS"
-# id = "your-kv-namespace-id"
+# KV namespaces for Brand+ user management
+# IMPORTANT: Replace YOUR_NAMESPACE_ID_HERE with the actual namespace ID from Cloudflare Dashboard
+[[kv_namespaces]]
+binding = "BRAND_PLUS_USERS"
+id = "YOUR_NAMESPACE_ID_HERE"  # Replace this with your namespace ID from Step 1
 
