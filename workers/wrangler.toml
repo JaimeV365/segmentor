@@ -1,0 +1,20 @@
+name = "segmentor-user-permissions"
+main = "api/user-permissions.js"
+compatibility_date = "2024-01-01"
+
+# Note: This file should be in the workers/ directory
+# The main file path is relative to this directory
+
+# Route configuration
+# This will be set up in the Cloudflare dashboard after deployment
+# Route: segmentor.pages.dev/api/user-permissions
+
+# Environment variables (if needed in the future)
+# [vars]
+# ENVIRONMENT = "production"
+
+# KV namespaces (if you want to store Brand+ users in KV instead of hardcoding)
+# [[kv_namespaces]]
+# binding = "BRAND_PLUS_USERS"
+# id = "your-kv-namespace-id"
+
