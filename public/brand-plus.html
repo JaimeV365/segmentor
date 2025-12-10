@@ -362,13 +362,146 @@
         text-align: center;
       }
 
+      /* Auth Section Styles */
+      .auth-section {
+        background: white;
+        border-radius: 12px;
+        padding: 48px 24px;
+        text-align: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 24px;
+      }
+
+      .auth-section h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 12px;
+      }
+
+      .auth-subtitle {
+        font-size: 1.125rem;
+        color: #6b7280;
+        margin-bottom: 32px;
+      }
+
+      .sign-in-button {
+        background: #3a863e;
+        color: white;
+        padding: 14px 32px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.0625rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-block;
+      }
+
+      .sign-in-button:hover {
+        background: #2d6b31;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(58, 134, 62, 0.3);
+      }
+
+      .sign-in-button:active {
+        transform: translateY(0);
+      }
+
+      /* Login Container Styles */
+      .login-container {
+        width: 100%;
+        max-width: 500px;
+        margin: 24px auto;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: white;
+      }
+
+      .login-redirect-container {
+        padding: 32px;
+        text-align: center;
+        background: #f9fafb;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+      }
+
+      .login-description {
+        color: #6b7280;
+        font-size: 0.9375rem;
+        margin-bottom: 24px;
+        line-height: 1.6;
+      }
+
+      @media (max-width: 768px) {
+        .login-container {
+          max-width: 100%;
+        }
+
+        .login-iframe {
+          min-height: 400px;
+        }
+      }
+
+      .auth-success {
+        display: none;
+        background: #d4edda;
+        color: #155724;
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-top: 16px;
+        font-size: 0.9375rem;
+        border: 1px solid #c3e6cb;
+      }
+
+      .auth-error {
+        display: none;
+        background: #f8d7da;
+        color: #721c24;
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-top: 16px;
+        font-size: 0.9375rem;
+        border: 1px solid #f5c6cb;
+      }
+
+
+      .auth-divider {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin: 32px 0;
+        text-align: center;
+      }
+
+      .divider-line {
+        flex: 1;
+        height: 1px;
+        background: #e5e7eb;
+      }
+
+      .divider-text {
+        color: #6b7280;
+        font-size: 0.9375rem;
+        white-space: nowrap;
+      }
+
       @media (max-width: 768px) {
         .hero-section h1 {
           font-size: 2rem;
         }
 
+        .auth-section h1 {
+          font-size: 1.75rem;
+        }
+
         .plans-grid {
           grid-template-columns: 1fr;
+        }
+
+        .auth-divider {
+          margin: 24px 0;
         }
       }
     </style>
@@ -393,8 +526,44 @@
 
 <main>
     <div class="app-content">
+        <!-- Sign In Section (Primary - Top Tasks) -->
+        <section class="auth-section" id="signInSection">
+            <h1>Sign in to Brand+</h1>
+            <p class="auth-subtitle">
+                Access your custom branding features
+            </p>
+            
+            <!-- Cloudflare Access Login - Redirect Button -->
+            <div class="login-container" id="loginContainer">
+                <div class="login-redirect-container">
+                    <p class="login-description">
+                        Click the button below to sign in with Cloudflare Access. You'll be redirected to the login page and then brought back here after authentication.
+                    </p>
+                    <button id="redirectLoginButton" onclick="initiateCloudflareLoginRedirect()" class="sign-in-button">
+                        Sign in with Cloudflare Access
+                    </button>
+                </div>
+            </div>
+            
+            <div id="authSuccess" class="auth-success" style="display: none;">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="margin-right: 8px; vertical-align: middle;">
+                    <path d="M16.667 5L7.5 14.167 3.333 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Successfully signed in! Redirecting to tool...
+            </div>
+            <div id="authError" class="auth-error" style="display: none;">
+                Authentication failed. Please try again.
+            </div>
+        </section>
+
+        <div class="auth-divider">
+            <span class="divider-line"></span>
+            <span class="divider-text">New to Brand+?</span>
+            <span class="divider-line"></span>
+        </div>
+
         <!-- Hero Section -->
-        <section class="hero-section">
+        <section class="hero-section" id="pricingSection">
             <h1>Upgrade to Brand+</h1>
             <p class="hero-subtitle">
                 Full features with your custom branding. Perfect for client presentations and professional reports.
@@ -485,6 +654,106 @@
     let currencySymbol = '€';
     let currencyCode = 'EUR';
     
+    // Cloudflare Access Integration
+    async function checkAuthStatus() {
+        try {
+            // Check if Cloudflare cookie exists
+            const hasAuthCookie = document.cookie.includes('CF_Authorization');
+            
+            if (hasAuthCookie) {
+                // Try to verify with backend API
+                // Note: This endpoint needs to be created in Cloudflare Workers
+                try {
+                    const response = await fetch('/api/user-permissions', {
+                        credentials: 'include',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.isPremium) {
+                            showAuthSuccess();
+                            // Hide login container
+                            const loginContainer = document.getElementById('loginContainer');
+                            if (loginContainer) loginContainer.style.display = 'none';
+                            // Redirect to tool after 2 seconds
+                            setTimeout(() => {
+                                window.location.href = '/tool/';
+                            }, 2000);
+                            return true;
+                        }
+                    }
+                } catch (apiError) {
+                    // API endpoint might not exist yet - that's okay
+                    console.log('Auth API not available yet:', apiError);
+                }
+            }
+            
+            // Check URL params for auth success (redirected back from Cloudflare)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('auth') === 'success') {
+                // Give Cloudflare a moment to set cookies
+                setTimeout(() => {
+                    checkAuthStatus();
+                }, 500);
+            }
+            
+            return false;
+        } catch (error) {
+            console.error('Error checking auth status:', error);
+            return false;
+        }
+    }
+    
+    
+    
+    function showAuthSuccess() {
+        const loginContainer = document.getElementById('loginContainer');
+        const authSuccess = document.getElementById('authSuccess');
+        const authError = document.getElementById('authError');
+        
+        if (loginContainer) loginContainer.style.display = 'none';
+        if (authSuccess) authSuccess.style.display = 'block';
+        if (authError) authError.style.display = 'none';
+    }
+    
+    function showAuthError() {
+        const authError = document.getElementById('authError');
+        authError.style.display = 'block';
+    }
+    
+    function initiateCloudflareLoginRedirect() {
+        // Hide any previous errors
+        const authError = document.getElementById('authError');
+        if (authError) authError.style.display = 'none';
+        
+        // Get current URL for return redirect
+        const returnUrl = encodeURIComponent(window.location.origin + '/brand-plus.html?auth=success');
+        
+        // Redirect to Cloudflare Access protected route
+        // After authentication, Cloudflare will redirect back to returnUrl
+        const loginUrl = `${window.location.origin}/brand-plus-auth?return=${returnUrl}`;
+        
+        console.log('🔐 Redirecting to Cloudflare Access login...');
+        console.log('📍 Login URL:', loginUrl);
+        console.log('🔄 Will redirect back to:', window.location.origin + '/brand-plus.html?auth=success');
+        
+        // Redirect the entire page to the login URL
+        window.location.href = loginUrl;
+    }
+    
+    // Check authentication status on page load
+    window.addEventListener('load', async () => {
+        // First check if user is already authenticated
+        const isAuthenticated = await checkAuthStatus();
+        
+        // If authenticated, we don't need to show login button
+        // If not authenticated, the login button is already visible in the HTML
+        // No need to do anything - user can click the button when ready
+    });
+    
     // Detect currency based on IP location
     async function detectCurrency() {
         try {
@@ -514,34 +783,40 @@
     function updatePricing() {
         // Update plan price
         const planPriceEl = document.getElementById('plan-price');
-        if (currency === 'GBP') {
-            planPriceEl.className = 'plan-price';
-            planPriceEl.textContent = '£99/month';
-        } else {
-            planPriceEl.className = 'plan-price';
-            planPriceEl.textContent = '99€/month';
+        if (planPriceEl) {
+            if (currency === 'GBP') {
+                planPriceEl.className = 'plan-price';
+                planPriceEl.textContent = '£99/month';
+            } else {
+                planPriceEl.className = 'plan-price';
+                planPriceEl.textContent = '99€/month';
+            }
         }
         
         // Update pricing details
         const pricingDetailsEl = document.getElementById('pricing-details');
-        if (currency === 'GBP') {
-            pricingDetailsEl.innerHTML = `
-                <p><strong>Monthly:</strong> £99/month</p>
-                <p><strong>Annual:</strong> £999/year (save £189)</p>
-                <p class="pricing-note">All features included. Only the branding changes.</p>
-            `;
-        } else {
-            pricingDetailsEl.innerHTML = `
-                <p><strong>Monthly:</strong> 99€/month</p>
-                <p><strong>Annual:</strong> 999€/year (save 189€)</p>
-                <p class="pricing-note">All features included. Only the branding changes.</p>
-            `;
+        if (pricingDetailsEl) {
+            if (currency === 'GBP') {
+                pricingDetailsEl.innerHTML = `
+                    <p><strong>Monthly:</strong> £99/month</p>
+                    <p><strong>Annual:</strong> £999/year (save £189)</p>
+                    <p class="pricing-note">All features included. Only the branding changes.</p>
+                `;
+            } else {
+                pricingDetailsEl.innerHTML = `
+                    <p><strong>Monthly:</strong> 99€/month</p>
+                    <p><strong>Annual:</strong> 999€/year (save 189€)</p>
+                    <p class="pricing-note">All features included. Only the branding changes.</p>
+                `;
+            }
         }
         
         // Update CTA button
         const ctaButton = document.getElementById('cta-button');
-        ctaButton.href = `#?currency=${currencyCode}`; // Placeholder - replace with actual Qualtrics link
-        ctaButton.style.display = 'inline-block';
+        if (ctaButton) {
+            ctaButton.href = `#?currency=${currencyCode}`; // Placeholder - replace with actual Qualtrics link
+            ctaButton.style.display = 'inline-block';
+        }
     }
     
     // Detect currency on page load
