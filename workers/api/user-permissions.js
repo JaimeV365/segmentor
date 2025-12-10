@@ -18,6 +18,7 @@ const BRAND_PLUS_USERS = [
   // Add your Brand+ user emails here
   // Example: 'user@example.com',
   // Example: 'premium@company.com',
+  // ADD YOUR BRAND+ USER EMAILS BELOW:
 ];
 
 // Brand+ user groups (if using Cloudflare Access groups)

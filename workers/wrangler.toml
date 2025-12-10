@@ -7,8 +7,9 @@ compatibility_date = "2024-01-01"
 
 # Route configuration
 # Route for the API endpoint
+# Note: For Pages.dev domains, use the pattern without zone_name
 routes = [
-  { pattern = "segmentor.pages.dev/api/user-permissions", zone_name = "segmentor.pages.dev" }
+  { pattern = "segmentor.pages.dev/api/user-permissions" }
 ]
 
 # Environment variables (if needed in the future)
