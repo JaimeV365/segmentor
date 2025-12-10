@@ -78,7 +78,7 @@ export default {
       // Get Cloudflare Access headers (if route is protected by Access)
       let email = request.headers.get('Cf-Access-Authenticated-User-Email');
       let groups = request.headers.get('Cf-Access-Groups')?.split(',') || [];
-      let jwt: string | null = null;
+      let jwt = null;
       
       // Method 1: Try Authorization header (localStorage JWT - cookie-free)
       const authHeader = request.headers.get('Authorization');
