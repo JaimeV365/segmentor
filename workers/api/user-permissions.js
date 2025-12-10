@@ -33,13 +33,23 @@ const BRAND_PLUS_GROUPS = [
 
 export default {
   async fetch(request, env, ctx) {
+    // Get the origin from the request for CORS
+    const origin = request.headers.get('Origin') || 'https://segmentor.pages.dev';
+    const allowedOrigins = [
+      'https://segmentor.pages.dev',
+      'https://segmentor.app',
+      'http://localhost:3000' // For local development
+    ];
+    const allowOrigin = allowedOrigins.includes(origin) ? origin : 'https://segmentor.pages.dev';
+    
     // Handle CORS preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         headers: {
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': allowOrigin,
           'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, X-Cloudflare-Email',
+          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Allow-Credentials': 'true',
           'Access-Control-Max-Age': '86400',
         },
       });
@@ -70,7 +80,8 @@ export default {
             status: 401,
             headers: { 
               'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Origin': allowOrigin,
+              'Access-Control-Allow-Credentials': 'true',
             }
           }
         );
@@ -103,7 +114,7 @@ export default {
         {
           headers: { 
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Origin': allowOrigin,
             'Access-Control-Allow-Credentials': 'true',
           }
         }
@@ -115,13 +126,14 @@ export default {
           error: 'Internal Server Error',
           message: error.message 
         }), 
-        {
-          status: 500,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
+          {
+            status: 500,
+            headers: { 
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': allowOrigin,
+              'Access-Control-Allow-Credentials': 'true',
+            }
           }
-        }
       );
     }
   },
