@@ -11,14 +11,18 @@
  * 5. Save and deploy
  */
 
-// List of Brand+ user emails
+// List of Brand+ user emails (exact matches)
 // TODO: Replace this with your actual Brand+ user list
 // For production, consider using Cloudflare KV storage or external database
 const BRAND_PLUS_USERS = [
   // Add your Brand+ user emails here
   // Example: 'user@example.com',
   // Example: 'premium@company.com',
-  // ADD YOUR BRAND+ USER EMAILS BELOW:
+];
+
+// Brand+ email domains (any email ending with these domains)
+const BRAND_PLUS_DOMAINS = [
+  '@teresamonroe.com',
 ];
 
 // Brand+ user groups (if using Cloudflare Access groups)
@@ -72,16 +76,21 @@ export default {
         );
       }
 
-      // Check if user has Brand+ access
-      // Method 1: Check email list
-      const isEmailPremium = BRAND_PLUS_USERS.includes(email);
-      
-      // Method 2: Check groups (if using Cloudflare Access groups)
-      const isGroupPremium = groups.some(group => 
-        BRAND_PLUS_GROUPS.includes(group.trim().toLowerCase())
-      );
-      
-      const isPremium = isEmailPremium || isGroupPremium;
+    // Check if user has Brand+ access
+    // Method 1: Check exact email match
+    const isEmailPremium = BRAND_PLUS_USERS.includes(email);
+    
+    // Method 2: Check email domain (any email ending with @teresamonroe.com, etc.)
+    const isDomainPremium = BRAND_PLUS_DOMAINS.some(domain => 
+      email.toLowerCase().endsWith(domain.toLowerCase())
+    );
+    
+    // Method 3: Check groups (if using Cloudflare Access groups)
+    const isGroupPremium = groups.some(group => 
+      BRAND_PLUS_GROUPS.includes(group.trim().toLowerCase())
+    );
+    
+    const isPremium = isEmailPremium || isDomainPremium || isGroupPremium;
 
       // Return user permissions
       return new Response(
