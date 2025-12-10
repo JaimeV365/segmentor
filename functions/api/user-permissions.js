@@ -22,8 +22,7 @@ const BRAND_PLUS_GROUPS = [
   'premium',
 ];
 
-export async function onRequest(context) {
-  const { request } = context;
+export async function onRequest({ request }) {
   
   // Handle CORS preflight
   if (request.method === 'OPTIONS') {
