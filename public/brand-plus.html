@@ -689,13 +689,15 @@
                 } catch (apiError) {
                     // API endpoint doesn't exist yet - that's okay
                     // If user has Cloudflare cookie, assume they're authenticated
-                    console.log('Auth API not available yet, but cookie exists - assuming authenticated');
+                    console.log('✅ Auth API not available yet, but cookie exists - assuming authenticated');
                     showAuthSuccess();
                     // Hide login container
                     const loginContainer = document.getElementById('loginContainer');
                     if (loginContainer) loginContainer.style.display = 'none';
                     // Redirect to tool after 2 seconds
+                    console.log('⏱️ Will redirect to /tool/ in 2 seconds...');
                     setTimeout(() => {
+                        console.log('🚀 Redirecting to /tool/ now');
                         window.location.href = '/tool/';
                     }, 2000);
                     return true;
@@ -705,10 +707,23 @@
             // Check URL params for auth success (redirected back from Cloudflare)
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('auth') === 'success') {
-                // Give Cloudflare a moment to set cookies
+                console.log('✅ Auth success parameter detected');
+                // Give Cloudflare a moment to set cookies, then check again
                 setTimeout(() => {
-                    checkAuthStatus();
-                }, 500);
+                    console.log('🔄 Re-checking auth status after redirect...');
+                    const recheckResult = await checkAuthStatus();
+                    // If still not authenticated after recheck, show success anyway and redirect
+                    if (!recheckResult && hasAuthCookie) {
+                        console.log('✅ Cookie exists, showing success and redirecting');
+                        showAuthSuccess();
+                        const loginContainer = document.getElementById('loginContainer');
+                        if (loginContainer) loginContainer.style.display = 'none';
+                        setTimeout(() => {
+                            console.log('🚀 Redirecting to /tool/');
+                            window.location.href = '/tool/';
+                        }, 2000);
+                    }
+                }, 1000);
             }
             
             return false;
