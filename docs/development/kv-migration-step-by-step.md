@@ -46,24 +46,33 @@
 
 2. **Open Settings**
    - Click the **"Settings"** tab at the top
-   - Scroll down to find **"Variables"** section
+   - Scroll down past "Variables and Secrets" section
+   - Look for **"Bindings"** section (separate from Variables)
 
 3. **Add KV Namespace Binding**
-   - Under **"Variables"**, find **"KV Namespace Bindings"**
-   - Click **"Add binding"** button
+   - In the **"Bindings"** section, click **"Add binding"** button
+   - A dropdown or form will appear
+   - **Binding type:** Select **"KV Namespace"** from the dropdown
    - **Variable name:** `BRAND_PLUS_USERS`
      - This MUST match what we'll use in code
      - Use exactly: `BRAND_PLUS_USERS` (all caps, underscore)
-   - **KV namespace:** Click dropdown and select `BRAND_PLUS_USERS` (the one you just created)
-   - Click **"Save"**
+   - **KV namespace:** Click dropdown and select `BRAND_PLUS_USERS` (the one you created in Step 1)
+   - Click **"Save"** or **"Add"**
 
-4. **Verify Binding**
-   - You should now see `BRAND_PLUS_USERS` listed under KV Namespace Bindings
-   - If you see it, you're good! Move to Step 3
+4. **Alternative: If you don't see "Bindings" section**
+   - The UI might be different - look for any section that mentions "Bindings", "Resources", or "Integrations"
+   - OR you can skip this step and configure it via `wrangler.toml` only (see Step 3)
+   - The `wrangler.toml` configuration will work for both local and production
+
+5. **Verify Binding**
+   - You should now see `BRAND_PLUS_USERS` listed in the Bindings section
+   - If you don't see it in the dashboard, that's OK - we'll configure it via `wrangler.toml` in Step 3
 
 ---
 
-## Step 3: Update wrangler.toml for Local Development
+## Step 3: Update wrangler.toml (This Configures the Binding)
+
+**Important:** Even if you couldn't add the binding in the dashboard, this step will configure it. The `wrangler.toml` file is used for Worker configuration.
 
 1. **Open `workers/wrangler.toml`**
    - In your code editor, open the file: `workers/wrangler.toml`
@@ -94,6 +103,8 @@
      ```
 
 3. **Save the file**
+
+4. **Note:** When you deploy via `wrangler deploy`, it will automatically configure the binding based on `wrangler.toml`. You don't necessarily need to add it in the dashboard if you configure it here.
 
 ---
 
