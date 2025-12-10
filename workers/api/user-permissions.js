@@ -48,7 +48,7 @@ export default {
         headers: {
           'Access-Control-Allow-Origin': allowOrigin,
           'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, X-User-Email',
+          'Access-Control-Allow-Headers': 'Content-Type, X-User-Email, X-Cloudflare-Email',
           'Access-Control-Allow-Credentials': 'true',
           'Access-Control-Max-Age': '86400',
         },
@@ -63,7 +63,7 @@ export default {
       // Fallback: Get email from custom header (if passed from client)
       // This is needed when Access isn't protecting the route directly
       if (!email) {
-        email = request.headers.get('X-User-Email');
+        email = request.headers.get('X-User-Email') || request.headers.get('X-Cloudflare-Email');
       }
       
       // If still no email, try to extract from CF_Authorization cookie
