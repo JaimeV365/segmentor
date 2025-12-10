@@ -53,7 +53,7 @@ const visualizationRef = useRef<HTMLDivElement>(null);
   const [showDemoTour, setShowDemoTour] = useState(false);
   const [isLoadingDemo, setIsLoadingDemo] = useState(false);
 
-  // Check Cloudflare Access authentication on mount
+  // Check Cloudflare Access authentication on mount and periodically
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -77,7 +77,19 @@ const visualizationRef = useRef<HTMLDivElement>(null);
       }
     };
     
+    // Check immediately on mount
     checkAuth();
+    
+    // Periodic verification every 5 minutes to prevent client-side bypass
+    const verificationInterval = setInterval(() => {
+      console.log('🔄 Periodic Brand+ verification check...');
+      checkAuth();
+    }, 5 * 60 * 1000); // 5 minutes
+    
+    // Cleanup interval on unmount
+    return () => {
+      clearInterval(verificationInterval);
+    };
   }, []);
 
   // Demo data loading function
