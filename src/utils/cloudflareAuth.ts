@@ -18,10 +18,11 @@ export async function checkCloudflareAccess(): Promise<UserAccessProfile> {
     }
 
     // Fetch user permissions from your backend
-    const response = await fetch('/api/user-permissions', {
+    const response = await fetch('https://segmentor.jaime-f57.workers.dev/api/user-permissions', {
       headers: {
         'X-Cloudflare-Email': email
-      }
+      },
+      credentials: 'include'
     });
 
     if (!response.ok) {
