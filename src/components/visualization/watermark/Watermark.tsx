@@ -281,7 +281,14 @@ export const Watermark: React.FC<WatermarkProps> = ({
         onDragStart={(e) => e.preventDefault()}
         onError={(e) => {
           console.error('Error loading logo from URL:', logoUrl);
-          e.currentTarget.src = DEFAULT_LOGO; // Fallback to default logo
+          // Use local fallback to prevent infinite loop
+          const fallbackLogo = '/segmentor-logo.png';
+          if (e.currentTarget.src !== fallbackLogo && !e.currentTarget.src.includes(fallbackLogo)) {
+            e.currentTarget.src = fallbackLogo;
+          } else {
+            // If fallback also fails, hide the image to stop the loop
+            e.currentTarget.style.display = 'none';
+          }
         }}
       />
     </div>
