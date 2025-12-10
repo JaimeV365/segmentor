@@ -39,17 +39,18 @@ export const LeftDrawer: React.FC<LeftDrawerProps> = ({
           <h3 className="drawer-title">
             Menu
             {isPremium && (
-              <Star 
-                size={12}
-                strokeWidth={1.5}
-                fill="transparent"
-                color="#3a863e"
-                style={{
-                  opacity: 0.5,
-                  transition: 'all 0.2s ease'
-                }}
-                title="Brand+ Active"
-              />
+              <span title="Brand+ Active">
+                <Star 
+                  size={12}
+                  strokeWidth={1.5}
+                  fill="transparent"
+                  color="#3a863e"
+                  style={{
+                    opacity: 0.5,
+                    transition: 'all 0.2s ease'
+                  }}
+                />
+              </span>
             )}
           </h3>
         </div>
