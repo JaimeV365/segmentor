@@ -130,16 +130,21 @@ export default {
     // Check if user has Brand+ access
     // Method 1: Check exact email match in KV
     const isEmailPremium = await isEmailInKV(email, env);
+    console.log('KV Email check:', { email, isEmailPremium, key: `user:${email}` });
     
     // Method 2: Check email domain in KV
     const isDomainPremium = await isDomainInKV(email, env);
+    const domain = '@' + email.split('@')[1];
+    console.log('KV Domain check:', { email, domain, isDomainPremium, key: `domain:${domain}` });
     
     // Method 3: Check groups (if using Cloudflare Access groups)
     const isGroupPremium = groups.some(group => 
       BRAND_PLUS_GROUPS.includes(group.trim().toLowerCase())
     );
+    console.log('Group check:', { groups, isGroupPremium });
     
     const isPremium = isEmailPremium || isDomainPremium || isGroupPremium;
+    console.log('Final premium status:', { isPremium, isEmailPremium, isDomainPremium, isGroupPremium });
 
       // Return user permissions
       return new Response(
