@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand+ Authentication - Redirecting...</title>
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3a863e;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        p {
+            color: #6b7280;
+            font-size: 0.9375rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="spinner"></div>
+        <h1>Authenticating...</h1>
+        <p>Please wait while we verify your access.</p>
+    </div>
+
+    <script>
+        // This page is protected by Cloudflare Access
+        // After authentication, Cloudflare will load this page
+        // We then redirect to the success page
+        
+        // Check if user is authenticated (Cloudflare sets cookies/headers)
+        const isAuthenticated = document.cookie.includes('CF_Authorization');
+        
+        // Get the return URL from query params (if provided)
+        const urlParams = new URLSearchParams(window.location.search);
+        const returnUrl = urlParams.get('return');
+        
+        if (isAuthenticated) {
+            // User is authenticated - redirect to success page
+            const redirectUrl = returnUrl || '/brand-plus.html?auth=success';
+            console.log('✅ User authenticated, redirecting to:', redirectUrl);
+            
+            // Small delay to ensure Cloudflare has set all cookies
+            setTimeout(() => {
+                window.location.href = redirectUrl;
+            }, 500);
+        } else {
+            // Not authenticated - Cloudflare Access should have intercepted this
+            // But if we reach here, redirect to login page
+            console.log('⚠️ Not authenticated, redirecting to login');
+            setTimeout(() => {
+                window.location.href = '/brand-plus.html';
+            }, 1000);
+        }
+        
+        // Fallback: if still here after 3 seconds, redirect anyway
+        setTimeout(() => {
+            if (window.location.pathname === '/brand-plus-auth' || 
+                window.location.pathname === '/brand-plus-auth/') {
+                window.location.href = '/brand-plus.html?auth=success';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
+
