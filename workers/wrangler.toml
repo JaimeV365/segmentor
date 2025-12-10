@@ -2,6 +2,10 @@ name = "segmentor"
 main = "api/user-permissions.js"
 compatibility_date = "2024-01-01"
 
+# Enable observability/logging
+[observability]
+enabled = true
+
 # Note: This file should be in the workers/ directory
 # The main file path is relative to this directory
 
