@@ -10,13 +10,20 @@ export async function checkCloudflareAccess(): Promise<UserAccessProfile> {
     // Check for Cloudflare authentication headers/cookies
     const email = getCloudflareCookie();
     
+    console.log('🔍 Cloudflare Auth Check:', { 
+      hasCookie: !!document.cookie.match(/CF_Authorization=/),
+      extractedEmail: email 
+    });
+    
     if (!email) {
+      console.log('⚠️ No email extracted from cookie - user not authenticated');
       return {
         isAuthenticated: false,
         isPremium: false
       };
     }
 
+    console.log('📡 Calling Worker API for:', email);
     // Fetch user permissions from your backend
     // The cookie will be sent automatically with credentials: 'include'
     // We can optionally send the email in a header, but the Worker will decode from cookie if needed
@@ -25,6 +32,11 @@ export async function checkCloudflareAccess(): Promise<UserAccessProfile> {
         'X-User-Email': email || '' // Send email if we extracted it
       },
       credentials: 'include' // This sends the CF_Authorization cookie automatically
+    });
+    
+    console.log('📥 Worker API Response:', { 
+      status: response.status, 
+      ok: response.ok 
     });
 
     if (!response.ok) {
