@@ -1,0 +1,17 @@
+* [33m32d7737[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32msandbox[m[33m, [m[1;31morigin/sandbox[m[33m)[m Update sandbox branch with Qualtrics contact form and latest changes
+[31m|[m *   [33mc504159[m[33m ([m[1;35mrefs/stash[m[33m)[m WIP on sandbox: 70f36d4 âœ¨ Improved watermark drag-and-drop functionality and constraints
+[31m|[m[31m/[m[33m|[m[34m\[m  
+[31m|[m [33m|[m * [33m44d8763[m untracked files on sandbox: 70f36d4 âœ¨ Improved watermark drag-and-drop functionality and constraints
+[31m|[m * [33mc77da91[m index on sandbox: 70f36d4 âœ¨ Improved watermark drag-and-drop functionality and constraints
+[31m|[m[31m/[m  
+* [33m70f36d4[m âœ¨ Improved watermark drag-and-drop functionality and constraints
+* [33mc47213c[m  Export: added PNG/PDF via unified panel, CSV (UTF-8) raw data with segment; export icon + styles harmonised; watermark overlay in exports; padding tuned for legends; panel titles cleaned (Main Chart Export); visualisation capture switched to section wrapper; assorted UI polish
+* [33mf60b74e[m  Frequency filter centralized in FilterContext; connection-safe date presets; removed redundant Filters tab header; robust date parsing; wired frequency to main/report-local states; added compare logic for frequency.
+* [33m85e102c[m  Added new feature: Removed mode badges from Reports header, added DRY info-ribbon under Data Report with British English wording, and standardised info icon styling to match Response Concentration.
+* [33m9259c12[m chore(watermark): increase size range to 100400; keep clamp safe; update panel inputs; improve hand icon with disabled state (grey + slash)
+* [33m68e6f2c[m  Added new feature: Premium-only watermark drag toggle with hand icon; synced cursor+DND to WM_DRAG_ENABLED; compact control next to Rotate; min opacity 0.4; kept pointer events stable and clamped movement
+* [33m9472385[m feat(watermark dnd): premium + panel-open gated via effect flag with handlers-only gating; pointer events remain on; cursor reflects state
+* [33m2ff532c[m revert(watermark dnd): remove premium/panel gating; restore always-on drag handlers; keep opacity min 0.4
+* [33me0d09d9[m feat(watermark): gate DnD to Premium while panel is open (WM_DRAG_ENABLED); keep pointer events always on; handlers conditional
+* [33mc42260c[m revert(scope): remove drag gating by panel; always-on DnD restored; keep opacity min at 0.4
+* [33m2c6932c[m fix(watermark): restore drag responsiveness by raising z-index and routing events to container (img pointer-events:none)

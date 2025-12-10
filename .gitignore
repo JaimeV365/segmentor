@@ -28,3 +28,7 @@ src/utils/secretCodes.ts
 
 # Browser data
 AppData/
+
+# Private documentation (not for public repo)
+docs/development/deployment-architecture.md
+docs/development/domain-setup-guide.md

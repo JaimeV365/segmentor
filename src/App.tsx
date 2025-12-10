@@ -18,6 +18,7 @@ import WelcomeBanner from './components/ui/WelcomeBanner/WelcomeBanner';
 import { DemoTour } from './components/ui/DemoTour';
 import { UnifiedLoadingPopup } from './components/ui/UnifiedLoadingPopup';
 import { UnsavedChangesModal } from './components/ui/UnsavedChangesModal/UnsavedChangesModal';
+import { BrandPlusIndicator } from './components/ui/BrandPlusIndicator/BrandPlusIndicator';
 import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 import './App.css';
 import './components/visualization/controls/ResponsiveDesign.css';
@@ -350,6 +351,26 @@ useEffect(() => {
       // Load the .seg file
       const saveData = await comprehensiveSaveLoadService.loadComprehensiveProgress(file);
       
+      // Check if this is a Brand+ user's save file
+      if (saveData.context?.premium?.brandPlusUser && !isPremium) {
+        // This save was created by a Brand+ user, but current user is not authenticated
+        const shouldLogin = window.confirm(
+          'This save file was created with Brand+ features. To access all features, please sign in to Brand+.\n\n' +
+          'Would you like to sign in now?'
+        );
+        
+        if (shouldLogin) {
+          window.location.href = '/brand-plus.html';
+          return; // Don't load the file yet - wait for authentication
+        }
+        // User chose not to login - continue loading but without Brand+ features
+        notification.showNotification({
+          title: 'Brand+ Features Disabled',
+          message: 'This file was created with Brand+ features. Some features may not be available.',
+          type: 'warning'
+        });
+      }
+      
       // Handle both old and new format
       if (saveData.version === '2.0.0' && saveData.dataTable) {
         // New format: Load from dataTable
@@ -649,6 +670,14 @@ const handleTerroristsZoneSizeChange = (size: number) => {
       <UnifiedLoadingPopup isVisible={isLoadingDemo} text="segmenting" size="medium" />
       
       <ScreenSizeWarning />
+      
+      {/* Brand+ Indicator - Always visible in top-right */}
+      <BrandPlusIndicator 
+        isPremium={isPremium}
+        onSignIn={() => {
+          window.location.href = '/brand-plus.html';
+        }}
+      />
       
       {/* App Header - Removed redundant header, mode indicator moved to welcome banner */}
       

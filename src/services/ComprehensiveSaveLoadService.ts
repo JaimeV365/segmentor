@@ -241,7 +241,9 @@ class ComprehensiveSaveLoadServiceImpl implements SaveLoadService {
         
         premium: params.isPremium ? {
           isPremium: true,
-          effects: Array.from(params.effects || new Set())
+          effects: Array.from(params.effects || new Set()),
+          brandPlusUser: true, // Mark this save as created by a Brand+ user
+          brandPlusUserEmail: undefined // Could be populated from auth context in the future
         } : undefined,
         
         // Report Visibility States

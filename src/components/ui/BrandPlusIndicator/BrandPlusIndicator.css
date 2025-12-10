@@ -1,0 +1,71 @@
+.brand-plus-indicator {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: white;
+  border: 2px solid #3a863e;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #3a863e;
+}
+
+.brand-plus-indicator:hover {
+  background: #f0f9f0;
+  box-shadow: 0 4px 12px rgba(58, 134, 62, 0.2);
+  transform: translateY(-1px);
+}
+
+.brand-plus-indicator:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(58, 134, 62, 0.15);
+}
+
+.brand-plus-indicator.active {
+  background: #f0f9f0;
+  border-color: #3a863e;
+  cursor: default;
+}
+
+.brand-plus-indicator.active:hover {
+  background: #e8f5e8;
+}
+
+.brand-plus-indicator.inactive {
+  background: white;
+  border-color: #3a863e;
+  cursor: pointer;
+}
+
+.brand-plus-indicator-text {
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* Responsive: Hide text on small screens, show icon only */
+@media (max-width: 640px) {
+  .brand-plus-indicator {
+    padding: 10px 12px;
+  }
+  
+  .brand-plus-indicator-text {
+    display: none;
+  }
+}
+
+/* Ensure it's above modals but below critical UI */
+@media (min-width: 641px) {
+  .brand-plus-indicator {
+    z-index: 1000;
+  }
+}
+

@@ -98,6 +98,8 @@ export interface ApostlesSaveData {
       isPremium: boolean;
       effects: string[];
       watermarkSettings?: Record<string, any>;
+      brandPlusUser?: boolean; // Marker indicating this save was created by a Brand+ user
+      brandPlusUserEmail?: string; // Email of the Brand+ user (optional, for future use)
     };
     
     // Report Visibility States
