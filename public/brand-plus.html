@@ -657,8 +657,13 @@
     // Cloudflare Access Integration
     async function checkAuthStatus() {
         try {
-            // Check if Cloudflare cookie exists
-            const hasAuthCookie = document.cookie.includes('CF_Authorization');
+            // Check if Cloudflare cookie exists and is valid
+            // Cloudflare Access sets CF_Authorization cookie with a JWT token
+            const authCookie = document.cookie.split(';').find(c => c.trim().startsWith('CF_Authorization='));
+            const hasAuthCookie = authCookie && authCookie.length > 20; // Basic validation - JWT tokens are longer
+            
+            console.log('🔍 Checking authentication...');
+            console.log('🍪 Cookie found:', !!authCookie);
             
             if (hasAuthCookie) {
                 // User is authenticated via Cloudflare Access
@@ -687,20 +692,12 @@
                         }
                     }
                 } catch (apiError) {
-                    // API endpoint doesn't exist yet - that's okay
-                    // If user has Cloudflare cookie, assume they're authenticated
-                    console.log('✅ Auth API not available yet, but cookie exists - assuming authenticated');
-                    showAuthSuccess();
-                    // Hide login container
-                    const loginContainer = document.getElementById('loginContainer');
-                    if (loginContainer) loginContainer.style.display = 'none';
-                    // Redirect to tool after 2 seconds
-                    console.log('⏱️ Will redirect to /tool/ in 2 seconds...');
-                    setTimeout(() => {
-                        console.log('🚀 Redirecting to /tool/ now');
-                        window.location.href = '/tool/';
-                    }, 2000);
-                    return true;
+                    // API endpoint doesn't exist yet
+                    // DON'T assume authentication - require actual Cloudflare login
+                    console.log('⚠️ Auth API not available - cannot verify authentication');
+                    console.log('💡 User must complete Cloudflare Access login to proceed');
+                    // Don't redirect - let user click sign in button
+                    return false;
                 }
             }
             
@@ -712,19 +709,11 @@
                 setTimeout(async () => {
                     console.log('🔄 Re-checking auth status after redirect...');
                     const recheckResult = await checkAuthStatus();
-                    // If still not authenticated after recheck but cookie exists, redirect anyway
-                    if (!recheckResult) {
-                        const hasCookie = document.cookie.includes('CF_Authorization');
-                        if (hasCookie) {
-                            console.log('✅ Cookie exists, showing success and redirecting');
-                            showAuthSuccess();
-                            const loginContainer = document.getElementById('loginContainer');
-                            if (loginContainer) loginContainer.style.display = 'none';
-                            setTimeout(() => {
-                                console.log('🚀 Redirecting to /tool/');
-                                window.location.href = '/tool/';
-                            }, 2000);
-                        }
+                    // Only redirect if authentication was actually verified
+                    if (recheckResult) {
+                        console.log('✅ Authentication verified, redirect will happen');
+                    } else {
+                        console.log('⚠️ Authentication not verified - user may need to sign in again');
                     }
                 }, 1000);
             }

@@ -52,6 +52,33 @@ const visualizationRef = useRef<HTMLDivElement>(null);
   const [showDemoTour, setShowDemoTour] = useState(false);
   const [isLoadingDemo, setIsLoadingDemo] = useState(false);
 
+  // Check Cloudflare Access authentication on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { checkCloudflareAccess } = await import('./utils/cloudflareAuth');
+        const accessProfile = await checkCloudflareAccess();
+        
+        if (accessProfile.isAuthenticated && accessProfile.isPremium) {
+          console.log('✅ Brand+ authenticated:', accessProfile.email);
+          setIsPremium(true);
+        } else if (accessProfile.isAuthenticated && !accessProfile.isPremium) {
+          console.log('ℹ️ Authenticated but not Brand+ user:', accessProfile.email);
+          setIsPremium(false);
+        } else {
+          console.log('ℹ️ Not authenticated with Cloudflare Access');
+          setIsPremium(false);
+        }
+      } catch (error) {
+        console.log('Cloudflare auth check failed (API may not exist yet):', error);
+        // Don't set premium if check fails - require actual authentication
+        setIsPremium(false);
+      }
+    };
+    
+    checkAuth();
+  }, []);
+
   // Demo data loading function
   const handleDemoDataLoad = async () => {
     try {
