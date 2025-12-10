@@ -661,7 +661,8 @@
             const hasAuthCookie = document.cookie.includes('CF_Authorization');
             
             if (hasAuthCookie) {
-                // Try to verify with backend API
+                // User is authenticated via Cloudflare Access
+                // Try to verify with backend API (if available)
                 // Note: This endpoint needs to be created in Cloudflare Workers
                 try {
                     const response = await fetch('/api/user-permissions', {
@@ -686,8 +687,18 @@
                         }
                     }
                 } catch (apiError) {
-                    // API endpoint might not exist yet - that's okay
-                    console.log('Auth API not available yet:', apiError);
+                    // API endpoint doesn't exist yet - that's okay
+                    // If user has Cloudflare cookie, assume they're authenticated
+                    console.log('Auth API not available yet, but cookie exists - assuming authenticated');
+                    showAuthSuccess();
+                    // Hide login container
+                    const loginContainer = document.getElementById('loginContainer');
+                    if (loginContainer) loginContainer.style.display = 'none';
+                    // Redirect to tool after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = '/tool/';
+                    }, 2000);
+                    return true;
                 }
             }
             
