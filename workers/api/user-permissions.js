@@ -56,10 +56,38 @@ export default {
     }
 
     try {
-      // Get Cloudflare Access headers
-      // These are automatically added by Cloudflare Access when user is authenticated
-      const email = request.headers.get('Cf-Access-Authenticated-User-Email');
-      const groups = request.headers.get('Cf-Access-Groups')?.split(',') || [];
+      // Get Cloudflare Access headers (if route is protected by Access)
+      let email = request.headers.get('Cf-Access-Authenticated-User-Email');
+      let groups = request.headers.get('Cf-Access-Groups')?.split(',') || [];
+      
+      // Fallback: Get email from custom header (if passed from client)
+      // This is needed when Access isn't protecting the route directly
+      if (!email) {
+        email = request.headers.get('X-User-Email');
+      }
+      
+      // If still no email, try to extract from CF_Authorization cookie
+      if (!email) {
+        const cookieHeader = request.headers.get('Cookie');
+        if (cookieHeader) {
+          const authCookie = cookieHeader.split(';').find(c => c.trim().startsWith('CF_Authorization='));
+          if (authCookie) {
+            try {
+              const cookieValue = authCookie.split('=')[1];
+              const parts = cookieValue.split('.');
+              if (parts.length === 3) {
+                // Decode JWT payload
+                const payload = JSON.parse(
+                  atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
+                );
+                email = payload.email || payload.sub || null;
+              }
+            } catch (e) {
+              console.log('Could not decode cookie:', e);
+            }
+          }
+        }
+      }
       
       // Log for debugging (remove in production or use proper logging)
       console.log('API Request:', {
