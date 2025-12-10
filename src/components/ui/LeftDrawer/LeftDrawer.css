@@ -83,17 +83,7 @@
   gap: 8px;
 }
 
-.brand-plus-indicator {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
-}
-
-.brand-plus-indicator:hover {
-  opacity: 1;
-}
+/* Brand+ indicator removed - now just a small icon in drawer header when active */
 
 /* Drawer Content */
 .drawer-content {

@@ -37,7 +37,7 @@ export const BrandPlusIndicator: React.FC<BrandPlusIndicatorProps> = ({
     <div 
       className={`brand-plus-indicator ${isPremium ? 'active' : 'inactive'}`}
       onClick={handleClick}
-      title={isPremium ? 'Brand+ Active' : 'Sign in to Brand+'}
+      title={isPremium ? 'Brand+ Active' : 'Brand+ Login'}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
@@ -64,7 +64,7 @@ export const BrandPlusIndicator: React.FC<BrandPlusIndicatorProps> = ({
             color="#3a863e"
             strokeWidth={2}
           />
-          <span className="brand-plus-indicator-text">Sign in</span>
+          <span className="brand-plus-indicator-text">Brand+ Login</span>
         </>
       )}
     </div>

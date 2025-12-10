@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronLeft, Star, ArrowBigUpDash } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Star } from 'lucide-react';
 import './LeftDrawer.css';
 
 interface LeftDrawerProps {
@@ -38,39 +38,19 @@ export const LeftDrawer: React.FC<LeftDrawerProps> = ({
         <div className="drawer-header">
           <h3 className="drawer-title">
             Menu
-            <span 
-              className="brand-plus-indicator"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (!isPremium) {
-                  window.location.href = '/brand-plus.html';
-                }
-              }}
-              title={isPremium ? 'Brand+ Active' : 'Upgrade to Brand+'}
-            >
-              {isPremium ? (
-                <Star 
-                  size={16}
-                  strokeWidth={2}
-                  fill="transparent"
-                  color="#3a863e"
-                  style={{
-                    transition: 'all 0.2s ease',
-                    cursor: 'default'
-                  }}
-                />
-              ) : (
-                <ArrowBigUpDash 
-                  size={20}
-                  strokeWidth={2}
-                  color="#3a863e"
-                  style={{
-                    transition: 'all 0.2s ease',
-                    cursor: 'pointer'
-                  }}
-                />
-              )}
-            </span>
+            {isPremium && (
+              <Star 
+                size={12}
+                strokeWidth={1.5}
+                fill="transparent"
+                color="#3a863e"
+                style={{
+                  opacity: 0.5,
+                  transition: 'all 0.2s ease'
+                }}
+                title="Brand+ Active"
+              />
+            )}
           </h3>
         </div>
         
