@@ -709,19 +709,22 @@
             if (urlParams.get('auth') === 'success') {
                 console.log('✅ Auth success parameter detected');
                 // Give Cloudflare a moment to set cookies, then check again
-                setTimeout(() => {
+                setTimeout(async () => {
                     console.log('🔄 Re-checking auth status after redirect...');
                     const recheckResult = await checkAuthStatus();
-                    // If still not authenticated after recheck, show success anyway and redirect
-                    if (!recheckResult && hasAuthCookie) {
-                        console.log('✅ Cookie exists, showing success and redirecting');
-                        showAuthSuccess();
-                        const loginContainer = document.getElementById('loginContainer');
-                        if (loginContainer) loginContainer.style.display = 'none';
-                        setTimeout(() => {
-                            console.log('🚀 Redirecting to /tool/');
-                            window.location.href = '/tool/';
-                        }, 2000);
+                    // If still not authenticated after recheck but cookie exists, redirect anyway
+                    if (!recheckResult) {
+                        const hasCookie = document.cookie.includes('CF_Authorization');
+                        if (hasCookie) {
+                            console.log('✅ Cookie exists, showing success and redirecting');
+                            showAuthSuccess();
+                            const loginContainer = document.getElementById('loginContainer');
+                            if (loginContainer) loginContainer.style.display = 'none';
+                            setTimeout(() => {
+                                console.log('🚀 Redirecting to /tool/');
+                                window.location.href = '/tool/';
+                            }, 2000);
+                        }
                     }
                 }, 1000);
             }
