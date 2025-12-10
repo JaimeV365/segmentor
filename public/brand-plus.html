@@ -729,16 +729,15 @@
         const authError = document.getElementById('authError');
         if (authError) authError.style.display = 'none';
         
-        // Get current URL for return redirect
-        const returnUrl = encodeURIComponent(window.location.origin + '/brand-plus.html?auth=success');
-        
         // Redirect to Cloudflare Access protected route
-        // After authentication, Cloudflare will redirect back to returnUrl
-        const loginUrl = `${window.location.origin}/brand-plus-auth?return=${returnUrl}`;
+        // NOTE: The redirect URL after login must be configured in Cloudflare Access dashboard
+        // Go to: Zero Trust → Access → Applications → [Your App] → Settings
+        // Set "Allowed redirect URLs" or "Redirect URL" to: https://segmentor.pages.dev/brand-plus.html?auth=success
+        const loginUrl = `${window.location.origin}/brand-plus-auth`;
         
         console.log('🔐 Redirecting to Cloudflare Access login...');
         console.log('📍 Login URL:', loginUrl);
-        console.log('🔄 Will redirect back to:', window.location.origin + '/brand-plus.html?auth=success');
+        console.log('💡 After login, Cloudflare will redirect based on dashboard settings');
         
         // Redirect the entire page to the login URL
         window.location.href = loginUrl;

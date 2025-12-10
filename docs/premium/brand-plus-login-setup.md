@@ -51,9 +51,12 @@ Create a Cloudflare Access-protected route that handles authentication:
      - Send user email: `Cf-Access-Authenticated-User-Email`
      - Send user groups: `Cf-Access-Groups`
 
-4. **Redirect Settings:**
-   - **After login:** Redirect to `/brand-plus.html?auth=success`
-   - This allows the page to detect successful authentication
+4. **Redirect Settings (IMPORTANT):**
+   - In your Cloudflare Access application settings, look for:
+     - **"Allowed redirect URLs"** or **"Redirect URL"** field
+   - Set it to: `https://segmentor.pages.dev/brand-plus.html?auth=success`
+   - **Note:** This must be configured in the dashboard - URL parameters won't work
+   - This is where users will be redirected after successful authentication
 
 ### Step 3: Customize Login Page (Optional but Recommended)
 
