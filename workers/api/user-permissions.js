@@ -67,7 +67,7 @@ export default {
         headers: {
           'Access-Control-Allow-Origin': allowOrigin,
           'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, X-User-Email, X-Cloudflare-Email',
+          'Access-Control-Allow-Headers': 'Content-Type, X-User-Email, X-Cloudflare-Email, Authorization',
           'Access-Control-Allow-Credentials': 'true',
           'Access-Control-Max-Age': '86400',
         },
@@ -78,15 +78,34 @@ export default {
       // Get Cloudflare Access headers (if route is protected by Access)
       let email = request.headers.get('Cf-Access-Authenticated-User-Email');
       let groups = request.headers.get('Cf-Access-Groups')?.split(',') || [];
+      let jwt: string | null = null;
       
-      // Fallback: Get email from custom header (if passed from client)
-      // This is needed when Access isn't protecting the route directly
+      // Method 1: Try Authorization header (localStorage JWT - cookie-free)
+      const authHeader = request.headers.get('Authorization');
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        jwt = authHeader.substring(7);
+        try {
+          const parts = jwt.split('.');
+          if (parts.length === 3) {
+            const payload = JSON.parse(
+              atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
+            );
+            email = payload.email || payload.sub || email; // Use JWT email if available
+            console.log('✅ JWT extracted from Authorization header (localStorage)');
+          }
+        } catch (e) {
+          console.log('Could not decode JWT from Authorization header:', e);
+        }
+      }
+      
+      // Method 2: Fallback - Get email from custom header (if passed from client)
       if (!email) {
         email = request.headers.get('X-User-Email') || request.headers.get('X-Cloudflare-Email');
       }
       
-      // If still no email, try to extract from CF_Authorization cookie
-      if (!email) {
+      // Method 3: Fallback - Extract from CF_Authorization cookie (for initial login only)
+      // After initial login, we use localStorage JWT instead
+      if (!email && !jwt) {
         const cookieHeader = request.headers.get('Cookie');
         if (cookieHeader) {
           const authCookie = cookieHeader.split(';').find(c => c.trim().startsWith('CF_Authorization='));
@@ -100,6 +119,7 @@ export default {
                   atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
                 );
                 email = payload.email || payload.sub || null;
+                console.log('✅ Email extracted from cookie (initial login)');
               }
             } catch (e) {
               console.log('Could not decode cookie:', e);

@@ -331,21 +331,41 @@ You have two options. Choose the one that works best for you:
 
 ## Step 8: Add New Customers (Going Forward)
 
-### Method 1: Cloudflare Dashboard (Easiest)
+**IMPORTANT: You must add emails in TWO places:**
+
+1. **Cloudflare Access Policy** (so they can log in)
+2. **KV Namespace** (so they get Brand+ features)
+
+### Adding to Access Policy (Required for Login)
+
+1. Go to **Zero Trust** → **Access** → **Applications**
+2. Click on your Brand+ authentication application
+3. Edit the policy
+4. Add the customer email to the policy
+5. Click **"Save"**
+
+### Adding to KV (Required for Brand+ Features)
+
+**Method 1: Cloudflare Dashboard (Easiest)**
 
 1. Go to **Workers & Pages** → **KV** → `BRAND_PLUS_USERS`
 2. Click **"Add entry"**
-3. **Key:** `user:newcustomer@company.com`
+3. **Key:** `user:newcustomer@company.com` (must include `user:` prefix)
 4. **Value:** `true`
 5. Click **"Save"**
-6. **Done!** No code changes needed
 
-### Method 2: Wrangler CLI
+**Method 2: Wrangler CLI**
 
 ```bash
 cd workers
 npx wrangler kv:key put "user:newcustomer@company.com" "true" --namespace-id=YOUR_NAMESPACE_ID
 ```
+
+### Summary
+
+- **Access Policy** = Can they log in? (Authentication)
+- **KV** = Do they get Brand+ features? (Authorization)
+- **Both are required!**
 
 ---
 
