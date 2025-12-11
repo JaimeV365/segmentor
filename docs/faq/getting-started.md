@@ -32,6 +32,23 @@ Optional columns you can add:
 
 Try with sample data first to see the format.
 
+## Where can I get satisfaction and loyalty data from?
+**Keywords:** where to get data, data sources, collect data, measure satisfaction, measure loyalty
+
+You can source satisfaction and loyalty data from multiple places:
+
+**For Loyalty Scores:**
+- **Purchase behaviour:** Track repeat purchases, subscription renewals, or frequency of transactions
+- **Survey questions:** Ask "How likely are you to continue buying from us?" (1-5, 1-7, or 1-10 scale)
+- **Recommendation questions:** "How likely are you to recommend us?" is commonly used as a loyalty measure
+
+**For Satisfaction Scores:**
+- **Listening strategies:** Analyse customer service chats, support emails, complaints, reviews, and social media comments using sentiment analysis
+- **Surveys:** Ask "How satisfied are you with our product/service?" (1-5, 1-7, or 1-10 scale)
+- **Review scores:** Convert review ratings (e.g., 1-5 stars) to satisfaction scores
+
+The tool accepts satisfaction and loyalty scores on 1-5, 1-7, or 1-10 scales and will automatically normalise them if needed. You can mix different scales in the same dataset.
+
 ## What format should my CSV be?
 **Keywords:** CSV format, file format, upload format, data structure
 

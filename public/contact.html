@@ -101,6 +101,14 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://segmentor.app/contact.html" />
     
+    <!-- Content Security Policy Meta Tag (fallback if _headers not applied) -->
+    <!-- Per Qualtrics documentation: Required CSP directives for intercepts to work -->
+    <!-- connect-src https://*.qualtrics.com -->
+    <!-- frame-src https://*.qualtrics.com -->
+    <!-- img-src https://siteintercept.qualtrics.com -->
+    <!-- script-src https://*.qualtrics.com (plus 'unsafe-inline' and 'unsafe-eval' for JavaScript variables) -->
+    <meta http-equiv="Content-Security-Policy" content="connect-src https://*.qualtrics.com; frame-src https://*.qualtrics.com; img-src https://siteintercept.qualtrics.com data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.qualtrics.com; style-src 'self' 'unsafe-inline' https://*.qualtrics.com;">
+    
     <!-- AI-Friendly Meta Tags -->
     <meta name="generator" content="segmentor.app" />
     <meta name="format-detection" content="telephone=no" />
@@ -133,6 +141,18 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/favicon.ico">
+    
+    <!-- Qualtrics Website Feedback Snippet - Moved to head per Qualtrics documentation -->
+    <!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+    <!-- IMPORTANT: If intercept is not loading, verify the deployment code in Qualtrics Deployment tab -->
+    <!-- Zone ID: ZN_11X8CuCOswXGKnC -->
+    <script type='text/javascript'>
+    (function(){var g=function(g){
+    this.go=function(){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)};
+    this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+    try{(new g("https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_11X8CuCOswXGKnC")).start()}catch(i){}})();
+    </script>
+    <!--END QUALTRICS WEBSITE FEEDBACK SNIPPET-->
 </head>
 <body>
 
@@ -293,14 +313,8 @@
                 <!-- Qualtrics Site Intercept Embed -->
                 <!-- Creative Insertion Point ID: ZN_11X8CuCOswXGKnC -->
                 <div class="qualtrics-survey-container" id="qualtrics-survey">
-                    <!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
-                    <script type='text/javascript'>
-                    (function(){var g=function(g){
-                    this.go=function(){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)};
-                    this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
-                    try{(new g("https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_11X8CuCOswXGKnC")).start()}catch(i){}})();
-                    </script><div id='ZN_11X8CuCOswXGKnC'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
-                    <!--END WEBSITE FEEDBACK SNIPPET-->
+                    <!-- Target div for Qualtrics creative insertion -->
+                    <div id='ZN_11X8CuCOswXGKnC'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
                 </div>
             </div>
 
@@ -634,11 +648,12 @@
             if (targetDiv && targetDiv.children.length === 0) {
                 var errorMsg = document.createElement('div');
                 errorMsg.style.cssText = 'padding: 24px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #991b1b;';
-                errorMsg.innerHTML = '<strong>⚠️ Qualtrics form unavailable</strong><br><br>' +
-                    'The contact form is currently unavailable. This may be because:<br>' +
-                    '• The domain needs to be whitelisted in Qualtrics settings<br>' +
-                    '• You are testing on localhost (forms work on production domains)<br><br>' +
-                    'Please contact support or try again from the production website.';
+                errorMsg.innerHTML = '<strong>⚠️ Contact form unavailable</strong><br><br>' +
+                    'The contact form could not be loaded. This may be because:<br>' +
+                    '• <strong>Firefox Enhanced Tracking Protection</strong> is blocking the form (most common)<br>' +
+                    '• Browser privacy extensions are blocking third-party scripts<br>' +
+                    '• Network or firewall restrictions<br><br>' +
+                    '<strong>To fix:</strong> Disable Enhanced Tracking Protection for this site, or try a different browser.';
                 targetDiv.appendChild(errorMsg);
             }
         }
@@ -648,7 +663,42 @@
             if (e.target && e.target.src && e.target.src.includes('siteintercept.qualtrics.com')) {
                 console.error('❌ Qualtrics chunk failed to load:', e.target.src);
                 console.error('   Current domain:', window.location.hostname);
-                console.error('   This usually means the domain is not whitelisted in Qualtrics.');
+                console.error('   Error details:', {
+                    message: e.message,
+                    filename: e.filename,
+                    lineno: e.lineno,
+                    colno: e.colno,
+                    error: e.error
+                });
+                console.error('   Common causes:');
+                console.error('   1. Firefox Enhanced Tracking Protection (most common)');
+                console.error('   2. Browser privacy extensions blocking third-party scripts');
+                console.error('   3. CSP headers blocking the request (check Network tab)');
+                console.error('   4. Network/firewall restrictions');
+                
+                // Try to fetch the script URL directly to see the actual error
+                fetch(e.target.src)
+                    .then(response => {
+                        console.error('   Script URL Response Status:', response.status, response.statusText);
+                        console.error('   Response Headers:', Object.fromEntries(response.headers.entries()));
+                        return response.text();
+                    })
+                    .then(text => {
+                        console.error('   Response Preview:', text.substring(0, 200));
+                    })
+                    .catch(fetchError => {
+                        console.error('   Fetch Error:', fetchError);
+                        console.error('   Error Type:', fetchError.name);
+                        console.error('   Error Message:', fetchError.message);
+                        if (fetchError.message.includes('Failed to fetch') || fetchError.message.includes('ERR_NAME_NOT_RESOLVED')) {
+                            console.error('   ⚠️ DNS Resolution Error - The Qualtrics subdomain may not exist.');
+                            console.error('   This usually means:');
+                            console.error('   1. The intercept is not activated/published in Qualtrics');
+                            console.error('   2. The Zone ID or deployment code is incorrect');
+                            console.error('   3. The project needs to be re-deployed in Qualtrics');
+                        }
+                    });
+                
                 // Only show error if Qualtrics hasn't loaded after a delay
                 setTimeout(function() {
                     if (typeof Qualtrics === 'undefined') {

@@ -1,0 +1,14 @@
+# Cloudflare Pages Headers Configuration
+# Content Security Policy for Qualtrics Website / App Insights
+# Per Qualtrics documentation: https://www.qualtrics.com/support/website-app-feedback/getting-started-with-website-app-feedback/website-app-feedback-technical-documentation/
+# Required CSP directives:
+# - connect-src https://*.qualtrics.com
+# - frame-src https://*.qualtrics.com
+# - img-src https://siteintercept.qualtrics.com
+# - script-src https://*.qualtrics.com (plus 'unsafe-inline' and 'unsafe-eval' for JavaScript variables)
+
+/contact.html
+  Content-Security-Policy: connect-src https://*.qualtrics.com; frame-src https://*.qualtrics.com; img-src https://siteintercept.qualtrics.com data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.qualtrics.com; style-src 'self' 'unsafe-inline' https://*.qualtrics.com;
+
+/*
+  Content-Security-Policy: connect-src https://*.qualtrics.com; frame-src https://*.qualtrics.com; img-src https://siteintercept.qualtrics.com data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.qualtrics.com; style-src 'self' 'unsafe-inline' https://*.qualtrics.com;
