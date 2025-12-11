@@ -11,6 +11,12 @@
 # production
 /build
 
+# Development - ignore built React app in public/tool (created during build)
+/public/tool/index.html
+/public/tool/static
+/public/tool/asset-manifest.json
+/public/tool/index.html.redirect
+
 # misc
 .DS_Store
 .env.local

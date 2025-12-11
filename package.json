@@ -33,7 +33,6 @@
     "xlsx": "^0.18.5"
   },
   "scripts": {
-    "prestart": "node scripts/dev-setup.js",
     "start": "react-scripts start",
     "build": "set CI=false && react-scripts build && node scripts/cleanup-old-nav.js && node scripts/build-navigation.js && npm run deploy:prepare && npm run fix-root",
     "build:nav": "node scripts/build-navigation.js",
