@@ -160,11 +160,10 @@
   <div class="nav-container">
     <div class="nav-logo">
       <a href="/">
-        <img src="/segmentor-logo.png" alt="Segmentor" />
+        <img src="/segmentor-logo.png" alt="Segmentor" onerror="this.src='/icons/segmentor-logo.png'; this.onerror=null;" />
       </a>
     </div>
     <div class="nav-links">
-      <a href="/" class="nav-link">Home</a>
       <a href="/about.html" class="nav-link">About</a>
       <a href="/faq.html" class="nav-link">FAQ</a>
       <a href="/contact.html" class="nav-link">Contact</a>
@@ -260,6 +259,7 @@
                             <li>Technical troubleshooting</li>
                             <li>Best practices and tips</li>
                         </ul>
+                        <div class="query-type-button">Get Help →</div>
                     </button>
                     
                     <button class="query-type-card" data-query-type="brand-plus" data-block="Brand+" onclick="handleQueryTypeClick('Brand+')">
@@ -296,6 +296,7 @@
                             <li>Implementation support</li>
                             <li>Strategic planning</li>
                         </ul>
+                        <div class="query-type-button">Get Started →</div>
                     </button>
                 </div>
             </div>
