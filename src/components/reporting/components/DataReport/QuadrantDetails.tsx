@@ -33,11 +33,16 @@ export const QuadrantDetails: React.FC<QuadrantDetailsProps> = ({
   };
 
   // Transform distribution data to BarChart format
-  const transformData = (distribution: Record<number, number>, maxValue: number): BarChartData[] => {
-    return Array.from({ length: maxValue }, (_, i) => ({
-      value: i + 1,
-      count: distribution[i + 1] || 0
-    }));
+  const transformData = (distribution: Record<number, number>, scale: string): BarChartData[] => {
+    const [min, max] = scale.split('-').map(Number);
+    const barCount = max - min + 1;
+    return Array.from({ length: barCount }, (_, i) => {
+      const value = min + i;
+      return {
+        value: value,
+        count: distribution[value] || 0
+      };
+    });
   };
 
   // Helper function to safely find the most common score
@@ -72,7 +77,7 @@ export const QuadrantDetails: React.FC<QuadrantDetailsProps> = ({
               </span>
             </div>
             <BarChart
-              data={transformData(stats.satisfaction.distribution, parseInt(satisfactionScale.split('-')[1]))}
+              data={transformData(stats.satisfaction.distribution, satisfactionScale)}
               showGrid={false}
               showLabels={true}
               interactive={isPremium}
@@ -89,7 +94,7 @@ export const QuadrantDetails: React.FC<QuadrantDetailsProps> = ({
               </span>
             </div>
             <BarChart
-              data={transformData(stats.loyalty.distribution, parseInt(loyaltyScale.split('-')[1]))}
+              data={transformData(stats.loyalty.distribution, loyaltyScale)}
               showGrid={false}
               showLabels={true}
               interactive={isPremium}

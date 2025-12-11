@@ -16,9 +16,9 @@ const AxisLegends: React.FC<AxisLegendsProps> = ({
 }) => {
   if (!showLegends) return null;
 
-  // Extract scale ranges
-  const [, satMax] = satisfactionScale.split('-');
-  const [, loyMax] = loyaltyScale.split('-');
+  // Extract scale ranges (both min and max)
+  const [satMin, satMax] = satisfactionScale.split('-').map(Number);
+  const [loyMin, loyMax] = loyaltyScale.split('-').map(Number);
 
   // Calculate positions based on scale visibility
   const xLabelBottom = showScaleNumbers ? '-85px' : '-45px';
@@ -76,7 +76,7 @@ const AxisLegends: React.FC<AxisLegendsProps> = ({
           Satisfaction
         </span>
         <span style={rangeStyles}>
-          1 - {satMax}
+          {satMin} - {satMax}
         </span>
       </div>
 
@@ -96,7 +96,7 @@ const AxisLegends: React.FC<AxisLegendsProps> = ({
           Loyalty
         </span>
         <span style={rangeStyles}>
-          1 - {loyMax}
+          {loyMin} - {loyMax}
         </span>
       </div>
     </div>

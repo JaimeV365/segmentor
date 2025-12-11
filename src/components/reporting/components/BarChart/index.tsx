@@ -209,8 +209,12 @@ useEffect(() => {
     // Determine which field to aggregate by (satisfaction or loyalty)
     const field = chartId === 'satisfaction' ? 'satisfaction' : 'loyalty';
     
-    // Find max value from original data to maintain scale
-    const maxValue = Math.max(...data.map(d => d.value), 1);
+    // Find min and max values from original data to maintain scale
+    // Use the actual min/max from the data, not a default
+    const values = data.map(d => d.value);
+    if (values.length === 0) return data; // Safety check
+    const minValue = Math.min(...values);
+    const maxValue = Math.max(...values);
     
     // Count occurrences of each value in filtered data
     const distribution: Record<number, number> = {};
@@ -222,10 +226,14 @@ useEffect(() => {
     });
     
     // Transform to BarChartData format matching the original data structure
-    return Array.from({ length: maxValue }, (_, i) => ({
-      value: i + 1,
-      count: distribution[i + 1] || 0
-    }));
+    const barCount = maxValue - minValue + 1;
+    return Array.from({ length: barCount }, (_, i) => {
+      const value = minValue + i;
+      return {
+        value: value,
+        count: distribution[value] || 0
+      };
+    });
   }, [effectiveData, data, chartId, originalData]);
   
   // Use filtered data if available, otherwise fall back to original data

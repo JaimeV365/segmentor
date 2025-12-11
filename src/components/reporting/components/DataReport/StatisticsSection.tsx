@@ -46,11 +46,16 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
   const [satisfactionFilters, setSatisfactionFilters] = useState<ReportFilter[]>([]);
   const [loyaltyFilters, setLoyaltyFilters] = useState<ReportFilter[]>([]);
 
-  const transformData = (distribution: Record<number, number>, maxValue: number): BarChartData[] => {
-    return Array.from({ length: maxValue }, (_, i) => ({
-      value: i + 1,
-      count: distribution[i + 1] || 0
-    }));
+  const transformData = (distribution: Record<number, number>, scale: string): BarChartData[] => {
+    const [min, max] = scale.split('-').map(Number);
+    const barCount = max - min + 1;
+    return Array.from({ length: barCount }, (_, i) => {
+      const value = min + i;
+      return {
+        value: value,
+        count: distribution[value] || 0
+      };
+    });
   };
 
   return (
@@ -139,7 +144,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
           <BarChart 
             data={transformData(
               statistics.satisfaction.distribution,
-              Number(scales.satisfaction.split('-')[1])
+              scales.satisfaction
             )}
             showGrid={true}
             showLabels={true}
@@ -171,7 +176,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
           <BarChart 
             data={transformData(
               statistics.loyalty.distribution,
-              Number(scales.loyalty.split('-')[1])
+              scales.loyalty
             )}
             showGrid={true}
             showLabels={true}

@@ -1,4 +1,28 @@
 import React from 'react';
+import { Heart, Package, LogOut } from 'lucide-react';
+
+// Custom Bird Icon Component for Mercenaries
+const BirdIcon: React.FC<{ size?: number; className?: string }> = ({ size = 16, className = '' }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={`lucide lucide-bird-icon lucide-bird ${className}`}
+  >
+    <path d="M16 7h.01"/>
+    <path d="M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.28-2.3L2 20"/>
+    <path d="m20 7 2 .5-2 .5"/>
+    <path d="M10 18v3"/>
+    <path d="M14 17.75V21"/>
+    <path d="M7 18a6 6 0 0 0 3.84-10.61"/>
+  </svg>
+);
 
 interface QuadrantLabelProps {
   quadrant: 'loyalists' | 'mercenaries' | 'hostages' | 'defectors';
@@ -25,22 +49,26 @@ const QuadrantLabel: React.FC<QuadrantLabelProps> = ({
       case 'loyalists':
         return {
           label: 'Loyalists',
-          color: '#1B4332'
+          color: '#1B4332',
+          icon: <Heart size={16} />
         };
       case 'mercenaries':
         return {
           label: 'Mercenaries',
-          color: '#854D0E'
+          color: '#854D0E',
+          icon: <BirdIcon size={16} />
         };
       case 'hostages':
         return {
           label: 'Hostages',
-          color: '#1E3A8A'
+          color: '#1E3A8A',
+          icon: <Package size={16} />
         };
       case 'defectors':
         return {
           label: 'Defectors',  // Always "Defectors" regardless of mode
-          color: '#7F1D1D'
+          color: '#7F1D1D',
+          icon: <LogOut size={16} />
         };
     }
   };
@@ -67,11 +95,15 @@ const QuadrantLabel: React.FC<QuadrantLabelProps> = ({
     fontWeight: 500,
     fontSize: '14px',
     zIndex: 2,
-    pointerEvents: 'none'
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px'
   };
 
   return (
     <div style={labelStyle}>
+      {info.icon}
       {info.label}
     </div>
   );

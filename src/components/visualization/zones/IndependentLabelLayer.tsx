@@ -1,8 +1,32 @@
 import React, { useMemo } from 'react';
+import { Heart, Package, LogOut } from 'lucide-react';
 import { GridDimensions, ScaleFormat } from '@/types/base';
 import { useQuadrantAssignment } from '../context/QuadrantAssignmentContext';
 import { calculateSpecialZoneBoundaries } from '../utils/zoneCalculator';
 import './IndependentLabelLayer.css';
+
+// Custom Bird Icon Component for Mercenaries
+const BirdIcon: React.FC<{ size?: number; className?: string }> = ({ size = 16, className = '' }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={`lucide lucide-bird-icon lucide-bird ${className}`}
+  >
+    <path d="M16 7h.01"/>
+    <path d="M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.28-2.3L2 20"/>
+    <path d="m20 7 2 .5-2 .5"/>
+    <path d="M10 18v3"/>
+    <path d="M14 17.75V21"/>
+    <path d="M7 18a6 6 0 0 0 3.84-10.61"/>
+  </svg>
+);
 
 interface IndependentLabelLayerProps {
   dimensions: GridDimensions;
@@ -135,6 +159,15 @@ export const IndependentLabelLayer: React.FC<IndependentLabelLayerProps> = ({
     }
   };
 
+  const getQuadrantIcon = (quadrant: 'loyalists' | 'mercenaries' | 'hostages' | 'defectors') => {
+    switch (quadrant) {
+      case 'loyalists': return <Heart size={16} />;
+      case 'mercenaries': return <BirdIcon size={16} />;
+      case 'hostages': return <Package size={16} />;
+      case 'defectors': return <LogOut size={16} />;
+    }
+  };
+
   const quadrants: Array<'loyalists' | 'mercenaries' | 'hostages' | 'defectors'> = 
     ['loyalists', 'mercenaries', 'hostages', 'defectors'];
 
@@ -164,6 +197,7 @@ export const IndependentLabelLayer: React.FC<IndependentLabelLayerProps> = ({
         const position = getLabelPosition(quadrant);
         const text = getLabelText(quadrant);
         const color = getLabelColor(quadrant);
+        const icon = getQuadrantIcon(quadrant);
         
         return (
           <div
@@ -185,8 +219,12 @@ export const IndependentLabelLayer: React.FC<IndependentLabelLayerProps> = ({
               boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
               pointerEvents: 'none',
               zIndex: 1, // Relative to the layer
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
             }}
           >
+            {icon}
             {text}
           </div>
         );

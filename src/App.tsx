@@ -20,6 +20,7 @@ import { UnifiedLoadingPopup } from './components/ui/UnifiedLoadingPopup';
 import { UnsavedChangesModal } from './components/ui/UnsavedChangesModal/UnsavedChangesModal';
 import { BrandPlusIndicator } from './components/ui/BrandPlusIndicator/BrandPlusIndicator';
 import { useUnsavedChanges } from './hooks/useUnsavedChanges';
+import { Footer } from './components/ui/Footer/Footer';
 import './App.css';
 import './components/visualization/controls/ResponsiveDesign.css';
 
@@ -894,6 +895,9 @@ const handleTerroristsZoneSizeChange = (size: number) => {
             setPendingNavigation(null);
           }}
         />
+        
+        {/* Footer */}
+        <Footer />
     </>
   );
 };
