@@ -17,3 +17,7 @@
 /404.html 200
 /pricing.html 200
 
+# SPA fallback for /tool/* - serve React app index.html for all tool routes
+# This prevents infinite redirect loops when React app files aren't found
+/tool/* /tool/index.html 200
+
