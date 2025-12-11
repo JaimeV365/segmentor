@@ -8,7 +8,7 @@
 # - script-src https://*.qualtrics.com (plus 'unsafe-inline' and 'unsafe-eval' for JavaScript variables)
 
 /contact.html
-  Content-Security-Policy: connect-src https://*.qualtrics.com; frame-src https://*.qualtrics.com; img-src https://siteintercept.qualtrics.com data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.qualtrics.com; style-src 'self' 'unsafe-inline' https://*.qualtrics.com;
+  Content-Security-Policy: connect-src https://*.qualtrics.com; frame-src https://*.qualtrics.com; img-src 'self' https://siteintercept.qualtrics.com data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.qualtrics.com; style-src 'self' 'unsafe-inline' https://*.qualtrics.com;
 
 /*
-  Content-Security-Policy: connect-src https://*.qualtrics.com; frame-src https://*.qualtrics.com; img-src https://siteintercept.qualtrics.com data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.qualtrics.com; style-src 'self' 'unsafe-inline' https://*.qualtrics.com;
+  Content-Security-Policy: connect-src https://*.qualtrics.com; frame-src https://*.qualtrics.com; img-src 'self' https://siteintercept.qualtrics.com data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.qualtrics.com; style-src 'self' 'unsafe-inline' https://*.qualtrics.com;
