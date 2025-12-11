@@ -28,8 +28,9 @@ This guide will help you create and deploy the Cloudflare Worker that handles Br
 
 3. **Configure Your Worker Project**
    - **Project name:** `segmentor` (or `segmentor-user-permissions`)
-   - **Build command:** Leave empty (no build step needed)
-   - **Deploy command:** `npx wrangler deploy`
+   - **Build command:** `npm run build` (builds the React app)
+   - **Deploy command:** `cd workers && npx wrangler deploy` (deploys the Cloudflare Worker)
+   - **Build output directory:** `public`
    - **Path:** `workers/api/` (this is where your worker file is located)
    - **API token:** You'll need to create one (see below)
 
