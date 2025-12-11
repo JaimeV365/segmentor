@@ -54,12 +54,12 @@ In the data table, click the details icon (eye or info icon) next to any custome
 ## Does the tool work with different satisfaction scales?
 **Keywords:** scale detection, automatic normalisation, different scales, satisfaction scale
 
-Yes. The tool automatically detects and normalises 1-5, 1-7, and 1-10 satisfaction scales. You can mix different scales in the same dataset—the tool will handle the conversion automatically.
+Yes. The tool automatically detects and normalises 1-3, 1-5, and 1-7 satisfaction scales. You can mix different scales in the same dataset—the tool will handle the conversion automatically.
 
 ## Does the tool work with different loyalty scales?
 **Keywords:** loyalty scale, different loyalty scales, automatic detection
 
-Yes. The tool automatically detects and normalises 1-5, 1-7, and 1-10 loyalty scales. Your satisfaction and loyalty scales can be different—the tool handles each independently.
+Yes. The tool automatically detects and normalises 1-5, 1-7, 1-10, and 0-10 loyalty scales. Your satisfaction and loyalty scales can be different—the tool handles each independently.
 
 ## How does the tool handle overlapping data points?
 **Keywords:** frequency clustering, overlapping points, multiple responses

@@ -21,8 +21,8 @@ No registration required—just enter your data and start analysing!
 
 You only need two mandatory columns:
 
-- **Satisfaction Score:** How satisfied they are (1-5, 1-7, or 1-10 scale)
-- **Loyalty Score:** How likely they are to stay (1-5, 1-7, or 1-10 scale)
+- **Satisfaction Score:** How satisfied they are (1-3, 1-5, or 1-7 scale)
+- **Loyalty Score:** How likely they are to stay (1-5, 1-7, 1-10, or 0-10 scale)
 
 Optional columns you can add:
 - **Customer Name/ID:** Unique identifier for each customer
@@ -39,15 +39,19 @@ You can source satisfaction and loyalty data from multiple places:
 
 **For Loyalty Scores:**
 - **Purchase behaviour:** Track repeat purchases, subscription renewals, or frequency of transactions
-- **Survey questions:** Ask "How likely are you to continue buying from us?" (1-5, 1-7, or 1-10 scale)
-- **Recommendation questions:** "How likely are you to recommend us?" is commonly used as a loyalty measure
+- **Survey questions:** Ask "How likely are you to continue buying from us?" (1-5, 1-7, 1-10, or 0-10 scale)
+- **Recommendation questions:** "How likely are you to recommend us?" is commonly used as a loyalty measure (normally on a 0-10 scale)
 
 **For Satisfaction Scores:**
 - **Listening strategies:** Analyse customer service chats, support emails, complaints, reviews, and social media comments using sentiment analysis
-- **Surveys:** Ask "How satisfied are you with our product/service?" (1-5, 1-7, or 1-10 scale)
+- **Surveys:** Ask "How satisfied are you with our product/service?" (1-3, 1-5, or 1-7 scale)
 - **Review scores:** Convert review ratings (e.g., 1-5 stars) to satisfaction scores
 
-The tool accepts satisfaction and loyalty scores on 1-5, 1-7, or 1-10 scales and will automatically normalise them if needed. You can mix different scales in the same dataset.
+**Accepted scales:**
+- **Satisfaction:** 1-3, 1-5, or 1-7
+- **Loyalty:** 1-5, 1-7, 1-10, or 0-10
+
+The tool will automatically normalise different scales if needed. You can mix different scales in the same dataset.
 
 ## What format should my CSV be?
 **Keywords:** CSV format, file format, upload format, data structure

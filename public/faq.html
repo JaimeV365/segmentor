@@ -304,6 +304,8 @@
                 <button class="category-btn" data-category="usage">Using the Tool</button>
                 <button class="category-btn" data-category="support">Getting Support</button>
                 <button class="category-btn" data-category="data">Data & Export</button>
+                <button class="category-btn" data-category="customisation">Customisation</button>
+                <button class="category-btn" data-category="troubleshooting">Troubleshooting</button>
             </div>
 
             <!-- FAQ Content -->
@@ -318,9 +320,9 @@
                         Privacy & Security
                     </h2>
                     
-                    <div class="faq-item" data-keywords="data safe privacy security">
+                    <div class="faq-item" data-keywords="data safe privacy security, customer data safe">
                         <div class="faq-question" onclick="toggleFAQ(this)">
-                            <h3>Is my data safe?</h3>
+                            <h3>Is my customers' data safe?</h3>
                             <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer">
@@ -476,60 +478,127 @@
                             <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer">
-                            <p><strong>Getting started is simple:</strong></p>
+                            <p>Getting started is simple:</p>
                             <ol>
-                                <li><strong>Upload your data:</strong> Click "Upload CSV" and select your customer data file</li>
-                                <li><strong>Or try sample data:</strong> Click "Load Sample Data" to see how it works</li>
-                                <li><strong>View your segments:</strong> The tool automatically categorizes your customers</li>
-                                <li><strong>Analyze results:</strong> Click on any customer point to see details</li>
-                                <li><strong>Save your work:</strong> Use the Save button to download your project</li>
+                                <li>Visit the main tool page</li>
+                                <li>Enter your data using one of three options:
+                                    <ul>
+                                        <li>Upload a CSV file with your customer data</li>
+                                        <li>Enter data manually using the form</li>
+                                        <li>Try sample data to explore (Explore mode)</li>
+                                    </ul>
+                                </li>
+                                <li>Or try our demo mode with a guided tour: <a href="/tool/?demo=true">Launch Demo →</a></li>
+                                <li>View your customers automatically segmented into the four quadrants</li>
+                                <li>Use filters and analysis tools to gain insights</li>
                             </ol>
+                            <p>No registration required—just enter your data and start analysing!</p>
                         </div>
                     </div>
 
-                    <div class="faq-item" data-keywords="CSV format data requirements">
+                    <div class="faq-item" data-keywords="data format, CSV format, what data, customer data, upload data">
                         <div class="faq-question" onclick="toggleFAQ(this)">
-                            <h3>What format should my CSV data be in?</h3>
+                            <h3>What data do I need to upload?</h3>
                             <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer">
-                            <p><strong>Your CSV only needs these two mandatory columns:</strong></p>
+                            <p>You only need two mandatory columns:</p>
                             <ul>
-                                <li><strong>Satisfaction Score:</strong> 1-10 scale (or 1-5, we'll normalize it automatically)</li>
-                                <li><strong>Loyalty Score:</strong> 1-10 scale (or 1-5, we'll normalize it automatically)</li>
+                                <li><strong>Satisfaction Score:</strong> How satisfied they are (1-3, 1-5, or 1-7 scale)</li>
+                                <li><strong>Loyalty Score:</strong> How likely they are to stay (1-5, 1-7, 1-10, or 0-10 scale)</li>
                             </ul>
-                            <p><strong>Optional columns:</strong></p>
+                            <p>Optional columns you can add:</p>
                             <ul>
-                                <li><strong>Customer ID:</strong> If you don't provide this, segmentor.app will assign automatic IDs</li>
-                                <li><strong>Customer Name, Email, etc.:</strong> Any additional details you want to include</li>
+                                <li><strong>Customer Name/ID:</strong> Unique identifier for each customer</li>
+                                <li><strong>Email:</strong> For tracking customers over time</li>
+                                <li><strong>Date:</strong> For filtering by time periods</li>
+                                <li><strong>Country, Language, or any other attributes:</strong> For filtering and analysis purposes</li>
                             </ul>
-                            <p><strong>Accepted scales:</strong> We automatically detect and normalize 1-5, 1-10, or 0-10 scales.</p>
-                            <p><strong>Examples:</strong></p>
-                            <pre>// Minimal format (anonymous feedback)
-Satisfaction,Loyalty
-8,9
-6,4
-
-// With customer details
-Customer ID,Satisfaction,Loyalty,Customer Name
-CUST001,8,9,John Smith
-CUST002,6,4,Jane Doe</pre>
+                            <p>Try with sample data first to see the format.</p>
                         </div>
                     </div>
 
-                    <div class="faq-item" data-keywords="sample data try demo">
+                    <div class="faq-item" data-keywords="where to get data, data sources, collect data, measure satisfaction, measure loyalty">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Where can I get satisfaction and loyalty data from?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>You can source satisfaction and loyalty data from multiple places:</p>
+                            <p><strong>For Loyalty Scores:</strong></p>
+                            <ul>
+                                <li><strong>Purchase behaviour:</strong> Track repeat purchases, subscription renewals, or frequency of transactions</li>
+                                <li><strong>Survey questions:</strong> Ask "How likely are you to continue buying from us?" (1-5, 1-7, 1-10, or 0-10 scale)</li>
+                                <li><strong>Recommendation questions:</strong> "How likely are you to recommend us?" is commonly used as a loyalty measure (normally on a 0-10 scale)</li>
+                            </ul>
+                            <p><strong>For Satisfaction Scores:</strong></p>
+                            <ul>
+                                <li><strong>Listening strategies:</strong> Analyse customer service chats, support emails, complaints, reviews, and social media comments using sentiment analysis</li>
+                                <li><strong>Surveys:</strong> Ask "How satisfied are you with our product/service?" (1-3, 1-5, or 1-7 scale)</li>
+                                <li><strong>Review scores:</strong> Convert review ratings (e.g., 1-5 stars) to satisfaction scores</li>
+                            </ul>
+                            <p><strong>Accepted scales:</strong></p>
+                            <ul>
+                                <li><strong>Satisfaction:</strong> 1-3, 1-5, or 1-7</li>
+                                <li><strong>Loyalty:</strong> 1-5, 1-7, 1-10, or 0-10</li>
+                            </ul>
+                            <p>The tool will automatically normalise different scales if needed. You can mix different scales in the same dataset.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="CSV format, file format, upload format, data structure">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What format should my CSV be?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Your CSV should have:</p>
+                            <ul>
+                                <li><strong>Header row:</strong> Column names in the first row</li>
+                                <li><strong>Required columns:</strong> Satisfaction, Loyalty</li>
+                                <li><strong>Data types:</strong> Numbers for satisfaction/loyalty scores</li>
+                                <li><strong>Encoding:</strong> UTF-8 (most common)</li>
+                            </ul>
+                            <p><strong>Example format:</strong></p>
+                            <pre>Name,Satisfaction,Loyalty,Email,Country
+John Smith,4,5,john@example.com,USA
+Jane Doe,2,3,jane@example.com,Canada</pre>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="sample data try demo, explore mode">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             <h3>Can I try the tool without my own data?</h3>
                             <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer">
-                            <p><strong>Absolutely!</strong> Click the "Load Sample Data" button to see how the tool works with example customer data. This is perfect for:</p>
-                            <ul>
-                                <li>✅ Understanding how the Apostles Model works</li>
-                                <li>✅ Seeing what your results will look like</li>
-                                <li>✅ Testing the tool's features</li>
-                                <li>✅ Demonstrating to colleagues</li>
-                            </ul>
+                            <p>Absolutely! You have two options to explore the tool:</p>
+                            <ol>
+                                <li><strong>Explore mode:</strong> Click "Try Sample Data" to load sample customer data and explore all features freely</li>
+                                <li><strong>Demo mode:</strong> <a href="/tool/?demo=true">Launch the guided demo tour →</a> to see the tool in action with step-by-step guidance</li>
+                            </ol>
+                            <p>Both options let you experience the full tool with realistic sample data before uploading your own.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="data limit, maximum entries, file size limit">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Is there a limit to how much data I can upload?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>No, there's no hard limit on the amount of data you can upload. The tool processes everything locally in your browser, so the practical limit depends on your device's performance. Most users work comfortably with thousands of entries.</p>
+                            <p>In demo mode, there's a 100-entry limit to showcase the tool's capabilities.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="account, registration, sign up, login">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Do I need to create an account?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>No account required! The tool works entirely in your browser with no registration, login, or email needed. Just visit the site and start using it.</p>
                         </div>
                     </div>
 
@@ -593,24 +662,28 @@ CUST002,6,4,Jane Doe</pre>
                         </div>
                     </div>
 
-                    <div class="faq-item" data-keywords="edit data, modify entries, update customer">
+                    <div class="faq-item" data-keywords="edit data, modify entries, update customer, hide entries">
                         <div class="faq-question" onclick="toggleFAQ(this)">
-                            <h3>Can I edit or delete customer entries?</h3>
+                            <h3>Can I edit, delete, or hide customer entries?</h3>
                             <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer">
-                            <p>Yes. In the data table, click the edit icon to modify satisfaction or loyalty scores. Click the delete icon to remove individual entries, or use "Delete All Rows" to clear everything.</p>
-                            <p>You can also exclude entries from analysis without deleting them—they'll remain in your data but won't appear in calculations.</p>
+                            <p>Yes. In the data table:</p>
+                            <ul>
+                                <li>Click the edit icon to modify satisfaction or loyalty scores</li>
+                                <li>Click the delete icon to remove individual entries, or use "Delete All Rows" to clear everything</li>
+                                <li>Click the hide/exclude icon to temporarily hide entries from analysis without deleting them—they'll remain in your data but won't appear in calculations or charts</li>
+                            </ul>
                         </div>
                     </div>
 
-                    <div class="faq-item" data-keywords="click points, view details, customer information">
+                    <div class="faq-item" data-keywords="view details, customer information, data table">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             <h3>How do I see details about a specific customer?</h3>
                             <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer">
-                            <p>Click any point on the chart to open an information box showing the customer's name, scores, quadrant assignment, and any additional data you've uploaded. For overlapping points, you'll see a frequency count.</p>
+                            <p>In the data table, click the details icon (eye or info icon) next to any customer entry to see all their information including name, email, satisfaction and loyalty scores, quadrant assignment, date, and any additional attributes you've uploaded.</p>
                         </div>
                     </div>
 
@@ -636,7 +709,7 @@ CUST002,6,4,Jane Doe</pre>
                             <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer">
-                            <p>Yes. The tool automatically detects and normalises 1-5, 1-7, and 1-10 satisfaction scales. You can mix different scales in the same dataset—the tool will handle the conversion automatically.</p>
+                            <p>Yes. The tool automatically detects and normalises 1-3, 1-5, and 1-7 satisfaction scales. You can mix different scales in the same dataset—the tool will handle the conversion automatically.</p>
                         </div>
                     </div>
 
@@ -646,7 +719,7 @@ CUST002,6,4,Jane Doe</pre>
                             <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer">
-                            <p>Yes. The tool automatically detects and normalises 1-5, 1-7, and 1-10 loyalty scales. Your satisfaction and loyalty scales can be different—the tool handles each independently.</p>
+                            <p>Yes. The tool automatically detects and normalises 1-5, 1-7, 1-10, and 0-10 loyalty scales. Your satisfaction and loyalty scales can be different—the tool handles each independently.</p>
                         </div>
                     </div>
 
@@ -712,7 +785,18 @@ CUST002,6,4,Jane Doe</pre>
                         </div>
                     </div>
 
-                    <div class="faq-item" data-keywords="brand plus custom branding">
+                </div>
+
+                <!-- Customisation Section -->
+                <div class="faq-section" data-category="customisation">
+                    <h2 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px; color: #3a863e;">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                        Customisation & Branding
+                    </h2>
+                    
+                    <div class="faq-item" data-keywords="brand plus, custom branding, logo">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             <h3>What's included in Brand+?</h3>
                             <span class="faq-toggle">+</span>
@@ -725,6 +809,61 @@ CUST002,6,4,Jane Doe</pre>
                                 <li>Control logo size, position, and orientation</li>
                             </ul>
                             <p><a href="/brand-plus.html" style="color: #3a863e; text-decoration: none; font-weight: 600;">Learn more about Brand+ →</a></p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="enable brand plus, activate branding, upgrade">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>How do I enable Brand+ features?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Brand+ features are available through our upgrade programme. Visit the Brand+ page to learn more about pricing and how to enable custom branding for your reports.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="custom logo, upload logo, company logo">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I use my own logo in reports?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes, with Brand+. You can upload your company logo via URL or select from predefined partner logos. The logo will replace the default watermark in all exported reports and charts.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="brand colours, custom colours, report colours">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I change the colours in my reports?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes, with Brand+. You can apply your organisation's colour palette to charts and reports, ensuring brand consistency across all your exported materials.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="free vs brand plus, feature comparison, what's included">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What's the difference between free and Brand+?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>All core segmentation and analysis features are free. Brand+ adds visual customisation:</p>
+                            <ul>
+                                <li><strong>Free:</strong> Full access to segmentation, analysis, reports, and exports</li>
+                                <li><strong>Brand+:</strong> Everything in free, plus custom logos and brand colours in exports</li>
+                            </ul>
+                            <p>The functionality is identical—Brand+ is purely about visual branding.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="try brand plus, test branding, preview">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I try Brand+ before upgrading?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes! Demo mode includes Brand+ features so you can see how custom branding looks in your reports before upgrading. <a href="/tool/?demo=true">Launch Demo →</a></p>
                         </div>
                     </div>
                 </div>
@@ -746,14 +885,14 @@ CUST002,6,4,Jane Doe</pre>
                             <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer">
-                            <p><strong>Yes! You can save your complete project.</strong> Use the Save button to download a .seg file that contains:</p>
+                            <p>Yes! You can save your complete analysis as a .seg project file that includes:</p>
                             <ul>
-                                <li>✅ All your customer data</li>
-                                <li>✅ Segmentation results</li>
-                                <li>✅ Any custom settings</li>
-                                <li>✅ Analysis notes</li>
+                                <li>All your customer data</li>
+                                <li>Filter settings and customisations</li>
+                                <li>Chart configurations and zone sizes</li>
+                                <li>Manual customer reassignments</li>
                             </ul>
-                            <p><strong>To load it later:</strong> Use the Load button and select your .seg file. Everything will be restored exactly as you left it.</p>
+                            <p>Click the save button in the menu to download your project file. You can load it later to continue your analysis exactly where you left off.</p>
                         </div>
                     </div>
 
@@ -780,12 +919,16 @@ CUST002,6,4,Jane Doe</pre>
                             <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer">
-                            <p>The tool generates two main reports:</p>
+                            <p>The tool generates comprehensive reports with multiple sections:</p>
                             <ul>
                                 <li><strong>Data Report:</strong> Statistics, distributions, and quadrant breakdowns</li>
-                                <li><strong>Action Plan:</strong> Strategic recommendations, proximity analysis, conversion opportunities, and risk warnings</li>
+                                <li><strong>Action Plan:</strong> Strategic recommendations, conversion opportunities, and risk warnings</li>
+                                <li><strong>Response Concentration:</strong> Shows where most responses cluster</li>
+                                <li><strong>Recommendation Score:</strong> Calculates your overall recommendation score</li>
+                                <li><strong>Segment Distribution:</strong> Detailed breakdown by quadrant</li>
+                                <li><strong>Proximity Analysis:</strong> Identifies customers close to quadrant boundaries</li>
                             </ul>
-                            <p>Both reports include visual charts and can be customised before export.</p>
+                            <p>All reports include visual charts and can be customised before export.</p>
                         </div>
                     </div>
 
@@ -798,10 +941,200 @@ CUST002,6,4,Jane Doe</pre>
                             <p>The Action Plan includes:</p>
                             <ul>
                                 <li><strong>Proximity Analysis:</strong> Identifies customers close to quadrant boundaries who could be converted</li>
-                                <li><strong>Recommendation Score:</strong> Calculates your overall NPS-style score</li>
+                                <li><strong>Recommendation Score:</strong> Calculates your overall recommendation score</li>
                                 <li><strong>Response Concentration:</strong> Shows where most responses cluster</li>
                                 <li><strong>Strategic Priorities:</strong> Highlights high-impact opportunities</li>
                             </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="Excel export, XLSX, spreadsheet export">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What's included in the Excel export?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>The Excel export includes multiple worksheets:</p>
+                            <ul>
+                                <li><strong>Raw Data:</strong> All customer data with segment assignments</li>
+                                <li><strong>Action sheets:</strong> One sheet per action recommendation with supporting customer lists</li>
+                                <li><strong>Opportunity sheets:</strong> One sheet per opportunity with relevant customers</li>
+                                <li><strong>Risk sheets:</strong> One sheet per risk warning with affected customers</li>
+                            </ul>
+                            <p>Each sheet contains customer details including ID, name, email, satisfaction, loyalty, and any additional attributes from your data. Perfect for further analysis in Excel or sharing with team members who prefer spreadsheets.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="export chart, image only, PNG export">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I export just the chart without the full report?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes. Use the export button in the chart controls to export just the visualisation as a PNG or PDF image. This is perfect for presentations or including in other documents.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="share reports, send reports, collaborate">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>How do I share my reports with others?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Export your reports in your preferred format (PDF, Excel, or PNG) and share the files through your usual channels—email, cloud storage, or collaboration tools. Since all processing happens locally, the exported files are regular files you can share however you like.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting Section -->
+                <div class="faq-section" data-category="troubleshooting">
+                    <h2 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px; color: #3a863e;">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        Troubleshooting
+                    </h2>
+                    
+                    <div class="faq-item" data-keywords="CSV error, upload problem, file format error, validation error">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>My CSV file isn't uploading correctly. What's wrong?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Common CSV issues:</p>
+                            <ul>
+                                <li><strong>Missing headers:</strong> Ensure your first row contains column names (Satisfaction, Loyalty, etc.)</li>
+                                <li><strong>Wrong column names:</strong> Column names must match exactly (case-sensitive)</li>
+                                <li><strong>Invalid scores:</strong> Satisfaction and loyalty values must be numbers within your scale range</li>
+                                <li><strong>Encoding issues:</strong> Save your CSV as UTF-8 encoding</li>
+                                <li><strong>Empty rows:</strong> Remove any completely empty rows</li>
+                            </ul>
+                            <p>The tool will show specific error messages indicating which rows have problems and how to fix them.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="browser support, compatibility, which browser">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What browsers are supported?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>The tool works best with modern browsers:</p>
+                            <ul>
+                                <li><strong>Chrome</strong> 60 or later</li>
+                                <li><strong>Firefox</strong> 55 or later</li>
+                                <li><strong>Safari</strong> 12 or later</li>
+                                <li><strong>Edge</strong> 79 or later</li>
+                            </ul>
+                            <p>For the best experience, use the latest version of your browser. Older browsers may have limited functionality.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="mobile, tablet, phone, responsive">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I use the tool on mobile devices?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes! The tool is fully responsive and works on mobile devices and tablets. All features are available, though some may be optimised for touch interaction on smaller screens.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="performance, slow, large data, many customers">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>The tool seems slow with large datasets. Is this normal?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>The tool processes everything locally in your browser, so performance depends on your device. For datasets with thousands of entries, you may notice:</p>
+                            <ul>
+                                <li>Slightly slower chart rendering</li>
+                                <li>Brief delays when applying filters</li>
+                                <li>Longer report generation times</li>
+                            </ul>
+                            <p>This is normal for local processing. If performance becomes an issue, try filtering your data to a smaller subset for analysis.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="demo limit, 100 entries, demo mode">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Why do I see a demo mode limitation?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Demo mode is limited to 100 customer entries to showcase the tool's capabilities. To remove this limitation, exit demo mode and use the full tool with your own data. There's no limit on the number of entries in the standard tool.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="load error, .seg file, project file error">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>My project file won't load. What should I do?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>If your .seg file won't load:</p>
+                            <ul>
+                                <li><strong>Check file format:</strong> Ensure it's a valid .seg file exported from Segmentor</li>
+                                <li><strong>File size:</strong> Very large files may take longer to load</li>
+                                <li><strong>Browser storage:</strong> Clear your browser's local storage if you're experiencing issues</li>
+                                <li><strong>Try a different browser:</strong> Some browsers handle file loading differently</li>
+                            </ul>
+                            <p>If problems persist, try exporting your data as CSV as a backup.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="disabled features, unavailable, greyed out">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Why are some features greyed out or unavailable?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Some features may be temporarily unavailable if:</p>
+                            <ul>
+                                <li>You're in demo mode (some advanced features are limited)</li>
+                                <li>Your data doesn't meet certain requirements (e.g., Near-Advocates requires sufficient data spread)</li>
+                                <li>The feature requires specific data attributes (e.g., date filtering requires date columns)</li>
+                            </ul>
+                            <p>Check the tooltips or help text for specific requirements.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="chart changed, reload, settings lost">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>The chart looks different after I reload. Why?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>If you haven't saved your project, custom settings like midpoint position, zone sizes, and manual reassignments are stored in your browser's temporary storage. These may be cleared if:</p>
+                            <ul>
+                                <li>You clear your browser cache</li>
+                                <li>You use a different browser or device</li>
+                                <li>Your browser's storage quota is exceeded</li>
+                            </ul>
+                            <p>Always save your project using the Save button to preserve all settings.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="offline, no internet, work offline">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I use the tool without an internet connection?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes! Once the page has loaded, you can work completely offline. All processing happens in your browser, so no internet connection is required after the initial page load.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="domain, .app, why .app, domain choice">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Why does segmentor.app use a .app domain instead of .com?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>We were quoted £18,000 by domain speculators for the .com version, but we chose an .app domain for £6 and invested the difference in improving our service instead.</p>
+                            <p>The .app domain also clearly signals that Segmentor is an application—a tool you use, not just a website you visit. This aligns perfectly with our tool-first approach.</p>
                         </div>
                     </div>
                 </div>
