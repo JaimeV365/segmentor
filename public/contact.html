@@ -277,6 +277,7 @@
                             <li>Customisation features</li>
                             <li>Pricing and upgrade process</li>
                         </ul>
+                        <div class="query-type-button">Learn More →</div>
                     </button>
                     
                     <button class="query-type-card" data-query-type="cx-programme" data-block="TM" onclick="handleQueryTypeClick('TM')">
@@ -562,6 +563,24 @@
             left: 0;
             color: #3a863e;
             font-weight: bold;
+        }
+
+        .query-type-button {
+            margin-top: 24px;
+            padding: 12px 24px;
+            background: #3a863e;
+            color: white;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-align: center;
+            transition: all 0.2s ease;
+            pointer-events: none;
+        }
+
+        .query-type-card:hover .query-type-button {
+            background: #2d6a31;
+            transform: translateY(-1px);
         }
 
         /* Qualtrics Survey Container */
