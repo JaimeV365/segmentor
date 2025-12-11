@@ -145,6 +145,9 @@ function buildNavigation() {
     'about.html', 
     'faq.html',
     'contact.html',
+    'privacy.html',
+    'terms.html',
+    'brand-plus.html',
     '404.html'
   ];
   
