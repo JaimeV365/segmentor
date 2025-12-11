@@ -34,7 +34,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "set CI=false && react-scripts build && node scripts/cleanup-old-nav.js && node scripts/build-navigation.js && npm run deploy:prepare && npm run fix-root",
+    "build": "CI=false react-scripts build && node scripts/cleanup-old-nav.js && node scripts/build-navigation.js && npm run deploy:prepare && npm run fix-root",
     "build:nav": "node scripts/build-navigation.js",
     "cleanup:nav": "node scripts/cleanup-old-nav.js",
     "build:deploy": "npm run build && npm run deploy:prepare",
