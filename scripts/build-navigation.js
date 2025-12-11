@@ -13,7 +13,6 @@ const navigationHTML = `
       </a>
     </div>
     <div class="nav-links">
-      <a href="/" class="nav-link">Home</a>
       <a href="/about.html" class="nav-link">About</a>
       <a href="/faq.html" class="nav-link">FAQ</a>
       <a href="/contact.html" class="nav-link">Contact</a>
