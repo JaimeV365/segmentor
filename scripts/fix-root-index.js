@@ -1,4 +1,20 @@
-<!DOCTYPE html>
+#!/usr/bin/env node
+
+const fs = require('fs');
+const path = require('path');
+
+/**
+ * Fix the root index.html to redirect to /tool/ instead of being the React app
+ * This ensures static HTML files are served correctly when Cloudflare Pages serves from public/
+ */
+function fixRootIndex() {
+  console.log('🔧 Fixing root index.html...');
+  
+  const publicDir = path.join(__dirname, '..', 'public');
+  const indexPath = path.join(publicDir, 'index.html');
+  
+  // Create a simple redirect page for root
+  const redirectHTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -85,4 +101,15 @@
         }, 500);
     </script>
 </body>
-</html>
+</html>`;
+
+  fs.writeFileSync(indexPath, redirectHTML, 'utf8');
+  console.log('✅ Root index.html updated to redirect to /tool/');
+}
+
+// Run if called directly
+if (require.main === module) {
+  fixRootIndex();
+}
+
+module.exports = { fixRootIndex };
