@@ -127,6 +127,11 @@ const navigationCSS = `
   background: #2d6b31;
 }
 
+/* Ensure navigation is consistent across all pages */
+.main-navigation * {
+  box-sizing: border-box;
+}
+
 @media (max-width: 768px) {
   .nav-container {
     flex-direction: column;

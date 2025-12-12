@@ -215,6 +215,11 @@
   background: #2d6b31;
 }
 
+/* Ensure navigation is consistent across all pages */
+.main-navigation * {
+  box-sizing: border-box;
+}
+
 @media (max-width: 768px) {
   .nav-container {
     flex-direction: column;
@@ -227,6 +232,9 @@
 }
 
 
+/* Ensure navigation is consistent across all pages */
+
+/* Ensure navigation is consistent across all pages */
 
       /* CSS Reset for Cross-Browser Compatibility */
       *, *::before, *::after {
@@ -313,6 +321,7 @@
                             <li>Technical troubleshooting</li>
                             <li>Best practices and tips</li>
                         </ul>
+                        <div class="query-type-button">Get Help</div>
                     </button>
                     
                     <button class="query-type-card" data-query-type="brand-plus" data-block="Brand+" onclick="handleQueryTypeClick('Brand+')">
@@ -330,6 +339,7 @@
                             <li>Customisation features</li>
                             <li>Pricing and upgrade process</li>
                         </ul>
+                        <div class="query-type-button">Learn More</div>
                     </button>
                     
                     <button class="query-type-card" data-query-type="cx-programme" data-block="TM" onclick="handleQueryTypeClick('TM')">
@@ -349,6 +359,7 @@
                             <li>Implementation support</li>
                             <li>Strategic planning</li>
                         </ul>
+                        <div class="query-type-button">Get Started</div>
                     </button>
                 </div>
             </div>
@@ -614,6 +625,25 @@
             left: 0;
             color: #3a863e;
             font-weight: bold;
+        }
+
+        .query-type-button {
+            display: inline-block;
+            background: #3a863e;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-top: 24px;
+            text-align: center;
+            transition: all 0.2s ease;
+            pointer-events: none; /* Prevent button from intercepting clicks - card handles it */
+        }
+
+        .query-type-card:hover .query-type-button {
+            background: #2d6b31;
+            transform: translateY(-1px);
         }
 
         /* Qualtrics Survey Container */
