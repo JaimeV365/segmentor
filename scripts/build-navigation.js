@@ -211,10 +211,10 @@ function injectNavigation(filePath) {
         );
       } else {
         // Insert after <head>
-        content = content.replace(
-          '<head>',
-          `<head>\n<style>${navigationCSS}</style>`
-        );
+      content = content.replace(
+        '<head>',
+        `<head>\n<style>${navigationCSS}</style>`
+      );
       }
     }
     
