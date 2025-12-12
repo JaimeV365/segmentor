@@ -5,9 +5,43 @@
 <link rel="preload" href="/fonts/Jaro-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
 
 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Basic SEO Meta Tags (Minimal as recommended) -->
+    <title>FAQ - segmentor.app</title>
+    <meta name="description" content="Frequently asked questions about segmentor.app - the professional customer segmentation tool that starts with Apostles Model visualization.">
+    <meta name="robots" content="noindex, nofollow" />
+    
+    <!-- Branding -->
+    <link rel="stylesheet" href="/assets/css/shared.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@400;600;700&family=Jaro&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
+<body>
+
+<nav class="main-navigation">
+  <div class="nav-container">
+    <div class="nav-logo">
+      <a href="/" class="logo-text">
+        <span class="logo-segmentor">seg<span class="logo-m">m</span>entor</span><span class="logo-app">.APP</span>
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="/about.html" class="nav-link">About</a>
+      <a href="/faq.html" class="nav-link">FAQ</a>
+      <a href="/contact.html" class="nav-link">Contact</a>
+      <a href="/tool/" class="nav-link nav-link-primary">Use Tool</a>
+    </div>
+  </div>
+</nav>
 
 
-<style>
+    <!-- Cross-Browser Compatibility & Reset Styles -->
+    <style>
 /* Font Face Declarations - Using Local Fonts */
 @font-face {
   font-family: 'Montserrat';
@@ -117,8 +151,947 @@
 }
 
 
+      /* CSS Reset for Cross-Browser Compatibility */
+      *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      
+      html {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      body {
+        font-family: 'Lato', sans-serif;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      /* Ensure consistent rendering across browsers */
+      img {
+        max-width: 100%;
+        height: auto;
+        border: 0;
+        vertical-align: middle;
+      }
+      
+      button, input, select, textarea {
+        font-family: 'Lato', sans-serif;
+        font-size: inherit;
+        line-height: inherit;
+        margin: 0;
+      }
+      
+      button {
+        cursor: pointer;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: transparent;
+        border: none;
+        outline: none;
+      }
+      
+      a {
+        color: inherit;
+        text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      
+      /* Flexbox fallbacks for older browsers */
+      .flex-container {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+      }
+      
+      /* Cross-browser compatibility for common properties */
+      .cross-browser-shadow {
+        -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      
+      .cross-browser-border-radius {
+        -webkit-border-radius: 6px;
+        -moz-border-radius: 6px;
+        border-radius: 6px;
+      }
+      
+      .cross-browser-transition {
+        -webkit-transition: all 0.2s ease;
+        -moz-transition: all 0.2s ease;
+        -o-transition: all 0.2s ease;
+        transition: all 0.2s ease;
+      }
+      
+      .cross-browser-transform {
+        -webkit-transform: translateY(-1px);
+        -moz-transform: translateY(-1px);
+        -ms-transform: translateY(-1px);
+        -o-transform: translateY(-1px);
+        transform: translateY(-1px);
+      }
+      
+      /* Ensure consistent appearance across browsers */
+      input, select, textarea {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+      }
+      
+      /* Cross-browser sticky positioning */
+      .sticky-element {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+      }
+      
+      /* Header styles now in shared.css */
+      
+      .help-button {
+        background: transparent;
+        color: #3a863e;
+        border: 1px solid #3a863e;
+        -webkit-border-radius: 6px;
+        -moz-border-radius: 6px;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        -webkit-transition: all 0.2s ease;
+        -moz-transition: all 0.2s ease;
+        -o-transition: all 0.2s ease;
+        transition: all 0.2s ease;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+      }
+      
+      .help-button:hover {
+        background: #3a863e;
+        color: white;
+        border-color: #2d6a31;
+      }
+      
+      .mode-badge {
+        background: #f8f9fa;
+        color: #6c757d;
+        border: 1px solid #e9ecef;
+        -webkit-border-radius: 6px;
+        -moz-border-radius: 6px;
+        border-radius: 6px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        cursor: pointer;
+        -webkit-transition: all 0.2s ease;
+        -moz-transition: all 0.2s ease;
+        -o-transition: all 0.2s ease;
+        transition: all 0.2s ease;
+        display: inline-block;
+      }
+      
+      .mode-badge:hover {
+        background: #e9ecef;
+        border-color: #dee2e6;
+      }
+      
+      .mode-badge--premium {
+        background: #fff3cd;
+        color: #856404;
+        border-color: #ffeaa7;
+      }
+      
+      .mode-badge--premium:hover {
+        background: #ffeaa7;
+        border-color: #fdcb6e;
+      }
+    </style>
 
-/* FAQ Items */
+    <!-- Main Content -->
+    <main class="faq-page">
+        <div class="app-content">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <h1 class="main-page-title">Frequently Asked Questions</h1>
+                <p class="hero-subtitle">
+                    Everything you need to know about using segmentor.app and getting the most from it.
+                </p>
+            </section>
+
+            <!-- Search Bar -->
+            <div class="section">
+                <div class="search-container">
+                    <div class="search-box">
+                        <input type="text" id="faq-search" placeholder="Search FAQ articles..." class="search-input">
+                        <button class="search-button" onclick="searchFAQ()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: white;">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="M21 21l-4.35-4.35"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="search-results" id="search-results"></div>
+                </div>
+            </div>
+
+            <!-- FAQ Categories -->
+            <div class="faq-categories">
+                <button class="category-btn active" data-category="all">All Questions</button>
+                <button class="category-btn" data-category="privacy">Privacy & Security</button>
+                <button class="category-btn" data-category="model">Understanding the Model</button>
+                <button class="category-btn" data-category="usage">Using the Tool</button>
+                <button class="category-btn" data-category="support">Getting Support</button>
+                <button class="category-btn" data-category="data">Data & Export</button>
+            </div>
+
+            <!-- FAQ Content -->
+            <div class="faq-content">
+                <!-- Privacy & Security Section -->
+                <div class="faq-section" data-category="privacy">
+                    <h2 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px; color: #3a863e;">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="M9 12l2 2 4-4"/>
+                        </svg>
+                        Privacy & Security
+                    </h2>
+                    
+                    <div class="faq-item" data-keywords="data safe privacy security">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Is my data safe?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Yes, absolutely.</strong> Your data never leaves your device. Segmentor.app runs entirely in your browser using local processing—we never see, store, or transmit your customer data anywhere. Think of it like using a calculator: the numbers you enter stay on your device.</p>
+                            <p><strong>Key security features:</strong></p>
+                            <ul>
+                                <li>✅ Zero cloud storage—all processing happens locally</li>
+                                <li>✅ No data transmission to external servers</li>
+                                <li>✅ Your files stay on your computer</li>
+                                <li>✅ You can work offline once the page loads</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="cookies tracking privacy">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Do you use cookies?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>No, we don't use cookies.</strong> Segmentor.app doesn't track you, create user profiles, or store any browsing data. We respect your privacy by design. The tool runs entirely in your browser with no account requirements for standard use.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="data storage where files">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Where is my data stored?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Only on your device.</strong> Your customer data is stored in two ways, both completely under your control:</p>
+                            <p><strong>1. Browser temporary storage (automatic):</strong> When you're working on a segmentation, your data is temporarily held in your browser's memory. You can clear this anytime through your browser settings.</p>
+                            <p><strong>2. .seg project files (manual):</strong> Use the Save button to export your complete project as a .seg file to your computer. You choose where to store it—it's just a regular file you control.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="trust sensitive data security">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I trust segmentor.app with sensitive customer data?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Yes, because we never see it.</strong> This isn't just a privacy promise—it's how the technology works. segmentor.app uses a privacy-by-design architecture. All calculations happen in your browser using JavaScript, similar to how a spreadsheet works.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Understanding the Model Section -->
+                <div class="faq-section" data-category="model">
+                    <h2 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px; color: #3a863e;">
+                            <path d="M3 3v18h18"/>
+                            <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+                        </svg>
+                        Understanding the Model
+                    </h2>
+                    
+                    <div class="faq-item" data-keywords="terminology classic modern apostles advocates terrorists trolls">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Does segmentor.app use the original Apostles Model terminology?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Yes and no—we give you the choice!</strong> The original 1995 Apostles Model used specific terminology:</p>
+                            <ul>
+                                <li><strong>Apostles</strong> (a sub-zone within Loyalists)</li>
+                                <li><strong>Terrorists</strong> (a sub-zone within Defectors)</li>
+                            </ul>
+                            <p><strong>We've modernised these terms to:</strong></p>
+                            <ul>
+                                <li><strong>Advocates</strong> (instead of Apostles)</li>
+                                <li><strong>Trolls</strong> (instead of Terrorists)</li>
+                            </ul>
+                            <p><strong>You choose:</strong> In the visualisation controls, switch between 'Modern' and 'Classic' terminology. The segmentation logic stays the same—only the labels change. We default to modern terms but respect those who prefer the original academic language.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="loyalists advocates difference superfans">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What's the difference between Loyalists and Advocates?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Loyalists are the full quadrant (top-right) of customers with both high satisfaction and high loyalty.</strong></p>
+                            <p><strong>Advocates are the most loyal and satisfied customers within that quadrant—essentially 'Loyalists Plus.'</strong> They don't just stay—they actively promote you.</p>
+                            <p><strong>Think of it like this:</strong> All Advocates are Loyalists, but not all Loyalists are Advocates. Advocates are your superfans.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item" data-keywords="apostles model what is framework">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What is the Apostles Model?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>The Apostles Model is a customer segmentation framework</strong> that classifies customers into four groups based on two dimensions: satisfaction and loyalty. It was developed by Thomas O. Jones and W. Earl Sasser Jr. in their groundbreaking 1995 Harvard Business Review article "Why Satisfied Customers Defect."</p>
+                        <p><strong>The classic model identified four customer types:</strong></p>
+                        <ul>
+                            <li><strong>Loyalists</strong>: High satisfaction + High loyalty (includes Apostles sub-zone)</li>
+                            <li><strong>Mercenaries</strong>: High satisfaction + Low loyalty</li>
+                            <li><strong>Hostages</strong>: Low satisfaction + High loyalty</li>
+                            <li><strong>Defectors</strong>: Low satisfaction + Low loyalty (includes Terrorists sub-zone)</li>
+                        </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="NPS difference comparison">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>How is this different from NPS?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Traditional recommendation scores and segmentor.app complement each other perfectly.</strong></p>
+                            <p><strong>Recommendation scores give you a single metric asking, 'Would you recommend us?'</strong></p>
+                            <p><strong>Segmentor.app adds context by showing why customers behave that way—plotting them across satisfaction and loyalty.</strong></p>
+                            <p><strong>Great news:</strong> If you already collect recommendation scores, you can use those as your loyalty metric in segmentor.app! Many of our users do exactly that. Recommendation scores tell you the number; we help you understand the segments behind it.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="advocate apostle characteristics">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What makes someone an Apostle?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>An Apostle is a sub-zone within the Loyalists quadrant</strong>—customers with both high satisfaction AND high loyalty who are your best customers and genuinely love what you do.</p>
+                            <p><strong>Characteristics of Apostles:</strong></p>
+                            <ul>
+                                <li>✅ Highly satisfied with your product/service</li>
+                                <li>✅ Actively recommend you to others</li>
+                                <li>✅ Resist competitive offers</li>
+                                <li>✅ Forgive occasional mistakes</li>
+                                <li>✅ Provide valuable feedback</li>
+                                <li>✅ Drive most of your organic growth</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Using the Tool Section -->
+                <div class="faq-section" data-category="usage">
+                    <h2 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px; color: #3a863e;">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                        </svg>
+                        Using the Tool
+                    </h2>
+                    
+                    <div class="faq-item" data-keywords="how to use get started">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>How do I get started with the tool?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Getting started is simple:</strong></p>
+                            <ol>
+                                <li><strong>Upload your data:</strong> Click "Upload CSV" and select your customer data file</li>
+                                <li><strong>Or try sample data:</strong> Click "Load Sample Data" to see how it works</li>
+                                <li><strong>View your segments:</strong> The tool automatically categorizes your customers</li>
+                                <li><strong>Analyze results:</strong> Click on any customer point to see details</li>
+                                <li><strong>Save your work:</strong> Use the Save button to download your project</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="CSV format data requirements">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What format should my CSV data be in?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Your CSV only needs these two mandatory columns:</strong></p>
+                            <ul>
+                                <li><strong>Satisfaction Score:</strong> 1-10 scale (or 1-5, we'll normalize it automatically)</li>
+                                <li><strong>Loyalty Score:</strong> 1-10 scale (or 1-5, we'll normalize it automatically)</li>
+                            </ul>
+                            <p><strong>Optional columns:</strong></p>
+                            <ul>
+                                <li><strong>Customer ID:</strong> If you don't provide this, segmentor.app will assign automatic IDs</li>
+                                <li><strong>Customer Name, Email, etc.:</strong> Any additional details you want to include</li>
+                            </ul>
+                            <p><strong>Accepted scales:</strong> We automatically detect and normalize 1-5, 1-10, or 0-10 scales.</p>
+                            <p><strong>Examples:</strong></p>
+                            <pre>// Minimal format (anonymous feedback)
+Satisfaction,Loyalty
+8,9
+6,4
+
+// With customer details
+Customer ID,Satisfaction,Loyalty,Customer Name
+CUST001,8,9,John Smith
+CUST002,6,4,Jane Doe</pre>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="sample data try demo">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I try the tool without my own data?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Absolutely!</strong> Click the "Load Sample Data" button to see how the tool works with example customer data. This is perfect for:</p>
+                            <ul>
+                                <li>✅ Understanding how the Apostles Model works</li>
+                                <li>✅ Seeing what your results will look like</li>
+                                <li>✅ Testing the tool's features</li>
+                                <li>✅ Demonstrating to colleagues</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="help consulting expert guidance CX strategy">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What if I need help interpreting my results or building a CX strategy?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Great question!</strong> While segmentor.app makes customer segmentation accessible to everyone, we know that turning insights into strategy isn't always straightforward.</p>
+                            <p><strong>We've partnered with Teresa Monroe</strong>, Europe's leading Customer Experience (CX) and Employee Experience (EX) consulting agency, to provide expert guidance when you need it. They specialise in:</p>
+                            <ul>
+                                <li>✓ Complete CX program development from the ground up</li>
+                                <li>✓ Expert segmentation analysis and strategic recommendations</li>
+                                <li>✓ Implementation support and team training</li>
+                                <li>✓ Organisational transformation and cultural change</li>
+                            </ul>
+                            <p>Teresa Monroe has helped hundreds of companies transform their customer experience—from Fortune 500s to innovative scale-ups. They bring decades of experience turning customer data into business transformation.</p>
+                            <div style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
+                                <a href="#" style="color: #3a863e; text-decoration: none; font-weight: 600;">Learn more about CX consulting →</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="adjust midpoint, move quadrants, reposition centre">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I adjust the quadrant boundaries?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes! You can drag the midpoint (centre point) to reposition where the quadrants divide. This is useful when your data distribution suggests different thresholds would be more meaningful.</p>
+                            <p>You can also resize the Apostles and Terrorists zones using the resize handles in the top-right and bottom-left corners of the chart.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="manual reassignment, change quadrant, override classification">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I manually reassign customers to different quadrants?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes, for points on quadrant boundaries. Click any data point to see its details. If the point sits on a boundary line, you'll see reassignment buttons to move it to an adjacent quadrant.</p>
+                            <p>Manual reassignments are automatically cleared if you move the midpoint and the point is no longer on a boundary.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="chart controls, visualisation settings, display options">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What chart display options are available?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>The chart controls let you:</p>
+                            <ul>
+                                <li>Toggle between Classic (Apostles/Terrorists) and Modern (Advocates/Trolls) terminology</li>
+                                <li>Show or hide Near-Apostles zones</li>
+                                <li>Control label visibility (all, quadrants only, or none)</li>
+                                <li>Toggle grid lines and scale numbers</li>
+                                <li>Show or hide axis legends</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="edit data, modify entries, update customer">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I edit or delete customer entries?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes. In the data table, click the edit icon to modify satisfaction or loyalty scores. Click the delete icon to remove individual entries, or use "Delete All Rows" to clear everything.</p>
+                            <p>You can also exclude entries from analysis without deleting them—they'll remain in your data but won't appear in calculations.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="click points, view details, customer information">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>How do I see details about a specific customer?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Click any point on the chart to open an information box showing the customer's name, scores, quadrant assignment, and any additional data you've uploaded. For overlapping points, you'll see a frequency count.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="filter customers, exclude customers, date filters">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I filter my data by date or other attributes?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes! The tool offers comprehensive filtering:</p>
+                            <ul>
+                                <li><strong>Date filters:</strong> Analyse specific time periods with presets or custom ranges</li>
+                                <li><strong>Attribute filters:</strong> Filter by country, language, or any custom attributes in your data</li>
+                                <li><strong>Score filters:</strong> Filter by satisfaction or loyalty values</li>
+                            </ul>
+                            <p>You can combine multiple filters to narrow down your analysis to specific customer segments.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="scale detection, automatic normalisation, different scales, satisfaction scale">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Does the tool work with different satisfaction scales?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes. The tool automatically detects and normalises 1-5, 1-7, and 1-10 satisfaction scales. You can mix different scales in the same dataset—the tool will handle the conversion automatically.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="loyalty scale, different loyalty scales, automatic detection">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Does the tool work with different loyalty scales?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes. The tool automatically detects and normalises 1-5, 1-7, and 1-10 loyalty scales. Your satisfaction and loyalty scales can be different—the tool handles each independently.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="frequency clustering, overlapping points, multiple responses">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>How does the tool handle overlapping data points?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>When multiple customers share the same satisfaction and loyalty scores, they're displayed as a single point with a frequency indicator. Click the point to see all customers at that position and their details.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Getting Support Section -->
+                <div class="faq-section" data-category="support">
+                    <h2 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px; color: #3a863e;">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7,10 12,15 17,10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Getting Support
+                    </h2>
+                    
+                    <div class="faq-item" data-keywords="teresa monroe who is consulting partner">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Who is Teresa Monroe?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Teresa Monroe is widely recognised as Europe's #1 Customer Experience (CX) and Employee Experience (EX) consulting agency</strong>—and the partner we trust to support segmentor.app users who need strategic CX guidance.</p>
+                            
+                            <p><strong>Their Credentials:</strong></p>
+                            <ul>
+                                <li><strong>Track Record:</strong> 20+ years specialising exclusively in Customer Experience, hundreds of successful CX transformations completed, clients ranging from nimble startups to Fortune 500 enterprises</li>
+                                <li><strong>Industry Recognition:</strong> Regular speakers at leading CX conferences (CX Network, CXPA events), published thought leadership in Harvard Business Review, McKinsey Quarterly, and industry journals</li>
+                                <li><strong>Methodology Excellence:</strong> Proprietary frameworks combining academic research with practical implementation, data-driven approach focused on measurable outcomes</li>
+                                <li><strong>European Market Leaders:</strong> Deep understanding of European regulatory environment (GDPR, consumer protection), multi-country experience across diverse business cultures</li>
+                            </ul>
+                            
+                            <p><strong>Why We Chose Them:</strong></p>
+                            <p>When selecting a consulting partner, we evaluated dozens of agencies. Teresa Monroe stood out for three reasons:</p>
+                            <ul>
+                                <li>They walk the talk – Their own operations are customer-centric and data-driven</li>
+                                <li>They focus on implementation – Not just strategy decks, but real organisational change</li>
+                                <li>They share our values – Transparency, privacy, and measurable impact over buzzwords</li>
+                            </ul>
+                            
+                            <p><strong>Services They Provide:</strong></p>
+                            <ul>
+                                <li>CX strategy development and roadmapping</li>
+                                <li>Advanced segmentation analysis and insights</li>
+                                <li>Program design and implementation support</li>
+                                <li>Team training and capability building</li>
+                                <li>Ongoing advisory and optimisation</li>
+                            </ul>
+                            
+                            <div style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
+                                <a href="#" style="color: #3a863e; text-decoration: none; font-weight: 600;">Visit Teresa Monroe's website →</a>
+                                <a href="#" style="color: #3a863e; text-decoration: none; font-weight: 600;">Request an introductory call →</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="brand plus custom branding">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What's included in Brand+?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Brand+ adds custom branding to your reports:</p>
+                            <ul>
+                                <li>Replace the watermark with your company logo</li>
+                                <li>Apply your brand colours to charts and reports</li>
+                                <li>Control logo size, position, and orientation</li>
+                            </ul>
+                            <p><a href="/brand-plus.html" style="color: #3a863e; text-decoration: none; font-weight: 600;">Learn more about Brand+ →</a></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data & Export Section -->
+                <div class="faq-section" data-category="data">
+                    <h2 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px; color: #3a863e;">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7,10 12,15 17,10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Data & Export
+                    </h2>
+                    
+                    <div class="faq-item" data-keywords="save export project file">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I save my work?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Yes! You can save your complete project.</strong> Use the Save button to download a .seg file that contains:</p>
+                            <ul>
+                                <li>✅ All your customer data</li>
+                                <li>✅ Segmentation results</li>
+                                <li>✅ Any custom settings</li>
+                                <li>✅ Analysis notes</li>
+                            </ul>
+                            <p><strong>To load it later:</strong> Use the Load button and select your .seg file. Everything will be restored exactly as you left it.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="export reports download">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What export formats are available?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>You can export in multiple formats:</p>
+                            <ul>
+                                <li><strong>PNG:</strong> Chart images for presentations</li>
+                                <li><strong>PDF:</strong> Complete reports with charts and analysis</li>
+                                <li><strong>CSV:</strong> Raw customer data with segment assignments</li>
+                                <li><strong>Excel (XLSX):</strong> Action plans with multiple worksheets</li>
+                            </ul>
+                            <p>Export options are available in the reporting section and chart controls.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="generate reports, action plan, data report">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What types of reports can I generate?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>The tool generates two main reports:</p>
+                            <ul>
+                                <li><strong>Data Report:</strong> Statistics, distributions, and quadrant breakdowns</li>
+                                <li><strong>Action Plan:</strong> Strategic recommendations, proximity analysis, conversion opportunities, and risk warnings</li>
+                            </ul>
+                            <p>Both reports include visual charts and can be customised before export.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="proximity analysis, recommendation score, response concentration">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What advanced analysis features are included?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>The Action Plan includes:</p>
+                            <ul>
+                                <li><strong>Proximity Analysis:</strong> Identifies customers close to quadrant boundaries who could be converted</li>
+                                <li><strong>Recommendation Score:</strong> Calculates your overall NPS-style score</li>
+                                <li><strong>Response Concentration:</strong> Shows where most responses cluster</li>
+                                <li><strong>Strategic Priorities:</strong> Highlights high-impact opportunities</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Section -->
+            <div class="section text-center">
+                    <h2 style="font-family: 'Montserrat', sans-serif;">Still Need Help?</h2>
+                    <p>Can't find the answer you're looking for? We're here to help.</p>
+                    <div class="help-actions">
+                        <a href="/" class="btn btn-primary">Use Tool</a>
+                        <a href="/" class="btn btn-secondary">Try the Tool</a>
+                    </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer (Shared Component) -->
+    <footer class="site-footer">
+        <div class="app-content">
+            <div class="footer-content">
+                <p>&copy; 2025 segmentor.app. All rights reserved.</p>
+                <nav class="footer-nav">
+                    <a href="/privacy.html">Privacy Policy</a>
+                    <a href="/terms.html">Terms of Service</a>
+                </nav>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Page-specific styles with cross-browser compatibility -->
+    <style>
+      /* CSS Reset for Cross-Browser Compatibility */
+      *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      
+      html {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      body {
+        font-family: 'Lato', sans-serif;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      img {
+        max-width: 100%;
+        height: auto;
+        border: 0;
+        vertical-align: middle;
+      }
+      
+      button, input, select, textarea {
+        font-family: 'Lato', sans-serif;
+        font-size: inherit;
+        line-height: inherit;
+        margin: 0;
+      }
+      
+      button {
+        cursor: pointer;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: 0 0;
+        border: none;
+        outline: 0;
+      }
+      
+      a {
+        color: inherit;
+        text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      
+      .flex-container {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+      }
+      
+
+        /* App Content - matches React app layout exactly */
+        .app-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px 16px 16px;
+        }
+
+        /* Section - matches React app section styling */
+        .section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+
+        .section h2 {
+            margin: 0 0 16px 0;
+            font-size: 20px;
+            font-weight: 500;
+            color: #111827;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 24px 0;
+            background: -webkit-linear-gradient(135deg, var(--background-light) 0%, var(--background-white) 100%);
+            background: -moz-linear-gradient(135deg, var(--background-light) 0%, var(--background-white) 100%);
+            background: -o-linear-gradient(135deg, var(--background-light) 0%, var(--background-white) 100%);
+            background: linear-gradient(135deg, var(--background-light) 0%, var(--background-white) 100%);
+            -webkit-border-radius: 12px;
+            -moz-border-radius: 12px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        /* Override hero-section text-align for main page title */
+        .hero-section .main-page-title {
+            text-align: left !important;
+        }
+
+        /* FAQ Search Styles */
+        .search-container {
+            margin-bottom: 24px;
+        }
+
+        .search-box {
+            display: flex;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px 0 0 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #3a863e;
+        }
+
+        .search-button {
+            padding: 12px 16px;
+            background: #3a863e;
+            color: white;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .search-button:hover {
+            background: #2d6a31;
+        }
+
+        .search-results {
+            margin-top: 16px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+
+        /* FAQ Categories */
+        .faq-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 32px;
+            justify-content: center;
+        }
+
+        .category-btn {
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border: 2px solid #e5e7eb;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            color: #6b7280;
+        }
+
+        .category-btn:hover {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .category-btn.active {
+            background: #3a863e;
+            border-color: #3a863e;
+            color: white;
+        }
+
+        /* FAQ Content */
+        .faq-content {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .faq-section {
+            display: block;
+        }
+
+        .faq-section.hidden {
+            display: none;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        /* FAQ Items */
         .faq-item {
             margin-bottom: 16px;
             border: 1px solid #e5e7eb;
@@ -491,90 +1464,5 @@
             searchResults.style.display = 'none';
         }
     </script>
-</head>
-<body>
-
-<nav class="main-navigation">
-  <div class="nav-container">
-    <div class="nav-logo">
-      <a href="/" class="logo-text">
-        <span class="logo-segmentor">seg<span class="logo-m">m</span>entor</span><span class="logo-app">.APP</span>
-      </a>
-    </div>
-    <div class="nav-links">
-      <a href="/about.html" class="nav-link">About</a>
-      <a href="/faq.html" class="nav-link">FAQ</a>
-      <a href="/contact.html" class="nav-link">Contact</a>
-      <a href="/tool/" class="nav-link nav-link-primary">Use Tool</a>
-    </div>
-  </div>
-</nav>
-
-
-    <!-- Main Content -->
-    <main class="faq-page">
-        <div class="app-content">
-            <!-- Hero Section -->
-            <section class="section hero-section">
-                <h1>Frequently Asked Questions</h1>
-                <p class="hero-subtitle">
-                    Find answers to common questions about segmentor.app and the customer segmentation tool. 
-                    Can't find what you're looking for? <a href="/contact.html">Contact us</a>.
-                </p>
-            </section>
-
-            <!-- FAQ Content -->
-            <section class="section">
-                <h2>Getting Started</h2>
-                <div style="margin-bottom: 2rem;">
-                    <h3>How do I get started with segmentor.app?</h3>
-                    <p>Getting started is simple:</p>
-                    <ol>
-                        <li>Visit the <a href="/tool/">main tool page</a></li>
-                        <li>Upload a CSV file with your customer data, or try the sample data to explore</li>
-                        <li>View your customers automatically segmented into the four quadrants</li>
-                        <li>Use filters and analysis tools to gain insights</li>
-                    </ol>
-                    <p>No registration required - just upload and start analyzing!</p>
-                </div>
-
-                <div style="margin-bottom: 2rem;">
-                    <h3>What data do I need to upload?</h3>
-                    <p>You need a CSV file with at least these columns:</p>
-                    <ul>
-                        <li><strong>Customer Name/ID:</strong> Unique identifier for each customer</li>
-                        <li><strong>Satisfaction Score:</strong> How satisfied they are (1-5, 1-7, or 1-10 scale)</li>
-                        <li><strong>Loyalty Score:</strong> How likely they are to stay (1-5, 1-7, or 1-10 scale)</li>
-                    </ul>
-                    <p>Optional columns: Email, Date, Country, Language, or any other customer attributes you want to analyze.</p>
-                </div>
-            </section>
-
-            <section class="section">
-                <h2>Privacy & Security</h2>
-                <div style="margin-bottom: 2rem;">
-                    <h3>Is my data safe?</h3>
-                    <p><strong>Yes, absolutely.</strong> Your data never leaves your device. Segmentor.app runs entirely in your browser using local processing—we never see, store, or transmit your customer data anywhere.</p>
-                    <p>Think of it like using a calculator: the numbers you enter stay on your device. We don't have servers collecting your information because there's nothing to collect. Your customer data remains 100% private and under your control.</p>
-                </div>
-
-                <div style="margin-bottom: 2rem;">
-                    <h3>Do you use cookies?</h3>
-                    <p><strong>No, we don't use cookies.</strong> Segmentor.app doesn't track you, create user profiles, or store any browsing data.</p>
-                    <p>We respect your privacy by design. Since the tool runs entirely in your browser without requiring accounts or logins, there's no need for cookies. We don't collect analytics, track your behavior, or sell your information to third parties.</p>
-                </div>
-            </section>
-
-            <section class="section">
-                <h2>Still Need Help?</h2>
-                <p>Can't find the answer you're looking for? We're here to help.</p>
-                <div class="hero-actions" style="margin-top: 1rem;">
-                    <a href="/contact.html" class="btn btn-primary">Contact Support</a>
-                    <a href="/tool/" class="btn btn-secondary">Try the Tool</a>
-                </div>
-            </section>
-        </div>
-    </main>
-
 </body>
 </html>
