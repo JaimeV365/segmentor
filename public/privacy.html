@@ -80,9 +80,10 @@
   color: #3a863e;
   text-transform: uppercase;
   font-size: 0.6em;
-  vertical-align: baseline;
+  vertical-align: middle;
   display: inline-block;
   margin-left: 2px;
+  transform: translateY(-1px);
 }
 
 .nav-links {
@@ -193,26 +194,98 @@
 
 /* Ensure navigation is consistent across all pages */
 
+
+/* Force consistent navigation styling - override any React app CSS */
+
+/* Ensure navigation is consistent across all pages */
+
+
+/* Force consistent navigation styling - override any React app CSS */
+
+/* Ensure navigation is consistent across all pages */
+
+
+/* Force consistent navigation styling - override any React app CSS */
+
 /* Ensure navigation is consistent across all pages */
 
 /* Ensure navigation is consistent across all pages */
+
+/* Ensure navigation is consistent across all pages */
+
+/* Main Content Styling */
+body {
+    font-family: 'Lato', sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.app-content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 24px !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 24px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.policy-content {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 32px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.policy-content h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 24px;
+}
+
+.policy-content h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-top: 32px;
+    margin-bottom: 16px;
+}
 
 .policy-content p {
-            margin-bottom: 1rem;
-            color: #374151;
-        }
-        .policy-content ul {
-            margin-left: 2rem;
-            margin-bottom: 1rem;
-        }
-        .policy-content li {
-            margin-bottom: 0.5rem;
-        }
-        .last-updated {
-            color: #6b7280;
-            font-style: italic;
-            margin-bottom: 2rem;
-        }
+    margin-bottom: 1rem;
+    color: #374151;
+    line-height: 1.7;
+}
+
+.policy-content ul {
+    margin-left: 2rem;
+    margin-bottom: 1.5rem;
+    color: #374151;
+}
+
+.policy-content li {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+}
+
+.policy-content a {
+    color: #3a863e;
+    text-decoration: none;
+}
+
+.policy-content a:hover {
+    text-decoration: underline;
+}
     </style>
 </head>
 <body>
@@ -234,9 +307,9 @@
 </nav>
 
 
-    <main class="policy-content">
-        <h1>Privacy Policy</h1>
-        <p class="last-updated">Last Updated: January 2025</p>
+    <main class="app-content">
+        <div class="policy-content">
+            <h1>Privacy Policy</h1>
 
         <h2>Our Commitment to Privacy</h2>
         <p>
@@ -330,8 +403,9 @@
 
         <h2>Contact Us</h2>
         <p>
-            If you have questions about this privacy policy, please contact us through our <a href="/contact.html" style="color: #3a863e;">contact page</a>.
+            If you have questions about this privacy policy, please contact us through our <a href="/contact.html">contact page</a>.
         </p>
+        </div>
     </main>
 
     <footer class="site-footer">

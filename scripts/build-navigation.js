@@ -102,9 +102,10 @@ const navigationCSS = `
   color: #3a863e;
   text-transform: uppercase;
   font-size: 0.6em;
-  vertical-align: baseline;
+  vertical-align: middle;
   display: inline-block;
   margin-left: 2px;
+  transform: translateY(-1px);
 }
 
 .nav-links {
