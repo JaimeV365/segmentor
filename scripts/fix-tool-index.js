@@ -42,8 +42,18 @@ function fixToolIndex() {
   
   // Write React's index.html to tool/index.html (overwriting any redirect file)
   fs.writeFileSync(toolIndexPath, reactIndex, 'utf8');
+  
+  // Inject navigation into the generated HTML
+  injectNavigation(toolIndexPath);
+  
   console.log('✅ Copied/generated React app index.html to build/tool/index.html');
   console.log('   Removed any redirect file that was there');
+  console.log('   Navigation injected');
+}
+
+function injectNavigation(filePath) {
+  const { injectNavigation: injectNav } = require('./build-navigation.js');
+  injectNav(filePath);
 }
 
 function generateReactIndex(assetManifestPath) {

@@ -8,8 +8,8 @@ const navigationHTML = `
 <nav class="main-navigation">
   <div class="nav-container">
     <div class="nav-logo">
-      <a href="/">
-        <img src="/segmentor-logo.png" alt="Segmentor" />
+      <a href="/" class="logo-text">
+        <span class="logo-segmentor">seg<span class="logo-m">m</span>entor</span><span class="logo-app">.APP</span>
       </a>
     </div>
     <div class="nav-links">
@@ -24,6 +24,8 @@ const navigationHTML = `
 
 // CSS for navigation
 const navigationCSS = `
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Jaro&display=swap');
+
 .main-navigation {
   background: #fff;
   border-bottom: 1px solid #e5e7eb;
@@ -42,9 +44,38 @@ const navigationCSS = `
   padding: 0 1rem;
 }
 
-.nav-logo img {
-  height: 40px;
-  width: auto;
+.nav-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.logo-text {
+  text-decoration: none;
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  color: #333333;
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.logo-segmentor {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 700;
+  color: #333333;
+}
+
+.logo-m {
+  color: #3a863e;
+}
+
+.logo-app {
+  font-family: 'Jaro', 'Montserrat', sans-serif;
+  color: #3a863e;
+  text-transform: uppercase;
+  font-size: 0.6em;
+  transform: translateY(2px);
+  display: inline-block;
+  margin-left: 2px;
 }
 
 .nav-links {
