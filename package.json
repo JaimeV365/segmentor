@@ -39,7 +39,7 @@
     "build:nav": "node scripts/build-navigation.js",
     "cleanup:nav": "node scripts/cleanup-old-nav.js",
     "build:deploy": "npm run build && npm run deploy:prepare",
-    "deploy:prepare": "mkdir -p build/tool && rm -rf build/tool/* && cp -r build/static build/tool/ && cp build/index.html build/tool/ && cp build/asset-manifest.json build/tool/ 2>/dev/null || true && cp build/manifest.json build/tool/ 2>/dev/null || true && cp build/logo*.png build/tool/ 2>/dev/null || true && cp build/favicon.ico build/tool/ 2>/dev/null || true",
+    "deploy:prepare": "mkdir -p build/tool && rm -rf build/tool/* && cp -r build/static build/tool/ && node scripts/fix-tool-index.js && cp build/asset-manifest.json build/tool/ 2>/dev/null || true && cp build/manifest.json build/tool/ 2>/dev/null || true && cp build/logo*.png build/tool/ 2>/dev/null || true && cp build/favicon.ico build/tool/ 2>/dev/null || true && cp public/_redirects build/_redirects 2>/dev/null || true",
     "fix-root": "node scripts/fix-root-index.js",
     "deploy": "npm run build:deploy && git add . && git commit -m 'Deploy to GitHub Pages' && git push",
     "test": "jest --config jest.config.js",
