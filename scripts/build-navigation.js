@@ -94,7 +94,7 @@ const navigationCSS = `
   color: #3a863e;
   text-transform: uppercase;
   font-size: 0.6em;
-  transform: translateY(2px);
+  vertical-align: baseline;
   display: inline-block;
   margin-left: 2px;
 }
@@ -167,6 +167,17 @@ function injectNavigation(filePath) {
     content = content.replace(/@import url\('https:\/\/fonts\.googleapis\.com\/css2\?family=Montserrat[^']*'\);/g, '');
     content = content.replace(/@font-face[\s\S]{0,500}font-family:\s*['"]Montserrat['"][\s\S]{0,500}?}/g, '');
     content = content.replace(/@font-face[\s\S]{0,500}font-family:\s*['"]Jaro['"][\s\S]{0,500}?}/g, '');
+    
+    // Remove duplicate empty CSS comment blocks and media queries (more aggressive)
+    // Remove all instances of these comment patterns, even if followed by empty lines
+    content = content.replace(/\/\*\s*Font Face Declarations[^*]*\*\/[\s\n]*/g, '');
+    content = content.replace(/\/\*\s*Import Google Fonts[^*]*\*\/[\s\n]*/g, '');
+    content = content.replace(/\/\*\s*Jaro font[^*]*\*\/[\s\n]*/g, '');
+    content = content.replace(/\/\*\s*Fallback: If local fonts fail[^*]*\*\/[\s\n]*/g, '');
+    // Remove empty media queries
+    content = content.replace(/@media\s*\([^)]*\)\s*\{[\s\n]*\}/g, '');
+    // Remove excessive blank lines (4+ consecutive newlines)
+    content = content.replace(/\n\s*\n\s*\n\s*\n+/g, '\n\n');
     
     // Remove empty style blocks
     content = content.replace(/<style>\s*<\/style>/g, '');
