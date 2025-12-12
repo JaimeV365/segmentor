@@ -174,12 +174,16 @@ function injectNavigation(filePath) {
     
     // Always inject fresh navigation (don't check if it exists, just replace)
     
+    // Remove old preload links (remove any existing font preloads)
+    content = content.replace(/<link rel="preload" href="\/fonts\/[^"]*"[^>]*>/g, '');
+    
     // Inject font preload links in head (for faster font loading)
     if (content.includes('<head>')) {
-      // Add preload links after <head> tag
-      if (!content.includes('rel="preload" href="/fonts/Montserrat-Bold.ttf"')) {
+      // Always add preload links after <head> tag (replace first occurrence only)
+      const headMatch = content.match(/<head>/);
+      if (headMatch) {
         content = content.replace(
-          '<head>',
+          /<head>/,
           `<head>${fontPreloadHTML}`
         );
       }
