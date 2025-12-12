@@ -55,11 +55,11 @@ const navigationCSS = `
   align-items: baseline;
   gap: 0;
   color: #333333;
-  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .logo-segmentor {
-  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   color: #333333;
 }
@@ -69,7 +69,7 @@ const navigationCSS = `
 }
 
 .logo-app {
-  font-family: 'Jaro', 'Montserrat', sans-serif;
+  font-family: 'Jaro', sans-serif;
   color: #3a863e;
   text-transform: uppercase;
   font-size: 0.6em;
