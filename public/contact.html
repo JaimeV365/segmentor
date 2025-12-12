@@ -420,6 +420,22 @@
         
         console.log('Qualtrics handler script loaded');
     </script>
+</head>
+<body>
+    <!-- Qualtrics Site Intercept Target Div -->
+    <div id="ZN_11X8CuCOswXGKnC"></div>
+    
+    <!-- Qualtrics Site Intercept Deployment Script -->
+    <script type="text/javascript">
+        (function() {
+            var qs,js,q,s,d=document, gi=d.getElementById, ce=d.createElement, gt=d.getElementsByTagName, id="typef_orm", b="https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtrics.com/SIE/";
+            if(!gi.call(d,id)) {
+                js=ce.call(d,"script"); js.id=id; js.type="text/javascript"; js.async=true;
+                js.src=b+"?Q_ZID=ZN_11X8CuCOswXGKnC";
+                q=gt.call(d,"script")[0]; q.parentNode.insertBefore(js,q)
+            }
+        })();
+    </script>
 </body>
 </html>
 
