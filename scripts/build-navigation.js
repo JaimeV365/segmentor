@@ -267,6 +267,9 @@ function buildNavigation() {
     }
   });
   
+  // Copy static files from public/ to build/ if they don't exist
+  copyStaticFilesToBuild(publicDir, buildDir);
+  
   // Process files in build directory (after React build)
   htmlFiles.forEach(file => {
     const filePath = path.join(buildDir, file);
@@ -276,6 +279,97 @@ function buildNavigation() {
   });
   
   console.log('✅ Navigation build complete!');
+}
+
+/**
+ * Copy static files from public/ to build/ if they don't exist
+ * This ensures Cloudflare Pages can serve all static pages correctly
+ */
+function copyStaticFilesToBuild(publicDir, buildDir) {
+  console.log('📋 Ensuring static files are in build directory...');
+  
+  // List of static HTML files (excluding index.html which is the React app)
+  const staticFiles = [
+    'about.html',
+    'faq.html',
+    'contact.html',
+    'privacy.html',
+    'terms.html',
+    'brand-plus.html',
+    '404.html',
+    '_redirects',
+    '_headers',
+    'robots.txt',
+    'segmentor-logo.png',
+    'tm-logo.png',
+    'favicon.ico',
+    'screenshot-segments.png',
+    'screenshot-opportunity.png',
+    'screenshot-recommendation.png',
+    'screenshot-proximity.png'
+  ];
+  
+  // Directories to copy recursively
+  const staticDirs = [
+    'assets',
+    'icons',
+    'fonts'
+  ];
+  
+  // Ensure build directory exists
+  if (!fs.existsSync(buildDir)) {
+    fs.mkdirSync(buildDir, { recursive: true });
+  }
+  
+  // Copy static files if they don't exist in build/
+  staticFiles.forEach(file => {
+    const sourcePath = path.join(publicDir, file);
+    const destPath = path.join(buildDir, file);
+    
+    if (fs.existsSync(sourcePath)) {
+      // Only copy if destination doesn't exist or is older
+      if (!fs.existsSync(destPath) || fs.statSync(sourcePath).mtime > fs.statSync(destPath).mtime) {
+        fs.copyFileSync(sourcePath, destPath);
+        console.log(`✅ Copied ${file} to build/`);
+      }
+    }
+  });
+  
+  // Copy static directories recursively
+  staticDirs.forEach(dir => {
+    const sourcePath = path.join(publicDir, dir);
+    const destPath = path.join(buildDir, dir);
+    
+    if (fs.existsSync(sourcePath)) {
+      copyRecursive(sourcePath, destPath);
+      console.log(`✅ Ensured directory ${dir}/ exists in build/`);
+    }
+  });
+}
+
+/**
+ * Recursively copy directory from source to destination
+ */
+function copyRecursive(src, dest) {
+  if (!fs.existsSync(dest)) {
+    fs.mkdirSync(dest, { recursive: true });
+  }
+  
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+  
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    
+    if (entry.isDirectory()) {
+      copyRecursive(srcPath, destPath);
+    } else {
+      // Only copy if destination doesn't exist or source is newer
+      if (!fs.existsSync(destPath) || fs.statSync(srcPath).mtime > fs.statSync(destPath).mtime) {
+        fs.copyFileSync(srcPath, destPath);
+      }
+    }
+  }
 }
 
 // Run if called directly
