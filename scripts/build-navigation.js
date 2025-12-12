@@ -71,12 +71,20 @@ const navigationCSS = `
 }
 
 .logo-text {
-  text-decoration: none;
+  text-decoration: none !important;
   display: flex;
   align-items: baseline;
   gap: 0;
   color: #333333;
   font-family: 'Montserrat', sans-serif;
+}
+
+.logo-text:hover {
+  text-decoration: none !important;
+}
+
+.logo-text:focus {
+  text-decoration: none !important;
 }
 
 .logo-segmentor {
@@ -130,6 +138,22 @@ const navigationCSS = `
 /* Ensure navigation is consistent across all pages */
 .main-navigation * {
   box-sizing: border-box;
+}
+
+/* Force consistent navigation styling - override any React app CSS */
+.main-navigation {
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+.nav-logo {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+}
+
+.nav-link {
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
 }
 
 @media (max-width: 768px) {
