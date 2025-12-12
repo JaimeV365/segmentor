@@ -13,17 +13,26 @@ function fixToolIndex() {
   const buildDir = path.join(__dirname, '..', 'build');
   const buildIndexPath = path.join(buildDir, 'index.html');
   const toolIndexPath = path.join(buildDir, 'tool', 'index.html');
+  const assetManifestPath = path.join(buildDir, 'asset-manifest.json');
   
-  // Check if React's index.html exists
-  if (!fs.existsSync(buildIndexPath)) {
-    console.error('❌ ERROR: build/index.html does not exist!');
-    console.error('   React app may not have built correctly.');
-    console.error('   Check that homepage in package.json is set correctly.');
-    process.exit(1);
+  let reactIndex;
+  
+  // Try to read React's index.html from build directory
+  if (fs.existsSync(buildIndexPath)) {
+    const content = fs.readFileSync(buildIndexPath, 'utf8');
+    // Check if it's actually a React app (not a redirect file)
+    if (content.includes('<div id="root"></div>') && !content.includes('Redirecting')) {
+      reactIndex = content;
+      console.log('✅ Found React app index.html in build/');
+    } else {
+      console.log('⚠️  build/index.html exists but appears to be a redirect file, generating from asset-manifest...');
+      reactIndex = generateReactIndex(assetManifestPath);
+    }
+  } else {
+    // If build/index.html doesn't exist, generate it from asset-manifest
+    console.log('⚠️  build/index.html not found, generating from asset-manifest...');
+    reactIndex = generateReactIndex(assetManifestPath);
   }
-  
-  // Read React's index.html
-  const reactIndex = fs.readFileSync(buildIndexPath, 'utf8');
   
   // Ensure tool directory exists
   const toolDir = path.join(buildDir, 'tool');
@@ -33,8 +42,43 @@ function fixToolIndex() {
   
   // Write React's index.html to tool/index.html (overwriting any redirect file)
   fs.writeFileSync(toolIndexPath, reactIndex, 'utf8');
-  console.log('✅ Copied React app index.html to build/tool/index.html');
+  console.log('✅ Copied/generated React app index.html to build/tool/index.html');
   console.log('   Removed any redirect file that was there');
+}
+
+function generateReactIndex(assetManifestPath) {
+  if (!fs.existsSync(assetManifestPath)) {
+    console.error('❌ ERROR: build/asset-manifest.json does not exist!');
+    console.error('   React app may not have built correctly.');
+    process.exit(1);
+  }
+  
+  const assetManifest = JSON.parse(fs.readFileSync(assetManifestPath, 'utf8'));
+  const cssFiles = assetManifest.entrypoints.filter(f => f.endsWith('.css'));
+  const jsFiles = assetManifest.entrypoints.filter(f => f.endsWith('.js'));
+  
+  console.log(`   Found ${cssFiles.length} CSS files and ${jsFiles.length} JS files in asset-manifest`);
+  
+  // Generate React app HTML template with correct paths for /tool/ base
+  return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/tool/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Professional customer segmentation tool using the Apostles Model methodology" />
+    <link rel="apple-touch-icon" href="/tool/logo192.png" />
+    <link rel="manifest" href="/tool/manifest.json" />
+    ${cssFiles.map(css => `<link rel="stylesheet" href="/tool/${css}" />`).join('\n    ')}
+    <title>segmentor.app - Customer Segmentation Tool</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    ${jsFiles.map(js => `<script src="/tool/${js}"></script>`).join('\n    ')}
+  </body>
+</html>`;
 }
 
 // Run if called directly
