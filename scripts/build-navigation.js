@@ -22,6 +22,11 @@ const navigationHTML = `
 </nav>
 `;
 
+// Font preload links (for faster font loading)
+const fontPreloadHTML = `
+<link rel="preload" href="/fonts/Montserrat-Bold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+`;
+
 // CSS for navigation
 const navigationCSS = `
 /* Import Google Fonts FIRST (CSS rule: @import must be at top) */
@@ -160,6 +165,17 @@ function injectNavigation(filePath) {
     content = content.replace(/<style>\s*\/\*[\s\S]*?\*\/\s*<\/style>/g, '');
     
     // Always inject fresh navigation (don't check if it exists, just replace)
+    
+    // Inject font preload links in head (for faster font loading)
+    if (content.includes('<head>')) {
+      // Add preload links after <head> tag
+      if (!content.includes('rel="preload" href="/fonts/Montserrat-Bold.ttf"')) {
+        content = content.replace(
+          '<head>',
+          `<head>${fontPreloadHTML}`
+        );
+      }
+    }
     
     // Inject CSS in head (always inject fresh, we've already removed old CSS above)
     if (content.includes('<head>')) {
