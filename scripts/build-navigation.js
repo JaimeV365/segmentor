@@ -25,18 +25,24 @@ const navigationHTML = `
 // Font preload links (for faster font loading)
 const fontPreloadHTML = `
 <link rel="preload" href="/fonts/Montserrat-Bold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+<link rel="preload" href="/fonts/Jaro-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
 `;
 
 // CSS for navigation
 const navigationCSS = `
-/* Import Google Fonts FIRST (CSS rule: @import must be at top) */
-@import url('https://fonts.googleapis.com/css2?family=Jaro&display=swap');
-
 /* Font Face Declarations - Using Local Fonts */
 @font-face {
   font-family: 'Montserrat';
   src: url('/fonts/Montserrat-Bold.ttf') format('truetype');
   font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Jaro';
+  src: url('/fonts/Jaro-Regular.ttf') format('truetype');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
@@ -154,11 +160,13 @@ function injectNavigation(filePath) {
     content = content.replace(/\.logo-m[\s\S]*?}/g, '');
     content = content.replace(/\.logo-app[\s\S]*?}/g, '');
     
-    // Remove old font imports and @font-face declarations
-    content = content.replace(/@import url\('https:\/\/fonts\.googleapis\.com\/css2\?family=Montserrat[^']*'\);/g, '');
+    // Remove old font imports and @font-face declarations (more comprehensive patterns)
+    content = content.replace(/@import url\([^)]*fonts\.googleapis\.com[^)]*Jaro[^)]*\);/g, '');
+    content = content.replace(/@import url\([^)]*fonts\.googleapis\.com[^)]*Montserrat[^)]*\);/g, '');
     content = content.replace(/@import url\('https:\/\/fonts\.googleapis\.com\/css2\?family=Jaro[^']*'\);/g, '');
-    content = content.replace(/@font-face[\s\S]*?font-family: ['"]Montserrat['"][\s\S]*?}/g, '');
-    content = content.replace(/@font-face[\s\S]*?font-family: ['"]Jaro['"][\s\S]*?}/g, '');
+    content = content.replace(/@import url\('https:\/\/fonts\.googleapis\.com\/css2\?family=Montserrat[^']*'\);/g, '');
+    content = content.replace(/@font-face[\s\S]{0,500}font-family:\s*['"]Montserrat['"][\s\S]{0,500}?}/g, '');
+    content = content.replace(/@font-face[\s\S]{0,500}font-family:\s*['"]Jaro['"][\s\S]{0,500}?}/g, '');
     
     // Remove empty style blocks
     content = content.replace(/<style>\s*<\/style>/g, '');
