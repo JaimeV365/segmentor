@@ -24,7 +24,17 @@ const navigationHTML = `
 
 // CSS for navigation
 const navigationCSS = `
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Jaro&display=swap');
+/* Import Google Fonts FIRST (CSS rule: @import must be at top) */
+@import url('https://fonts.googleapis.com/css2?family=Jaro&display=swap');
+
+/* Font Face Declarations - Using Local Fonts */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 .main-navigation {
   background: #fff;
@@ -134,30 +144,38 @@ function injectNavigation(filePath) {
     content = content.replace(/\.nav-logo[\s\S]*?}/g, '');
     content = content.replace(/\.nav-links[\s\S]*?}/g, '');
     content = content.replace(/\.nav-link[\s\S]*?}/g, '');
+    content = content.replace(/\.logo-text[\s\S]*?}/g, '');
+    content = content.replace(/\.logo-segmentor[\s\S]*?}/g, '');
+    content = content.replace(/\.logo-m[\s\S]*?}/g, '');
+    content = content.replace(/\.logo-app[\s\S]*?}/g, '');
+    
+    // Remove old font imports and @font-face declarations
+    content = content.replace(/@import url\('https:\/\/fonts\.googleapis\.com\/css2\?family=Montserrat[^']*'\);/g, '');
+    content = content.replace(/@import url\('https:\/\/fonts\.googleapis\.com\/css2\?family=Jaro[^']*'\);/g, '');
+    content = content.replace(/@font-face[\s\S]*?font-family: ['"]Montserrat['"][\s\S]*?}/g, '');
+    content = content.replace(/@font-face[\s\S]*?font-family: ['"]Jaro['"][\s\S]*?}/g, '');
+    
+    // Remove empty style blocks
+    content = content.replace(/<style>\s*<\/style>/g, '');
+    content = content.replace(/<style>\s*\/\*[\s\S]*?\*\/\s*<\/style>/g, '');
     
     // Always inject fresh navigation (don't check if it exists, just replace)
     
-    // Remove old navigation CSS if it exists (to avoid duplicates)
-    // Match any existing navigation CSS block
-    content = content.replace(/<style>[\s\S]*?@import url\('https:\/\/fonts\.googleapis\.com\/css2\?family=Montserrat[\s\S]*?<\/style>/g, '');
-    content = content.replace(/<style>[\s\S]*?\.main-navigation[\s\S]*?<\/style>/g, '');
-    
-    // Inject CSS in head (after any existing style tags to avoid conflicts)
+    // Inject CSS in head (always inject fresh, we've already removed old CSS above)
     if (content.includes('<head>')) {
-      // Check if navigation CSS already exists
-      if (!content.includes('main-navigation')) {
+      // Find the first <style> tag or insert before </head>
+      if (content.includes('<style>')) {
+        // Insert before first style tag
+        content = content.replace(
+          '<style>',
+          `<style>${navigationCSS}\n`
+        );
+      } else {
+        // Insert after <head>
         content = content.replace(
           '<head>',
           `<head>\n<style>${navigationCSS}</style>`
         );
-      } else {
-        // If head exists but CSS doesn't, add it
-        if (!content.includes('@import url(\'https://fonts.googleapis.com')) {
-          content = content.replace(
-            '<head>',
-            `<head>\n<style>${navigationCSS}</style>`
-          );
-        }
       }
     }
     
