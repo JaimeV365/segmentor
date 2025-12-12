@@ -102,7 +102,7 @@ const navigationCSS = `
   color: #3a863e;
   text-transform: uppercase;
   font-size: 0.6em;
-  vertical-align: baseline;
+  transform: translateY(2px);
   display: inline-block;
   margin-left: 2px;
 }
