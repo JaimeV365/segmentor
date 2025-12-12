@@ -123,22 +123,42 @@ function injectNavigation(filePath) {
   try {
     let content = fs.readFileSync(filePath, 'utf8');
     
-    // Remove old navigation if it exists
+    // Remove old navigation if it exists (multiple patterns)
     content = content.replace(/<!-- Website Header -->[\s\S]*?<\/header>/g, '');
     content = content.replace(/<header class="website-header">[\s\S]*?<\/header>/g, '');
+    content = content.replace(/<nav class="main-navigation">[\s\S]*?<\/nav>/g, '');
     
-    // Check if our new navigation already exists
-    if (content.includes('main-navigation') && !content.includes('website-header')) {
-      console.log(`Navigation already exists in ${filePath}`);
-      return;
-    }
+    // Remove old navigation CSS if it exists (inline styles)
+    content = content.replace(/\.main-navigation[\s\S]*?}/g, '');
+    content = content.replace(/\.nav-container[\s\S]*?}/g, '');
+    content = content.replace(/\.nav-logo[\s\S]*?}/g, '');
+    content = content.replace(/\.nav-links[\s\S]*?}/g, '');
+    content = content.replace(/\.nav-link[\s\S]*?}/g, '');
     
-    // Inject CSS in head
+    // Always inject fresh navigation (don't check if it exists, just replace)
+    
+    // Remove old navigation CSS if it exists (to avoid duplicates)
+    // Match any existing navigation CSS block
+    content = content.replace(/<style>[\s\S]*?@import url\('https:\/\/fonts\.googleapis\.com\/css2\?family=Montserrat[\s\S]*?<\/style>/g, '');
+    content = content.replace(/<style>[\s\S]*?\.main-navigation[\s\S]*?<\/style>/g, '');
+    
+    // Inject CSS in head (after any existing style tags to avoid conflicts)
     if (content.includes('<head>')) {
-      content = content.replace(
-        '<head>',
-        `<head>\n<style>${navigationCSS}</style>`
-      );
+      // Check if navigation CSS already exists
+      if (!content.includes('main-navigation')) {
+        content = content.replace(
+          '<head>',
+          `<head>\n<style>${navigationCSS}</style>`
+        );
+      } else {
+        // If head exists but CSS doesn't, add it
+        if (!content.includes('@import url(\'https://fonts.googleapis.com')) {
+          content = content.replace(
+            '<head>',
+            `<head>\n<style>${navigationCSS}</style>`
+          );
+        }
+      }
     }
     
     // Inject navigation after opening body tag
