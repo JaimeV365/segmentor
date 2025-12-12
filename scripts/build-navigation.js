@@ -321,28 +321,34 @@ function copyStaticFilesToBuild(publicDir, buildDir) {
     fs.mkdirSync(buildDir, { recursive: true });
   }
   
-  // Copy static files if they don't exist in build/
+  // Copy static files to build/ (always copy to ensure latest version)
   staticFiles.forEach(file => {
     const sourcePath = path.join(publicDir, file);
     const destPath = path.join(buildDir, file);
     
     if (fs.existsSync(sourcePath)) {
-      // Only copy if destination doesn't exist or is older
-      if (!fs.existsSync(destPath) || fs.statSync(sourcePath).mtime > fs.statSync(destPath).mtime) {
-        fs.copyFileSync(sourcePath, destPath);
-        console.log(`✅ Copied ${file} to build/`);
-      }
+      // Always copy to ensure build/ has the latest version
+      fs.copyFileSync(sourcePath, destPath);
+      console.log(`✅ Copied ${file} to build/`);
+    } else {
+      console.log(`⚠️  File not found in public/: ${file}`);
     }
   });
   
-  // Copy static directories recursively
+  // Copy static directories recursively (always copy to ensure latest)
   staticDirs.forEach(dir => {
     const sourcePath = path.join(publicDir, dir);
     const destPath = path.join(buildDir, dir);
     
     if (fs.existsSync(sourcePath)) {
+      // Remove destination directory first to ensure clean copy
+      if (fs.existsSync(destPath)) {
+        fs.rmSync(destPath, { recursive: true, force: true });
+      }
       copyRecursive(sourcePath, destPath);
-      console.log(`✅ Ensured directory ${dir}/ exists in build/`);
+      console.log(`✅ Copied directory ${dir}/ to build/`);
+    } else {
+      console.log(`⚠️  Directory not found in public/: ${dir}/`);
     }
   });
 }
@@ -364,10 +370,8 @@ function copyRecursive(src, dest) {
     if (entry.isDirectory()) {
       copyRecursive(srcPath, destPath);
     } else {
-      // Only copy if destination doesn't exist or source is newer
-      if (!fs.existsSync(destPath) || fs.statSync(srcPath).mtime > fs.statSync(destPath).mtime) {
-        fs.copyFileSync(srcPath, destPath);
-      }
+      // Always copy to ensure latest version
+      fs.copyFileSync(srcPath, destPath);
     }
   }
 }
