@@ -860,25 +860,39 @@
     }
     
     function initiateCloudflareLoginRedirect() {
-        // Hide any previous errors
-        const authError = document.getElementById('authError');
-        if (authError) authError.style.display = 'none';
-        
-        // Redirect to Cloudflare Access protected route
-        // Cloudflare Access will intercept this route and show login page
-        // After authentication, user will be allowed to access the route
-        // We'll handle the redirect in the auth success check
-        const loginUrl = `${window.location.origin}/brand-plus-auth`;
-        
-        console.log('🔐 Redirecting to Cloudflare Access login...');
-        console.log('📍 Login URL:', loginUrl);
-        console.log('💡 Cloudflare Access will intercept and show login page');
-        console.log('💡 After login, you\'ll be redirected back here');
-        
-        // Redirect the entire page to the login URL
-        // Cloudflare Access will intercept before the page loads
-        window.location.href = loginUrl;
+        try {
+            console.log('🔐 Button clicked - initiating Cloudflare Access login...');
+            
+            // Hide any previous errors
+            const authError = document.getElementById('authError');
+            if (authError) authError.style.display = 'none';
+            
+            // Redirect to Cloudflare Access protected route
+            // Cloudflare Access will intercept this route and show login page
+            // After authentication, user will be allowed to access the route
+            // We'll handle the redirect in the auth success check
+            const loginUrl = `${window.location.origin}/brand-plus-auth`;
+            
+            console.log('🔐 Redirecting to Cloudflare Access login...');
+            console.log('📍 Login URL:', loginUrl);
+            console.log('💡 Cloudflare Access will intercept and show login page');
+            console.log('💡 After login, you\'ll be redirected back here');
+            
+            // Redirect the entire page to the login URL
+            // Cloudflare Access will intercept before the page loads
+            window.location.href = loginUrl;
+        } catch (error) {
+            console.error('❌ Error initiating Cloudflare login:', error);
+            const authError = document.getElementById('authError');
+            if (authError) {
+                authError.style.display = 'block';
+                authError.textContent = 'Error: ' + error.message;
+            }
+        }
     }
+    
+    // Make function globally accessible
+    window.initiateCloudflareLoginRedirect = initiateCloudflareLoginRedirect;
     
     // Check authentication status on page load
     window.addEventListener('load', async () => {
