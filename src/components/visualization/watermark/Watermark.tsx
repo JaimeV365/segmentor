@@ -121,7 +121,6 @@ export const Watermark: React.FC<WatermarkProps> = ({
   }
 
   // Position within the chart area with adjustable offset
-  const isFlat = effects?.has('LOGO_FLAT');
   // Opacity from effects with default and clamp
   const opacityEffect = Array.from(effects).find(e => e.startsWith('LOGO_OPACITY:'));
   const parsedOpacity = opacityEffect ? parseFloat(opacityEffect.replace('LOGO_OPACITY:', '')) : 0.6;
