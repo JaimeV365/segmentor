@@ -1,0 +1,14 @@
+Request for font "Roboto" blocked at visibility level 2 (requires 3)
+2 tool
+🔍 Cloudflare Auth Check: 
+Object { hasLocalStorageJWT: false, hasCookie: false, extractedEmail: null }
+627.5349af0d.chunk.js:1:1397
+⚠️ No JWT or email found - user not authenticated 627.5349af0d.chunk.js:1:1561
+ℹ️ Not authenticated with Cloudflare Access main.e11d359e.js:2:2338687
+Request for font "Roboto" blocked at visibility level 2 (requires 3)
+2 tool
+Error loading demo data: TypeError: NetworkError when attempting to fetch resource.
+    N App.tsx:103
+    React 11
+main.e11d359e.js:2:2340927
+Content-Security-Policy: The page’s settings blocked the loading of a resource (connect-src) at https://segmentor.app/segmentor-demo.csv because it violates the following directive: “connect-src https://*.qualtrics.com https://fonts.googleapis.com https://fonts.gstatic.com” main.e11d359e.js:2:2339039
