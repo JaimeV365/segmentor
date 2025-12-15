@@ -43,8 +43,8 @@ function parseWatermarkSettings(settings: WatermarkSettings) {
   const isFlat = effects.has('LOGO_FLAT');
   const rotationDegrees = isFlat ? 0 : -90;
 
-  // Get size (default 90)
-  let logoSize = 90;
+  // Get size (default 45)
+  let logoSize = 45;
   const sizeModifier = Array.from(effects).find(e => e.startsWith('LOGO_SIZE:'));
   if (sizeModifier) {
     const sizeValue = parseInt(sizeModifier.replace('LOGO_SIZE:', ''), 10);

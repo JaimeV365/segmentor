@@ -53,7 +53,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
   const rotation = effects?.has('LOGO_FLAT') ? '0deg' : '-90deg';
 
   // Base size (default)
-  let logoSize = 60;
+  let logoSize = 45;
 
   // Check for size modifiers in effects
   const sizeModifier = Array.from(effects).find(e => e.startsWith('LOGO_SIZE:'));
