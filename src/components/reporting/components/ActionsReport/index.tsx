@@ -888,7 +888,7 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                   })();
                   
                   // Show plus button if:
-                  // 1. TM Agent mode is enabled (advanced feature)
+                  // 1. Teresa Monroe staff mode is enabled (advanced feature)
                   // 2. Current finding is a text finding (not a chart)
                   const showPlusButton = isPremium && !finding.isChartItem;
                   

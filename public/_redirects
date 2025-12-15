@@ -1,8 +1,8 @@
 # Cloudflare Pages Redirects
 # This file handles routing for Cloudflare Pages
 
-# After Cloudflare Access authentication, redirect /brand-plus-auth to brand-plus page
-/brand-plus-auth /brand-plus.html?auth=success 302
+# After Cloudflare Access authentication, redirect /brand-plus-auth to TM login page
+/brand-plus-auth /tm?auth=success 302
 
 # Root path redirects to tool
 / /tool/ 301
@@ -13,7 +13,9 @@
 /contact.html 200
 /privacy.html 200
 /terms.html 200
-/brand-plus.html 200
+/brand-plus.html /tm 301
+/tm /tm.html 200
+/tm.html 200
 /brand-plus-auth.html 200
 /404.html 200
 /pricing.html 200

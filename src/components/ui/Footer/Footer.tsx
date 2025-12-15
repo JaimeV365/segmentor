@@ -16,6 +16,7 @@ export const Footer: React.FC = () => {
           <nav className="footer-nav">
             <a href="/privacy.html" onClick={(e) => handleLinkClick(e, '/privacy.html')}>Privacy Policy</a>
             <a href="/terms.html" onClick={(e) => handleLinkClick(e, '/terms.html')}>Terms of Service</a>
+            <a href="/tm" onClick={(e) => handleLinkClick(e, '/tm')} style={{ fontSize: '0.85rem', opacity: 0.7 }}>TM Staff</a>
           </nav>
         </div>
       </div>

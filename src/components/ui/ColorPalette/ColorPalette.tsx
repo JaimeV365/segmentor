@@ -66,7 +66,7 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
                 console.log('[ColorPalette] Button onMouseDown for color:', color);
               }}
               disabled={disabled || !isPremium}
-              title={!isPremium ? 'TM Agent feature' : `Select ${color}`}
+              title={!isPremium ? 'Teresa Monroe staff feature' : `Select ${color}`}
             />
           </PremiumFeature>
         ))}

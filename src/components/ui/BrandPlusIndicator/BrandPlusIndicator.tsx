@@ -8,12 +8,12 @@ interface BrandPlusIndicatorProps {
 }
 
 /**
- * TM Agent Indicator Component
+ * Teresa Monroe Staff Indicator Component
  * 
- * Always-visible indicator in the top-right corner that:
- * - Shows "Agent Login" for non-authenticated users
- * - Shows "TM Agent Active" for authenticated TM agents
- * - Provides quick access to TM agent features
+ * Discrete indicator for Teresa Monroe staff access:
+ * - Hidden from regular users
+ * - Only visible to authenticated TM staff
+ * - Provides access to TM staff features
  */
 export const BrandPlusIndicator: React.FC<BrandPlusIndicatorProps> = ({
   isPremium,
@@ -24,11 +24,11 @@ export const BrandPlusIndicator: React.FC<BrandPlusIndicatorProps> = ({
       // Already authenticated - could show account info or do nothing
       return;
     } else {
-      // Not authenticated - redirect to Brand+ page
+      // Not authenticated - redirect to TM login page
       if (onSignIn) {
         onSignIn();
       } else {
-        window.location.href = '/brand-plus.html';
+        window.location.href = '/tm';
       }
     }
   };
@@ -37,7 +37,7 @@ export const BrandPlusIndicator: React.FC<BrandPlusIndicatorProps> = ({
     <div 
       className={`brand-plus-indicator ${isPremium ? 'active' : 'inactive'}`}
       onClick={handleClick}
-      title={isPremium ? 'TM Agent Active' : 'Agent Login'}
+      title={isPremium ? 'Teresa Monroe Staff Active' : 'Teresa Monroe Staff Login'}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
@@ -55,7 +55,7 @@ export const BrandPlusIndicator: React.FC<BrandPlusIndicatorProps> = ({
             color="#3a863e"
             strokeWidth={2}
           />
-          <span className="brand-plus-indicator-text">Brand+</span>
+          <span className="brand-plus-indicator-text">TM</span>
         </>
       ) : (
         <>
@@ -64,7 +64,7 @@ export const BrandPlusIndicator: React.FC<BrandPlusIndicatorProps> = ({
             color="#3a863e"
             strokeWidth={2}
           />
-          <span className="brand-plus-indicator-text">Agent Login</span>
+          <span className="brand-plus-indicator-text">TM Login</span>
         </>
       )}
     </div>
