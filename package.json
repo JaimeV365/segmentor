@@ -33,7 +33,7 @@
     "xlsx": "^0.18.5"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "cross-env PUBLIC_URL= react-scripts start",
     "build": "cross-env CI=false react-scripts build && node scripts/cleanup-old-nav.js && node scripts/build-navigation.js && npm run deploy:prepare",
     "build:nav": "node scripts/build-navigation.js",
     "cleanup:nav": "node scripts/cleanup-old-nav.js",
