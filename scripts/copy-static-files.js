@@ -21,6 +21,7 @@ function copyStaticFiles() {
     'privacy.html',
     'terms.html',
     'brand-plus.html',
+    'tm.html',
     '404.html',
     '_redirects',
     'robots.txt',
