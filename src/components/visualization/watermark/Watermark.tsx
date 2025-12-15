@@ -55,7 +55,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
 
   // Base size (default) - smaller for vertical (rotated), larger for flat
   // Vertical appears larger visually after rotation, so use smaller base size
-  let logoSize = isFlat ? 90 : 45;
+  let logoSize = isFlat ? 110 : 50;
 
   // Check for size modifiers in effects
   const sizeModifier = Array.from(effects).find(e => e.startsWith('LOGO_SIZE:'));

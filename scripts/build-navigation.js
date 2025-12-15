@@ -289,6 +289,7 @@ function buildNavigation() {
     'privacy.html',
     'terms.html',
     'brand-plus.html',
+    'brand-plus-auth.html',
     '404.html'
   ];
   
@@ -329,6 +330,7 @@ function copyStaticFilesToBuild(publicDir, buildDir) {
     'privacy.html',
     'terms.html',
     'brand-plus.html',
+    'brand-plus-auth.html',
     '404.html',
     '_redirects',
     '_headers',
