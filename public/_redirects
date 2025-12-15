@@ -14,7 +14,8 @@
 /privacy.html 200
 /terms.html 200
 /brand-plus.html /tm 301
-/tm /tm.html 200
+/brand-plus /tm 301
+/tm.html 200
 /brand-plus-auth.html 200
 /404.html 200
 /pricing.html 200
