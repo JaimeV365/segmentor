@@ -11,7 +11,7 @@ interface WatermarkProps {
   onEffectsChange?: (effects: Set<string>) => void;
 }
 
-const DEFAULT_LOGO = 'https://raw.githubusercontent.com/JaimeV365/segmentor/main/Logo%20large%209%20no%20motto%20stylised%20hand.png';
+const DEFAULT_LOGO = '/segmentor-logo.png';
 
 export const Watermark: React.FC<WatermarkProps> = ({ 
   hide, 
@@ -53,7 +53,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
   const rotation = effects?.has('LOGO_FLAT') ? '0deg' : '-90deg';
 
   // Base size (default)
-  let logoSize = 90;
+  let logoSize = 60;
 
   // Check for size modifiers in effects
   const sizeModifier = Array.from(effects).find(e => e.startsWith('LOGO_SIZE:'));

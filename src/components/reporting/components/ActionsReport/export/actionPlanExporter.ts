@@ -2,7 +2,7 @@ import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import type { ActionPlanReport, ChartImage } from '../types';
 
-const DEFAULT_LOGO = 'https://raw.githubusercontent.com/JaimeV365/segmentor/main/Logo%20large%209%20no%20motto%20stylised%20hand.png';
+const DEFAULT_LOGO = '/segmentor-logo.png';
 const DISCLAIMER_TEXT = 'This report is generated automatically and is provided for general informational purposes only. It is NOT professional advice and must not be relied upon as such. See full disclaimer at segmentor.app';
 
 /**

@@ -1,18 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="preload" href="/fonts/Montserrat-Bold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
-<link rel="preload" href="/fonts/Jaro-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
-
-
-
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>segmentor.app - Professional Customer Segmentation Tool</title>
-    <meta http-equiv="refresh" content="0; url=/tool/">
-    <link rel="canonical" href="https://segmentor.app/tool/" />
-    <style>
+<style>
 /* Font Face Declarations - Using Local Fonts */
 @font-face {
   font-family: 'Montserrat';
@@ -150,67 +139,23 @@
     gap: 1rem;
   }
 }
+</style>
+<link rel="preload" href="/fonts/Montserrat-Bold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+<link rel="preload" href="/fonts/Jaro-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
 
 
 
-* {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: #2c3e50;
-        }
-        .redirect-container {
-            text-align: center;
-            padding: 2rem;
-        }
-        .logo {
-            margin-bottom: 2rem;
-        }
-        .logo img {
-            height: 60px;
-            width: auto;
-        }
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #3a863e;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .redirect-text {
-            font-size: 1.125rem;
-            color: #6b7280;
-            margin-top: 1rem;
-        }
-        .link {
-            color: #3a863e;
-            text-decoration: none;
-            margin-top: 1rem;
-            display: inline-block;
-        }
-        .link:hover {
-            text-decoration: underline;
-        }
-    </style>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting... - segmentor.app</title>
+    <meta http-equiv="refresh" content="0; url=/brand-plus.html?auth=success">
     <script>
-        // Immediate redirect, preserving query parameters
+        // Immediate redirect, preserving query parameters and hash
         const queryString = window.location.search;
         const hash = window.location.hash;
-        window.location.href = '/tool/' + queryString + hash;
+        window.location.href = '/brand-plus.html?auth=success' + queryString.replace('?', '&') + hash;
     </script>
 </head>
 <body>
@@ -232,20 +177,18 @@
 </nav>
 
 
-    <div class="redirect-container">
-        <div class="logo">
-            <img src="/segmentor-logo.png" alt="segmentor.app" />
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <div style="text-align: center;">
+            <p>Redirecting...</p>
+            <p><a href="/brand-plus.html?auth=success">Click here if you are not redirected</a></p>
         </div>
-        <div class="spinner"></div>
-        <div class="redirect-text">Redirecting to segmentor.app...</div>
-        <a href="/tool/" class="link">Click here if you are not redirected</a>
     </div>
     <script>
-        // Fallback redirect, preserving query parameters
+        // Fallback redirect
         setTimeout(() => {
             const queryString = window.location.search;
             const hash = window.location.hash;
-            window.location.href = '/tool/' + queryString + hash;
+            window.location.href = '/brand-plus.html?auth=success' + queryString.replace('?', '&') + hash;
         }, 500);
     </script>
 </body>

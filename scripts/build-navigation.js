@@ -204,6 +204,9 @@ function injectNavigation(filePath) {
     content = content.replace(/\/\*\s*Import Google Fonts[^*]*\*\/[\s\n]*/g, '');
     content = content.replace(/\/\*\s*Jaro font[^*]*\*\/[\s\n]*/g, '');
     content = content.replace(/\/\*\s*Fallback: If local fonts fail[^*]*\*\/[\s\n]*/g, '');
+    // Remove duplicate navigation consistency comments
+    content = content.replace(/\/\*\s*Ensure navigation is consistent across all pages\s*\*\/[\s\n]*/g, '');
+    content = content.replace(/\/\*\s*Force consistent navigation styling[^*]*\*\/[\s\n]*/g, '');
     // Remove empty media queries
     content = content.replace(/@media\s*\([^)]*\)\s*\{[\s\n]*\}/g, '');
     // Remove excessive blank lines (4+ consecutive newlines)
@@ -286,6 +289,7 @@ function buildNavigation() {
     'privacy.html',
     'terms.html',
     'brand-plus.html',
+    'brand-plus-auth.html',
     '404.html'
   ];
   
@@ -326,11 +330,13 @@ function copyStaticFilesToBuild(publicDir, buildDir) {
     'privacy.html',
     'terms.html',
     'brand-plus.html',
+    'brand-plus-auth.html',
     '404.html',
     '_redirects',
     '_headers',
     'robots.txt',
     'segmentor-logo.png',
+    'segmentor-demo.csv',
     'tm-logo.png',
     'favicon.ico',
     'screenshot-segments.png',
