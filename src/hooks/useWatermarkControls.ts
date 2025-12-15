@@ -133,8 +133,10 @@ export const useWatermarkControls = ({
 
   // Get current watermark state (calculates default position if not set in effects)
   const getCurrentState = useCallback((): WatermarkState => {
-    const size = getEffectValue('LOGO_SIZE:', 45);
     const isFlat = effects.has('LOGO_FLAT');
+    // Default size: smaller for vertical (rotated), larger for flat
+    const defaultSize = isFlat ? 90 : 45;
+    const size = getEffectValue('LOGO_SIZE:', defaultSize);
     
     // Check if position is explicitly set in effects
     const hasXEffect = Array.from(effects).some(e => e.startsWith('LOGO_X:'));
