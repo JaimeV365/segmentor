@@ -56,8 +56,8 @@ const createTourSteps = (isPremium: boolean): TourStep[] => {
   const baseSteps: TourStep[] = [
     {
       id: 'intro',
-      title: 'Welcome to Brand+ Demo',
-      content: 'This demo showcases Brand+ features with pre-loaded sample data. You\'ll explore:\n\n• Customer segmentation visualisation\n• Chart personalisation & branding\n• Advanced filtering & analysis\n• Comprehensive reporting\n• Export capabilities\n\nFollow the tour or explore freely—you can interact with everything!',
+      title: 'Welcome to Demo Mode',
+      content: 'This demo showcases segmentor.app with pre-loaded sample data. You\'ll explore:\n\n• Customer segmentation visualisation\n• Chart customisation & branding\n• Advanced filtering & analysis\n• Comprehensive reporting\n• Export capabilities\n\nFollow the tour or explore freely—you can interact with everything!',
       target: 'body',
       position: 'top',
       ariaLabel: 'Tour introduction',
@@ -142,8 +142,8 @@ const createTourSteps = (isPremium: boolean): TourStep[] => {
     },
     {
       id: 'brand-customisation',
-      title: 'Brand+ Features',
-      content: 'Customise your watermark: use your brand logo or make it disappear entirely.',
+      title: 'Watermark Customisation',
+      content: 'Customise your watermark: adjust size, position, and transparency. TM agents can also use custom logos.',
       target: '.control-group.watermark-group',
       position: 'top',
       scrollOffset: 120,

@@ -8,12 +8,12 @@ interface BrandPlusIndicatorProps {
 }
 
 /**
- * Brand+ Indicator Component
+ * TM Agent Indicator Component
  * 
  * Always-visible indicator in the top-right corner that:
- * - Shows "Sign in to Brand+" for non-authenticated users
- * - Shows "Brand+ Active" for authenticated Brand+ users
- * - Provides quick access to Brand+ features
+ * - Shows "Agent Login" for non-authenticated users
+ * - Shows "TM Agent Active" for authenticated TM agents
+ * - Provides quick access to TM agent features
  */
 export const BrandPlusIndicator: React.FC<BrandPlusIndicatorProps> = ({
   isPremium,
@@ -37,7 +37,7 @@ export const BrandPlusIndicator: React.FC<BrandPlusIndicatorProps> = ({
     <div 
       className={`brand-plus-indicator ${isPremium ? 'active' : 'inactive'}`}
       onClick={handleClick}
-      title={isPremium ? 'Brand+ Active' : 'Brand+ Login'}
+      title={isPremium ? 'TM Agent Active' : 'Agent Login'}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
@@ -64,7 +64,7 @@ export const BrandPlusIndicator: React.FC<BrandPlusIndicatorProps> = ({
             color="#3a863e"
             strokeWidth={2}
           />
-          <span className="brand-plus-indicator-text">Brand+ Login</span>
+          <span className="brand-plus-indicator-text">Agent Login</span>
         </>
       )}
     </div>

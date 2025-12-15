@@ -336,18 +336,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
 
   const Tag = tag;
 
-  if (!isPremium) {
-    // Non-premium: just render the content without edit functionality
-    return (
-      <Tag 
-        className={className}
-        dangerouslySetInnerHTML={{ __html: editedContent }}
-        style={backgroundColor ? { backgroundColor } : undefined}
-      />
-    );
-  }
-
-  // Premium users: show editable version with hover button
+  // All users can edit - basic editing is universal, advanced formatting is TM-only
 
   if (isEditing) {
     // Always use paragraph-based editing in edit mode for premium users
@@ -376,7 +365,8 @@ export const EditableText: React.FC<EditableTextProps> = ({
           </button>
           <div className="toolbar-separator" />
           
-          {/* Text Color */}
+          {/* Text Color - TM Agent only */}
+          {isPremium && (
           <div className="color-picker-wrapper">
             <button
               type="button"
@@ -428,8 +418,10 @@ export const EditableText: React.FC<EditableTextProps> = ({
               </button>
             </div>
           </div>
+          )}
 
-          {/* Highlight (selected text) */}
+          {/* Highlight (selected text) - TM Agent only */}
+          {isPremium && (
           <div className="color-picker-wrapper">
             <button
               type="button"
@@ -481,8 +473,10 @@ export const EditableText: React.FC<EditableTextProps> = ({
               </button>
             </div>
           </div>
+          )}
 
-          {/* Background Color (whole paragraph) */}
+          {/* Background Color (whole paragraph) - TM Agent only */}
+          {isPremium && (
           <div className="color-picker-wrapper">
             <button
               type="button"
@@ -534,6 +528,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
               </button>
             </div>
           </div>
+          )}
 
           <div className="toolbar-actions">
             <button

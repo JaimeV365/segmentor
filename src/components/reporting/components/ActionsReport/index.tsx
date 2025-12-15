@@ -888,9 +888,8 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                   })();
                   
                   // Show plus button if:
-                  // 1. Premium mode is enabled (same as edit/delete buttons)
+                  // 1. TM Agent mode is enabled (advanced feature)
                   // 2. Current finding is a text finding (not a chart)
-                  // This matches the logic for edit/delete buttons - if they show, plus button should show too
                   const showPlusButton = isPremium && !finding.isChartItem;
                   
                   return (

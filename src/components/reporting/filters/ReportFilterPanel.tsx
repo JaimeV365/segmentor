@@ -110,11 +110,7 @@ export const ReportFilterPanel: React.FC<ReportFilterPanelProps> = ({
   };
 
   const addFilter = () => {
-    if (filters.length >= 3 && !isPremium) {
-      alert('Brand+ feature required for more than 3 filters');
-      return;
-    }
-    
+    // All users can add unlimited filters
     const fields = getAvailableFields();
     if (fields.length > 0) {
       handleFilterChange([...filters, {
@@ -245,7 +241,7 @@ export const ReportFilterPanel: React.FC<ReportFilterPanelProps> = ({
                       <option value="contains">Contains</option>
                       <option value="greaterThan">Greater Than</option>
                       <option value="lessThan">Less Than</option>
-                      {isPremium && <option value="between">Between</option>}
+                      <option value="between">Between</option>
                     </select>
                   </div>
                   

@@ -21,12 +21,8 @@ export const HighlightableKPI: React.FC<HighlightableKPIProps> = ({
   const [currentColor, setCurrentColor] = useState<HighlightColor | null>(null);
 
   const handleClick = () => {
-    if (isPremium) {
-      setShowColorPicker(true);
-    } else {
-      // Standard mode - toggle yellow only
-      setCurrentColor(currentColor === 'yellow' ? null : 'yellow');
-    }
+    // All users can access all color options
+    setShowColorPicker(true);
   };
 
   const handleColorSelect = (color: HighlightColor) => {
@@ -45,7 +41,7 @@ export const HighlightableKPI: React.FC<HighlightableKPIProps> = ({
       
       {!currentColor && (
         <div className="kpi-hover-tooltip">
-          Click to {isPremium ? 'choose highlight' : 'highlight'}
+          Click to choose highlight
         </div>
       )}
 

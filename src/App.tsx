@@ -62,10 +62,10 @@ const visualizationRef = useRef<HTMLDivElement>(null);
         const accessProfile = await checkCloudflareAccess();
         
         if (accessProfile.isAuthenticated && accessProfile.isPremium) {
-          console.log('✅ Brand+ authenticated:', accessProfile.email);
+          console.log('✅ TM Agent authenticated:', accessProfile.email);
           setIsPremium(true);
         } else if (accessProfile.isAuthenticated && !accessProfile.isPremium) {
-          console.log('ℹ️ Authenticated but not Brand+ user:', accessProfile.email);
+          console.log('ℹ️ Authenticated but not TM agent:', accessProfile.email);
           setIsPremium(false);
         } else {
           console.log('ℹ️ Not authenticated with Cloudflare Access');
@@ -83,7 +83,7 @@ const visualizationRef = useRef<HTMLDivElement>(null);
     
     // Periodic verification every 5 minutes to prevent client-side bypass
     const verificationInterval = setInterval(() => {
-      console.log('🔄 Periodic Brand+ verification check...');
+      console.log('🔄 Periodic TM Agent verification check...');
       checkAuth();
     }, 5 * 60 * 1000); // 5 minutes
     
@@ -364,22 +364,22 @@ useEffect(() => {
       // Load the .seg file
       const saveData = await comprehensiveSaveLoadService.loadComprehensiveProgress(file);
       
-      // Check if this is a Brand+ user's save file
+      // Check if this is a TM agent's save file
       if (saveData.context?.premium?.brandPlusUser && !isPremium) {
-        // This save was created by a Brand+ user, but current user is not authenticated
+        // This save was created by a TM agent, but current user is not authenticated
         const shouldLogin = window.confirm(
-          'This save file was created with Brand+ features. To access all features, please sign in to Brand+.\n\n' +
+          'This save file was created with TM agent features. To access all features, please sign in as a TM agent.\n\n' +
           'Would you like to sign in now?'
         );
         
         if (shouldLogin) {
-          window.location.href = '/brand-plus.html';
+          window.location.href = '/tm';
           return; // Don't load the file yet - wait for authentication
         }
-        // User chose not to login - continue loading but without Brand+ features
+        // User chose not to login - continue loading but without TM agent features
         notification.showNotification({
-          title: 'Brand+ Features Disabled',
-          message: 'This file was created with Brand+ features. Some features may not be available.',
+          title: 'TM Agent Features Disabled',
+          message: 'This file was created with TM agent features. Some features may not be available.',
           type: 'warning'
         });
       }
@@ -684,7 +684,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
       
       <ScreenSizeWarning />
       
-      {/* Brand+ Indicator - Always visible in top-right */}
+      {/* TM Agent Indicator - Always visible in top-right */}
       <BrandPlusIndicator 
         isPremium={isPremium}
         onSignIn={() => {
@@ -816,7 +816,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
 />
                 </div>
                 
-                {/* Left Drawer with Save Button and Brand+ Indicator - Inside providers for context access */}
+                {/* Left Drawer with Save Button and TM Agent Indicator - Inside providers for context access */}
                 <LeftDrawer
                   isOpen={isDrawerOpen} 
                   onToggle={() => setIsDrawerOpen(!isDrawerOpen)}
