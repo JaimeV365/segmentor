@@ -129,12 +129,18 @@ export const Watermark: React.FC<WatermarkProps> = ({
   // Drag enabled flag (Premium interaction): tied to WM_DRAG_ENABLED effect
   const dragEnabled = effects?.has('WM_DRAG_ENABLED') === true;
 
+  // Adjust container dimensions for vertical rotation to account for aspect ratio
+  // When vertical, the logo's width (after rotation becomes visual height) is typically 2x the height
+  // So we use a narrower container to compensate
+  const containerWidth = isFlat ? logoSize : logoSize;
+  const containerHeight = isFlat ? logoSize : logoSize * 0.5; // Narrower container for vertical to compensate for aspect ratio
+
   const styles: React.CSSProperties = {
     position: 'absolute',
     left: `${10 + logoX}px`,
     top: `${10 + logoY}px`, // Changed from bottom to top for better control
-    width: `${logoSize}px`,
-    height: `${logoSize}px`,
+    width: `${containerWidth}px`,
+    height: `${containerHeight}px`,
     opacity: logoOpacity,
     transition: 'opacity 0.15s ease, transform 0.15s ease',
     zIndex: 3000,
