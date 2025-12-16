@@ -814,7 +814,6 @@ export const DemoTour: React.FC<DemoTourProps> = ({
     window.addEventListener('resize', handleResize);
 
     return () => {
-      clearTimeout(timeoutId);
       clearTimeout(scrollTimeout);
       clearTimeout(resizeTimeout);
       window.removeEventListener('scroll', handleScroll);
