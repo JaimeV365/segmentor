@@ -385,12 +385,22 @@ export const DemoTour: React.FC<DemoTourProps> = ({
   const spotlightRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const steps = createTourSteps(isPremium);
+  
+  // Filter out data-dependent steps if data isn't loaded yet
+  const availableSteps = React.useMemo(() => {
+    if (dataLength > 0) {
+      return steps; // All steps available when data is loaded
+    }
+    // Filter out data-dependent steps when no data
+    const dataDependentStepIds = ['data-table', 'visualization', 'segment-loyalists', 'segment-mercenaries', 'segment-hostages', 'segment-defectors', 'chart-controls', 'brand-customisation', 'filters', 'reports-section', 'actions-report', 'save-progress'];
+    return steps.filter(step => !dataDependentStepIds.includes(step.id));
+  }, [steps, dataLength]);
 
   // Calculate spotlight and tooltip positions
   const updatePositions = useCallback(() => {
-    if (currentStep >= steps.length) return;
+    if (currentStep >= availableSteps.length) return;
 
-    const step = steps[currentStep];
+    const step = availableSteps[currentStep];
     
     // Debug logging
     console.log(`[Tour] updatePositions called for step ${currentStep}: ${step.id}, target: ${step.target}`);
@@ -457,7 +467,7 @@ export const DemoTour: React.FC<DemoTourProps> = ({
       if (step.id === 'reports-section' || step.id === 'actions-report') {
         setTimeout(() => {
           // Verify we're still on the same step before retrying
-          if (currentStep < steps.length && steps[currentStep].id === step.id) {
+          if (currentStep < availableSteps.length && availableSteps[currentStep].id === step.id) {
             const retryElement = document.querySelector(step.target);
             if (retryElement) {
               updatePositions();
@@ -472,14 +482,15 @@ export const DemoTour: React.FC<DemoTourProps> = ({
         
         if (isDataDependent) {
           // Retry multiple times with increasing delays for data-dependent steps
+          // React may need time to render conditional elements
           let retryCount = 0;
-          const maxRetries = 10;
+          const maxRetries = 30; // Increased from 10 to 30 (6 seconds total)
           const retryInterval = 200;
           
           const retryCheck = () => {
             retryCount++;
             // Verify we're still on the same step before retrying
-            if (currentStep < steps.length && steps[currentStep].id === step.id) {
+            if (currentStep < availableSteps.length && availableSteps[currentStep].id === step.id) {
               const retryElement = document.querySelector(step.target);
               if (retryElement) {
                 console.log(`[Tour] Found element for ${step.id} on retry ${retryCount}`);
@@ -653,7 +664,7 @@ export const DemoTour: React.FC<DemoTourProps> = ({
 
       setTooltipPosition({ top, left });
     });
-  }, [currentStep, steps]);
+    }, [currentStep, availableSteps]);
 
   // Scroll to target element
   const scrollToTarget = useCallback((step: TourStep) => {
@@ -711,8 +722,9 @@ export const DemoTour: React.FC<DemoTourProps> = ({
       
       if (isDataDependent) {
         // Retry multiple times with increasing delays for data-dependent steps
+        // React may need time to render conditional elements
         let retryCount = 0;
-        const maxRetries = 15;
+        const maxRetries = 40; // Increased from 15 to 40 (8 seconds total)
         const retryInterval = 200;
         
         const retryScroll = () => {
@@ -767,7 +779,7 @@ export const DemoTour: React.FC<DemoTourProps> = ({
         requestAnimationFrame(() => {
           // Double RAF ensures scroll has fully completed
           // Verify we're still on the same step before updating
-          if (currentStep >= steps.length || steps[currentStep].id !== step.id) {
+          if (currentStep >= availableSteps.length || availableSteps[currentStep].id !== step.id) {
             // Step has changed, don't update positions
             return;
           }
@@ -778,7 +790,7 @@ export const DemoTour: React.FC<DemoTourProps> = ({
             // Small additional delay to ensure everything has settled
             setTimeout(() => {
               // Verify step hasn't changed during delay
-              if (currentStep < steps.length && steps[currentStep].id === step.id) {
+              if (currentStep < availableSteps.length && availableSteps[currentStep].id === step.id) {
                 // Update positions - this will clear old and set new positions with fresh element position
                 updatePositions();
               }
@@ -822,9 +834,9 @@ export const DemoTour: React.FC<DemoTourProps> = ({
 
   // Handle step changes
   useEffect(() => {
-    if (!isOpen || currentStep >= steps.length) return;
+    if (!isOpen || currentStep >= availableSteps.length) return;
 
-    const step = steps[currentStep];
+    const step = availableSteps[currentStep];
     
     // For intro step, update positions immediately (no scrolling needed)
     if (step.isIntro) {
@@ -982,7 +994,7 @@ export const DemoTour: React.FC<DemoTourProps> = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, currentStep, steps.length]);
+  }, [isOpen, currentStep, availableSteps.length, scrollToTarget, updatePositions]);
 
   // Focus management for accessibility
   useEffect(() => {
@@ -995,7 +1007,7 @@ export const DemoTour: React.FC<DemoTourProps> = ({
   }, [isOpen, currentStep]);
 
   const handleNext = () => {
-    if (currentStep < steps.length - 1) {
+    if (currentStep < availableSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       handleClose();
@@ -1019,11 +1031,11 @@ export const DemoTour: React.FC<DemoTourProps> = ({
     handleClose();
   };
 
-  if (!isOpen || steps.length === 0) return null;
+  if (!isOpen || availableSteps.length === 0) return null;
 
-  const step = steps[currentStep];
+  const step = availableSteps[currentStep];
   const isFirstStep = currentStep === 0;
-  const isLastStep = currentStep === steps.length - 1;
+  const isLastStep = currentStep === availableSteps.length - 1;
 
   return (
     <div
