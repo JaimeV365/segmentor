@@ -441,9 +441,9 @@ export const DemoTour: React.FC<DemoTourProps> = ({
     const targetElement = document.querySelector(step.target);
 
     if (!targetElement) {
-      // Clear spotlight if element not found
-      setSpotlightRect(null);
-      setTooltipPosition(null);
+      // Don't clear positions if element not found - keep showing previous step
+      // This prevents the tour from disappearing
+      console.warn(`Tour step target not found: ${step.target} for step ${step.id}`);
       
       // For some steps, wait a bit and retry (e.g., reports that need to render)
       if (step.id === 'reports-section' || step.id === 'actions-report') {
@@ -468,9 +468,13 @@ export const DemoTour: React.FC<DemoTourProps> = ({
           }
         }, 300);
       }
-      console.warn(`Tour step target not found: ${step.target} for step ${step.id}`);
       return;
     }
+    
+    // Only clear old positions when we successfully found the new target
+    // This prevents the tour from disappearing during transitions
+    setSpotlightRect(null);
+    setTooltipPosition(null);
 
     // Get element position
     const rect = targetElement.getBoundingClientRect();
@@ -598,28 +602,36 @@ export const DemoTour: React.FC<DemoTourProps> = ({
 
     // Don't scroll for filters step - panel is fixed on right side
     if (step.id === 'filters') {
-      // Still update positions for fixed elements
+      // Clear old positions and update for fixed elements
+      setSpotlightRect(null);
+      setTooltipPosition(null);
       setTimeout(() => updatePositions(), 100);
       return;
     }
     
     // Don't scroll for reports-section step - drawer is fixed on left side
     if (step.id === 'reports-section') {
-      // Still update positions for fixed elements
+      // Clear old positions and update for fixed elements
+      setSpotlightRect(null);
+      setTooltipPosition(null);
       setTimeout(() => updatePositions(), 100);
       return;
     }
     
     // Don't scroll for save-progress step - drawer is fixed on left side
     if (step.id === 'save-progress') {
-      // Still update positions for fixed elements
+      // Clear old positions and update for fixed elements
+      setSpotlightRect(null);
+      setTooltipPosition(null);
       setTimeout(() => updatePositions(), 100);
       return;
     }
     
     // Don't scroll for support-help step - drawer is fixed on left side
     if (step.id === 'support-help') {
-      // Still update positions for fixed elements
+      // Clear old positions and update for fixed elements
+      setSpotlightRect(null);
+      setTooltipPosition(null);
       setTimeout(() => updatePositions(), 100);
       return;
     }
@@ -632,6 +644,9 @@ export const DemoTour: React.FC<DemoTourProps> = ({
         const retryElement = document.querySelector(step.target);
         if (retryElement) {
           scrollToTarget(step);
+        } else {
+          // If still not found, try to update positions anyway (might show tooltip without spotlight)
+          updatePositions();
         }
       }, 500);
       return;
@@ -655,9 +670,20 @@ export const DemoTour: React.FC<DemoTourProps> = ({
       // Verify element is still found and update positions
       const verifyElement = document.querySelector(step.target);
       if (verifyElement) {
+        // Update positions - this will clear old and set new positions
         updatePositions();
       } else {
         console.warn(`Tour step target lost after scroll: ${step.target}`);
+        // Retry finding the element
+        setTimeout(() => {
+          const retryElement = document.querySelector(step.target);
+          if (retryElement) {
+            updatePositions();
+          } else {
+            // If still not found, try updatePositions anyway - it will handle gracefully
+            updatePositions();
+          }
+        }, 200);
       }
       
       // For data-entry step, check if tooltip buttons are visible and scroll if needed
@@ -694,9 +720,8 @@ export const DemoTour: React.FC<DemoTourProps> = ({
       return;
     }
     
-    // Clear previous spotlight immediately when step changes (for non-intro steps)
-    setSpotlightRect(null);
-    setTooltipPosition(null);
+    // Don't clear spotlight/tooltip immediately - wait until new positions are calculated
+    // This prevents the tour from disappearing during transitions
     
     // For chart-controls and brand-customisation steps, expand the controls if they're collapsed
     if (step.id === 'chart-controls' || step.id === 'brand-customisation') {
