@@ -147,7 +147,6 @@ const createTourSteps = (isPremium: boolean): TourStep[] => {
       target: '.control-group.watermark-group',
       position: 'top',
       scrollOffset: 120,
-      condition: (props) => props.isPremium === true,
       ariaLabel: 'Watermark Controls and logo customisation options'
     },
     {
