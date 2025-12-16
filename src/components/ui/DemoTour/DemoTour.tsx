@@ -66,7 +66,7 @@ const createTourSteps = (isPremium: boolean): TourStep[] => {
     {
       id: 'data-entry',
       title: 'Upload Your Data',
-      content: '90 sample customers are pre-loaded. You can also upload CSV, add entries manually, or load a saved project.\n\nClick the tabs to explore—the tour will continue!',
+      content: '90 sample customers are now loaded. You can also upload CSV, add entries manually, or load a saved project.',
       target: '[data-section-id="data-entry"]',
       position: 'bottom',
       ariaLabel: 'Data entry section with upload options',
@@ -441,16 +441,34 @@ export const DemoTour: React.FC<DemoTourProps> = ({
     const targetElement = document.querySelector(step.target);
 
     if (!targetElement) {
+      // Clear spotlight if element not found
+      setSpotlightRect(null);
+      setTooltipPosition(null);
+      
       // For some steps, wait a bit and retry (e.g., reports that need to render)
       if (step.id === 'reports-section' || step.id === 'actions-report') {
         setTimeout(() => {
-          const retryElement = document.querySelector(step.target);
-          if (retryElement) {
-            updatePositions();
+          // Verify we're still on the same step before retrying
+          if (currentStep < steps.length && steps[currentStep].id === step.id) {
+            const retryElement = document.querySelector(step.target);
+            if (retryElement) {
+              updatePositions();
+            }
           }
         }, 1000);
+      } else {
+        // For other steps, retry after a shorter delay
+        setTimeout(() => {
+          // Verify we're still on the same step before retrying
+          if (currentStep < steps.length && steps[currentStep].id === step.id) {
+            const retryElement = document.querySelector(step.target);
+            if (retryElement) {
+              updatePositions();
+            }
+          }
+        }, 300);
       }
-      console.warn(`Tour step target not found: ${step.target}`);
+      console.warn(`Tour step target not found: ${step.target} for step ${step.id}`);
       return;
     }
 
@@ -573,32 +591,51 @@ export const DemoTour: React.FC<DemoTourProps> = ({
     // Don't scroll for intro step
     if (step.isIntro) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Update positions after scroll
+      setTimeout(() => updatePositions(), 700);
       return;
     }
 
     // Don't scroll for filters step - panel is fixed on right side
     if (step.id === 'filters') {
+      // Still update positions for fixed elements
+      setTimeout(() => updatePositions(), 100);
       return;
     }
     
     // Don't scroll for reports-section step - drawer is fixed on left side
     if (step.id === 'reports-section') {
+      // Still update positions for fixed elements
+      setTimeout(() => updatePositions(), 100);
       return;
     }
     
     // Don't scroll for save-progress step - drawer is fixed on left side
     if (step.id === 'save-progress') {
+      // Still update positions for fixed elements
+      setTimeout(() => updatePositions(), 100);
       return;
     }
     
     // Don't scroll for support-help step - drawer is fixed on left side
     if (step.id === 'support-help') {
+      // Still update positions for fixed elements
+      setTimeout(() => updatePositions(), 100);
       return;
     }
 
     const targetElement = document.querySelector(step.target);
-    if (!targetElement) return;
-
+    if (!targetElement) {
+      console.warn(`Tour step target not found: ${step.target}`);
+      // Retry after a short delay in case element hasn't rendered yet
+      setTimeout(() => {
+        const retryElement = document.querySelector(step.target);
+        if (retryElement) {
+          scrollToTarget(step);
+        }
+      }, 500);
+      return;
+    }
 
     const offset = step.scrollOffset || 120;
     const rect = targetElement.getBoundingClientRect();
@@ -613,8 +650,15 @@ export const DemoTour: React.FC<DemoTourProps> = ({
     });
 
     // Wait for scroll to complete before updating positions
+    // Use a longer timeout to ensure smooth scroll completes
     setTimeout(() => {
-      updatePositions();
+      // Verify element is still found and update positions
+      const verifyElement = document.querySelector(step.target);
+      if (verifyElement) {
+        updatePositions();
+      } else {
+        console.warn(`Tour step target lost after scroll: ${step.target}`);
+      }
       
       // For data-entry step, check if tooltip buttons are visible and scroll if needed
       if (step.id === 'data-entry') {
@@ -634,12 +678,16 @@ export const DemoTour: React.FC<DemoTourProps> = ({
           }
         });
       }
-    }, 700);
+    }, 800); // Increased timeout to ensure scroll completes
   }, [updatePositions]);
 
   // Handle step changes
   useEffect(() => {
     if (!isOpen || currentStep >= steps.length) return;
+
+    // Clear previous spotlight immediately when step changes
+    setSpotlightRect(null);
+    setTooltipPosition(null);
 
     const step = steps[currentStep];
     
@@ -745,11 +793,8 @@ export const DemoTour: React.FC<DemoTourProps> = ({
       scrollToTarget(step);
     }
 
-    // Update positions after a short delay to ensure DOM is ready
-    // Use a single timeout to prevent multiple rapid updates
-    const timeoutId = setTimeout(() => {
-      updatePositions();
-    }, 700); // Slightly longer delay to ensure scroll completes
+    // Note: updatePositions is called by scrollToTarget after scrolling completes
+    // For steps that don't scroll, scrollToTarget handles calling updatePositions directly
 
     // Debounce scroll/resize updates to prevent blinking
     let scrollTimeout: NodeJS.Timeout;
