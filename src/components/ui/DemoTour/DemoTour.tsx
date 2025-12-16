@@ -665,26 +665,44 @@ export const DemoTour: React.FC<DemoTourProps> = ({
     });
 
     // Wait for scroll to complete before updating positions
-    // Use a longer timeout to ensure smooth scroll completes
+    // Use requestAnimationFrame to ensure scroll has completed and DOM has updated
     setTimeout(() => {
-      // Verify element is still found and update positions
-      const verifyElement = document.querySelector(step.target);
-      if (verifyElement) {
-        // Update positions - this will clear old and set new positions
-        updatePositions();
-      } else {
-        console.warn(`Tour step target lost after scroll: ${step.target}`);
-        // Retry finding the element
-        setTimeout(() => {
-          const retryElement = document.querySelector(step.target);
-          if (retryElement) {
-            updatePositions();
-          } else {
-            // If still not found, try updatePositions anyway - it will handle gracefully
-            updatePositions();
+      // Use requestAnimationFrame to ensure the scroll position has been applied
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          // Double RAF ensures scroll has fully completed
+          // Verify we're still on the same step before updating
+          if (currentStep >= steps.length || steps[currentStep].id !== step.id) {
+            // Step has changed, don't update positions
+            return;
           }
-        }, 200);
-      }
+          
+          // Verify element is still found and update positions
+          const verifyElement = document.querySelector(step.target);
+          if (verifyElement) {
+            // Small additional delay to ensure everything has settled
+            setTimeout(() => {
+              // Verify step hasn't changed during delay
+              if (currentStep < steps.length && steps[currentStep].id === step.id) {
+                // Update positions - this will clear old and set new positions with fresh element position
+                updatePositions();
+              }
+            }, 100);
+          } else {
+            console.warn(`Tour step target lost after scroll: ${step.target}`);
+            // Retry finding the element
+            setTimeout(() => {
+              const retryElement = document.querySelector(step.target);
+              if (retryElement) {
+                updatePositions();
+              } else {
+                // If still not found, try updatePositions anyway - it will handle gracefully
+                updatePositions();
+              }
+            }, 200);
+          }
+        });
+      });
       
       // For data-entry step, check if tooltip buttons are visible and scroll if needed
       if (step.id === 'data-entry') {
@@ -704,7 +722,7 @@ export const DemoTour: React.FC<DemoTourProps> = ({
           }
         });
       }
-    }, 800); // Increased timeout to ensure scroll completes
+    }, 900); // Increased timeout to ensure smooth scroll completes
   }, [updatePositions]);
 
   // Handle step changes
