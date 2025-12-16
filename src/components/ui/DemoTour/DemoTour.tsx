@@ -441,14 +441,30 @@ export const DemoTour: React.FC<DemoTourProps> = ({
     const targetElement = document.querySelector(step.target);
 
     if (!targetElement) {
-      // For some steps, wait a bit and retry (e.g., reports that need to render)
-      if (step.id === 'reports-section' || step.id === 'actions-report') {
-        setTimeout(() => {
+      // For data-dependent steps, wait a bit and retry (elements are conditionally rendered)
+      const dataDependentSteps = ['data-table', 'visualization', 'segment-loyalists', 'segment-mercenaries', 'segment-hostages', 'segment-defectors', 'reports-section', 'actions-report'];
+      if (dataDependentSteps.includes(step.id)) {
+        // Retry a few times with increasing delays
+        let retryCount = 0;
+        const maxRetries = 10;
+        const retryInterval = 300;
+        
+        const retryCheck = () => {
+          retryCount++;
           const retryElement = document.querySelector(step.target);
           if (retryElement) {
+            // Found it! Update positions now
             updatePositions();
+          } else if (retryCount < maxRetries) {
+            // Not found yet, try again
+            setTimeout(retryCheck, retryInterval);
+          } else {
+            // Give up after max retries
+            console.warn(`Tour step target not found after ${maxRetries} retries: ${step.target}`);
           }
-        }, 1000);
+        };
+        
+        setTimeout(retryCheck, retryInterval);
       }
       console.warn(`Tour step target not found: ${step.target}`);
       return;
@@ -615,7 +631,29 @@ export const DemoTour: React.FC<DemoTourProps> = ({
     }
 
     const targetElement = document.querySelector(step.target);
-    if (!targetElement) return;
+    if (!targetElement) {
+      // For data-dependent steps, wait and retry before scrolling
+      const dataDependentSteps = ['data-table', 'visualization', 'segment-loyalists', 'segment-mercenaries', 'segment-hostages', 'segment-defectors'];
+      if (dataDependentSteps.includes(step.id)) {
+        let retryCount = 0;
+        const maxRetries = 10;
+        const retryInterval = 300;
+        
+        const retryScroll = () => {
+          retryCount++;
+          const retryElement = document.querySelector(step.target);
+          if (retryElement) {
+            // Found it! Now scroll
+            scrollToTarget(step);
+          } else if (retryCount < maxRetries) {
+            setTimeout(retryScroll, retryInterval);
+          }
+        };
+        
+        setTimeout(retryScroll, retryInterval);
+      }
+      return;
+    }
 
     const offset = step.scrollOffset || 120;
     const rect = targetElement.getBoundingClientRect();
