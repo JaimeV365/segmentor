@@ -386,15 +386,9 @@ export const DemoTour: React.FC<DemoTourProps> = ({
   const tooltipRef = useRef<HTMLDivElement>(null);
   const steps = createTourSteps(isPremium);
   
-  // Filter out data-dependent steps if data isn't loaded yet
-  const availableSteps = React.useMemo(() => {
-    if (dataLength > 0) {
-      return steps; // All steps available when data is loaded
-    }
-    // Filter out data-dependent steps when no data
-    const dataDependentStepIds = ['data-table', 'visualization', 'segment-loyalists', 'segment-mercenaries', 'segment-hostages', 'segment-defectors', 'chart-controls', 'brand-customisation', 'filters', 'reports-section', 'actions-report', 'save-progress'];
-    return steps.filter(step => !dataDependentStepIds.includes(step.id));
-  }, [steps, dataLength]);
+  // Use all steps - retry logic will handle waiting for elements to appear
+  // In demo mode, data should be loaded, so all steps should be available
+  const availableSteps = steps;
 
   // Calculate spotlight and tooltip positions
   const updatePositions = useCallback(() => {
@@ -994,7 +988,7 @@ export const DemoTour: React.FC<DemoTourProps> = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, currentStep, availableSteps.length, scrollToTarget, updatePositions]);
+  }, [isOpen, currentStep, steps.length, scrollToTarget, updatePositions]);
 
   // Focus management for accessibility
   useEffect(() => {
