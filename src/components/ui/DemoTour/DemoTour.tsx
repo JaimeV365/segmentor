@@ -471,123 +471,139 @@ export const DemoTour: React.FC<DemoTourProps> = ({
       return;
     }
     
-    // Only clear old positions when we successfully found the new target
-    // This prevents the tour from disappearing during transitions
-    setSpotlightRect(null);
-    setTooltipPosition(null);
+    // Get fresh element position first (after any scrolling)
+    // Use requestAnimationFrame to ensure DOM has updated
+    requestAnimationFrame(() => {
+      // Verify element still exists and we're still on the same step
+      const freshElement = document.querySelector(step.target);
+      if (!freshElement) {
+        console.warn(`Tour step target lost during position update: ${step.target}`);
+        return;
+      }
+      
+      // Verify we're still on the same step
+      if (currentStep >= steps.length || steps[currentStep].id !== step.id) {
+        return;
+      }
+      
+      // Only clear old positions when we successfully found the new target
+      // This prevents the tour from disappearing during transitions
+      setSpotlightRect(null);
+      setTooltipPosition(null);
+      
+      // Get fresh element position after scroll/DOM updates
+      const rect = freshElement.getBoundingClientRect();
+      setSpotlightRect(rect);
 
-    // Get element position
-    const rect = targetElement.getBoundingClientRect();
-    setSpotlightRect(rect);
+      // Calculate tooltip position based on step.position
+      // Use reasonable estimates for tooltip dimensions (reduced for more compact tooltip)
+      const tooltipWidth = 400;
+      const tooltipHeight = 240; // Reduced height for more compact tooltip
+      const spacing = 20;
+      const padding = 20; // Padding from viewport edges
 
-    // Calculate tooltip position based on step.position
-    // Use reasonable estimates for tooltip dimensions (reduced for more compact tooltip)
-    const tooltipWidth = 400;
-    const tooltipHeight = 240; // Reduced height for more compact tooltip
-    const spacing = 20;
-    const padding = 20; // Padding from viewport edges
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
 
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
+      let top = 0;
+      let left = 0;
+      let preferredPosition = step.position;
 
-    let top = 0;
-    let left = 0;
-    let preferredPosition = step.position;
+      // For quadrant segment steps, always position below to avoid covering indicators
+      const isSegmentStep = step.id.startsWith('segment-');
+      if (isSegmentStep) {
+        preferredPosition = 'bottom';
+      }
 
-    // For quadrant segment steps, always position below to avoid covering indicators
-    const isSegmentStep = step.id.startsWith('segment-');
-    if (isSegmentStep) {
-      preferredPosition = 'bottom';
-    }
-
-    // Calculate preferred position
-    switch (preferredPosition) {
-      case 'top':
-        top = rect.top - tooltipHeight - spacing;
-        left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
-        // If tooltip would go above viewport, flip to bottom
-        if (top < padding) {
-          preferredPosition = 'bottom';
-          top = rect.bottom + spacing;
-        }
-        break;
-      case 'bottom':
-        left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
-        // Special handling for data-entry and segment steps - position below the highlighted area
-        if (step.id === 'data-entry' || isSegmentStep) {
-          // Position below the spotlight area
-          top = rect.bottom + spacing + (isSegmentStep ? 20 : 20);
-          // If it doesn't fit, allow scrolling - position it below and let user scroll
-          // Don't constrain to viewport, let it be scrollable
-          if (top + tooltipHeight > viewportHeight - padding) {
-            // Position it below, user can scroll to see buttons
-            // Ensure at least some of tooltip is visible
-            if (top > viewportHeight - 100) {
-              top = viewportHeight - 100; // Show at least top part
+      // Calculate preferred position
+      switch (preferredPosition) {
+        case 'top':
+          top = rect.top - tooltipHeight - spacing;
+          left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+          // If tooltip would go above viewport, flip to bottom
+          if (top < padding) {
+            preferredPosition = 'bottom';
+            top = rect.bottom + spacing;
+          }
+          break;
+        case 'bottom':
+          left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+          // Special handling for data-entry and segment steps - position below the highlighted area
+          if (step.id === 'data-entry' || isSegmentStep) {
+            // Position below the spotlight area
+            top = rect.bottom + spacing + (isSegmentStep ? 20 : 20);
+            // If it doesn't fit, allow scrolling - position it below and let user scroll
+            // Don't constrain to viewport, let it be scrollable
+            if (top + tooltipHeight > viewportHeight - padding) {
+              // Position it below, user can scroll to see buttons
+              // Ensure at least some of tooltip is visible
+              if (top > viewportHeight - 100) {
+                top = viewportHeight - 100; // Show at least top part
+              }
+            }
+          } else {
+            top = rect.bottom + spacing;
+            // For other steps, ensure buttons are visible
+            if (top + tooltipHeight > viewportHeight - padding) {
+              top = Math.max(padding, viewportHeight - tooltipHeight - padding);
             }
           }
-        } else {
-          top = rect.bottom + spacing;
-          // For other steps, ensure buttons are visible
-          if (top + tooltipHeight > viewportHeight - padding) {
-            top = Math.max(padding, viewportHeight - tooltipHeight - padding);
+          // Ensure tooltip doesn't go above viewport
+          if (top < padding) {
+            top = padding;
           }
-        }
-        // Ensure tooltip doesn't go above viewport
-        if (top < padding) {
-          top = padding;
-        }
-        break;
-      case 'left':
-        top = rect.top + (rect.height / 2) - (tooltipHeight / 2);
-        left = rect.left - tooltipWidth - spacing;
-        // If tooltip would go left of viewport, flip to right
-        if (left < padding) {
-          preferredPosition = 'right';
-          left = rect.right + spacing;
-        }
-        break;
-      case 'right':
-        top = rect.top + (rect.height / 2) - (tooltipHeight / 2);
-        left = rect.right + spacing;
-        // If tooltip would go right of viewport, flip to left
-        if (left + tooltipWidth > viewportWidth - padding) {
-          preferredPosition = 'left';
+          break;
+        case 'left':
+          top = rect.top + (rect.height / 2) - (tooltipHeight / 2);
           left = rect.left - tooltipWidth - spacing;
-        }
-        break;
-    }
-
-    // Ensure tooltip stays within viewport bounds
-    // Horizontal constraints
-    if (left < padding) {
-      left = padding;
-    } else if (left + tooltipWidth > viewportWidth - padding) {
-      left = viewportWidth - tooltipWidth - padding;
-    }
-
-    // Vertical constraints - ensure buttons are always visible
-    // Priority: keep tooltip fully visible, especially buttons at bottom
-    if (top < padding) {
-      top = padding;
-    } else if (top + tooltipHeight > viewportHeight - padding) {
-      // If tooltip would go below viewport, try to position it better
-      if (preferredPosition === 'bottom') {
-        // Try positioning above the target
-        const topPosition = rect.top - tooltipHeight - spacing;
-        if (topPosition >= padding) {
-          top = topPosition;
-        } else {
-          // Center it vertically if it doesn't fit above
-          top = Math.max(padding, Math.min(viewportHeight - tooltipHeight - padding, (viewportHeight - tooltipHeight) / 2));
-        }
-      } else {
-        // For other positions, ensure it doesn't go below viewport
-        top = Math.max(padding, viewportHeight - tooltipHeight - padding);
+          // If tooltip would go left of viewport, flip to right
+          if (left < padding) {
+            preferredPosition = 'right';
+            left = rect.right + spacing;
+          }
+          break;
+        case 'right':
+          top = rect.top + (rect.height / 2) - (tooltipHeight / 2);
+          left = rect.right + spacing;
+          // If tooltip would go right of viewport, flip to left
+          if (left + tooltipWidth > viewportWidth - padding) {
+            preferredPosition = 'left';
+            left = rect.left - tooltipWidth - spacing;
+          }
+          break;
       }
-    }
 
-    setTooltipPosition({ top, left });
+      // Ensure tooltip stays within viewport bounds
+      // Horizontal constraints
+      if (left < padding) {
+        left = padding;
+      } else if (left + tooltipWidth > viewportWidth - padding) {
+        left = viewportWidth - tooltipWidth - padding;
+      }
+
+      // Vertical constraints - ensure buttons are always visible
+      // Priority: keep tooltip fully visible, especially buttons at bottom
+      if (top < padding) {
+        top = padding;
+      } else if (top + tooltipHeight > viewportHeight - padding) {
+        // If tooltip would go below viewport, try to position it better
+        if (preferredPosition === 'bottom') {
+          // Try positioning above the target
+          const topPosition = rect.top - tooltipHeight - spacing;
+          if (topPosition >= padding) {
+            top = topPosition;
+          } else {
+            // Center it vertically if it doesn't fit above
+            top = Math.max(padding, Math.min(viewportHeight - tooltipHeight - padding, (viewportHeight - tooltipHeight) / 2));
+          }
+        } else {
+          // For other positions, ensure it doesn't go below viewport
+          top = Math.max(padding, viewportHeight - tooltipHeight - padding);
+        }
+      }
+
+      setTooltipPosition({ top, left });
+    });
   }, [currentStep, steps]);
 
   // Scroll to target element
