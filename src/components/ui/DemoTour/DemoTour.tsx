@@ -465,16 +465,46 @@ export const DemoTour: React.FC<DemoTourProps> = ({
           }
         }, 1000);
       } else {
-        // For other steps, retry after a shorter delay
-        setTimeout(() => {
-          // Verify we're still on the same step before retrying
-          if (currentStep < steps.length && steps[currentStep].id === step.id) {
-            const retryElement = document.querySelector(step.target);
-            if (retryElement) {
-              updatePositions();
+        // For data-dependent steps (data-table, visualization, segments), retry multiple times
+        // These elements are conditionally rendered and may take time to appear
+        const dataDependentSteps = ['data-table', 'visualization', 'segment-loyalists', 'segment-mercenaries', 'segment-hostages', 'segment-defectors'];
+        const isDataDependent = dataDependentSteps.includes(step.id);
+        
+        if (isDataDependent) {
+          // Retry multiple times with increasing delays for data-dependent steps
+          let retryCount = 0;
+          const maxRetries = 10;
+          const retryInterval = 200;
+          
+          const retryCheck = () => {
+            retryCount++;
+            // Verify we're still on the same step before retrying
+            if (currentStep < steps.length && steps[currentStep].id === step.id) {
+              const retryElement = document.querySelector(step.target);
+              if (retryElement) {
+                console.log(`[Tour] Found element for ${step.id} on retry ${retryCount}`);
+                updatePositions();
+              } else if (retryCount < maxRetries) {
+                setTimeout(retryCheck, retryInterval);
+              } else {
+                console.warn(`[Tour] Element ${step.target} not found after ${maxRetries} retries`);
+              }
             }
-          }
-        }, 300);
+          };
+          
+          setTimeout(retryCheck, retryInterval);
+        } else {
+          // For other steps, retry once after a shorter delay
+          setTimeout(() => {
+            // Verify we're still on the same step before retrying
+            if (currentStep < steps.length && steps[currentStep].id === step.id) {
+              const retryElement = document.querySelector(step.target);
+              if (retryElement) {
+                updatePositions();
+              }
+            }
+          }, 300);
+        }
       }
       return;
     }
@@ -673,17 +703,47 @@ export const DemoTour: React.FC<DemoTourProps> = ({
 
     const targetElement = document.querySelector(step.target);
     if (!targetElement) {
-      console.warn(`Tour step target not found: ${step.target}`);
-      // Retry after a short delay in case element hasn't rendered yet
-      setTimeout(() => {
-        const retryElement = document.querySelector(step.target);
-        if (retryElement) {
-          scrollToTarget(step);
-        } else {
-          // If still not found, try to update positions anyway (might show tooltip without spotlight)
-          updatePositions();
-        }
-      }, 500);
+      console.warn(`[Tour] scrollToTarget: element not found: ${step.target} for step ${step.id}`);
+      
+      // For data-dependent steps, retry multiple times
+      const dataDependentSteps = ['data-table', 'visualization', 'segment-loyalists', 'segment-mercenaries', 'segment-hostages', 'segment-defectors'];
+      const isDataDependent = dataDependentSteps.includes(step.id);
+      
+      if (isDataDependent) {
+        // Retry multiple times with increasing delays for data-dependent steps
+        let retryCount = 0;
+        const maxRetries = 15;
+        const retryInterval = 200;
+        
+        const retryScroll = () => {
+          retryCount++;
+          const retryElement = document.querySelector(step.target);
+          if (retryElement) {
+            console.log(`[Tour] Found element for ${step.id} on scroll retry ${retryCount}, scrolling now`);
+            // Recursively call scrollToTarget now that element exists
+            scrollToTarget(step);
+          } else if (retryCount < maxRetries) {
+            setTimeout(retryScroll, retryInterval);
+          } else {
+            console.warn(`[Tour] Element ${step.target} not found after ${maxRetries} scroll retries`);
+            // Try to update positions anyway (might show tooltip without spotlight)
+            updatePositions();
+          }
+        };
+        
+        setTimeout(retryScroll, retryInterval);
+      } else {
+        // For other steps, retry once
+        setTimeout(() => {
+          const retryElement = document.querySelector(step.target);
+          if (retryElement) {
+            scrollToTarget(step);
+          } else {
+            // If still not found, try to update positions anyway (might show tooltip without spotlight)
+            updatePositions();
+          }
+        }, 500);
+      }
       return;
     }
 
