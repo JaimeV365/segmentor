@@ -143,7 +143,7 @@ const createTourSteps = (isPremium: boolean): TourStep[] => {
     {
       id: 'brand-customisation',
       title: 'Watermark Customisation',
-      content: 'Customise your watermark: adjust size, position, and transparency. TM agents can also use custom logos.',
+      content: 'Customise your watermark: adjust size, position, and transparency. Contact Teresa Monroe experts if you need to show your own logo.',
       target: '.control-group.watermark-group',
       position: 'top',
       scrollOffset: 120,
@@ -596,37 +596,61 @@ export const DemoTour: React.FC<DemoTourProps> = ({
 
     // Don't scroll for filters step - panel is fixed on right side
     if (step.id === 'filters') {
-      // Clear old positions and update for fixed elements
-      setSpotlightRect(null);
-      setTooltipPosition(null);
-      setTimeout(() => updatePositions(), 100);
+      // Wait for panel to be fully open and visible before updating positions
+      setTimeout(() => {
+        const panel = document.querySelector('.unified-controls-panel');
+        if (panel) {
+          updatePositions();
+        } else {
+          // Panel still not open, retry
+          setTimeout(() => updatePositions(), 200);
+        }
+      }, 400);
       return;
     }
     
     // Don't scroll for reports-section step - drawer is fixed on left side
     if (step.id === 'reports-section') {
-      // Clear old positions and update for fixed elements
-      setSpotlightRect(null);
-      setTooltipPosition(null);
-      setTimeout(() => updatePositions(), 100);
+      // Wait for drawer to be fully open before updating positions
+      setTimeout(() => {
+        const drawer = document.querySelector('.left-drawer');
+        if (drawer && drawer.classList.contains('open')) {
+          updatePositions();
+        } else {
+          // Drawer still not open, retry
+          setTimeout(() => updatePositions(), 200);
+        }
+      }, 400);
       return;
     }
     
     // Don't scroll for save-progress step - drawer is fixed on left side
     if (step.id === 'save-progress') {
-      // Clear old positions and update for fixed elements
-      setSpotlightRect(null);
-      setTooltipPosition(null);
-      setTimeout(() => updatePositions(), 100);
+      // Wait for drawer to be fully open before updating positions
+      setTimeout(() => {
+        const drawer = document.querySelector('.left-drawer');
+        if (drawer && drawer.classList.contains('open')) {
+          updatePositions();
+        } else {
+          // Drawer still not open, retry
+          setTimeout(() => updatePositions(), 200);
+        }
+      }, 400);
       return;
     }
     
     // Don't scroll for support-help step - drawer is fixed on left side
     if (step.id === 'support-help') {
-      // Clear old positions and update for fixed elements
-      setSpotlightRect(null);
-      setTooltipPosition(null);
-      setTimeout(() => updatePositions(), 100);
+      // Wait for drawer to be fully open before updating positions
+      setTimeout(() => {
+        const drawer = document.querySelector('.left-drawer');
+        if (drawer && drawer.classList.contains('open')) {
+          updatePositions();
+        } else {
+          // Drawer still not open, retry
+          setTimeout(() => updatePositions(), 200);
+        }
+      }, 400);
       return;
     }
 
