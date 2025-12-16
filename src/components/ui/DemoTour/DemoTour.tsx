@@ -685,11 +685,18 @@ export const DemoTour: React.FC<DemoTourProps> = ({
   useEffect(() => {
     if (!isOpen || currentStep >= steps.length) return;
 
-    // Clear previous spotlight immediately when step changes
+    const step = steps[currentStep];
+    
+    // For intro step, update positions immediately (no scrolling needed)
+    if (step.isIntro) {
+      // Don't clear spotlight for intro - update positions right away
+      setTimeout(() => updatePositions(), 50);
+      return;
+    }
+    
+    // Clear previous spotlight immediately when step changes (for non-intro steps)
     setSpotlightRect(null);
     setTooltipPosition(null);
-
-    const step = steps[currentStep];
     
     // For chart-controls and brand-customisation steps, expand the controls if they're collapsed
     if (step.id === 'chart-controls' || step.id === 'brand-customisation') {
