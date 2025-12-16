@@ -98,7 +98,7 @@ const visualizationRef = useRef<HTMLDivElement>(null);
     try {
       setIsLoadingDemo(true);
       setIsDemoMode(true);
-      setIsPremium(true); // Auto-enable Premium mode for demo
+      // Don't auto-enable Premium mode for demo - keep it as regular demo
       
       const response = await fetch('/segmentor-demo.csv');
       if (!response.ok) {
