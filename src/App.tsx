@@ -240,9 +240,20 @@ const visualizationRef = useRef<HTMLDivElement>(null);
     setShowWelcomeBanner(false);
   };
 
-  const handleStartTour = () => {
-    setShowWelcomeBanner(false);
-    setShowDemoTour(true);
+  const handleStartTour = async () => {
+    // If no data is loaded, load sample data first, then start tour
+    if (data.length === 0) {
+      setShowWelcomeBanner(false);
+      await handleDemoDataLoad();
+      // Wait for data to be set and DOM to update, then start tour
+      setTimeout(() => {
+        setShowDemoTour(true);
+      }, 500);
+    } else {
+      // Data already loaded, just start the tour
+      setShowWelcomeBanner(false);
+      setShowDemoTour(true);
+    }
   };
 
   const handleCloseTour = () => {
