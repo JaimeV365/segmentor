@@ -385,19 +385,12 @@ export const DemoTour: React.FC<DemoTourProps> = ({
   const spotlightRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const steps = createTourSteps(isPremium);
-  
-  // Use all steps - retry logic will handle waiting for elements to appear
-  // In demo mode, data should be loaded, so all steps should be available
-  const availableSteps = steps;
 
   // Calculate spotlight and tooltip positions
   const updatePositions = useCallback(() => {
-    if (currentStep >= availableSteps.length) return;
+    if (currentStep >= steps.length) return;
 
-    const step = availableSteps[currentStep];
-    
-    // Debug logging
-    console.log(`[Tour] updatePositions called for step ${currentStep}: ${step.id}, target: ${step.target}`);
+    const step = steps[currentStep];
     
     // For chart-controls and brand-customisation steps, ensure controls are expanded before calculating position
     if (step.id === 'chart-controls' || step.id === 'brand-customisation') {
@@ -446,219 +439,134 @@ export const DemoTour: React.FC<DemoTourProps> = ({
     }
     
     const targetElement = document.querySelector(step.target);
-    
-    // Debug: log what element we found
-    if (targetElement) {
-      console.log(`[Tour] Found element for step ${step.id}:`, targetElement, 'Rect:', targetElement.getBoundingClientRect());
-    }
 
     if (!targetElement) {
-      // Don't clear positions if element not found - keep showing previous step
-      // This prevents the tour from disappearing
-      console.warn(`[Tour] Step target not found: ${step.target} for step ${step.id}`);
-      
       // For some steps, wait a bit and retry (e.g., reports that need to render)
       if (step.id === 'reports-section' || step.id === 'actions-report') {
         setTimeout(() => {
-          // Verify we're still on the same step before retrying
-          if (currentStep < availableSteps.length && availableSteps[currentStep].id === step.id) {
-            const retryElement = document.querySelector(step.target);
-            if (retryElement) {
-              updatePositions();
-            }
+          const retryElement = document.querySelector(step.target);
+          if (retryElement) {
+            updatePositions();
           }
         }, 1000);
-      } else {
-        // For data-dependent steps (data-table, visualization, segments), retry multiple times
-        // These elements are conditionally rendered and may take time to appear
-        const dataDependentSteps = ['data-table', 'visualization', 'segment-loyalists', 'segment-mercenaries', 'segment-hostages', 'segment-defectors'];
-        const isDataDependent = dataDependentSteps.includes(step.id);
-        
-        if (isDataDependent) {
-          // Retry multiple times with increasing delays for data-dependent steps
-          // React may need time to render conditional elements
-          let retryCount = 0;
-          const maxRetries = 30; // Increased from 10 to 30 (6 seconds total)
-          const retryInterval = 200;
-          
-          const retryCheck = () => {
-            retryCount++;
-            // Verify we're still on the same step before retrying
-            if (currentStep < availableSteps.length && availableSteps[currentStep].id === step.id) {
-              const retryElement = document.querySelector(step.target);
-              if (retryElement) {
-                console.log(`[Tour] Found element for ${step.id} on retry ${retryCount}`);
-                updatePositions();
-              } else if (retryCount < maxRetries) {
-                setTimeout(retryCheck, retryInterval);
-              } else {
-                console.warn(`[Tour] Element ${step.target} not found after ${maxRetries} retries`);
-              }
-            }
-          };
-          
-          setTimeout(retryCheck, retryInterval);
-        } else {
-          // For other steps, retry once after a shorter delay
-          setTimeout(() => {
-            // Verify we're still on the same step before retrying
-            if (currentStep < steps.length && steps[currentStep].id === step.id) {
-              const retryElement = document.querySelector(step.target);
-              if (retryElement) {
-                updatePositions();
-              }
-            }
-          }, 300);
-        }
       }
+      console.warn(`Tour step target not found: ${step.target}`);
       return;
     }
-    
-      // Get fresh element position first (after any scrolling)
-      // Use requestAnimationFrame to ensure DOM has updated
-      requestAnimationFrame(() => {
-        // IMPORTANT: Re-read currentStep from the latest closure to ensure we have the correct step
-        // This prevents using stale step values
-        const latestStepIndex = currentStep;
-        if (latestStepIndex >= steps.length) return;
-        
-        const latestStep = steps[latestStepIndex];
-        
-        // Verify we're still on the same step (compare with the step we started with)
-        if (latestStep.id !== step.id) {
-          console.log(`[Tour] Step changed from ${step.id} to ${latestStep.id}, skipping position update`);
-          return;
+
+    // Get element position
+    const rect = targetElement.getBoundingClientRect();
+    setSpotlightRect(rect);
+
+    // Calculate tooltip position based on step.position
+    // Use reasonable estimates for tooltip dimensions (reduced for more compact tooltip)
+    const tooltipWidth = 400;
+    const tooltipHeight = 240; // Reduced height for more compact tooltip
+    const spacing = 20;
+    const padding = 20; // Padding from viewport edges
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    let top = 0;
+    let left = 0;
+    let preferredPosition = step.position;
+
+    // For quadrant segment steps, always position below to avoid covering indicators
+    const isSegmentStep = step.id.startsWith('segment-');
+    if (isSegmentStep) {
+      preferredPosition = 'bottom';
+    }
+
+    // Calculate preferred position
+    switch (preferredPosition) {
+      case 'top':
+        top = rect.top - tooltipHeight - spacing;
+        left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+        // If tooltip would go above viewport, flip to bottom
+        if (top < padding) {
+          preferredPosition = 'bottom';
+          top = rect.bottom + spacing;
         }
-        
-        // Verify element still exists using the latest step's target
-        const freshElement = document.querySelector(latestStep.target);
-        if (!freshElement) {
-          console.warn(`[Tour] Step target lost during position update: ${latestStep.target} for step ${latestStep.id}`);
-          return;
-        }
-        
-        console.log(`[Tour] Updating positions for step ${latestStepIndex} (${latestStep.id}), element:`, freshElement);
-      
-      // Only clear old positions when we successfully found the new target
-      // This prevents the tour from disappearing during transitions
-      setSpotlightRect(null);
-      setTooltipPosition(null);
-      
-      // Get fresh element position after scroll/DOM updates
-      const rect = freshElement.getBoundingClientRect();
-      console.log(`[Tour] Setting spotlight rect for ${latestStep.id}:`, rect);
-      setSpotlightRect(rect);
-
-      // Calculate tooltip position based on latestStep.position
-      // Use reasonable estimates for tooltip dimensions (reduced for more compact tooltip)
-      const tooltipWidth = 400;
-      const tooltipHeight = 240; // Reduced height for more compact tooltip
-      const spacing = 20;
-      const padding = 20; // Padding from viewport edges
-
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-
-      let top = 0;
-      let left = 0;
-      let preferredPosition = latestStep.position;
-
-      // For quadrant segment steps, always position below to avoid covering indicators
-      const isSegmentStep = latestStep.id.startsWith('segment-');
-      if (isSegmentStep) {
-        preferredPosition = 'bottom';
-      }
-
-      // Calculate preferred position
-      switch (preferredPosition) {
-        case 'top':
-          top = rect.top - tooltipHeight - spacing;
-          left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
-          // If tooltip would go above viewport, flip to bottom
-          if (top < padding) {
-            preferredPosition = 'bottom';
-            top = rect.bottom + spacing;
-          }
-          break;
-        case 'bottom':
-          left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
-          // Special handling for data-entry and segment steps - position below the highlighted area
-          if (latestStep.id === 'data-entry' || isSegmentStep) {
-            // Position below the spotlight area
-            top = rect.bottom + spacing + (isSegmentStep ? 20 : 20);
-            // If it doesn't fit, allow scrolling - position it below and let user scroll
-            // Don't constrain to viewport, let it be scrollable
-            if (top + tooltipHeight > viewportHeight - padding) {
-              // Position it below, user can scroll to see buttons
-              // Ensure at least some of tooltip is visible
-              if (top > viewportHeight - 100) {
-                top = viewportHeight - 100; // Show at least top part
-              }
+        break;
+      case 'bottom':
+        left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+        // Special handling for data-entry and segment steps - position below the highlighted area
+        if (step.id === 'data-entry' || isSegmentStep) {
+          // Position below the spotlight area
+          top = rect.bottom + spacing + (isSegmentStep ? 20 : 20);
+          // If it doesn't fit, allow scrolling - position it below and let user scroll
+          // Don't constrain to viewport, let it be scrollable
+          if (top + tooltipHeight > viewportHeight - padding) {
+            // Position it below, user can scroll to see buttons
+            // Ensure at least some of tooltip is visible
+            if (top > viewportHeight - 100) {
+              top = viewportHeight - 100; // Show at least top part
             }
-          } else {
-            top = rect.bottom + spacing;
-            // For other steps, ensure buttons are visible
-            if (top + tooltipHeight > viewportHeight - padding) {
-              top = Math.max(padding, viewportHeight - tooltipHeight - padding);
-            }
-          }
-          // Ensure tooltip doesn't go above viewport
-          if (top < padding) {
-            top = padding;
-          }
-          break;
-        case 'left':
-          top = rect.top + (rect.height / 2) - (tooltipHeight / 2);
-          left = rect.left - tooltipWidth - spacing;
-          // If tooltip would go left of viewport, flip to right
-          if (left < padding) {
-            preferredPosition = 'right';
-            left = rect.right + spacing;
-          }
-          break;
-        case 'right':
-          top = rect.top + (rect.height / 2) - (tooltipHeight / 2);
-          left = rect.right + spacing;
-          // If tooltip would go right of viewport, flip to left
-          if (left + tooltipWidth > viewportWidth - padding) {
-            preferredPosition = 'left';
-            left = rect.left - tooltipWidth - spacing;
-          }
-          break;
-      }
-
-      // Ensure tooltip stays within viewport bounds
-      // Horizontal constraints
-      if (left < padding) {
-        left = padding;
-      } else if (left + tooltipWidth > viewportWidth - padding) {
-        left = viewportWidth - tooltipWidth - padding;
-      }
-
-      // Vertical constraints - ensure buttons are always visible
-      // Priority: keep tooltip fully visible, especially buttons at bottom
-      if (top < padding) {
-        top = padding;
-      } else if (top + tooltipHeight > viewportHeight - padding) {
-        // If tooltip would go below viewport, try to position it better
-        if (preferredPosition === 'bottom') {
-          // Try positioning above the target
-          const topPosition = rect.top - tooltipHeight - spacing;
-          if (topPosition >= padding) {
-            top = topPosition;
-          } else {
-            // Center it vertically if it doesn't fit above
-            top = Math.max(padding, Math.min(viewportHeight - tooltipHeight - padding, (viewportHeight - tooltipHeight) / 2));
           }
         } else {
-          // For other positions, ensure it doesn't go below viewport
-          top = Math.max(padding, viewportHeight - tooltipHeight - padding);
+          top = rect.bottom + spacing;
+          // For other steps, ensure buttons are visible
+          if (top + tooltipHeight > viewportHeight - padding) {
+            top = Math.max(padding, viewportHeight - tooltipHeight - padding);
+          }
         }
-      }
+        // Ensure tooltip doesn't go above viewport
+        if (top < padding) {
+          top = padding;
+        }
+        break;
+      case 'left':
+        top = rect.top + (rect.height / 2) - (tooltipHeight / 2);
+        left = rect.left - tooltipWidth - spacing;
+        // If tooltip would go left of viewport, flip to right
+        if (left < padding) {
+          preferredPosition = 'right';
+          left = rect.right + spacing;
+        }
+        break;
+      case 'right':
+        top = rect.top + (rect.height / 2) - (tooltipHeight / 2);
+        left = rect.right + spacing;
+        // If tooltip would go right of viewport, flip to left
+        if (left + tooltipWidth > viewportWidth - padding) {
+          preferredPosition = 'left';
+          left = rect.left - tooltipWidth - spacing;
+        }
+        break;
+    }
 
-      setTooltipPosition({ top, left });
-    });
-    }, [currentStep, availableSteps]);
+    // Ensure tooltip stays within viewport bounds
+    // Horizontal constraints
+    if (left < padding) {
+      left = padding;
+    } else if (left + tooltipWidth > viewportWidth - padding) {
+      left = viewportWidth - tooltipWidth - padding;
+    }
+
+    // Vertical constraints - ensure buttons are always visible
+    // Priority: keep tooltip fully visible, especially buttons at bottom
+    if (top < padding) {
+      top = padding;
+    } else if (top + tooltipHeight > viewportHeight - padding) {
+      // If tooltip would go below viewport, try to position it better
+      if (preferredPosition === 'bottom') {
+        // Try positioning above the target
+        const topPosition = rect.top - tooltipHeight - spacing;
+        if (topPosition >= padding) {
+          top = topPosition;
+        } else {
+          // Center it vertically if it doesn't fit above
+          top = Math.max(padding, Math.min(viewportHeight - tooltipHeight - padding, (viewportHeight - tooltipHeight) / 2));
+        }
+      } else {
+        // For other positions, ensure it doesn't go below viewport
+        top = Math.max(padding, viewportHeight - tooltipHeight - padding);
+      }
+    }
+
+    setTooltipPosition({ top, left });
+  }, [currentStep, steps]);
 
   // Scroll to target element
   const scrollToTarget = useCallback((step: TourStep) => {
@@ -707,51 +615,7 @@ export const DemoTour: React.FC<DemoTourProps> = ({
     }
 
     const targetElement = document.querySelector(step.target);
-    if (!targetElement) {
-      console.warn(`[Tour] scrollToTarget: element not found: ${step.target} for step ${step.id}`);
-      
-      // For data-dependent steps, retry multiple times
-      const dataDependentSteps = ['data-table', 'visualization', 'segment-loyalists', 'segment-mercenaries', 'segment-hostages', 'segment-defectors'];
-      const isDataDependent = dataDependentSteps.includes(step.id);
-      
-      if (isDataDependent) {
-        // Retry multiple times with increasing delays for data-dependent steps
-        // React may need time to render conditional elements
-        let retryCount = 0;
-        const maxRetries = 40; // Increased from 15 to 40 (8 seconds total)
-        const retryInterval = 200;
-        
-        const retryScroll = () => {
-          retryCount++;
-          const retryElement = document.querySelector(step.target);
-          if (retryElement) {
-            console.log(`[Tour] Found element for ${step.id} on scroll retry ${retryCount}, scrolling now`);
-            // Recursively call scrollToTarget now that element exists
-            scrollToTarget(step);
-          } else if (retryCount < maxRetries) {
-            setTimeout(retryScroll, retryInterval);
-          } else {
-            console.warn(`[Tour] Element ${step.target} not found after ${maxRetries} scroll retries`);
-            // Try to update positions anyway (might show tooltip without spotlight)
-            updatePositions();
-          }
-        };
-        
-        setTimeout(retryScroll, retryInterval);
-      } else {
-        // For other steps, retry once
-        setTimeout(() => {
-          const retryElement = document.querySelector(step.target);
-          if (retryElement) {
-            scrollToTarget(step);
-          } else {
-            // If still not found, try to update positions anyway (might show tooltip without spotlight)
-            updatePositions();
-          }
-        }, 500);
-      }
-      return;
-    }
+    if (!targetElement) return;
 
     const offset = step.scrollOffset || 120;
     const rect = targetElement.getBoundingClientRect();
@@ -766,44 +630,8 @@ export const DemoTour: React.FC<DemoTourProps> = ({
     });
 
     // Wait for scroll to complete before updating positions
-    // Use requestAnimationFrame to ensure scroll has completed and DOM has updated
     setTimeout(() => {
-      // Use requestAnimationFrame to ensure the scroll position has been applied
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          // Double RAF ensures scroll has fully completed
-          // Verify we're still on the same step before updating
-          if (currentStep >= availableSteps.length || availableSteps[currentStep].id !== step.id) {
-            // Step has changed, don't update positions
-            return;
-          }
-          
-          // Verify element is still found and update positions
-          const verifyElement = document.querySelector(step.target);
-          if (verifyElement) {
-            // Small additional delay to ensure everything has settled
-            setTimeout(() => {
-              // Verify step hasn't changed during delay
-              if (currentStep < availableSteps.length && availableSteps[currentStep].id === step.id) {
-                // Update positions - this will clear old and set new positions with fresh element position
-                updatePositions();
-              }
-            }, 100);
-          } else {
-            console.warn(`Tour step target lost after scroll: ${step.target}`);
-            // Retry finding the element
-            setTimeout(() => {
-              const retryElement = document.querySelector(step.target);
-              if (retryElement) {
-                updatePositions();
-              } else {
-                // If still not found, try updatePositions anyway - it will handle gracefully
-                updatePositions();
-              }
-            }, 200);
-          }
-        });
-      });
+      updatePositions();
       
       // For data-entry step, check if tooltip buttons are visible and scroll if needed
       if (step.id === 'data-entry') {
@@ -823,24 +651,14 @@ export const DemoTour: React.FC<DemoTourProps> = ({
           }
         });
       }
-    }, 900); // Increased timeout to ensure smooth scroll completes
+    }, 700);
   }, [updatePositions]);
 
   // Handle step changes
   useEffect(() => {
-    if (!isOpen || currentStep >= availableSteps.length) return;
+    if (!isOpen || currentStep >= steps.length) return;
 
-    const step = availableSteps[currentStep];
-    
-    // For intro step, update positions immediately (no scrolling needed)
-    if (step.isIntro) {
-      // Don't clear spotlight for intro - update positions right away
-      setTimeout(() => updatePositions(), 50);
-      return;
-    }
-    
-    // Don't clear spotlight/tooltip immediately - wait until new positions are calculated
-    // This prevents the tour from disappearing during transitions
+    const step = steps[currentStep];
     
     // For chart-controls and brand-customisation steps, expand the controls if they're collapsed
     if (step.id === 'chart-controls' || step.id === 'brand-customisation') {
@@ -944,8 +762,11 @@ export const DemoTour: React.FC<DemoTourProps> = ({
       scrollToTarget(step);
     }
 
-    // Note: updatePositions is called by scrollToTarget after scrolling completes
-    // For steps that don't scroll, scrollToTarget handles calling updatePositions directly
+    // Update positions after a short delay to ensure DOM is ready
+    // Use a single timeout to prevent multiple rapid updates
+    const timeoutId = setTimeout(() => {
+      updatePositions();
+    }, 700); // Slightly longer delay to ensure scroll completes
 
     // Debounce scroll/resize updates to prevent blinking
     let scrollTimeout: NodeJS.Timeout;
@@ -988,7 +809,7 @@ export const DemoTour: React.FC<DemoTourProps> = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, currentStep, steps.length, scrollToTarget, updatePositions]);
+  }, [isOpen, currentStep, steps, scrollToTarget, updatePositions]);
 
   // Focus management for accessibility
   useEffect(() => {
@@ -1001,7 +822,7 @@ export const DemoTour: React.FC<DemoTourProps> = ({
   }, [isOpen, currentStep]);
 
   const handleNext = () => {
-    if (currentStep < availableSteps.length - 1) {
+    if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       handleClose();
@@ -1025,11 +846,11 @@ export const DemoTour: React.FC<DemoTourProps> = ({
     handleClose();
   };
 
-  if (!isOpen || availableSteps.length === 0) return null;
+  if (!isOpen || steps.length === 0) return null;
 
-  const step = availableSteps[currentStep];
+  const step = steps[currentStep];
   const isFirstStep = currentStep === 0;
-  const isLastStep = currentStep === availableSteps.length - 1;
+  const isLastStep = currentStep === steps.length - 1;
 
   return (
     <div
