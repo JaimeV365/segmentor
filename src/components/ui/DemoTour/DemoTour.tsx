@@ -171,7 +171,7 @@ const createTourSteps = (isPremium: boolean): TourStep[] => {
     {
       id: 'actions-report',
       title: 'Export Action Plan',
-      content: 'Generate comprehensive action plans. Export to PDF, PowerPoint, or Excel to share with your team.',
+      content: 'Generate comprehensive action plans. Export to PDF or Excel to share with your team.',
       target: '[data-section-id="report-actions"]',
       position: 'top',
       scrollOffset: 120,
@@ -189,7 +189,7 @@ const createTourSteps = (isPremium: boolean): TourStep[] => {
     {
       id: 'support-help',
       title: 'Need Help?',
-      content: 'Get support for the tool itself or for expanding your company\'s Customer Experience strategies.',
+      content: 'Get support for segmentor or improve your CX programme with Teresa Monroe experts.',
       target: '.drawer-section .drawer-item',
       position: 'right',
       scrollOffset: 0, // Don't scroll - drawer is fixed on left side
