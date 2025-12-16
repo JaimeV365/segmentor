@@ -392,6 +392,9 @@ export const DemoTour: React.FC<DemoTourProps> = ({
 
     const step = steps[currentStep];
     
+    // Debug logging
+    console.log(`[Tour] updatePositions called for step ${currentStep}: ${step.id}, target: ${step.target}`);
+    
     // For chart-controls and brand-customisation steps, ensure controls are expanded before calculating position
     if (step.id === 'chart-controls' || step.id === 'brand-customisation') {
       const controlsContainer = document.querySelector('.chart-controls');
@@ -439,11 +442,16 @@ export const DemoTour: React.FC<DemoTourProps> = ({
     }
     
     const targetElement = document.querySelector(step.target);
+    
+    // Debug: log what element we found
+    if (targetElement) {
+      console.log(`[Tour] Found element for step ${step.id}:`, targetElement, 'Rect:', targetElement.getBoundingClientRect());
+    }
 
     if (!targetElement) {
       // Don't clear positions if element not found - keep showing previous step
       // This prevents the tour from disappearing
-      console.warn(`Tour step target not found: ${step.target} for step ${step.id}`);
+      console.warn(`[Tour] Step target not found: ${step.target} for step ${step.id}`);
       
       // For some steps, wait a bit and retry (e.g., reports that need to render)
       if (step.id === 'reports-section' || step.id === 'actions-report') {
@@ -471,20 +479,30 @@ export const DemoTour: React.FC<DemoTourProps> = ({
       return;
     }
     
-    // Get fresh element position first (after any scrolling)
-    // Use requestAnimationFrame to ensure DOM has updated
-    requestAnimationFrame(() => {
-      // Verify element still exists and we're still on the same step
-      const freshElement = document.querySelector(step.target);
-      if (!freshElement) {
-        console.warn(`Tour step target lost during position update: ${step.target}`);
-        return;
-      }
-      
-      // Verify we're still on the same step
-      if (currentStep >= steps.length || steps[currentStep].id !== step.id) {
-        return;
-      }
+      // Get fresh element position first (after any scrolling)
+      // Use requestAnimationFrame to ensure DOM has updated
+      requestAnimationFrame(() => {
+        // IMPORTANT: Re-read currentStep from the latest closure to ensure we have the correct step
+        // This prevents using stale step values
+        const latestStepIndex = currentStep;
+        if (latestStepIndex >= steps.length) return;
+        
+        const latestStep = steps[latestStepIndex];
+        
+        // Verify we're still on the same step (compare with the step we started with)
+        if (latestStep.id !== step.id) {
+          console.log(`[Tour] Step changed from ${step.id} to ${latestStep.id}, skipping position update`);
+          return;
+        }
+        
+        // Verify element still exists using the latest step's target
+        const freshElement = document.querySelector(latestStep.target);
+        if (!freshElement) {
+          console.warn(`[Tour] Step target lost during position update: ${latestStep.target} for step ${latestStep.id}`);
+          return;
+        }
+        
+        console.log(`[Tour] Updating positions for step ${latestStepIndex} (${latestStep.id}), element:`, freshElement);
       
       // Only clear old positions when we successfully found the new target
       // This prevents the tour from disappearing during transitions
@@ -493,9 +511,10 @@ export const DemoTour: React.FC<DemoTourProps> = ({
       
       // Get fresh element position after scroll/DOM updates
       const rect = freshElement.getBoundingClientRect();
+      console.log(`[Tour] Setting spotlight rect for ${latestStep.id}:`, rect);
       setSpotlightRect(rect);
 
-      // Calculate tooltip position based on step.position
+      // Calculate tooltip position based on latestStep.position
       // Use reasonable estimates for tooltip dimensions (reduced for more compact tooltip)
       const tooltipWidth = 400;
       const tooltipHeight = 240; // Reduced height for more compact tooltip
@@ -507,10 +526,10 @@ export const DemoTour: React.FC<DemoTourProps> = ({
 
       let top = 0;
       let left = 0;
-      let preferredPosition = step.position;
+      let preferredPosition = latestStep.position;
 
       // For quadrant segment steps, always position below to avoid covering indicators
-      const isSegmentStep = step.id.startsWith('segment-');
+      const isSegmentStep = latestStep.id.startsWith('segment-');
       if (isSegmentStep) {
         preferredPosition = 'bottom';
       }
@@ -529,7 +548,7 @@ export const DemoTour: React.FC<DemoTourProps> = ({
         case 'bottom':
           left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
           // Special handling for data-entry and segment steps - position below the highlighted area
-          if (step.id === 'data-entry' || isSegmentStep) {
+          if (latestStep.id === 'data-entry' || isSegmentStep) {
             // Position below the spotlight area
             top = rect.bottom + spacing + (isSegmentStep ? 20 : 20);
             // If it doesn't fit, allow scrolling - position it below and let user scroll
