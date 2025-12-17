@@ -5,6 +5,9 @@
   height: 24px;
   min-width: 160px;  /* Added for consistent spacing */
   justify-content: space-between;  /* Added for better label distribution */
+  padding: 0 6px;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .switch {
