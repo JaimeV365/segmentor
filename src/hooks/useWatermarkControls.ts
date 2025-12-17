@@ -43,7 +43,9 @@ export const useWatermarkControls = ({
   onEffectsChange,
   dimensions
 }: UseWatermarkControlsProps) => {
-  const EDGE_PADDING = 12; // small inset to avoid touching edges
+  const EDGE_PADDING_X = Math.max(4, (dimensions?.cellWidth ?? 24) / 2);  // half a cell, fallback 12
+  const EDGE_PADDING_Y = Math.max(4, (dimensions?.cellHeight ?? 24) / 2); // half a cell, fallback 12
+  const OFFSET = 10; // matches Watermark positioning offset
   // Cache container dimensions to avoid DOM queries
   const containerDimensionsRef = useRef<{ width: number; height: number } | null>(null);
   
@@ -82,20 +84,24 @@ export const useWatermarkControls = ({
   const getGridBounds = useCallback((logoSize: number, isFlat: boolean): GridBounds => {
     const container = getContainerDimensions();
     
-    // Small, fixed padding so the logo doesn't hug edges
-    const margin = EDGE_PADDING;
+    // Half-cell padding on all sides
+    const marginX = EDGE_PADDING_X;
+    const marginY = EDGE_PADDING_Y;
     
     // Visual footprint is the same for both orientations: width = size, height = size * 0.3
     const effWidth = logoSize;
     const effHeight = logoSize * 0.3;
     
-    const maxX = Math.max(0, container.width - effWidth - margin - 10); // -10 matches Watermark offset
-    const maxY = Math.max(0, container.height - effHeight - margin - 10); // -10 matches Watermark offset
+    // Compensate for the 10px offset applied in Watermark.tsx so margins stay symmetric
+    const minX = Math.max(0, marginX - OFFSET);
+    const minY = Math.max(0, marginY - OFFSET);
+    const maxX = Math.max(0, container.width - effWidth - marginX - OFFSET);
+    const maxY = Math.max(0, container.height - effHeight - marginY - OFFSET);
     
     return {
-      minX: margin, // Start inset to keep away from edge
+      minX,
       maxX,
-      minY: margin, // Start inset to keep away from edge
+      minY,
       maxY,
       width: container.width,
       height: container.height
@@ -135,21 +141,15 @@ export const useWatermarkControls = ({
     if (hasXEffect) {
       x = getEffectValue('LOGO_X:', 0);
     } else {
-      // Calculate default X position (matching Watermark.tsx logic)
-      const container = getContainerDimensions();
-      const effWidth = size;
-      const margin = EDGE_PADDING;
-      x = Math.max(margin, container.width - effWidth - margin - 10);
+      const bounds = getGridBounds(size, isFlat);
+      x = bounds.maxX;
     }
     
     if (hasYEffect) {
       y = getEffectValue('LOGO_Y:', 0);
     } else {
-      // Calculate default Y position (matching Watermark.tsx logic)
-      const container = getContainerDimensions();
-      const effHeight = size * 0.3;
-      const margin = EDGE_PADDING;
-      y = Math.max(margin, container.height - effHeight - margin - 10);
+      const bounds = getGridBounds(size, isFlat);
+      y = bounds.maxY;
     }
     
     let logoType: 'default' | 'custom' = 'default';

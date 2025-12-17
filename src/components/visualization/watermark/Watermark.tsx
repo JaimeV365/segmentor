@@ -78,15 +78,8 @@ export const Watermark: React.FC<WatermarkProps> = ({
       logoX = xValue;
     }
   } else {
-    const container = document.querySelector('.chart-container');
-    if (container) {
-      const rect = container.getBoundingClientRect();
-      // Use the same visual footprint for both orientations (width = size, height = size * 0.3)
-      const effWidth = logoSize;
-      // Uniform margin on all sides, scaled with size
-      const margin = EDGE_PADDING;
-      logoX = Math.max(margin, rect.width - effWidth - margin - 10);
-    }
+    const bounds = getGridBounds(logoSize, isFlatCalc);
+    logoX = bounds.maxX;
   }
   
   const yModifier = Array.from(effects).find(e => e.startsWith('LOGO_Y:'));
@@ -96,14 +89,8 @@ export const Watermark: React.FC<WatermarkProps> = ({
       logoY = yValue;
     }
   } else {
-    const container = document.querySelector('.chart-container');
-    if (container) {
-      const rect = container.getBoundingClientRect();
-      // Same visual footprint for both orientations (width = size, height = size * 0.3)
-      const effHeight = logoSize * 0.3;
-      const margin = EDGE_PADDING;
-      logoY = Math.max(margin, rect.height - effHeight - margin - 10);
-    }
+    const bounds = getGridBounds(logoSize, isFlatCalc);
+    logoY = bounds.maxY;
   }
 
   // Position within the chart area with adjustable offset
