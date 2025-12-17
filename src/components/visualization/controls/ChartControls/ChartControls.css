@@ -31,7 +31,6 @@
   flex-wrap: nowrap;
   gap: 20px;
   padding: 20px;
-  justify-content: center; /* center the groups within the container */
   transition: all 0.2s ease;
 }
 
@@ -45,9 +44,7 @@
 /* Group layout */
 /* Individual control groups */
 .control-group {
-  flex: 0 1 320px; /* consistent width to avoid edge hugging */
-  min-width: 260px;
-  max-width: 340px;
+  flex: 1;
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
@@ -307,7 +304,7 @@
 /* When in premium mode, allow the container to wrap if needed */
 .chart-controls:has(.premium-mode) {
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 /* Standard mode watermark styling */
