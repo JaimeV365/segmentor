@@ -45,7 +45,7 @@ export const useWatermarkControls = ({
 }: UseWatermarkControlsProps) => {
   const EDGE_PADDING_X = Math.max(4, (dimensions?.cellWidth ?? 24) / 2);  // half a cell, fallback 12
   const EDGE_PADDING_Y = Math.max(4, (dimensions?.cellHeight ?? 24) / 2); // half a cell, fallback 12
-  const DEFAULT_Y_OFFSET = EDGE_PADDING_Y * 2; // lift default placement by ~1 cell
+  const DEFAULT_Y_OFFSET = EDGE_PADDING_Y * 6; // lift default placement by ~3 cells
   // Cache container dimensions to avoid DOM queries
   const containerDimensionsRef = useRef<{ width: number; height: number } | null>(null);
   
