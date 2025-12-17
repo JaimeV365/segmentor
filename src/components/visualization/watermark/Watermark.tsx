@@ -12,7 +12,6 @@ interface WatermarkProps {
 }
 
 const DEFAULT_LOGO = '/segmentor-logo.png';
-const EDGE_PADDING = 12; // small inset so the logo never hugs the edge
 
 export const Watermark: React.FC<WatermarkProps> = ({ 
   hide, 
