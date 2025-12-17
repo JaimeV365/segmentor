@@ -56,12 +56,8 @@ export const useWatermarkControls = ({
     return Number.isNaN(parsed) ? fallback : parsed;
   }, [effects]);
 
-  // Get cached container dimensions (only query DOM once)
+  // Get container dimensions; recalc each time to avoid stale cached sizes
   const getContainerDimensions = useCallback((): { width: number; height: number } => {
-    if (containerDimensionsRef.current) {
-      return containerDimensionsRef.current;
-    }
-    
     const chartElement = document.querySelector('.chart-container');
     if (chartElement) {
       const rect = chartElement.getBoundingClientRect();
