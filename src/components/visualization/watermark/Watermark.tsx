@@ -101,8 +101,8 @@ export const Watermark: React.FC<WatermarkProps> = ({
   // Drag enabled flag (Premium interaction): tied to WM_DRAG_ENABLED effect
   const dragEnabled = effects?.has('WM_DRAG_ENABLED') === true;
 
-  // Footprint depends on orientation: flat is wide/short, rotated is tall/narrow
-  const containerWidth = isFlat ? logoSize : logoSize * 0.3;
+  // Footprint: keep full width; height shrinks only when flat
+  const containerWidth = logoSize;
   const containerHeight = isFlat ? logoSize * 0.3 : logoSize;
 
   // Debug flag to visualize movement bounds
@@ -201,8 +201,8 @@ export const Watermark: React.FC<WatermarkProps> = ({
       // Get bounds - remove the restrictive margins for drag
       const bounds = getGridBounds(state.size, state.isFlat);
       
-      // Orientation-aware footprint
-      const logoWidth = state.isFlat ? state.size : state.size * 0.3;
+      // Footprint matches container choice above
+      const logoWidth = state.size;
       const logoHeight = state.isFlat ? state.size * 0.3 : state.size;
       
       const dragBounds = {
