@@ -124,8 +124,7 @@
 }
 
 .vertical-buttons .label-button {
-  max-width: 260px;
-  min-width: 140px;
+  max-width: 90%;
   width: 100%;
   box-sizing: border-box;
   padding: 6px 8px;
