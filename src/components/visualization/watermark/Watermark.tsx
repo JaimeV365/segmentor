@@ -53,9 +53,8 @@ export const Watermark: React.FC<WatermarkProps> = ({
   const rotation = effects?.has('LOGO_FLAT') ? '0deg' : '-90deg';
   const isFlat = effects?.has('LOGO_FLAT');
 
-  // Base size (default) - smaller for vertical (rotated), larger for flat
-  // Vertical appears larger visually after rotation, so use smaller base size
-  let logoSize = isFlat ? 110 : 40;
+  // Base size (default) - same for both orientations to keep visual parity
+  let logoSize = 90;
 
   // Check for size modifiers in effects
   const sizeModifier = Array.from(effects).find(e => e.startsWith('LOGO_SIZE:'));
@@ -76,28 +75,18 @@ export const Watermark: React.FC<WatermarkProps> = ({
     const xValue = parseInt(xModifier.replace('LOGO_X:', ''), 10);
     if (!isNaN(xValue)) {
       logoX = xValue;
-      // When flat, move 5 units to the right (decrease logoX by 5) even if LOGO_X is set
-      if (isFlatCalc) {
-        logoX = Math.max(0, logoX - 5);
-      }
     }
   } else {
     const container = document.querySelector('.chart-container');
     if (container) {
       const rect = container.getBoundingClientRect();
-      // For vertical: after rotation, visual height = containerWidth (2.8x logoSize)
-      // Visual width = containerHeight (0.85 * logoSize)
-      // Account for the visual footprint after rotation
-      const effWidth = isFlatCalc ? logoSize : logoSize * 0.85; // Visual width after rotation
-      // Scale margin with logo size: larger logos get smaller margin (closer to edge)
+      // Use the same visual footprint for both orientations (width = size, height = size * 0.3)
+      const effWidth = logoSize;
+      // Uniform margin on all sides, scaled with size
       const baseMargin = 100;
       const baseSize = 90;
-      const margin = Math.max(40, baseMargin * (baseSize / logoSize)); // Min 40px margin
-      logoX = Math.max(0, rect.width - effWidth - margin);
-      // When flat, move 5 units to the right (decrease logoX by 5)
-      if (isFlatCalc) {
-        logoX = Math.max(0, logoX - 5);
-      }
+      const margin = Math.max(40, baseMargin * (baseSize / logoSize));
+      logoX = Math.max(0, rect.width - effWidth - margin - 10);
     }
   }
   
@@ -111,12 +100,12 @@ export const Watermark: React.FC<WatermarkProps> = ({
     const container = document.querySelector('.chart-container');
     if (container) {
       const rect = container.getBoundingClientRect();
-      const isFlatCalc = effects?.has('LOGO_FLAT');
-      // For vertical: the container is square (logoSize x logoSize), after rotation it's still logoSize visually
-      // For flat: much smaller height
-      const effHeight = isFlatCalc ? logoSize * 0.3 : logoSize; // Visual height after rotation
-      // Position with larger margin to place logo higher
-      logoY = Math.max(0, rect.height - effHeight - 80);
+      // Same visual footprint for both orientations (width = size, height = size * 0.3)
+      const effHeight = logoSize * 0.3;
+      const baseMargin = 100;
+      const baseSize = 90;
+      const margin = Math.max(40, baseMargin * (baseSize / logoSize));
+      logoY = Math.max(0, rect.height - effHeight - margin - 10);
     }
   }
 
@@ -129,11 +118,11 @@ export const Watermark: React.FC<WatermarkProps> = ({
   // Drag enabled flag (Premium interaction): tied to WM_DRAG_ENABLED effect
   const dragEnabled = effects?.has('WM_DRAG_ENABLED') === true;
 
-  // Adjust container dimensions for vertical rotation to account for aspect ratio
-  // When vertical, the logo's width (after rotation becomes visual height) is typically 2x the height
-  // So we use a narrower container to compensate
-  const containerWidth = isFlat ? logoSize : logoSize;
-  const containerHeight = isFlat ? logoSize : logoSize * 0.5; // Narrower container for vertical to compensate for aspect ratio
+  // Adjust container dimensions so rotated and flat share the same visual footprint.
+  // Flat: width = size, height = size * 0.3
+  // Rotated: width = size * 0.3, height = size (swapped before rotation)
+  const containerWidth = isFlat ? logoSize : logoSize * 0.3;
+  const containerHeight = isFlat ? logoSize * 0.3 : logoSize;
 
   const styles: React.CSSProperties = {
     position: 'absolute',
@@ -227,18 +216,16 @@ export const Watermark: React.FC<WatermarkProps> = ({
       // Get bounds - remove the restrictive margins for drag
       const bounds = getGridBounds(state.size, state.isFlat);
       
-      // For drag, use MUCH more permissive bounds - allow movement across most of the grid
-      // Remove the restrictive margins that prevent movement
-      // Push maxX further right by reducing the margin even more
-      const logoWidth = state.isFlat ? state.size : state.size * 0.85;
-      const logoHeight = state.isFlat ? state.size * 0.3 : state.size;
+      // Use the same footprint for both orientations and keep movement within the grid
+      const logoWidth = state.size;
+      const logoHeight = state.size * 0.3;
       
       const dragBounds = {
         ...bounds,
-        minX: 0,
-        minY: 40,  // Increase top margin to prevent logo from going too high (40px gap from top)
-        maxX: bounds.width - logoWidth + 100,  // Push 100px further right than normal bounds
-        maxY: bounds.height - logoHeight + 50  // Also push 50px further down
+        minX: bounds.minX,
+        minY: bounds.minY,
+        maxX: bounds.maxX,
+        maxY: bounds.maxY
       };
       
       // Constrain with permissive drag bounds

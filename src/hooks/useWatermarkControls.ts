@@ -81,29 +81,17 @@ export const useWatermarkControls = ({
   const getGridBounds = useCallback((logoSize: number, isFlat: boolean): GridBounds => {
     const container = getContainerDimensions();
     
-    // Scale margin inversely with logo size: larger logos get smaller margin
-    // Use same margin calculation as default position (matching Watermark.tsx)
-    // Base margin of 100 for default size (90), scales down proportionally
-    // Minimum margin of 40 to match default position minimum
+    // Uniform margin scaled with size for both axes
     const baseMargin = 100;
     const baseSize = 90;
-    const marginX = Math.max(40, baseMargin * (baseSize / logoSize));
+    const margin = Math.max(40, baseMargin * (baseSize / logoSize));
     
-    // For flat mode, use smaller Y margin since logo is much shorter (0.3x height)
-    // Use smaller base margin for flat mode to allow more movement range
-    // For vertical mode, use same scaled margin as X
-    const marginY = isFlat 
-      ? Math.max(20, 50 * (baseSize / logoSize)) // Smaller margin for flat (50px base, min 20px) - allows more range
-      : Math.max(40, baseMargin * (baseSize / logoSize)); // Same as X for vertical
+    // Visual footprint is the same for both orientations: width = size, height = size * 0.3
+    const effWidth = logoSize;
+    const effHeight = logoSize * 0.3;
     
-    // Account for actual visual footprint after rotation
-    // For X axis: flat uses full width, vertical uses 0.85x width after rotation
-    const effWidth = isFlat ? logoSize : logoSize * 0.85;
-    // For Y axis: flat uses 0.3x height, vertical uses full height after rotation
-    const effHeight = isFlat ? logoSize * 0.3 : logoSize;
-    
-    const maxX = Math.max(0, container.width - effWidth - marginX - 10); // -10 for the offset
-    const maxY = Math.max(0, container.height - effHeight - marginY - 10); // -10 for the offset
+    const maxX = Math.max(0, container.width - effWidth - margin - 10); // -10 for the offset
+    const maxY = Math.max(0, container.height - effHeight - margin - 10); // -10 for the offset
     
     return {
       minX: 0, // Start from 0 since Watermark adds 10px offset
@@ -134,8 +122,8 @@ export const useWatermarkControls = ({
   // Get current watermark state (calculates default position if not set in effects)
   const getCurrentState = useCallback((): WatermarkState => {
     const isFlat = effects.has('LOGO_FLAT');
-    // Default size: smaller for vertical (rotated), larger for flat
-    const defaultSize = isFlat ? 110 : 40;
+    // Default size is the same for both orientations to keep visual parity
+    const defaultSize = 90;
     const size = getEffectValue('LOGO_SIZE:', defaultSize);
     
     // Check if position is explicitly set in effects
@@ -150,12 +138,11 @@ export const useWatermarkControls = ({
     } else {
       // Calculate default X position (matching Watermark.tsx logic)
       const container = getContainerDimensions();
-      const effWidth = isFlat ? size : size * 0.85; // Visual width after rotation for vertical
-      // Scale margin with logo size: larger logos get smaller margin (closer to edge)
+      const effWidth = size;
       const baseMargin = 100;
       const baseSize = 90;
-      const margin = Math.max(40, baseMargin * (baseSize / size)); // Min 40px margin
-      x = Math.max(0, container.width - effWidth - margin);
+      const margin = Math.max(40, baseMargin * (baseSize / size));
+      x = Math.max(0, container.width - effWidth - margin - 10);
     }
     
     if (hasYEffect) {
@@ -163,8 +150,11 @@ export const useWatermarkControls = ({
     } else {
       // Calculate default Y position (matching Watermark.tsx logic)
       const container = getContainerDimensions();
-      const effHeight = isFlat ? size * 0.3 : size; // Visual height after rotation for vertical
-      y = Math.max(0, container.height - effHeight - 80);
+      const effHeight = size * 0.3;
+      const baseMargin = 100;
+      const baseSize = 90;
+      const margin = Math.max(40, baseMargin * (baseSize / size));
+      y = Math.max(0, container.height - effHeight - margin - 10);
     }
     
     let logoType: 'default' | 'custom' = 'default';
