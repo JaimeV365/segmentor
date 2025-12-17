@@ -45,7 +45,7 @@ export const useWatermarkControls = ({
 }: UseWatermarkControlsProps) => {
   const EDGE_PADDING_X = Math.max(4, (dimensions?.cellWidth ?? 24) / 2);  // half a cell, fallback 12
   const EDGE_PADDING_Y = Math.max(4, (dimensions?.cellHeight ?? 24) / 2); // half a cell, fallback 12
-  const DEFAULT_Y_OFFSET = EDGE_PADDING_Y; // lift default placement up by half a cell
+  const DEFAULT_Y_OFFSET = EDGE_PADDING_Y * 2; // lift default placement by ~1 cell
   // Cache container dimensions to avoid DOM queries
   const containerDimensionsRef = useRef<{ width: number; height: number } | null>(null);
   
@@ -109,7 +109,7 @@ export const useWatermarkControls = ({
     const bounds = getGridBounds(logoSize, isFlat);
     return {
       x: bounds.maxX, // Right side - use maximum X position
-      y: Math.max(bounds.minY, bounds.maxY - DEFAULT_Y_OFFSET)  // Lift slightly above the bottom
+      y: Math.max(bounds.minY, bounds.maxY - DEFAULT_Y_OFFSET)  // Lift above the bottom
     };
   }, [getGridBounds, DEFAULT_Y_OFFSET]);
 
