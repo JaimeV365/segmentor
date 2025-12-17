@@ -45,6 +45,7 @@ export const useWatermarkControls = ({
 }: UseWatermarkControlsProps) => {
   const EDGE_PADDING_X = Math.max(4, (dimensions?.cellWidth ?? 24) / 2);  // half a cell, fallback 12
   const EDGE_PADDING_Y = Math.max(4, (dimensions?.cellHeight ?? 24) / 2); // half a cell, fallback 12
+  const DEFAULT_Y_OFFSET = EDGE_PADDING_Y; // lift default placement up by half a cell
   // Cache container dimensions to avoid DOM queries
   const containerDimensionsRef = useRef<{ width: number; height: number } | null>(null);
   
@@ -108,9 +109,9 @@ export const useWatermarkControls = ({
     const bounds = getGridBounds(logoSize, isFlat);
     return {
       x: bounds.maxX, // Right side - use maximum X position
-      y: bounds.maxY  // Bottom side - use maximum Y position
+      y: Math.max(bounds.minY, bounds.maxY - DEFAULT_Y_OFFSET)  // Lift slightly above the bottom
     };
-  }, [getGridBounds]);
+  }, [getGridBounds, DEFAULT_Y_OFFSET]);
 
   // Update effects helper
   const updateEffects = useCallback((updater: (effects: Set<string>) => void) => {
@@ -144,7 +145,7 @@ export const useWatermarkControls = ({
       y = getEffectValue('LOGO_Y:', 0);
     } else {
       const bounds = getGridBounds(size, isFlat);
-      y = bounds.maxY;
+      y = Math.max(bounds.minY, bounds.maxY - DEFAULT_Y_OFFSET);
     }
     
     let logoType: 'default' | 'custom' = 'default';

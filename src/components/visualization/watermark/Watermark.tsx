@@ -21,7 +21,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
   onEffectsChange
 }) => {
   // Hook for clamping and updating effects
-  const { constrainPosition, updateEffects, getCurrentState, getGridBounds } = useWatermarkControls({
+  const { constrainPosition, updateEffects, getCurrentState, getGridBounds, getDefaultPosition } = useWatermarkControls({
     effects,
     onEffectsChange: onEffectsChange || (() => {}),
     dimensions
@@ -76,20 +76,20 @@ export const Watermark: React.FC<WatermarkProps> = ({
     if (!isNaN(xValue)) {
       logoX = xValue;
     }
-  } else {
-    const bounds = getGridBounds(logoSize, isFlatCalc);
-    logoX = bounds.maxX;
   }
   
-  const yModifier = Array.from(effects).find(e => e.startsWith('LOGO_Y:'));
   if (yModifier) {
     const yValue = parseInt(yModifier.replace('LOGO_Y:', ''), 10);
     if (!isNaN(yValue)) {
       logoY = yValue;
     }
-  } else {
-    const bounds = getGridBounds(logoSize, isFlatCalc);
-    logoY = bounds.maxY;
+  }
+
+  // If neither X nor Y provided, use default position (bottom-right lifted slightly)
+  if (!xModifier || !yModifier) {
+    const def = getDefaultPosition(logoSize, isFlatCalc);
+    if (!xModifier) logoX = def.x;
+    if (!yModifier) logoY = def.y;
   }
 
   // Position within the chart area with adjustable offset
