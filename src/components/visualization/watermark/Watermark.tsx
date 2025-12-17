@@ -1,5 +1,5 @@
 // Watermark.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { GridDimensions } from '@/types/base';
 import { useWatermarkControls } from '../../../hooks/useWatermarkControls';
 
@@ -99,16 +99,28 @@ export const Watermark: React.FC<WatermarkProps> = ({
   const parsedOpacity = opacityEffect ? parseFloat(opacityEffect.replace('LOGO_OPACITY:', '')) : 0.6;
   const logoOpacity = Math.max(0.4, Math.min(1, isNaN(parsedOpacity) ? 0.6 : parsedOpacity));
 
-  // Drag enabled flag (Premium interaction): tied to WM_DRAG_ENABLED effect
-  const dragEnabled = effects?.has('WM_DRAG_ENABLED') === true;
+  // Drag enabled flag (Premium interaction): default to enabled unless explicitly off
+  const dragEnabled = effects?.has('WM_DRAG_ENABLED') !== false;
 
   // Footprint: keep full width; height shrinks only when flat
   const containerWidth = logoSize;
   const containerHeight = isFlat ? logoSize * 0.3 : logoSize;
 
   // Debug flag to visualize movement bounds
-  const showDebugBounds = true;
+  const showDebugBounds = false;
   const bounds = getGridBounds(logoSize, isFlat);
+
+  // Seed drag enabled by default (only once) to align UX
+  const seededDragRef = React.useRef(false);
+  useEffect(() => {
+    if (seededDragRef.current) return;
+    if (!effects?.has('WM_DRAG_ENABLED')) {
+      seededDragRef.current = true;
+      updateEffects(next => {
+        next.add('WM_DRAG_ENABLED');
+      });
+    }
+  }, [effects, updateEffects]);
 
   const styles: React.CSSProperties = {
     position: 'absolute',
@@ -137,7 +149,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
   const rafRef = React.useRef<number>(0);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!effects?.has('WM_DRAG_ENABLED')) return;
+    if (!dragEnabled) return;
     e.preventDefault();
     (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
     isDraggingRef.current = true;

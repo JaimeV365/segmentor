@@ -2,7 +2,7 @@
 .watermark-controls-chart-button {
   position: absolute;
   bottom: 12px;
-  right: -5px; /* Position in bottom-right corner */
+  right: 8px; /* add breathing room from the container edge */
   z-index: 20;
 }
 
