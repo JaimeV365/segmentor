@@ -49,13 +49,12 @@ export const Watermark: React.FC<WatermarkProps> = ({
     logoUrl = customLogo;
   }
 
-  // Determine rotation - default is -90deg (vertical) unless LOGO_FLAT is set
-  const rotation = effects?.has('LOGO_FLAT') ? '0deg' : '-90deg';
+  // Determine rotation - apply to image only for consistent footprint
+  const rotation = effects?.has('LOGO_FLAT') ? 'none' : 'rotate(-90deg)';
   const isFlat = effects?.has('LOGO_FLAT');
 
   // Base size (default) - same for both orientations to keep visual parity
-  // Slightly smaller default to avoid oversized rotated logo
-  let logoSize = 70;
+  let logoSize = 90;
 
   // Check for size modifiers in effects
   const sizeModifier = Array.from(effects).find(e => e.startsWith('LOGO_SIZE:'));
@@ -119,11 +118,10 @@ export const Watermark: React.FC<WatermarkProps> = ({
   // Drag enabled flag (Premium interaction): tied to WM_DRAG_ENABLED effect
   const dragEnabled = effects?.has('WM_DRAG_ENABLED') === true;
 
-  // Adjust container dimensions so rotated and flat share the same visual footprint.
-  // Flat: width = size, height = size * 0.3
-  // Rotated: width = size * 0.3, height = size (swapped before rotation)
-  const containerWidth = isFlat ? logoSize : logoSize * 0.3;
-  const containerHeight = isFlat ? logoSize * 0.3 : logoSize;
+  // Keep container footprint the same for both orientations
+  // Footprint: width = size, height = size * 0.3; rotation applied to image only
+  const containerWidth = logoSize;
+  const containerHeight = logoSize * 0.3;
 
   const styles: React.CSSProperties = {
     position: 'absolute',
@@ -134,7 +132,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
     opacity: logoOpacity,
     transition: 'opacity 0.15s ease, transform 0.15s ease',
     zIndex: 3000,
-    transform: `rotate(${rotation})`,
+    transform: 'none',
     pointerEvents: 'auto',
     cursor: dragEnabled ? 'move' : 'default',
     userSelect: 'none',
@@ -269,6 +267,8 @@ export const Watermark: React.FC<WatermarkProps> = ({
           width: '100%',
           height: '100%',
           objectFit: 'contain',
+          transform: rotation,
+          transformOrigin: 'center center',
           display: 'block',
           pointerEvents: 'none'
         }} 
