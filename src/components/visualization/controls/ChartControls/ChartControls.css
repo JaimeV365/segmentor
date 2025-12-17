@@ -276,6 +276,7 @@
 /* Ensure watermark button stays within container */
 .watermark-group .control-group-content {
   overflow: hidden;
+  padding: 0 8px 8px 8px; /* add breathing room so the button isn't flush */
 }
 
 /* Make watermark button more compact in Premium mode */
