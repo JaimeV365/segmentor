@@ -54,7 +54,8 @@ export const Watermark: React.FC<WatermarkProps> = ({
   const isFlat = effects?.has('LOGO_FLAT');
 
   // Base size (default) - same for both orientations to keep visual parity
-  let logoSize = 90;
+  // Slightly smaller default to avoid oversized rotated logo
+  let logoSize = 70;
 
   // Check for size modifiers in effects
   const sizeModifier = Array.from(effects).find(e => e.startsWith('LOGO_SIZE:'));
@@ -265,8 +266,8 @@ export const Watermark: React.FC<WatermarkProps> = ({
         src={logoUrl} 
         alt="Logo" 
         style={{
-          width: isFlat ? '100%' : 'auto',
-          height: isFlat ? 'auto' : '100%',
+          width: '100%',
+          height: '100%',
           objectFit: 'contain',
           display: 'block',
           pointerEvents: 'none'

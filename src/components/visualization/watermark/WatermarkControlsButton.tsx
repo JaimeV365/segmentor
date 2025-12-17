@@ -36,7 +36,7 @@ export const WatermarkControlsButton: React.FC<WatermarkControlsButtonProps> = (
   
   const getCurrentSize = () => {
     const sizeEffect = Array.from(effects).find(e => e.startsWith('LOGO_SIZE:'));
-    return sizeEffect ? parseInt(sizeEffect.replace('LOGO_SIZE:', ''), 10) : 90;
+    return sizeEffect ? parseInt(sizeEffect.replace('LOGO_SIZE:', ''), 10) : 70;
   };
 
   const getCurrentPosition = () => {
@@ -147,7 +147,7 @@ export const WatermarkControlsButton: React.FC<WatermarkControlsButtonProps> = (
   // Handle size adjustment
   const adjustSize = (delta: number) => {
     const currentSize = getCurrentSize();
-    const newSize = Math.max(90, Math.min(200, currentSize + delta));
+    const newSize = Math.max(50, Math.min(200, currentSize + delta));
     
     const newEffects = new Set(effects);
     

@@ -123,7 +123,8 @@ export const useWatermarkControls = ({
   const getCurrentState = useCallback((): WatermarkState => {
     const isFlat = effects.has('LOGO_FLAT');
     // Default size is the same for both orientations to keep visual parity
-    const defaultSize = 90;
+    // Slightly smaller to avoid oversized rotated logo
+    const defaultSize = 70;
     const size = getEffectValue('LOGO_SIZE:', defaultSize);
     
     // Check if position is explicitly set in effects
@@ -222,7 +223,7 @@ export const useWatermarkControls = ({
   // Set size (with clamping of position so logo remains within bounds)
   const setLogoSize = useCallback((newSize: number) => {
     const state = getCurrentState();
-    const constrainedSize = Math.max(90, Math.min(400, newSize));
+    const constrainedSize = Math.max(50, Math.min(400, newSize));
     const constrainedPos = constrainPosition(state.position.x, state.position.y, constrainedSize, state.isFlat);
 
     updateEffects(effects => {
