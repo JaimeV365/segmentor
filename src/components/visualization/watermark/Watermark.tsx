@@ -108,8 +108,8 @@ export const Watermark: React.FC<WatermarkProps> = ({
 
   const styles: React.CSSProperties = {
     position: 'absolute',
-    left: `${10 + logoX}px`,
-    top: `${10 + logoY}px`, // Changed from bottom to top for better control
+    left: `${logoX}px`,
+    top: `${logoY}px`,
     width: `${containerWidth}px`,
     height: `${containerHeight}px`,
     opacity: logoOpacity,
