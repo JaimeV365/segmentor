@@ -78,6 +78,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
     }
   }
   
+  const yModifier = Array.from(effects).find(e => e.startsWith('LOGO_Y:'));
   if (yModifier) {
     const yValue = parseInt(yModifier.replace('LOGO_Y:', ''), 10);
     if (!isNaN(yValue)) {
