@@ -45,6 +45,7 @@ export const useWatermarkControls = ({
 }: UseWatermarkControlsProps) => {
   const EDGE_PADDING_X = Math.max(4, (dimensions?.cellWidth ?? 24) / 2);  // half a cell, fallback 12
   const EDGE_PADDING_Y = Math.max(4, (dimensions?.cellHeight ?? 24) / 2); // half a cell, fallback 12
+  const OFFSET = 10; // matches Watermark.tsx positioning offset
   // Cache container dimensions to avoid DOM queries
   const containerDimensionsRef = useRef<{ width: number; height: number } | null>(null);
   
@@ -91,11 +92,11 @@ export const useWatermarkControls = ({
     const effWidth = logoSize;
     const effHeight = logoSize * 0.3;
     
-    // Symmetric padding on all sides (half a cell), no extra offset
+    // Symmetric padding on all sides (half a cell) accounting for render offset
     const minX = Math.max(0, marginX);
     const minY = Math.max(0, marginY);
-    const maxX = Math.max(0, container.width - effWidth - marginX);
-    const maxY = Math.max(0, container.height - effHeight - marginY);
+    const maxX = Math.max(0, container.width - effWidth - marginX - OFFSET);
+    const maxY = Math.max(0, container.height - effHeight - marginY - OFFSET);
     
     return {
       minX,
