@@ -83,9 +83,9 @@ export const useWatermarkControls = ({
     const marginX = EDGE_PADDING_X;
     const marginY = EDGE_PADDING_Y;
     
-    // Visual footprint is the same for both orientations: width = size, height = size * 0.3
-    const effWidth = logoSize;
-    const effHeight = logoSize * 0.3;
+    // Visual footprint depends on orientation
+    const effWidth = isFlat ? logoSize : logoSize * 0.3;
+    const effHeight = isFlat ? logoSize * 0.3 : logoSize;
     
     // Symmetric padding on all sides (half a cell) in container coordinates
     const minX = Math.max(0, marginX);
