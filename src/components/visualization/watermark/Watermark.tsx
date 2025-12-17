@@ -12,6 +12,7 @@ interface WatermarkProps {
 }
 
 const DEFAULT_LOGO = '/segmentor-logo.png';
+const EDGE_PADDING = 12; // small inset so the logo never hugs the edge
 
 export const Watermark: React.FC<WatermarkProps> = ({ 
   hide, 
@@ -83,10 +84,8 @@ export const Watermark: React.FC<WatermarkProps> = ({
       // Use the same visual footprint for both orientations (width = size, height = size * 0.3)
       const effWidth = logoSize;
       // Uniform margin on all sides, scaled with size
-      const baseMargin = 100;
-      const baseSize = 90;
-      const margin = Math.max(40, baseMargin * (baseSize / logoSize));
-      logoX = Math.max(0, rect.width - effWidth - margin - 10);
+      const margin = EDGE_PADDING;
+      logoX = Math.max(margin, rect.width - effWidth - margin - 10);
     }
   }
   
@@ -102,10 +101,8 @@ export const Watermark: React.FC<WatermarkProps> = ({
       const rect = container.getBoundingClientRect();
       // Same visual footprint for both orientations (width = size, height = size * 0.3)
       const effHeight = logoSize * 0.3;
-      const baseMargin = 100;
-      const baseSize = 90;
-      const margin = Math.max(40, baseMargin * (baseSize / logoSize));
-      logoY = Math.max(0, rect.height - effHeight - margin - 10);
+      const margin = EDGE_PADDING;
+      logoY = Math.max(margin, rect.height - effHeight - margin - 10);
     }
   }
 
