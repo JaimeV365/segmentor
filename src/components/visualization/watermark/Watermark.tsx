@@ -106,6 +106,10 @@ export const Watermark: React.FC<WatermarkProps> = ({
   const containerWidth = logoSize;
   const containerHeight = logoSize * 0.3;
 
+  // Debug flag to visualize movement bounds
+  const showDebugBounds = true;
+  const bounds = getGridBounds(logoSize, isFlat);
+
   const styles: React.CSSProperties = {
     position: 'absolute',
     left: `${logoX}px`,
@@ -235,41 +239,59 @@ export const Watermark: React.FC<WatermarkProps> = ({
   if (shouldHide) return null;
 
   return (
-    <div 
-      className="watermark-layer"
-      style={styles} 
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerUp}
-    >
-      <img 
-        src={logoUrl} 
-        alt="Logo" 
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'contain',
-          transform: rotation,
-          transformOrigin: 'center center',
-          display: 'block',
-          pointerEvents: 'none'
-        }} 
-        draggable={false}
-        onDragStart={(e) => e.preventDefault()}
-        onError={(e) => {
-          console.error('Error loading logo from URL:', logoUrl);
-          // Use local fallback to prevent infinite loop
-          const fallbackLogo = '/segmentor-logo.png';
-          if (e.currentTarget.src !== fallbackLogo && !e.currentTarget.src.includes(fallbackLogo)) {
-            e.currentTarget.src = fallbackLogo;
-          } else {
-            // If fallback also fails, hide the image to stop the loop
-            e.currentTarget.style.display = 'none';
-          }
-        }}
-      />
-    </div>
+    <>
+      {showDebugBounds && (
+        <div
+          style={{
+            position: 'absolute',
+            left: `${bounds.minX}px`,
+            top: `${bounds.minY}px`,
+            width: `${bounds.maxX - bounds.minX + containerWidth}px`,
+            height: `${bounds.maxY - bounds.minY + containerHeight}px`,
+            border: '2px solid red',
+            background: 'rgba(255, 0, 0, 0.06)',
+            pointerEvents: 'none',
+            zIndex: 2995,
+            boxSizing: 'border-box'
+          }}
+        />
+      )}
+      <div 
+        className="watermark-layer"
+        style={styles} 
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+      >
+        <img 
+          src={logoUrl} 
+          alt="Logo" 
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            transform: rotation,
+            transformOrigin: 'center center',
+            display: 'block',
+            pointerEvents: 'none'
+          }} 
+          draggable={false}
+          onDragStart={(e) => e.preventDefault()}
+          onError={(e) => {
+            console.error('Error loading logo from URL:', logoUrl);
+            // Use local fallback to prevent infinite loop
+            const fallbackLogo = '/segmentor-logo.png';
+            if (e.currentTarget.src !== fallbackLogo && !e.currentTarget.src.includes(fallbackLogo)) {
+              e.currentTarget.src = fallbackLogo;
+            } else {
+              // If fallback also fails, hide the image to stop the loop
+              e.currentTarget.style.display = 'none';
+            }
+          }}
+        />
+      </div>
+    </>
   );
 };
 
