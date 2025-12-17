@@ -247,12 +247,12 @@
 
 .labels-buttons .label-button,
 .terminology-buttons .label-button {
-  max-width: 100%;
-  width: 100%;
+  max-width: 90%;
+  width: 90%;
   box-sizing: border-box;
   padding: 6px 8px;
   font-size: 12px;
-  margin: 0;
+  margin: 0 auto;
 }
 
 /* Make Label Position toggle wider */
