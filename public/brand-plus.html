@@ -27,6 +27,10 @@
     <link rel="apple-touch-icon" href="/favicon.ico">
     
     <style>
+/* Global focus states - remove outline for mouse clicks, keep for keyboard */
+*:focus { outline: none; }
+*:focus-visible { outline: 2px solid #3a863e; outline-offset: 2px; border-radius: 4px; }
+
 /* Font Face Declarations - Using Local Fonts */
 @font-face {
   font-family: 'Montserrat';
