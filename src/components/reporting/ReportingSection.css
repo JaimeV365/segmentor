@@ -522,6 +522,7 @@
   transition: background-color 0.3s ease;
   text-align: left;
   box-shadow: none !important;
+  font-family: inherit;
 }
 
 .advanced-section-header:focus,

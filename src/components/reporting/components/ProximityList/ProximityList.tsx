@@ -81,10 +81,15 @@ const getRelationLabels = (isClassicModel: boolean): Record<string, string> => (
   loyalists_close_to_apostles: `Loyalists Nearly ${isClassicModel ? 'Apostles' : 'Advocates'}`,
   loyalists_close_to_near_apostles: `Loyalists Nearly ${isClassicModel ? 'Near-Apostles' : 'Near-Advocates'}`,
   near_apostles_close_to_apostles: `${isClassicModel ? 'Near-Apostles' : 'Near-Advocates'} Nearly ${isClassicModel ? 'Apostles' : 'Advocates'}`,
-  defectors_close_to_terrorists: `Defectors Nearly ${isClassicModel ? 'Terrorists' : 'Trolls'}`
+  defectors_close_to_terrorists: `Defectors Nearly ${isClassicModel ? 'Terrorists' : 'Trolls'}`,
+  // Reverse movements (from special zones back to main quadrants)
+  apostles_close_to_loyalists: `${isClassicModel ? 'Apostles' : 'Advocates'} Nearly Loyalists`,
+  near_apostles_close_to_loyalists: `${isClassicModel ? 'Near-Apostles' : 'Near-Advocates'} Nearly Loyalists`,
+  terrorists_close_to_defectors: `${isClassicModel ? 'Terrorists' : 'Trolls'} Nearly Defectors`
 });
 
 // Strategic group classifications
+// WARNING: Movements towards worse segments (negative)
 const WARNING_GROUPS = [
   'loyalists_close_to_mercenaries',
   'loyalists_close_to_hostages', 
@@ -93,9 +98,13 @@ const WARNING_GROUPS = [
   'defectors_close_to_terrorists',
   // Diagonal warning relationships (crisis movements)
   'loyalists_close_to_defectors',
-  'mercenaries_close_to_hostages'
+  'mercenaries_close_to_hostages',
+  // Special zones: moving backwards from top zones (when special zones enabled)
+  'apostles_close_to_loyalists',
+  'near_apostles_close_to_loyalists'
 ];
 
+// OPPORTUNITY: Movements towards better segments (positive)
 const OPPORTUNITY_GROUPS = [
   'mercenaries_close_to_loyalists',
   'hostages_close_to_loyalists',
@@ -106,7 +115,9 @@ const OPPORTUNITY_GROUPS = [
   'near_apostles_close_to_apostles',
   // Diagonal opportunity relationships (redemption movements)
   'hostages_close_to_mercenaries',
-  'defectors_close_to_loyalists'
+  'defectors_close_to_loyalists',
+  // Special zones: moving up from worst zone (when special zones enabled)
+  'terrorists_close_to_defectors'
 ];
 
 // Function to get proximity explanations based on terminology
@@ -128,7 +139,11 @@ const getProximityExplanations = (isClassicModel: boolean): Record<string, strin
   loyalists_close_to_apostles: `These customers are positioned nearly the ${isClassicModel ? 'apostles' : 'advocates'} zone`,
   loyalists_close_to_near_apostles: `These customers are positioned nearly the ${isClassicModel ? 'near apostles' : 'near advocates'} zone`,
   near_apostles_close_to_apostles: `These customers are positioned nearly the ${isClassicModel ? 'apostles' : 'advocates'} zone from the ${isClassicModel ? 'near apostles' : 'near advocates'} zone`,
-  defectors_close_to_terrorists: `These customers are positioned nearly the ${isClassicModel ? 'terrorists' : 'trolls'} zone`
+  defectors_close_to_terrorists: `These customers are positioned nearly the ${isClassicModel ? 'terrorists' : 'trolls'} zone`,
+  // Reverse movements - special zones back to main quadrants
+  apostles_close_to_loyalists: `These ${isClassicModel ? 'apostles' : 'advocates'} are at risk of dropping back to the loyalists zone`,
+  near_apostles_close_to_loyalists: `These ${isClassicModel ? 'near-apostles' : 'near-advocates'} are at risk of dropping back to the loyalists zone`,
+  terrorists_close_to_defectors: `These ${isClassicModel ? 'terrorists' : 'trolls'} are positioned nearly the defectors zone (improvement opportunity)`
 });
 
 // Brand colours rendered as subtle rgba for professional look

@@ -102,6 +102,13 @@
 
 .logo-text:focus {
   text-decoration: none !important;
+  outline: none;
+}
+
+.logo-text:focus-visible {
+  outline: 2px solid #3a863e;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .logo-segmentor {
@@ -140,6 +147,16 @@
 
 .nav-link:hover {
   color: #3a863e;
+}
+
+.nav-link:focus {
+  outline: none;
+}
+
+.nav-link:focus-visible {
+  outline: 2px solid #3a863e;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .nav-link-primary {
@@ -1935,6 +1952,7 @@ CUST002,6,4,Jane Doe</pre>
 
         function searchFAQ(query) {
             const faqItems = document.querySelectorAll('.faq-item');
+            const faqSections = document.querySelectorAll('.faq-section');
             const results = [];
             
             faqItems.forEach(item => {
@@ -1947,6 +1965,17 @@ CUST002,6,4,Jane Doe</pre>
                     item.style.display = 'block';
                 } else {
                     item.style.display = 'none';
+                }
+            });
+            
+            // Hide empty categories (sections with no visible items)
+            faqSections.forEach(section => {
+                const visibleItems = section.querySelectorAll('.faq-item[style="display: block"], .faq-item:not([style*="display: none"])');
+                const hasVisibleItems = Array.from(section.querySelectorAll('.faq-item')).some(item => item.style.display !== 'none');
+                if (hasVisibleItems) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
                 }
             });
             
@@ -1965,6 +1994,12 @@ CUST002,6,4,Jane Doe</pre>
             const faqItems = document.querySelectorAll('.faq-item');
             faqItems.forEach(item => {
                 item.style.display = 'block';
+            });
+            
+            // Show all sections again
+            const faqSections = document.querySelectorAll('.faq-section');
+            faqSections.forEach(section => {
+                section.style.display = 'block';
             });
             
             const searchResults = document.getElementById('search-results');

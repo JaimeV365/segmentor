@@ -21,7 +21,7 @@ export const DemoButton: React.FC<DemoButtonProps> = ({ onDemoDataLoad, disabled
           className="demo-button"
         >
           <Play size={16} />
-          Explore Now
+          Try Sample Data
         </button>
       </div>
     </div>

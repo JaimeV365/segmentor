@@ -190,13 +190,6 @@ const WelcomeBanner: React.FC<WelcomeBannerProps> = ({
             Take Quick Tour
           </button>
           <button
-            onClick={handleUploadClick}
-            className="welcome-banner__button welcome-banner__button--secondary"
-          >
-            <Upload size={16} />
-            Upload Your Data
-          </button>
-          <button
             onClick={handleSampleDataClick}
             className="welcome-banner__button welcome-banner__button--tertiary"
           >
