@@ -985,14 +985,22 @@
             margin-bottom: 24px;
         }
 
-        /* Focus styles for accessibility */
+        /* Focus styles for accessibility - only show for keyboard navigation */
         a:focus,
         button:focus {
+            outline: none;
+        }
+        a:focus-visible,
+        button:focus-visible {
             outline: 3px solid #3a863e;
             outline-offset: 2px;
         }
         
         .btn:focus {
+            outline: none;
+            box-shadow: none;
+        }
+        .btn:focus-visible {
             outline: 3px solid #3a863e;
             outline-offset: 2px;
             box-shadow: 0 0 0 4px rgba(58, 134, 62, 0.2);
@@ -1011,6 +1019,12 @@
         }
         
         .skip-link:focus {
+            left: 50%;
+            transform: translateX(-50%);
+            top: 1rem;
+            outline: none;
+        }
+        .skip-link:focus-visible {
             left: 50%;
             transform: translateX(-50%);
             top: 1rem;
