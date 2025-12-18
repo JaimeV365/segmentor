@@ -596,29 +596,36 @@ const ProximitySection: React.FC<ProximitySectionProps> = ({
     
     // Helper to determine if movement is positive (opportunity) or negative (warning)
     const isPositiveMovement = (from: string, to: string): boolean => {
-      // Opportunities:
-      // 1. From defectors/terrorists to anything better
-      // 2. From anything to loyalists/near-apostles/apostles
-      // Warnings:
-      // 1. Anything towards defectors/terrorists
-      // 2. Anything coming from loyalists/apostles/near-apostles
+      // Segment hierarchy (best to worst): apostles > near_apostles > loyalists > mercenaries/hostages > defectors > terrorists
+      // Opportunities: moving UP the hierarchy (towards better segments)
+      // Warnings: moving DOWN the hierarchy (towards worse segments)
       
-      // If moving TO defectors or terrorists, it's a warning
+      // Special case: Loyalists moving to apostles/near-apostles is POSITIVE (promotion)
+      if (from === 'loyalists' && (to === 'apostles' || to === 'near_apostles')) {
+        return true;
+      }
+      
+      // Special case: Near-apostles moving to apostles is POSITIVE
+      if (from === 'near_apostles' && to === 'apostles') {
+        return true;
+      }
+      
+      // If moving TO defectors or terrorists, it's always a warning
       if (to === 'defectors' || to === 'terrorists') {
         return false;
       }
       
-      // If moving FROM loyalists, apostles, or near-apostles, it's a warning
-      if (from === 'loyalists' || from === 'apostles' || from === 'near_apostles') {
+      // If apostles/near-apostles moving BACK to loyalists, it's a warning (demotion)
+      if ((from === 'apostles' || from === 'near_apostles') && to === 'loyalists') {
         return false;
       }
       
-      // If moving TO loyalists, apostles, or near-apostles, it's an opportunity
+      // If moving TO loyalists, apostles, or near-apostles (from lower segments), it's an opportunity
       if (to === 'loyalists' || to === 'apostles' || to === 'near_apostles') {
         return true;
       }
       
-      // If moving FROM defectors or terrorists, it's an opportunity
+      // If moving FROM defectors or terrorists (to anything better), it's an opportunity
       if (from === 'defectors' || from === 'terrorists') {
         return true;
       }
