@@ -4,6 +4,7 @@ import type { ActionPlanReport, ChartImage } from '../types';
 
 const DEFAULT_LOGO = '/segmentor-logo.png';
 const DISCLAIMER_TEXT = 'This report is generated automatically and is provided for general informational purposes only. It is NOT professional advice and must not be relied upon as such. See full disclaimer at segmentor.app';
+const EXPERT_REVIEW_TEXT = 'The conclusions and actions in this report can be reviewed by experts from Teresa Monroe. For professional consultation, visit segmentor.app/contact.html';
 
 /**
  * Loads a font from a URL and adds it to jsPDF
@@ -909,6 +910,13 @@ function addPageWatermarkAndFooter(
     pdf.text(line, 20, disclaimerStartY + (index * 3));
   });
   
+  // Add expert review text (below disclaimer)
+  const expertReviewLines = pdf.splitTextToSize(EXPERT_REVIEW_TEXT, pageWidth - 40);
+  const expertReviewStartY = disclaimerStartY - (expertReviewLines.length * 3) - 2; // 2mm spacing between disclaimers
+  expertReviewLines.forEach((line: string, index: number) => {
+    pdf.text(line, 20, expertReviewStartY + (index * 3));
+  });
+  
   // Reset text color
   pdf.setTextColor(0, 0, 0);
 }
@@ -1693,8 +1701,27 @@ export async function exportActionPlanToXLSX(
       }
     });
 
-    // Check if workbook has any sheets
-    if (workbook.SheetNames.length === 0) {
+    // Add Disclaimer sheet (always first sheet)
+    const disclaimerData = [
+      ['Disclaimer'],
+      [''],
+      ['This report is generated automatically and is provided for general informational purposes only.'],
+      ['It is NOT professional advice and must not be relied upon as such.'],
+      [''],
+      ['Expert Review'],
+      [''],
+      ['The conclusions and actions in this report can be reviewed by experts from Teresa Monroe.'],
+      ['For professional consultation, please visit:'],
+      ['https://segmentor.app/contact.html'],
+      [''],
+      ['See full disclaimer at: https://segmentor.app']
+    ];
+    const disclaimerSheet = XLSX.utils.aoa_to_sheet(disclaimerData);
+    disclaimerSheet['!cols'] = [{ wch: 80 }]; // Wide column for disclaimer text
+    XLSX.utils.book_append_sheet(workbook, disclaimerSheet, 'Disclaimer');
+
+    // Check if workbook has any sheets (besides disclaimer)
+    if (workbook.SheetNames.length === 1) {
       alert('No customer data found to export. Please ensure your Actions Report contains customer lists.');
       return;
     }
