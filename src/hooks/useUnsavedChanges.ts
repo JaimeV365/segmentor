@@ -155,15 +155,46 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
     
     // Use a MutationObserver-like approach: poll for changes
     // Since we can't directly listen to same-tab localStorage changes,
-    // we'll check periodically when the component is active
-    const intervalId = setInterval(() => {
-      // This will trigger the useEffect below to re-check
-      setEditableTextChangeTrigger(prev => prev + 1);
-    }, 2000); // Check every 2 seconds
+    // we'll check periodically when the page is visible
+    let intervalId: NodeJS.Timeout | null = null;
+    
+    const startPolling = () => {
+      if (intervalId) clearInterval(intervalId);
+      intervalId = setInterval(() => {
+        // Only check if page is visible
+        if (!document.hidden) {
+          setEditableTextChangeTrigger(prev => prev + 1);
+        }
+      }, 3000); // Check every 3 seconds when visible
+    };
+    
+    const stopPolling = () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    };
+    
+    // Start polling when page is visible
+    if (!document.hidden) {
+      startPolling();
+    }
+    
+    // Handle visibility changes
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopPolling();
+      } else {
+        startPolling();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      stopPolling();
     };
   }, []);
 
