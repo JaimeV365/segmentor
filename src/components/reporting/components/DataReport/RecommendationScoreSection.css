@@ -137,7 +137,7 @@
 }
 
 .score-gauge-text {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Lato', sans-serif;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
