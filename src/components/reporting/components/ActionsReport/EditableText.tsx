@@ -105,6 +105,11 @@ export const EditableText: React.FC<EditableTextProps> = ({
   }, [editedContent, backgroundColor, id, content]);
 
   const handleEdit = () => {
+    // Only allow editing if premium
+    if (!isPremium) {
+      console.warn('Edit mode is restricted to premium users');
+      return;
+    }
     setIsEditing(true);
     setOriginalContent(editedContent);
     setOriginalBackgroundColor(backgroundColor);
@@ -339,6 +344,20 @@ export const EditableText: React.FC<EditableTextProps> = ({
   // Editing (add, edit, delete paragraphs) is TM-exclusive - only premium users can edit
 
   if (isEditing) {
+    // Only allow editing if premium - exit edit mode if not premium
+    if (!isPremium) {
+      setIsEditing(false);
+      return (
+        <div className={`editable-text-container ${className}`} ref={containerRef}>
+          <Tag
+            className="editable-text-content"
+            dangerouslySetInnerHTML={{ __html: editedContent }}
+            style={backgroundColor ? { backgroundColor } : undefined}
+          />
+        </div>
+      );
+    }
+    
     // Always use paragraph-based editing in edit mode for premium users
     // This allows adding/removing containers even with single paragraph content
     // If we have multiple paragraphs, use them; otherwise, treat the single content as one paragraph

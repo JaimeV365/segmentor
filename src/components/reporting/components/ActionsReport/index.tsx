@@ -317,9 +317,9 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
     setIsCapturing(true);
     try {
       console.log('📸 Attempting to capture chart with selector:', selector);
-      // For Brand+ users, hide watermark when capturing main chart
+      // Always hide watermark when capturing main chart (watermark added correctly in export)
       const isMainChart = selector.includes('chart-container') || selector === '.chart-container';
-      const hideWatermark = isPremium && isMainChart;
+      const hideWatermark = isMainChart; // Always hide for main chart - watermark added in export
       const chartImage = await captureChartAsImage(selector, caption, { hideWatermark });
       if (chartImage) {
         console.log('✅ Chart captured successfully:', chartImage.id);

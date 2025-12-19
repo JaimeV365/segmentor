@@ -556,19 +556,6 @@
                         </div>
                     </div>
 
-                    <div class="faq-item" data-keywords="average response concentration difference mean cluster">
-                        <div class="faq-question" onclick="toggleFAQ(this)">
-                            <h3>What's the difference between the average and response concentration?</h3>
-                            <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer">
-                            <p><strong>The average gives you a single number, but it doesn't represent any individual customer.</strong> For example, an average of loyalty=3.5 and satisfaction=7.8 tells you the mathematical centre of your data, but no customer actually has those exact scores.</p>
-                            <p><strong>Response concentration shows where your customers actually cluster.</strong> It reveals where most of your responses tend to be located on the chart—the real patterns in your data.</p>
-                            <p><strong>Why this matters:</strong> By comparing the concentration to the average, you can see how volume is affecting your numbers. If you have many customers clustered in one area but a few outliers pulling the average in a different direction, the concentration will show you the true story of where your customers are, while the average might be misleading.</p>
-                            <p>This helps you understand whether your averages are being skewed by outliers or whether they accurately represent where most of your customers actually sit.</p>
-                        </div>
-                    </div>
-
                 </div>
 
                 <!-- Getting Started Section -->
@@ -914,16 +901,29 @@ CUST002,6,4,Jane Doe</pre>
                             <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer">
-                            <p><strong>Applying filters:</strong> Use the filter controls in the chart interface to select criteria. You can filter by date ranges, specific attributes (like country or language), or score ranges. Multiple filters work together—only customers matching ALL your selected criteria will be shown.</p>
-                            <p><strong>Connection intelligence:</strong> When you apply filters, the tool automatically "connects" related data. For example, if you filter by a specific country, the tool will:</p>
+                            <p><strong>Applying filters:</strong> Use the filter controls in the main customer segments chart to select criteria. You can filter by date ranges, specific attributes (like country or language), or score ranges. Multiple filters work together—only customers matching ALL your selected criteria will be shown.</p>
+                            <p><strong>Connection intelligence:</strong> When you set filters in the main chart, the tool automatically connects those filters to all other reports and charts throughout the tool. This means:</p>
                             <ul>
-                                <li>Show only customers from that country on the chart</li>
-                                <li>Recalculate statistics and distributions for that filtered subset</li>
-                                <li>Update quadrant assignments based on the filtered data's midpoint</li>
-                                <li>Adjust all reports and analysis to reflect only the filtered customers</li>
+                                <li>All reports (Data Report, Action Plan) automatically filter to match your main chart filters</li>
+                                <li>All other charts and visualisations update to reflect the same filtered subset</li>
+                                <li>Statistics and distributions recalculate based on the filtered data</li>
+                                <li>Everything stays synchronised—when you change filters in the main chart, all connected views update automatically</li>
                             </ul>
-                            <p>This intelligent connection means your entire analysis—charts, statistics, reports, and recommendations—stays synchronised with your active filters. When you remove a filter, everything automatically updates to show the full dataset again.</p>
-                            <p><strong>Tip:</strong> Use filters to compare different segments. For example, filter by date range to see how customer satisfaction has changed over time, or filter by country to compare performance across regions.</p>
+                            <p><strong>Disconnecting filters:</strong> You can disconnect individual reports or charts from the main filter by editing their own filter settings. This allows you to compare different filtered views side-by-side—for example, keeping the main chart filtered by one country while viewing a report filtered by a different country.</p>
+                            <p><strong>Tip:</strong> Use connection intelligence to quickly analyse specific segments across all your reports, then disconnect individual views when you need to compare different filters.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="average response concentration difference mean cluster">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What's the difference between the average and response concentration?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>The average gives you a single number, but it doesn't represent any individual customer.</strong> For example, an average of loyalty=3.5 and satisfaction=7.8 tells you the mathematical centre of your data, but no customer actually has those exact scores.</p>
+                            <p><strong>Response concentration shows where your customers actually cluster.</strong> It reveals where most of your responses tend to be located on the chart—the real patterns in your data.</p>
+                            <p><strong>Why this matters:</strong> By comparing the concentration to the average, you can see how volume is affecting your numbers. If you have many customers clustered in one area but a few outliers pulling the average in a different direction, the concentration will show you the true story of where your customers are, while the average might be misleading.</p>
+                            <p>This helps you understand whether your averages are being skewed by outliers or whether they accurately represent where most of your customers actually sit.</p>
                         </div>
                     </div>
 
@@ -1438,8 +1438,8 @@ CUST002,6,4,Jane Doe</pre>
                     <h2 style="font-family: 'Montserrat', sans-serif;">Still Need Help?</h2>
                     <p>Can't find the answer you're looking for? We're here to help.</p>
                     <div class="help-actions">
-                        <a href="/" class="btn btn-primary">Start</a>
-                        <a href="/" class="btn btn-secondary">Try the Tool</a>
+                        <a href="/tool/" class="btn btn-primary">Start Using the Tool</a>
+                        <a href="/tool/?demo=true" class="btn btn-secondary">Try Demo Mode</a>
                     </div>
             </div>
         </div>

@@ -251,9 +251,10 @@ export async function generateActionPlan(
 
     // Capture charts
     console.log('📸 Starting chart capture for', captureRequests.length, 'charts');
-    // For Brand+ users, hide watermark when capturing main chart
+    // Always hide watermark when capturing main chart (for both premium and non-premium)
+    // Watermark will be added correctly in export process if needed
     supportingImages = await captureMultipleCharts(captureRequests, { 
-      hideWatermarkForMainChart: isPremium 
+      hideWatermarkForMainChart: true // Always true - watermark added in export
     });
     console.log('📸 Chart capture completed. Captured', supportingImages.length, 'charts');
     
