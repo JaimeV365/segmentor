@@ -32,6 +32,40 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
   const [lastSavedTime, setLastSavedTime] = useState<Date | null>(null);
   const lastSavedStateRef = useRef<string | null>(null);
   const isInitialMount = useRef(true);
+  const [editableTextChangeTrigger, setEditableTextChangeTrigger] = useState(0);
+
+  // Get hash of all editable text content from localStorage
+  const getEditableTextHash = useCallback(() => {
+    try {
+      const editableTextItems: Record<string, string> = {};
+      // Collect all editable-text-* items from localStorage
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('editable-text-')) {
+          const value = localStorage.getItem(key);
+          if (value) {
+            try {
+              const parsed = JSON.parse(value);
+              // Include both content and backgroundColor in the hash
+              editableTextItems[key] = JSON.stringify({
+                content: parsed.content || '',
+                backgroundColor: parsed.backgroundColor || ''
+              });
+            } catch (e) {
+              // If parsing fails, just use the raw value
+              editableTextItems[key] = value;
+            }
+          }
+        }
+      }
+      // Return a sorted JSON string for consistent hashing
+      const sortedKeys = Object.keys(editableTextItems).sort();
+      return JSON.stringify(sortedKeys.map(key => ({ key, value: editableTextItems[key] })));
+    } catch (error) {
+      console.warn('Failed to get editable text hash:', error);
+      return '';
+    }
+  }, []);
 
   // Create a hash of current state for comparison
   const getStateHash = useCallback(() => {
@@ -56,6 +90,7 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
       isClassicModel: options.isClassicModel,
       isPremium: options.isPremium,
       effects: Array.from(options.effects || []).sort(),
+      editableTextHash: getEditableTextHash(), // Include editable text content
     });
   }, [
     options.data?.length,
@@ -78,6 +113,7 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
     options.isClassicModel,
     options.isPremium,
     options.effects,
+    getEditableTextHash,
   ]);
 
   // Load last saved state from localStorage on mount
@@ -98,11 +134,54 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
     }
   }, []);
 
+  // Listen for localStorage changes (editable text edits)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      // Only react to editable-text-* changes
+      if (e.key && e.key.startsWith('editable-text-')) {
+        // Trigger a re-check by updating the trigger state
+        setEditableTextChangeTrigger(prev => prev + 1);
+      }
+    };
+
+    // Listen to storage events (fires when localStorage changes in other tabs/windows)
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also create a custom event listener for same-tab localStorage changes
+    // (storage event only fires for changes in OTHER tabs)
+    const handleCustomStorageChange = () => {
+      setEditableTextChangeTrigger(prev => prev + 1);
+    };
+    
+    // Use a MutationObserver-like approach: poll for changes
+    // Since we can't directly listen to same-tab localStorage changes,
+    // we'll check periodically when the component is active
+    const intervalId = setInterval(() => {
+      // This will trigger the useEffect below to re-check
+      setEditableTextChangeTrigger(prev => prev + 1);
+    }, 2000); // Check every 2 seconds
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(intervalId);
+    };
+  }, []);
+
   // Check for unsaved changes
   useEffect(() => {
     // If there's no data at all, never mark as unsaved (user is just on the loader page)
+    // UNLESS there are editable text changes (user might have edited report text)
+    const hasEditableTextChanges = getEditableTextHash() !== '';
+    
     if (!options.data || options.data.length === 0) {
-      setHasUnsavedChanges(false);
+      // Even if no data, check if there are editable text changes
+      // This handles the case where user edits report text but hasn't loaded data yet
+      if (hasEditableTextChanges && lastSavedStateRef.current !== null) {
+        const currentHash = getStateHash();
+        setHasUnsavedChanges(currentHash !== lastSavedStateRef.current);
+      } else {
+        setHasUnsavedChanges(false);
+      }
       return;
     }
 
@@ -128,7 +207,7 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
       // Compare current state with saved state
       setHasUnsavedChanges(currentHash !== lastSavedStateRef.current);
     }
-  }, [getStateHash, options.data?.length, options.data]);
+  }, [getStateHash, getEditableTextHash, options.data?.length, options.data, editableTextChangeTrigger]);
 
   // Mark as saved
   const markAsSaved = useCallback(() => {
