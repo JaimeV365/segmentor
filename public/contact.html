@@ -754,7 +754,7 @@ try{(new g("https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtric
         }
     </style>
 
-    <!-- Qualtrics Embedded Data Handler -->
+    <!-- Qualtrics Handler Script -->
     <script>
         // Function to show error message when Qualtrics fails to load
         function showQualtricsError() {
@@ -860,19 +860,9 @@ try{(new g("https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtric
             }, 2000);
         });
         
-        // Store the selected block value
-        let selectedBlock = null;
-
         // Function to handle query type button clicks
         function handleQueryTypeClick(blockValue) {
             console.log('Button clicked! Block value:', blockValue);
-            
-            // Store the block value for Qualtrics
-            selectedBlock = blockValue;
-            
-            // Store in sessionStorage for Qualtrics to access
-            sessionStorage.setItem('QualtricsBlock', blockValue);
-            console.log('Stored in sessionStorage:', blockValue);
             
             // Show the survey section
             const surveySection = document.getElementById('survey-section');
@@ -910,12 +900,6 @@ try{(new g("https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtric
                     // Check Qualtrics status when section becomes visible
                     console.log('Checking Qualtrics status...');
                     checkQualtricsStatus();
-                    
-                    // Set Qualtrics embedded data if Qualtrics is loaded
-                    console.log('Setting Qualtrics embedded data:', blockValue);
-                    setQualtricsEmbeddedData(blockValue);
-                    // Also start watching for Qualtrics to load
-                    watchForQualtrics(blockValue);
                 }, 100);
             } else {
                 console.error('Survey section not found! ID: survey-section');
@@ -924,67 +908,6 @@ try{(new g("https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtric
         
         // Make function globally accessible
         window.handleQueryTypeClick = handleQueryTypeClick;
-
-        // Function to set Qualtrics embedded data
-        function setQualtricsEmbeddedData(blockValue) {
-            console.log('setQualtricsEmbeddedData called with:', blockValue);
-            console.log('Qualtrics object available:', typeof Qualtrics !== 'undefined');
-            
-            // Method 1: For Qualtrics Site Intercept API
-            if (typeof Qualtrics !== 'undefined' && Qualtrics.SiteIntercept) {
-                try {
-                    Qualtrics.SiteIntercept.setEmbeddedData('Block', blockValue);
-                    console.log('✓ Qualtrics Site Intercept embedded data set:', blockValue);
-                } catch (e) {
-                    console.log('✗ Qualtrics Site Intercept API not ready yet:', e);
-                }
-            } else {
-                console.log('Qualtrics.SiteIntercept not available yet');
-            }
-            
-            // Method 2: Store for when intercept loads
-            window.QualtricsBlock = blockValue;
-            console.log('Stored in window.QualtricsBlock:', blockValue);
-            
-            // Method 3: Try to set via Qualtrics global object if available
-            if (typeof Qualtrics !== 'undefined') {
-                try {
-                    if (Qualtrics.SiteIntercept) {
-                        Qualtrics.SiteIntercept.setEmbeddedData('Block', blockValue);
-                        console.log('✓ Set via Qualtrics.SiteIntercept');
-                    } else if (Qualtrics.SurveyEngine) {
-                        Qualtrics.SurveyEngine.setEmbeddedData('Block', blockValue);
-                        console.log('✓ Set via Qualtrics.SurveyEngine');
-                    }
-                } catch (e) {
-                    console.log('✗ Error setting Qualtrics embedded data:', e);
-                }
-            }
-        }
-
-        // Watch for Qualtrics to become available after button click
-        function watchForQualtrics(blockValue) {
-            let attempts = 0;
-            const maxAttempts = 50; // 10 seconds
-            
-            const checkInterval = setInterval(function() {
-                attempts++;
-                
-                if (typeof Qualtrics !== 'undefined' && Qualtrics.SiteIntercept) {
-                    try {
-                        Qualtrics.SiteIntercept.setEmbeddedData('Block', blockValue);
-                        console.log('✓ Qualtrics loaded and embedded data set:', blockValue);
-                        clearInterval(checkInterval);
-                    } catch (e) {
-                        console.log('Error setting embedded data:', e);
-                    }
-                } else if (attempts >= maxAttempts) {
-                    console.warn('Qualtrics not available after button click. Domain may not be whitelisted.');
-                    showQualtricsError();
-                    clearInterval(checkInterval);
-                }
-            }, 200);
-        }
 
         // Add event listeners as backup (in case onclick doesn't work)
         document.addEventListener('DOMContentLoaded', function() {
@@ -1005,38 +928,6 @@ try{(new g("https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtric
                 });
             });
         });
-
-        // Continuously check for Qualtrics to load and set embedded data
-        (function checkQualtricsLoaded() {
-            if (typeof Qualtrics !== 'undefined' && Qualtrics.SiteIntercept) {
-                const storedBlock = sessionStorage.getItem('QualtricsBlock') || window.QualtricsBlock;
-                if (storedBlock) {
-                    try {
-                        Qualtrics.SiteIntercept.setEmbeddedData('Block', storedBlock);
-                        console.log('✓ Site Intercept embedded data set on load:', storedBlock);
-                        // Stop checking once successfully set
-                        return;
-                    } catch (e) {
-                        console.log('Error setting Site Intercept embedded data:', e);
-                    }
-                }
-            }
-            
-            // Check again in 200ms if Qualtrics isn't loaded yet (up to 10 seconds)
-            const checkCount = checkQualtricsLoaded.count || 0;
-            if (checkCount < 50) { // 50 * 200ms = 10 seconds max
-                checkQualtricsLoaded.count = checkCount + 1;
-                setTimeout(checkQualtricsLoaded, 200);
-            } else {
-                console.warn('Qualtrics did not load within 10 seconds. This may be due to domain restrictions. Make sure your domain is whitelisted in Qualtrics settings.');
-                showQualtricsError();
-            }
-        })();
-
-        // Expose function globally for Qualtrics to call
-        window.setQualtricsBlock = function(blockValue) {
-            handleQueryTypeClick(blockValue);
-        };
         
         console.log('Qualtrics handler script loaded');
     </script>
