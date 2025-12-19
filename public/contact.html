@@ -764,10 +764,16 @@ try{(new g("https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtric
                 errorMsg.style.cssText = 'padding: 24px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #991b1b;';
                 errorMsg.innerHTML = '<strong>⚠️ Contact form unavailable</strong><br><br>' +
                     'The contact form could not be loaded. This may be because:<br>' +
-                    '• <strong>Firefox Enhanced Tracking Protection</strong> is blocking the form (most common)<br>' +
-                    '• Browser privacy extensions are blocking third-party scripts<br>' +
-                    '• Network or firewall restrictions<br><br>' +
-                    '<strong>To fix:</strong> Disable Enhanced Tracking Protection for this site, or try a different browser.';
+                    '• <strong>Ad blocker or privacy extension</strong> is blocking the form (uBlock Origin, AdBlock Plus, Privacy Badger, etc.)<br>' +
+                    '• <strong>VPN or DNS filtering</strong> is blocking the form<br>' +
+                    '• <strong>Firefox Enhanced Tracking Protection</strong> is blocking the form<br>' +
+                    '• Browser privacy settings blocking third-party scripts<br><br>' +
+                    '<strong>Quick fixes:</strong><br>' +
+                    '• <strong>Disable ad blockers</strong> for this site (most common fix)<br>' +
+                    '• Disable your VPN temporarily<br>' +
+                    '• Try a different browser<br>' +
+                    '• Disable Enhanced Tracking Protection for this site (Firefox)<br><br>' +
+                    '<strong>Alternative:</strong> <a href="mailto:contact@segmentor.app?subject=Contact%20from%20segmentor.app" style="color: #3a863e; text-decoration: underline; font-weight: 600;">Email us directly</a>';
                 targetDiv.appendChild(errorMsg);
             }
         }
@@ -784,17 +790,39 @@ try{(new g("https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtric
                     colno: e.colno,
                     error: e.error
                 });
+                
+                // Check if this is a BLOCKED_BY_CLIENT error (ad blocker)
+                var isBlockedByClient = false;
+                if (e.message && e.message.includes('BLOCKED_BY_CLIENT')) {
+                    isBlockedByClient = true;
+                }
+                
                 console.error('   Common causes:');
-                console.error('   1. Firefox Enhanced Tracking Protection (most common)');
-                console.error('   2. Browser privacy extensions blocking third-party scripts');
-                console.error('   3. CSP headers blocking the request (check Network tab)');
-                console.error('   4. Network/firewall restrictions');
+                if (isBlockedByClient) {
+                    console.error('   1. ⚠️ Ad blocker or privacy extension (ERR_BLOCKED_BY_CLIENT) - MOST LIKELY');
+                    console.error('   2. VPN or DNS filtering blocking the subdomain');
+                    console.error('   3. Firefox Enhanced Tracking Protection');
+                    console.error('   4. Browser privacy settings blocking third-party scripts');
+                } else {
+                    console.error('   1. VPN or DNS filtering blocking the subdomain (most common)');
+                    console.error('   2. Ad blocker or privacy extension');
+                    console.error('   3. Firefox Enhanced Tracking Protection');
+                    console.error('   4. Browser privacy extensions blocking third-party scripts');
+                    console.error('   5. CSP headers blocking the request (check Network tab)');
+                    console.error('   6. Network/firewall restrictions');
+                }
                 
                 // Try to fetch the script URL directly to see the actual error
                 fetch(e.target.src)
                     .then(response => {
                         console.error('   Script URL Response Status:', response.status, response.statusText);
                         console.error('   Response Headers:', Object.fromEntries(response.headers.entries()));
+                        // If fetch succeeds but script tag fails, it's likely an ad blocker
+                        if (response.status === 200 && !isBlockedByClient) {
+                            console.error('   ⚠️ Script URL is accessible (200 OK) but script tag was blocked');
+                            console.error('   This strongly suggests an ad blocker or privacy extension is blocking the script injection');
+                            console.error('   Solution: Disable ad blocker/privacy extension for this site');
+                        }
                         return response.text();
                     })
                     .then(text => {
@@ -805,11 +833,12 @@ try{(new g("https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtric
                         console.error('   Error Type:', fetchError.name);
                         console.error('   Error Message:', fetchError.message);
                         if (fetchError.message.includes('Failed to fetch') || fetchError.message.includes('ERR_NAME_NOT_RESOLVED')) {
-                            console.error('   ⚠️ DNS Resolution Error - The Qualtrics subdomain may not exist.');
+                            console.error('   ⚠️ DNS Resolution Error - Cannot resolve Qualtrics subdomain.');
                             console.error('   This usually means:');
-                            console.error('   1. The intercept is not activated/published in Qualtrics');
-                            console.error('   2. The Zone ID or deployment code is incorrect');
-                            console.error('   3. The project needs to be re-deployed in Qualtrics');
+                            console.error('   1. VPN is blocking/filtering DNS (try disabling VPN)');
+                            console.error('   2. Corporate network DNS filtering');
+                            console.error('   3. The intercept is not activated/published in Qualtrics');
+                            console.error('   4. The Zone ID or deployment code is incorrect');
                         }
                     });
                 

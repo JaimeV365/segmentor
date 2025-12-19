@@ -543,22 +543,32 @@ async function addWatermarkToChartImage(
     logoSize = Math.min(logoSize, maxLogoSize);
 
     // Calculate watermark position (bottom-right)
-    // For flat watermarks, the logo is wider, so we need to account for that in positioning
-    const logoAspectRatio = logoImg.height / logoImg.width;
+    // Get natural logo dimensions to maintain proper aspect ratio
+    const logoNaturalWidth = logoImg.naturalWidth || logoImg.width;
+    const logoNaturalHeight = logoImg.naturalHeight || logoImg.height;
+    const logoAspectRatio = logoNaturalHeight / logoNaturalWidth;
     
     // Determine actual visual dimensions after rotation
+    // Always use logoSize as the base dimension, maintaining aspect ratio
     let visualWidth: number;
     let visualHeight: number;
+    let drawWidth: number;
+    let drawHeight: number;
     
     if (isFlat) {
       // When flat (rotation = 0), logo is drawn wider: width = logoSize, height = logoSize * aspectRatio
-      visualWidth = logoSize; // Visual width when flat (wider)
-      visualHeight = logoSize * logoAspectRatio; // Visual height when flat (shorter)
+      drawWidth = logoSize;
+      drawHeight = logoSize * logoAspectRatio;
+      visualWidth = drawWidth; // Visual width when flat (wider)
+      visualHeight = drawHeight; // Visual height when flat (shorter)
     } else {
       // When vertical (rotation = -90), logo is drawn then rotated
+      // Draw with same dimensions, but after rotation, visual dimensions swap
+      drawWidth = logoSize;
+      drawHeight = logoSize * logoAspectRatio;
       // After rotation, visual width = original height, visual height = original width
-      visualWidth = logoSize * logoAspectRatio; // Visual width when vertical (narrower)
-      visualHeight = logoSize; // Visual height when vertical (taller)
+      visualWidth = drawHeight; // Visual width when vertical (narrower)
+      visualHeight = drawWidth; // Visual height when vertical (taller)
     }
     
     // Calculate X position - account for visual width
@@ -586,13 +596,15 @@ async function addWatermarkToChartImage(
     ctx.translate(-centerX, -centerY);
     
     // Draw logo with full opacity (no transparency)
-    // Draw with original dimensions (logoSize for width, logoSize * aspectRatio for height)
-    // The rotation will handle the visual appearance
+    // Use natural dimensions to prevent deformation - maintain aspect ratio
     ctx.globalAlpha = 1.0;
     // Enable high-quality rendering for the logo
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(logoImg, finalLogoX, logoY, logoSize, logoSize * logoAspectRatio);
+    
+    // Draw using the calculated dimensions that maintain aspect ratio
+    // This ensures the logo is not stretched or deformed
+    ctx.drawImage(logoImg, finalLogoX, logoY, drawWidth, drawHeight);
     ctx.restore();
 
     // Return the watermarked image as data URL with high quality

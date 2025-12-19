@@ -336,7 +336,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
 
   const Tag = tag;
 
-  // All users can edit - basic editing is universal, advanced formatting is TM-only
+  // Editing (add, edit, delete paragraphs) is TM-exclusive - only premium users can edit
 
   if (isEditing) {
     // Always use paragraph-based editing in edit mode for premium users
@@ -609,7 +609,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
         dangerouslySetInnerHTML={{ __html: editedContent }}
         style={backgroundColor ? { backgroundColor } : undefined}
       />
-      {isHovered && (
+      {isHovered && isPremium && (
         <>
           <button
             className="editable-text-edit-button"
