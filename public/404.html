@@ -326,13 +326,13 @@
                     <h1 class="main-page-title">Page Not Found</h1>
                     <p class="error-description">
                         The page you're looking for doesn't exist or has been moved. 
-                        Don't worry—let's get you back on track with your customer segmentation analysis.
+                        Don't worry—let's get you back on track with segmentor.
                     </p>
                 </div>
                 
                 <!-- Action Buttons -->
                 <div class="error-actions">
-                    <a href="/" class="btn btn-primary">Go to Tool</a>
+                    <a href="/" class="btn btn-primary">Go to segmentor</a>
                     <a href="/about.html" class="btn btn-secondary">Learn More</a>
                 </div>
                 
@@ -517,8 +517,8 @@
         .links-grid {
             display: -ms-grid;
             display: grid;
-            -ms-grid-columns: repeat(auto-fit, minmax(250px, 1fr));
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            -ms-grid-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: var(--space-4);
         }
 
@@ -558,10 +558,16 @@
         }
 
         .link-icon {
-            font-size: var(--text-2xl);
             -webkit-flex-shrink: 0;
             -ms-flex-negative: 0;
             flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            color: var(--primary-green);
+        }
+        
+        .link-card:hover .link-icon {
+            color: white;
         }
 
         .link-text {
