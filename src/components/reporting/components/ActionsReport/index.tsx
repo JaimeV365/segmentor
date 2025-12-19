@@ -986,8 +986,9 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                       Opportunities
                     </h4>
                     <div className="opportunities-list">
-                      {actionPlan.opportunities.map((opportunity) => (
-                        <div key={opportunity.id} className={`opportunity-item impact-${opportunity.impact}`}>
+                      {actionPlan.opportunities.map((opportunity, oppIndex) => (
+                        <div key={opportunity.id} className="opportunity-item-wrapper">
+                          <div className={`opportunity-item impact-${opportunity.impact}`}>
                           <div className="opportunity-header">
                             <span className={`impact-badge impact-${opportunity.impact}`}>
                               {opportunity.impact.toUpperCase()}
@@ -999,6 +1000,16 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                             isPremium={isPremium}
                             onSave={(id, content) => {
                               console.log('Saved opportunity:', id, content);
+                            }}
+                            onDelete={(id) => {
+                              // Remove the opportunity from the action plan
+                              if (actionPlan) {
+                                const newOpportunities = actionPlan.opportunities.filter(o => o.id !== opportunity.id);
+                                setActionPlan({
+                                  ...actionPlan,
+                                  opportunities: newOpportunities
+                                });
+                              }
                             }}
                             className="opportunity-statement"
                             tag="p"
@@ -1080,6 +1091,38 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                               </div>
                             ) : null;
                           })()}
+                          </div>
+                          {/* Plus button to add new opportunity - TM users only */}
+                          {isPremium && (
+                            <button
+                              type="button"
+                              className="finding-insert-between"
+                              onClick={() => {
+                                // Create a new empty opportunity
+                                const newOpportunity = {
+                                  id: `custom-opportunity-${Date.now()}`,
+                                  statement: '<p class="finding-placeholder">New opportunity. Click to edit.</p>',
+                                  source: 'proximity' as const,
+                                  impact: 'medium' as const,
+                                  supportingData: {}
+                                };
+                                
+                                // Insert the new opportunity into the action plan
+                                if (actionPlan) {
+                                  const newOpportunities = [...actionPlan.opportunities];
+                                  newOpportunities.splice(oppIndex + 1, 0, newOpportunity);
+                                  setActionPlan({
+                                    ...actionPlan,
+                                    opportunities: newOpportunities
+                                  });
+                                }
+                              }}
+                              title="Add new opportunity here"
+                              aria-label="Add new opportunity here"
+                            >
+                              <Plus size={16} />
+                            </button>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -1093,8 +1136,9 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                       Risks
                     </h4>
                     <div className="risks-list">
-                      {actionPlan.risks.map((risk) => (
-                        <div key={risk.id} className={`risk-item severity-${risk.severity}`}>
+                      {actionPlan.risks.map((risk, riskIndex) => (
+                        <div key={risk.id} className="risk-item-wrapper">
+                          <div className={`risk-item severity-${risk.severity}`}>
                           <div className="risk-header">
                             <span className={`severity-badge severity-${risk.severity}`}>
                               {risk.severity.toUpperCase()}
@@ -1106,6 +1150,16 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                             isPremium={isPremium}
                             onSave={(id, content) => {
                               console.log('Saved risk:', id, content);
+                            }}
+                            onDelete={(id) => {
+                              // Remove the risk from the action plan
+                              if (actionPlan) {
+                                const newRisks = actionPlan.risks.filter(r => r.id !== risk.id);
+                                setActionPlan({
+                                  ...actionPlan,
+                                  risks: newRisks
+                                });
+                              }
                             }}
                             className="risk-statement"
                             tag="p"
@@ -1187,6 +1241,38 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                               </div>
                             ) : null;
                           })()}
+                          </div>
+                          {/* Plus button to add new risk - TM users only */}
+                          {isPremium && (
+                            <button
+                              type="button"
+                              className="finding-insert-between"
+                              onClick={() => {
+                                // Create a new empty risk
+                                const newRisk = {
+                                  id: `custom-risk-${Date.now()}`,
+                                  statement: '<p class="finding-placeholder">New risk. Click to edit.</p>',
+                                  source: 'proximity' as const,
+                                  severity: 'medium' as const,
+                                  supportingData: {}
+                                };
+                                
+                                // Insert the new risk into the action plan
+                                if (actionPlan) {
+                                  const newRisks = [...actionPlan.risks];
+                                  newRisks.splice(riskIndex + 1, 0, newRisk);
+                                  setActionPlan({
+                                    ...actionPlan,
+                                    risks: newRisks
+                                  });
+                                }
+                              }}
+                              title="Add new risk here"
+                              aria-label="Add new risk here"
+                            >
+                              <Plus size={16} />
+                            </button>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -1275,6 +1361,16 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                       isPremium={isPremium}
                       onSave={(id, content) => {
                         console.log('Saved action:', id, content);
+                      }}
+                      onDelete={(id) => {
+                        // Remove the action from the action plan
+                        if (actionPlan) {
+                          const newActions = actionPlan.actions.filter(a => a.id !== action.id);
+                          setActionPlan({
+                            ...actionPlan,
+                            actions: newActions
+                          });
+                        }
                       }}
                       className="action-statement"
                       tag="p"

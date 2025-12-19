@@ -94,6 +94,14 @@ export const EditableText: React.FC<EditableTextProps> = ({
     }
   }, [content, id, isEditing]);
 
+  // Ensure edit mode is disabled if user is not premium
+  useEffect(() => {
+    if (isEditing && !isPremium) {
+      console.warn('Edit mode disabled - premium required');
+      setIsEditing(false);
+    }
+  }, [isPremium, isEditing]);
+
   // Save to localStorage when content changes
   useEffect(() => {
     if (editedContent !== content || backgroundColor) {

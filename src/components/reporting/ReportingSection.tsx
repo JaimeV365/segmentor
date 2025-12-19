@@ -134,7 +134,9 @@ export const ReportingSection: React.FC<ReportingSectionProps> = ({
     midpoint // Pass the actual user-adjusted midpoint
   });
 
-  const isPremium = activeEffects.has('premium') || activeEffects.has('PREMIUM') || Boolean(activeEffects.size > 0);
+  // isPremium should ONLY be true if 'premium' or 'PREMIUM' is explicitly in activeEffects
+  // Do NOT use activeEffects.size > 0 as that would make ANY effect trigger premium mode
+  const isPremium = activeEffects.has('premium') || activeEffects.has('PREMIUM');
   
   // State for Response Concentration section
   const [responseConcentrationSettings, setResponseConcentrationSettings] = useState<ResponseConcentrationSettings>(() => {
