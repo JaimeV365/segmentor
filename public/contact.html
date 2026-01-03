@@ -85,21 +85,6 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/favicon.ico">
     
-    <!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
-
-<script type='text/javascript'>
-
-(function(){var g=function(g){
-
-this.go=function(){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)};
-
-this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
-
-try{(new g("https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_11X8CuCOswXGKnC")).start()}catch(i){}})();
-
-</script><div id='ZN_11X8CuCOswXGKnC'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
-
-<!--END WEBSITE FEEDBACK SNIPPET-->
 </head>
 <body>
 
@@ -404,11 +389,9 @@ try{(new g("https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtric
                     </p>
                 </div>
                 
-                <!-- Qualtrics Site Intercept Embed -->
-                <!-- Creative Insertion Point ID: ZN_11X8CuCOswXGKnC -->
-                <!-- Note: The Qualtrics div is at the top of the body. Content will be moved here when survey loads. -->
-                <div class="qualtrics-survey-container" id="qualtrics-survey">
-                    <!-- Qualtrics content will be moved here from the div at the top of the body -->
+                <!-- Qualtrics Survey Direct Embed -->
+                <div class="qualtrics-survey-container" id="qualtrics-survey" style="display: none;">
+                    <iframe src="https://teresamonroesandbox.ca1.qualtrics.com/jfe/form/SV_6DLiX0zTyE1Vcpg" width="100%" height="600" title="Contact Us Form" style="border: 0; border-radius: 8px;"></iframe>
                 </div>
             </div>
 
@@ -754,152 +737,18 @@ try{(new g("https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtric
         }
     </style>
 
-    <!-- Qualtrics Handler Script -->
+    <!-- Contact Form Handler Script -->
     <script>
-        // Function to show error message when Qualtrics fails to load
-        function showQualtricsError() {
-            var targetDiv = document.getElementById('ZN_11X8CuCOswXGKnC');
-            if (targetDiv && targetDiv.children.length === 0) {
-                var errorMsg = document.createElement('div');
-                errorMsg.style.cssText = 'padding: 24px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #991b1b;';
-                errorMsg.innerHTML = '<strong>⚠️ Contact form unavailable</strong><br><br>' +
-                    'The contact form could not be loaded. This may be because:<br>' +
-                    '• <strong>Ad blocker or privacy extension</strong> is blocking the form (uBlock Origin, AdBlock Plus, Privacy Badger, etc.)<br>' +
-                    '• <strong>VPN or DNS filtering</strong> is blocking the form<br>' +
-                    '• <strong>Firefox Enhanced Tracking Protection</strong> is blocking the form<br>' +
-                    '• Browser privacy settings blocking third-party scripts<br><br>' +
-                    '<strong>Quick fixes:</strong><br>' +
-                    '• <strong>Disable ad blockers</strong> for this site (most common fix)<br>' +
-                    '• Disable your VPN temporarily<br>' +
-                    '• Try a different browser<br>' +
-                    '• Disable Enhanced Tracking Protection for this site (Firefox)<br><br>' +
-                    '<strong>Alternative:</strong> <a href="mailto:contact@segmentor.app?subject=Contact%20from%20segmentor.app" style="color: #3a863e; text-decoration: underline; font-weight: 600;">Email us directly</a>';
-                targetDiv.appendChild(errorMsg);
-            }
-        }
-        
-        // Monitor for Qualtrics chunk loading failures
-        window.addEventListener('error', function(e) {
-            if (e.target && e.target.src && e.target.src.includes('siteintercept.qualtrics.com')) {
-                console.error('❌ Qualtrics chunk failed to load:', e.target.src);
-                console.error('   Current domain:', window.location.hostname);
-                console.error('   Error details:', {
-                    message: e.message,
-                    filename: e.filename,
-                    lineno: e.lineno,
-                    colno: e.colno,
-                    error: e.error
-                });
-                
-                // Check if this is a BLOCKED_BY_CLIENT error (ad blocker)
-                var isBlockedByClient = false;
-                if (e.message && e.message.includes('BLOCKED_BY_CLIENT')) {
-                    isBlockedByClient = true;
-                }
-                
-                console.error('   Common causes:');
-                if (isBlockedByClient) {
-                    console.error('   1. ⚠️ Ad blocker or privacy extension (ERR_BLOCKED_BY_CLIENT) - MOST LIKELY');
-                    console.error('   2. VPN or DNS filtering blocking the subdomain');
-                    console.error('   3. Firefox Enhanced Tracking Protection');
-                    console.error('   4. Browser privacy settings blocking third-party scripts');
-                } else {
-                    console.error('   1. VPN or DNS filtering blocking the subdomain (most common)');
-                    console.error('   2. Ad blocker or privacy extension');
-                    console.error('   3. Firefox Enhanced Tracking Protection');
-                    console.error('   4. Browser privacy extensions blocking third-party scripts');
-                    console.error('   5. CSP headers blocking the request (check Network tab)');
-                    console.error('   6. Network/firewall restrictions');
-                }
-                
-                // Try to fetch the script URL directly to see the actual error
-                fetch(e.target.src)
-                    .then(response => {
-                        console.error('   Script URL Response Status:', response.status, response.statusText);
-                        console.error('   Response Headers:', Object.fromEntries(response.headers.entries()));
-                        // If fetch succeeds but script tag fails, it's likely an ad blocker
-                        if (response.status === 200 && !isBlockedByClient) {
-                            console.error('   ⚠️ Script URL is accessible (200 OK) but script tag was blocked');
-                            console.error('   This strongly suggests an ad blocker or privacy extension is blocking the script injection');
-                            console.error('   Solution: Disable ad blocker/privacy extension for this site');
-                        }
-                        return response.text();
-                    })
-                    .then(text => {
-                        console.error('   Response Preview:', text.substring(0, 200));
-                    })
-                    .catch(fetchError => {
-                        console.error('   Fetch Error:', fetchError);
-                        console.error('   Error Type:', fetchError.name);
-                        console.error('   Error Message:', fetchError.message);
-                        if (fetchError.message.includes('Failed to fetch') || fetchError.message.includes('ERR_NAME_NOT_RESOLVED')) {
-                            console.error('   ⚠️ DNS Resolution Error - Cannot resolve Qualtrics subdomain.');
-                            console.error('   This usually means:');
-                            console.error('   1. VPN is blocking/filtering DNS (try disabling VPN)');
-                            console.error('   2. Corporate network DNS filtering');
-                            console.error('   3. The intercept is not activated/published in Qualtrics');
-                            console.error('   4. The Zone ID or deployment code is incorrect');
-                        }
-                    });
-                
-                // Only show error if Qualtrics hasn't loaded after a delay
-                setTimeout(function() {
-                    if (typeof Qualtrics === 'undefined') {
-                        showQualtricsError();
-                    }
-                }, 5000);
-            }
-        }, true);
-        
-        // Function to check Qualtrics status
-        function checkQualtricsStatus() {
-            console.log('=== Qualtrics Status Check ===');
-            console.log('Current domain:', window.location.hostname);
-            console.log('Qualtrics object exists:', typeof Qualtrics !== 'undefined');
-            if (typeof Qualtrics !== 'undefined') {
-                console.log('Qualtrics.SiteIntercept exists:', typeof Qualtrics.SiteIntercept !== 'undefined');
-                console.log('Qualtrics.SurveyEngine exists:', typeof Qualtrics.SurveyEngine !== 'undefined');
-            }
-            console.log('Target div exists:', document.getElementById('ZN_11X8CuCOswXGKnC') !== null);
-            var targetDiv = document.getElementById('ZN_11X8CuCOswXGKnC');
-            if (targetDiv) {
-                console.log('Target div content:', targetDiv.innerHTML.substring(0, 100));
-                console.log('Target div has children:', targetDiv.children.length);
-            }
-            console.log('============================');
-        }
-        
-        // Expose check function globally for debugging
-        window.checkQualtricsStatus = checkQualtricsStatus;
-        
-        // Check status after page loads
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                checkQualtricsStatus();
-                // If Qualtrics still hasn't loaded after 5 seconds, show error
-                setTimeout(function() {
-                    if (typeof Qualtrics === 'undefined') {
-                        var targetDiv = document.getElementById('ZN_11X8CuCOswXGKnC');
-                        if (targetDiv && targetDiv.children.length === 0) {
-                            console.error('❌ Qualtrics failed to load after 5 seconds');
-                            showQualtricsError();
-                        }
-                    }
-                }, 3000);
-            }, 2000);
-        });
-        
         // Function to handle query type button clicks
         function handleQueryTypeClick(blockValue) {
-            console.log('Button clicked! Block value:', blockValue);
-            
-            // Show the survey section
+            // Show the survey section and iframe
             const surveySection = document.getElementById('survey-section');
-            console.log('Survey section element:', surveySection);
+            const surveyContainer = document.getElementById('qualtrics-survey');
             
-            if (surveySection) {
+            if (surveySection && surveyContainer) {
                 // Show the section
                 surveySection.style.display = 'block';
+                surveyContainer.style.display = 'block';
                 
                 // Get the title element to scroll to it
                 const titleElement = document.getElementById('contact-form-heading');
@@ -917,7 +766,6 @@ try{(new g("https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtric
                             top: offsetPosition,
                             behavior: 'smooth'
                         });
-                        console.log('Scrolled to title element');
                     } else {
                         // Fallback: scroll to section if title not found
                         surveySection.scrollIntoView({ 
@@ -925,13 +773,7 @@ try{(new g("https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtric
                             block: 'start' 
                         });
                     }
-                    
-                    // Check Qualtrics status when section becomes visible
-                    console.log('Checking Qualtrics status...');
-                    checkQualtricsStatus();
                 }, 100);
-            } else {
-                console.error('Survey section not found! ID: survey-section');
             }
         }
         
@@ -940,25 +782,18 @@ try{(new g("https://zn11x8cucoswxgknc-teresamonroesandbox.siteintercept.qualtric
 
         // Add event listeners as backup (in case onclick doesn't work)
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, setting up button listeners');
-            
             const buttons = document.querySelectorAll('.query-type-card');
-            console.log('Found buttons:', buttons.length);
             
             buttons.forEach(function(button) {
                 const blockValue = button.getAttribute('data-block');
-                console.log('Setting up listener for button with block:', blockValue);
                 
                 // Add click event listener
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
-                    console.log('Button clicked via event listener, block:', blockValue);
                     handleQueryTypeClick(blockValue);
                 });
             });
         });
-        
-        console.log('Qualtrics handler script loaded');
     </script>
 </body>
 </html>
