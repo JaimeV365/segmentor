@@ -91,8 +91,8 @@
 <nav class="main-navigation">
   <div class="nav-container">
     <div class="nav-logo">
-      <a href="/" class="logo-text">
-        <span class="logo-segmentor">seg<span class="logo-m">m</span>entor</span><span class="logo-app">.APP</span>
+      <a href="/" class="logo-text" translate="no">
+        <span class="logo-segmentor" translate="no">seg<span class="logo-m">m</span>entor</span><span class="logo-app" translate="no">.APP</span>
       </a>
     </div>
     <div class="nav-links">
@@ -758,45 +758,88 @@
         // Function to check if iframe loaded successfully and show fallback link if needed
         function checkIframeLoaded(iframe, fallbackLink) {
             let hasLoaded = false;
+            let loadEventFired = false;
             let checkCount = 0;
-            const maxChecks = 8; // Check for 4 seconds (8 checks * 500ms)
+            const maxChecks = 10; // Check for 5 seconds (10 checks * 500ms)
+            const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
             
             // Listen for iframe load event
             iframe.addEventListener('load', function() {
+                loadEventFired = true;
                 hasLoaded = true;
                 // Give it a moment to render, then check
                 setTimeout(function() {
-                    const rect = iframe.getBoundingClientRect();
-                    // If iframe has proper dimensions, it likely loaded successfully
-                    if (rect.width > 100 && rect.height > 100) {
-                        fallbackLink.style.display = 'none';
-                    } else {
-                        // Iframe loaded but appears blocked - show fallback link
+                    // Try to detect if content actually loaded (cross-origin will throw error, which is normal)
+                    try {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        // If we can access the document and it has content, it loaded
+                        if (iframeDoc && iframeDoc.body && iframeDoc.body.innerHTML.trim().length > 100) {
+                            fallbackLink.style.display = 'none';
+                        } else {
+                            // Document accessible but empty - likely blocked
+                            fallbackLink.style.display = 'inline';
+                        }
+                    } catch (e) {
+                        // Cross-origin is normal for Qualtrics - assume it loaded if load event fired
+                        // But for Firefox, be more cautious
+                        if (isFirefox) {
+                            // In Firefox, even if load fires, content might be blocked
+                            // Show the link as a precaution
+                            fallbackLink.style.display = 'inline';
+                        } else {
+                            fallbackLink.style.display = 'none';
+                        }
+                    }
+                }, 1500);
+            }, { once: true });
+            
+            // For Firefox, show link proactively after 2 seconds (Enhanced Tracking Protection often blocks)
+            if (isFirefox) {
+                setTimeout(function() {
+                    if (!hasLoaded) {
                         fallbackLink.style.display = 'inline';
                     }
-                }, 1000);
-            }, { once: true });
+                }, 2000);
+            }
             
             // Periodically check if iframe appears to be blocked
             const checkInterval = setInterval(function() {
                 checkCount++;
-                const rect = iframe.getBoundingClientRect();
                 
-                // If iframe has zero or very small dimensions after a few seconds, show fallback link
+                // If load event never fired after several checks, likely blocked
+                if (checkCount >= 4 && !loadEventFired) {
+                    fallbackLink.style.display = 'inline';
+                    clearInterval(checkInterval);
+                    return;
+                }
+                
+                // Check dimensions as backup
+                const rect = iframe.getBoundingClientRect();
                 if (checkCount >= 3 && rect.width < 50 && rect.height < 50) {
                     fallbackLink.style.display = 'inline';
                     clearInterval(checkInterval);
+                    return;
                 }
                 
                 // Stop checking after max attempts
                 if (checkCount >= maxChecks) {
                     clearInterval(checkInterval);
-                    // Final check - if still tiny dimensions, show fallback link
-                    if (rect.width < 50 && rect.height < 50) {
+                    // If load event never fired, show link
+                    if (!loadEventFired) {
                         fallbackLink.style.display = 'inline';
                     } else {
-                        // Iframe seems to have loaded - hide fallback link
-                        fallbackLink.style.display = 'none';
+                        // Final check - try to detect if content is actually there
+                        try {
+                            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                            if (!iframeDoc || !iframeDoc.body || iframeDoc.body.innerHTML.trim().length < 100) {
+                                fallbackLink.style.display = 'inline';
+                            }
+                        } catch (e) {
+                            // Cross-origin - can't check, but if we're in Firefox, show link
+                            if (isFirefox) {
+                                fallbackLink.style.display = 'inline';
+                            }
+                        }
                     }
                 }
             }, 500);
