@@ -33,23 +33,30 @@ export const Watermark: React.FC<WatermarkProps> = ({
   // Choose logo based on effects
   let logoUrl = DEFAULT_LOGO; // segmentor.app default logo
   
+  // Debug: log current effects
+  console.log('🔍 Watermark: Current effects:', Array.from(effects || []));
+  
   if (effects?.has('SHOW_TM_LOGO')) {
     logoUrl = TM_LOGO;
+    console.log('✅ Watermark: Using TM logo:', logoUrl);
   } else if (effects?.has('CUSTOM_LOGO')) {
     // Get custom logo URL from effects
     const customUrlFromEffects = Array.from(effects).find(e => e.startsWith('CUSTOM_LOGO_URL:'));
-    console.log('Custom logo effect found, effects:', Array.from(effects));
+    console.log('🔍 Watermark: Custom logo effect found, effects:', Array.from(effects));
     if (customUrlFromEffects) {
       logoUrl = customUrlFromEffects.replace('CUSTOM_LOGO_URL:', '');
-      console.log('Using custom logo URL from effects:', logoUrl);
+      console.log('✅ Watermark: Using custom logo URL from effects:', logoUrl);
     } else {
-      console.log('CUSTOM_LOGO effect found but no URL in effects');
+      console.warn('⚠️ Watermark: CUSTOM_LOGO effect found but no URL in effects');
     }
-  } 
+  } else {
+    console.log('ℹ️ Watermark: Using default logo:', logoUrl);
+  }
 
   // Use custom logo from props if provided (overrides other settings)
   if (customLogo) {
     logoUrl = customLogo;
+    console.log('ℹ️ Watermark: Overriding with customLogo prop:', logoUrl);
   }
 
   // Determine rotation - apply to image only for consistent footprint

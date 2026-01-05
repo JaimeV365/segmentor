@@ -665,12 +665,14 @@ useEffect(() => {
                   <button
                     className={`label-button ${getCurrentLogo() === 'tm' ? 'active' : ''}`}
                     onClick={() => {
+                      console.log('🔵 TM Logo button clicked, current effects:', Array.from(effects));
                       const newEffects = new Set(effects);
                       newEffects.add('SHOW_TM_LOGO');
                       newEffects.delete('CUSTOM_LOGO');
                       newEffects.delete('HIDE_WATERMARK');
                       const urlEffect = Array.from(newEffects).find((e: string) => e.startsWith('CUSTOM_LOGO_URL:'));
                       if (urlEffect) newEffects.delete(urlEffect);
+                      console.log('🔵 New effects after TM click:', Array.from(newEffects));
                       onEffectsChange(newEffects);
                     }}
                   >
@@ -729,6 +731,7 @@ useEffect(() => {
       isOpen={showCustomLogoModal}
       onClose={() => setShowCustomLogoModal(false)}
       onConfirm={(url) => {
+        console.log('🟢 Custom logo confirmed, URL:', url, 'current effects:', Array.from(effects));
         const newEffects = new Set(effects);
         newEffects.delete('SHOW_TM_LOGO');
         newEffects.delete('HIDE_WATERMARK');
@@ -739,6 +742,7 @@ useEffect(() => {
         // Add custom logo and URL
         newEffects.add('CUSTOM_LOGO');
         newEffects.add(`CUSTOM_LOGO_URL:${url}`);
+        console.log('🟢 New effects after custom logo:', Array.from(newEffects));
         onEffectsChange(newEffects);
         setShowCustomLogoModal(false);
       }}
