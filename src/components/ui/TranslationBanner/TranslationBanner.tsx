@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Globe } from 'lucide-react';
 import './TranslationBanner.css';
 
 export const TranslationBanner: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const bannerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Check if page is translated by browser
@@ -72,15 +73,27 @@ export const TranslationBanner: React.FC = () => {
     }
   }, []);
 
+  // Set translate="no" directly on DOM element (React doesn't always handle this attribute correctly)
+  useEffect(() => {
+    if (bannerRef.current) {
+      bannerRef.current.setAttribute('translate', 'no');
+      // Also set on child elements
+      const children = bannerRef.current.querySelectorAll('*');
+      children.forEach(child => {
+        child.setAttribute('translate', 'no');
+      });
+    }
+  }, [isVisible]);
+
   if (!isVisible || isDismissed) return null;
 
   return (
-    <div className="translation-banner" role="alert" aria-live="polite">
+    <div ref={bannerRef} className="translation-banner notranslate" role="alert" aria-live="polite" translate="no">
       <div className="translation-banner-content">
         <Globe size={16} className="translation-banner-icon" />
-        <div className="translation-banner-text">
-          <strong>Browser Translation Active</strong>
-          <span>This page is being translated by your browser. Translations may contain errors and are not provided by <span translate="no">segmentor.app</span>.</span>
+        <div className="translation-banner-text notranslate">
+          <strong className="notranslate">Browser Translation Active</strong>
+          <span className="notranslate">This page is being translated by your browser. Translations may contain errors and are not provided by <span className="notranslate">segmentor.app</span>.</span>
         </div>
         <button
           className="translation-banner-dismiss"
