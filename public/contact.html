@@ -86,6 +86,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/favicon.ico">
     
+    <script src="/logo-replacement.js"></script>
 </head>
 <body>
 
@@ -781,15 +782,9 @@
                             fallbackLink.style.display = 'inline';
                         }
                     } catch (e) {
-                        // Cross-origin is normal for Qualtrics - assume it loaded if load event fired
-                        // But for Firefox, be more cautious
-                        if (isFirefox) {
-                            // In Firefox, even if load fires, content might be blocked
-                            // Show the link as a precaution
-                            fallbackLink.style.display = 'inline';
-                        } else {
-                            fallbackLink.style.display = 'none';
-                        }
+                        // Cross-origin is normal for Qualtrics - can't verify content
+                        // Since we can't check, show link as fallback for any blocking scenario
+                        fallbackLink.style.display = 'inline';
                     }
                 }, 1500);
             }, { once: true });
@@ -836,10 +831,8 @@
                                 fallbackLink.style.display = 'inline';
                             }
                         } catch (e) {
-                            // Cross-origin - can't check, but if we're in Firefox, show link
-                            if (isFirefox) {
-                                fallbackLink.style.display = 'inline';
-                            }
+                            // Cross-origin - can't verify content, show link as fallback
+                            fallbackLink.style.display = 'inline';
                         }
                     }
                 }
