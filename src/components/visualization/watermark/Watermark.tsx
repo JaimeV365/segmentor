@@ -59,6 +59,9 @@ export const Watermark: React.FC<WatermarkProps> = ({
     console.log('ℹ️ Watermark: Overriding with customLogo prop:', logoUrl);
   }
 
+  // Log final logo URL being used
+  console.log('🎯 Watermark: Final logoUrl being used:', logoUrl);
+
   // Determine rotation - apply to image only for consistent footprint
   const rotation = effects?.has('LOGO_FLAT') ? 'none' : 'rotate(-90deg)';
   const isFlat = effects?.has('LOGO_FLAT');
@@ -287,6 +290,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
         onPointerCancel={onPointerUp}
       >
         <img 
+          key={logoUrl} 
           src={logoUrl} 
           alt="Logo" 
           style={{
@@ -300,14 +304,19 @@ export const Watermark: React.FC<WatermarkProps> = ({
           }} 
           draggable={false}
           onDragStart={(e) => e.preventDefault()}
+          onLoad={() => {
+            console.log('✅ Image loaded successfully from:', logoUrl);
+          }}
           onError={(e) => {
-            console.error('Error loading logo from URL:', logoUrl);
+            console.error('❌ Error loading logo from URL:', logoUrl, 'Current src:', e.currentTarget.src);
             // Use local fallback to prevent infinite loop
             const fallbackLogo = '/segmentor-logo.png';
             if (e.currentTarget.src !== fallbackLogo && !e.currentTarget.src.includes(fallbackLogo)) {
+              console.warn('⚠️ Falling back to default logo');
               e.currentTarget.src = fallbackLogo;
             } else {
               // If fallback also fails, hide the image to stop the loop
+              console.error('❌ Fallback logo also failed, hiding image');
               e.currentTarget.style.display = 'none';
             }
           }}
