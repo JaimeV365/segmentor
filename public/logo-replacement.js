@@ -4,6 +4,8 @@
 (function() {
   'use strict';
   
+  console.log('[Logo Replacement] Script loaded');
+  
   let isReplaced = false;
   
   function isPageTranslated() {
