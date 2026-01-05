@@ -187,6 +187,7 @@ export const ChartControls: React.FC<ChartControlsProps> = ({
   const getCurrentLogo = () => {
     // Check HIDE_WATERMARK first - it takes precedence
     if (effects.has('HIDE_WATERMARK')) return 'none';
+    if (effects.has('SHOW_TM_LOGO')) return 'tm';
     if (effects.has('CUSTOM_LOGO')) return 'custom';
     return 'default'; // segmentor.app is default
   };
@@ -651,6 +652,7 @@ useEffect(() => {
                     className={`label-button ${getCurrentLogo() === 'default' ? 'active' : ''}`}
                     onClick={() => {
                       const newEffects = new Set(effects);
+                      newEffects.delete('SHOW_TM_LOGO');
                       newEffects.delete('CUSTOM_LOGO');
                       newEffects.delete('HIDE_WATERMARK');
                       const urlEffect = Array.from(newEffects).find((e: string) => e.startsWith('CUSTOM_LOGO_URL:'));
@@ -659,6 +661,20 @@ useEffect(() => {
                     }}
                   >
                     <span translate="no">segmentor.app</span>
+                  </button>
+                  <button
+                    className={`label-button ${getCurrentLogo() === 'tm' ? 'active' : ''}`}
+                    onClick={() => {
+                      const newEffects = new Set(effects);
+                      newEffects.add('SHOW_TM_LOGO');
+                      newEffects.delete('CUSTOM_LOGO');
+                      newEffects.delete('HIDE_WATERMARK');
+                      const urlEffect = Array.from(newEffects).find((e: string) => e.startsWith('CUSTOM_LOGO_URL:'));
+                      if (urlEffect) newEffects.delete(urlEffect);
+                      onEffectsChange(newEffects);
+                    }}
+                  >
+                    Teresa Monroe
                   </button>
                   <button
                     className={`label-button ${getCurrentLogo() === 'custom' ? 'active' : ''}`}
@@ -707,6 +723,30 @@ useEffect(() => {
         onToggleDrag={() => setWatermarkDragOn(v => !v)}
       />
     )}
+
+    {/* Custom Logo Modal */}
+    <CustomLogoModal
+      isOpen={showCustomLogoModal}
+      onClose={() => setShowCustomLogoModal(false)}
+      onConfirm={(url) => {
+        const newEffects = new Set(effects);
+        newEffects.delete('SHOW_TM_LOGO');
+        newEffects.delete('HIDE_WATERMARK');
+        // Remove existing custom URL
+        Array.from(newEffects)
+          .filter(e => e.startsWith('CUSTOM_LOGO_URL:'))
+          .forEach(e => newEffects.delete(e));
+        // Add custom logo and URL
+        newEffects.add('CUSTOM_LOGO');
+        newEffects.add(`CUSTOM_LOGO_URL:${url}`);
+        onEffectsChange(newEffects);
+        setShowCustomLogoModal(false);
+      }}
+      initialUrl={(() => {
+        const urlEffect = Array.from(effects).find(e => e.startsWith('CUSTOM_LOGO_URL:'));
+        return urlEffect ? urlEffect.replace('CUSTOM_LOGO_URL:', '') : '';
+      })()}
+    />
 
     </>
   );

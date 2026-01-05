@@ -118,6 +118,9 @@ export const WatermarkControlsButton: React.FC<WatermarkControlsButtonProps> = (
 
     // Set new logo
     switch (logoType) {
+      case 'tm':
+        newEffects.add('SHOW_TM_LOGO');
+        break;
       case 'custom':
         newEffects.add('CUSTOM_LOGO');
         break;
@@ -244,6 +247,9 @@ export const WatermarkControlsButton: React.FC<WatermarkControlsButtonProps> = (
                       className="watermark-control-select"
                     >
                       <option value="default" translate="no">segmentor.app</option>
+                      {isPremium && (
+                        <option value="tm">Teresa Monroe</option>
+                      )}
                       <option value="custom">Custom Logo URL</option>
                     </select>
                   </div>

@@ -72,6 +72,7 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
               <select
                 className="unified-control-select"
                 value={
+                  effects.has('SHOW_TM_LOGO') ? 'tm' :
                   effects.has('CUSTOM_LOGO') ? 'custom' : 'default'
                 }
                 onChange={(e) => {
@@ -79,14 +80,51 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
                     next.delete('SHOW_XP_LOGO');
                     next.delete('SHOW_TM_LOGO');
                     next.delete('CUSTOM_LOGO');
-                    if (e.target.value === 'custom') next.add('CUSTOM_LOGO');
+                    Array.from(next)
+                      .filter(e => e.startsWith('CUSTOM_LOGO_URL:'))
+                      .forEach(e => next.delete(e));
+                    if (e.target.value === 'tm') {
+                      next.add('SHOW_TM_LOGO');
+                    } else if (e.target.value === 'custom') {
+                      next.add('CUSTOM_LOGO');
+                    }
                   });
                 }}
               >
                 <option value="default" translate="no">segmentor.app</option>
-                <option value="custom">Custom Logo</option>
+                {isPremium && (
+                  <option value="tm">Teresa Monroe</option>
+                )}
+                <option value="custom">Custom Logo URL</option>
               </select>
             </div>
+
+            {/* Custom URL Input */}
+            {effects.has('CUSTOM_LOGO') && (
+              <div className="unified-control-group">
+                <label className="unified-control-label">Custom Logo URL</label>
+                <input
+                  type="url"
+                  placeholder="https://example.com/logo.png"
+                  value={(() => {
+                    const urlEffect = Array.from(effects).find(e => e.startsWith('CUSTOM_LOGO_URL:'));
+                    return urlEffect ? urlEffect.replace('CUSTOM_LOGO_URL:', '') : '';
+                  })()}
+                  onChange={(e) => {
+                    const url = e.target.value.trim();
+                    updateEffects(next => {
+                      Array.from(next)
+                        .filter(e => e.startsWith('CUSTOM_LOGO_URL:'))
+                        .forEach(e => next.delete(e));
+                      if (url) {
+                        next.add(`CUSTOM_LOGO_URL:${url}`);
+                      }
+                    });
+                  }}
+                  className="unified-control-input"
+                />
+              </div>
+            )}
 
             {/* Size Controls */}
             <div className="unified-control-group">

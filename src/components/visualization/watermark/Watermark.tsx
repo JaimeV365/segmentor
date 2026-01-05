@@ -12,6 +12,7 @@ interface WatermarkProps {
 }
 
 const DEFAULT_LOGO = '/segmentor-logo.png';
+const TM_LOGO = 'https://cdn.prod.website-files.com/6667436f74d6166897e4686e/667ec77e501687a868dd9fe7_TeresaMonroe%20logo%20blanc.webp';
 
 export const Watermark: React.FC<WatermarkProps> = ({ 
   hide, 
@@ -32,7 +33,9 @@ export const Watermark: React.FC<WatermarkProps> = ({
   // Choose logo based on effects
   let logoUrl = DEFAULT_LOGO; // segmentor.app default logo
   
-  if (effects?.has('CUSTOM_LOGO')) {
+  if (effects?.has('SHOW_TM_LOGO')) {
+    logoUrl = TM_LOGO;
+  } else if (effects?.has('CUSTOM_LOGO')) {
     // Get custom logo URL from effects
     const customUrlFromEffects = Array.from(effects).find(e => e.startsWith('CUSTOM_LOGO_URL:'));
     console.log('Custom logo effect found, effects:', Array.from(effects));
