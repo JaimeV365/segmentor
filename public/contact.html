@@ -391,7 +391,13 @@
                 
                 <!-- Qualtrics Survey Direct Embed -->
                 <div class="qualtrics-survey-container" id="qualtrics-survey">
-                    <iframe id="qualtrics-iframe" src="" width="100%" height="600" title="Contact Us Form" style="border: 0; border-radius: 8px;"></iframe>
+                    <iframe id="qualtrics-iframe" src="" width="100%" height="600" title="Contact Us Form" style="border: 0; border-radius: 8px;" referrerpolicy="no-referrer-when-downgrade" allow="forms"></iframe>
+                    <div id="iframe-error-message" style="display: none; padding: 24px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; color: #991b1b; margin-top: 16px;">
+                        <strong>⚠️ Contact form blocked by browser privacy settings</strong><br><br>
+                        <strong>Firefox users:</strong> The form is being blocked by Enhanced Tracking Protection.<br>
+                        <strong>To fix:</strong> Click the shield icon in Firefox's address bar and disable Enhanced Tracking Protection for this site, then refresh the page.<br><br>
+                        <strong>Alternative:</strong> <a href="mailto:contact@segmentor.app?subject=Contact%20from%20segmentor.app" style="color: #3a863e; text-decoration: underline; font-weight: 600;">Email us directly</a>
+                    </div>
                 </div>
             </div>
 
@@ -739,11 +745,67 @@
 
     <!-- Contact Form Handler Script -->
     <script>
+        // Function to check if iframe loaded successfully
+        function checkIframeLoaded(iframe, errorMessage) {
+            let hasLoaded = false;
+            let checkCount = 0;
+            const maxChecks = 10; // Check for 5 seconds (10 checks * 500ms)
+            
+            // Listen for iframe load event
+            iframe.addEventListener('load', function() {
+                hasLoaded = true;
+                // Give it a moment to render, then check
+                setTimeout(function() {
+                    const rect = iframe.getBoundingClientRect();
+                    // If iframe has proper dimensions, it likely loaded successfully
+                    if (rect.width > 100 && rect.height > 100) {
+                        errorMessage.style.display = 'none';
+                    }
+                }, 500);
+            }, { once: true });
+            
+            // Periodically check if iframe appears to be blocked
+            const checkInterval = setInterval(function() {
+                checkCount++;
+                const rect = iframe.getBoundingClientRect();
+                
+                // If iframe has zero or very small dimensions after a few seconds, it's likely blocked
+                if (checkCount >= 4 && rect.width < 50 && rect.height < 50) {
+                    errorMessage.style.display = 'block';
+                    clearInterval(checkInterval);
+                }
+                
+                // Stop checking after max attempts
+                if (checkCount >= maxChecks) {
+                    clearInterval(checkInterval);
+                    // Final check - if still tiny dimensions, show error
+                    if (rect.width < 50 && rect.height < 50) {
+                        errorMessage.style.display = 'block';
+                    }
+                }
+            }, 500);
+        }
+        
+        // Detect Firefox and show proactive warning
+        function detectFirefoxTrackingProtection(iframe, errorMessage) {
+            const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+            if (isFirefox) {
+                // Check iframe after a short delay - if it's still empty, show warning
+                setTimeout(function() {
+                    const rect = iframe.getBoundingClientRect();
+                    if (rect.width < 50 && rect.height < 50) {
+                        errorMessage.style.display = 'block';
+                    }
+                }, 2000);
+            }
+        }
+        
         // Function to handle query type button clicks
         function handleQueryTypeClick(blockValue) {
             // Show the survey section
             const surveySection = document.getElementById('survey-section');
             const iframe = document.getElementById('qualtrics-iframe');
+            const errorMessage = document.getElementById('iframe-error-message');
             
             if (surveySection && iframe) {
                 // Convert blockValue to proper format: 'web' -> 'Web', 'TM' -> 'TM'
@@ -753,11 +815,24 @@
                 const baseUrl = 'https://teresamonroesandbox.ca1.qualtrics.com/jfe/form/SV_6DLiX0zTyE1Vcpg';
                 const surveyUrl = baseUrl + '?Block=' + encodeURIComponent(blockParam);
                 
+                // Hide error message initially
+                if (errorMessage) {
+                    errorMessage.style.display = 'none';
+                }
+                
                 // Set the iframe source with the Block parameter
                 iframe.src = surveyUrl;
                 
                 // Show the section
                 surveySection.style.display = 'block';
+                
+                // Check if iframe loads successfully (with delay to allow loading)
+                if (errorMessage) {
+                    // Detect Firefox and check for tracking protection blocking
+                    detectFirefoxTrackingProtection(iframe, errorMessage);
+                    // Also do general iframe load checking
+                    checkIframeLoaded(iframe, errorMessage);
+                }
                 
                 // Get the title element to scroll to it
                 const titleElement = document.getElementById('contact-form-heading');
