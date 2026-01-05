@@ -380,7 +380,7 @@
             </div>
 
             <!-- Contact Form / Qualtrics Survey Section -->
-            <div class="section" id="survey-section">
+            <div class="section" id="survey-section" style="display: none;">
                 <h2 id="contact-form-heading" style="font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 600; color: #2c3e50; margin-bottom: 20px; text-align: center;">Get in Touch</h2>
                 
                 <div style="background: #f0f9f4; border-left: 4px solid #3a863e; border-radius: 6px; padding: 16px 20px; margin-bottom: 32px;">
@@ -390,8 +390,8 @@
                 </div>
                 
                 <!-- Qualtrics Survey Direct Embed -->
-                <div class="qualtrics-survey-container" id="qualtrics-survey" style="display: none;">
-                    <iframe src="https://teresamonroesandbox.ca1.qualtrics.com/jfe/form/SV_6DLiX0zTyE1Vcpg" width="100%" height="600" title="Contact Us Form" style="border: 0; border-radius: 8px;"></iframe>
+                <div class="qualtrics-survey-container" id="qualtrics-survey">
+                    <iframe id="qualtrics-iframe" src="" width="100%" height="600" title="Contact Us Form" style="border: 0; border-radius: 8px;"></iframe>
                 </div>
             </div>
 
@@ -741,14 +741,23 @@
     <script>
         // Function to handle query type button clicks
         function handleQueryTypeClick(blockValue) {
-            // Show the survey section and iframe
+            // Show the survey section
             const surveySection = document.getElementById('survey-section');
-            const surveyContainer = document.getElementById('qualtrics-survey');
+            const iframe = document.getElementById('qualtrics-iframe');
             
-            if (surveySection && surveyContainer) {
+            if (surveySection && iframe) {
+                // Convert blockValue to proper format: 'web' -> 'Web', 'TM' -> 'TM'
+                const blockParam = blockValue.toLowerCase() === 'web' ? 'Web' : blockValue;
+                
+                // Build the Qualtrics URL with Block parameter
+                const baseUrl = 'https://teresamonroesandbox.ca1.qualtrics.com/jfe/form/SV_6DLiX0zTyE1Vcpg';
+                const surveyUrl = baseUrl + '?Block=' + encodeURIComponent(blockParam);
+                
+                // Set the iframe source with the Block parameter
+                iframe.src = surveyUrl;
+                
                 // Show the section
                 surveySection.style.display = 'block';
-                surveyContainer.style.display = 'block';
                 
                 // Get the title element to scroll to it
                 const titleElement = document.getElementById('contact-form-heading');
