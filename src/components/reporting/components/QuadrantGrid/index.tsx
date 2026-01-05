@@ -40,7 +40,7 @@ export const QuadrantGrid: React.FC<QuadrantGridProps> = ({
   key={quadrant.type}
   className={`draggable-quadrant ${quadrant.type}`}
 >
-  <div className="quadrant-title">{quadrant.title}</div>
+  <div className="quadrant-title" translate="no">{quadrant.title}</div>
   <div className="quadrant-value">{quadrant.value}</div>
   <div className="quadrant-subtext">
     ({((quadrant.value / quadrant.total) * 100).toFixed(1)}%)

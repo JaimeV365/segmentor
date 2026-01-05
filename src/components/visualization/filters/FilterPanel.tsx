@@ -2820,7 +2820,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                                 <div className="checkbox">
                                   {attr.values.has(value) && <Check size={14} />}
                                 </div>
-                                <div className="attribute-label">{displayValue}</div>
+                                <div className="attribute-label" translate="no">{displayValue}</div>
                                 <div className="attribute-count">{count}</div>
                               </div>
                             );
@@ -2919,7 +2919,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                               <div className="checkbox">
                                 {attr.values.has(value) && <Check size={14} />}
                               </div>
-                              <div className="attribute-label">{displayValue}</div>
+                              <div className="attribute-label" translate="no">{displayValue}</div>
                               <div className="attribute-count">{count}</div>
                             </div>
                           );

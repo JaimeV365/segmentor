@@ -243,7 +243,7 @@ export const WatermarkControlsButton: React.FC<WatermarkControlsButtonProps> = (
                       onChange={(e) => handleLogoChange(e.target.value)}
                       className="watermark-control-select"
                     >
-                      <option value="default">segmentor.app</option>
+                      <option value="default" translate="no">segmentor.app</option>
                       <option value="custom">Custom Logo URL</option>
                     </select>
                   </div>

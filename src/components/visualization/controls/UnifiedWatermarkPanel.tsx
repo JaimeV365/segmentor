@@ -83,7 +83,7 @@ export const UnifiedWatermarkPanel: React.FC<UnifiedWatermarkPanelProps> = ({
                   });
                 }}
               >
-                <option value="default">segmentor.app</option>
+                <option value="default" translate="no">segmentor.app</option>
                 <option value="custom">Custom Logo</option>
               </select>
             </div>

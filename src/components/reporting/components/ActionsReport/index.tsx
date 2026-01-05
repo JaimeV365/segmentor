@@ -499,7 +499,7 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
               <br /><br />
               <div className="disclaimer-warning-box">
                 <p className="disclaimer-warning-text">
-                  <strong>Important:</strong> This report is generated automatically by segmentor.app. It is for general guidance only, may contain errors, and is NOT professional advice. You must independently verify everything before relying on it.
+                  <strong>Important:</strong> This report is generated automatically by <span translate="no">segmentor.app</span>. It is for general guidance only, may contain errors, and is NOT professional advice. You must independently verify everything before relying on it.
                 </p>
                 {!isAccepted && (
                   <p className="disclaimer-acceptance-text">
@@ -1454,6 +1454,7 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                                   <span 
                                     className="action-quadrant" 
                                     data-quadrant={action.quadrant.toLowerCase()}
+                                    translate="no"
                                   >
                                     {action.quadrant}
                                   </span>
@@ -1559,6 +1560,7 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                                   <span 
                                     className="action-quadrant" 
                                     data-quadrant={action.quadrant.toLowerCase()}
+                                    translate="no"
                                   >
                                     {action.quadrant}
                                   </span>
@@ -1645,6 +1647,7 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                                   <span 
                                     className="action-quadrant" 
                                     data-quadrant={action.quadrant.toLowerCase()}
+                                    translate="no"
                                   >
                                     {action.quadrant}
                                   </span>

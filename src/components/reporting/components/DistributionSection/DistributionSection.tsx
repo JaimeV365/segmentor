@@ -1298,7 +1298,7 @@ const getPointQuadrant = (point: DataPoint): string => {
   onClick={(e: React.MouseEvent) => handleQuadrantClick('hostages', effectiveDistribution.hostages || 0, e)}
   data-clickable={effectiveDistribution.hostages > 0 ? "true" : "false"}
 >
-  <div className="quadrant-title">Hostages</div>
+  <div className="quadrant-title" translate="no">Hostages</div>
   <div className="quadrant-value">{effectiveDistribution.hostages || 0}</div>
   <div className="quadrant-subtext">({(((effectiveDistribution.hostages || 0) / Math.max(1, effectiveTotal)) * 100).toFixed(1)}%)</div>
   {(effectiveDistribution.hostages || 0) > 0 && (
@@ -1310,7 +1310,7 @@ const getPointQuadrant = (point: DataPoint): string => {
   onClick={(e: React.MouseEvent) => handleQuadrantClick('loyalists', effectiveDistribution.loyalists, e)}
   data-clickable={effectiveDistribution.loyalists > 0 ? "true" : "false"}
 >
-  <div className="quadrant-title">Loyalists</div>
+  <div className="quadrant-title" translate="no">Loyalists</div>
   <div className="quadrant-value">{effectiveDistribution.loyalists}</div>
   <div className="quadrant-subtext">({calculatePercentage(effectiveDistribution.loyalists)}%)</div>
   {effectiveDistribution.loyalists > 0 && (
@@ -1323,7 +1323,7 @@ const getPointQuadrant = (point: DataPoint): string => {
   onClick={(e: React.MouseEvent) => handleQuadrantClick('defectors', effectiveDistribution.defectors, e)}
   data-clickable={effectiveDistribution.defectors > 0 ? "true" : "false"}
 >
-  <div className="quadrant-title">Defectors</div>
+  <div className="quadrant-title" translate="no">Defectors</div>
   <div className="quadrant-value">{effectiveDistribution.defectors}</div>
   <div className="quadrant-subtext">({calculatePercentage(effectiveDistribution.defectors)}%)</div>
   {effectiveDistribution.defectors > 0 && (
@@ -1335,7 +1335,7 @@ const getPointQuadrant = (point: DataPoint): string => {
   onClick={(e: React.MouseEvent) => handleQuadrantClick('mercenaries', effectiveDistribution.mercenaries || 0, e)}
   data-clickable={effectiveDistribution.mercenaries > 0 ? "true" : "false"}
 >
-  <div className="quadrant-title">Mercenaries</div>
+  <div className="quadrant-title" translate="no">Mercenaries</div>
   <div className="quadrant-value">{effectiveDistribution.mercenaries || 0}</div>
   <div className="quadrant-subtext">({(((effectiveDistribution.mercenaries || 0) / Math.max(1, effectiveTotal)) * 100).toFixed(1)}%)</div>
   {(effectiveDistribution.mercenaries || 0) > 0 && (

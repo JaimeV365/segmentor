@@ -176,7 +176,7 @@ const WelcomeBanner: React.FC<WelcomeBannerProps> = ({
           <Target size={20} />
         </div>
         <div className="welcome-banner__text">
-          <div className="welcome-banner__title">Welcome to Segmentor</div>
+          <div className="welcome-banner__title" translate="no">Welcome to Segmentor</div>
           <div className="welcome-banner__description">
             Analyse your customer satisfaction and loyalty to identify your best customers and growth opportunities.
           </div>

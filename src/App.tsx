@@ -21,6 +21,7 @@ import { UnsavedChangesModal } from './components/ui/UnsavedChangesModal/Unsaved
 import { BrandPlusIndicator } from './components/ui/BrandPlusIndicator/BrandPlusIndicator';
 import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 import { Footer } from './components/ui/Footer/Footer';
+import { TranslationBanner } from './components/ui/TranslationBanner/TranslationBanner';
 import './App.css';
 import './components/visualization/controls/ResponsiveDesign.css';
 
@@ -689,6 +690,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
 
   return (
     <>
+    <TranslationBanner />
     <div className="app">
       {/* Loading screen for demo data */}
       <UnifiedLoadingPopup isVisible={isLoadingDemo} text="segmenting" size="medium" />

@@ -345,7 +345,7 @@ export const ProximityTileMap: React.FC<ProximityTileMapProps> = ({
             title={`${group.label}: ${group.count} (${group.percentage.toFixed(1)}%)`}
           >
             <div className="tile-content">
-              <div className="tile-label">{group.label}</div>
+              <div className="tile-label" translate="no">{group.label}</div>
               <div className="tile-count">{group.count}</div>
             </div>
           </div>

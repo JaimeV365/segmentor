@@ -658,7 +658,7 @@ useEffect(() => {
                       onEffectsChange(newEffects);
                     }}
                   >
-                    segmentor.app
+                    <span translate="no">segmentor.app</span>
                   </button>
                   <button
                     className={`label-button ${getCurrentLogo() === 'custom' ? 'active' : ''}`}

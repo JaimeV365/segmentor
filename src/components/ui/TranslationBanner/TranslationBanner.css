@@ -1,0 +1,67 @@
+.translation-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #fff3cd;
+  border-bottom: 1px solid #ffc107;
+  z-index: 10000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.translation-banner-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.translation-banner-icon {
+  color: #856404;
+  flex-shrink: 0;
+}
+
+.translation-banner-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.translation-banner-text strong {
+  color: #856404;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.translation-banner-text span {
+  color: #856404;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.translation-banner-dismiss {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #856404;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+
+.translation-banner-dismiss:hover {
+  background-color: rgba(133, 100, 4, 0.1);
+}
+
+.translation-banner-dismiss:focus {
+  outline: 2px solid #856404;
+  outline-offset: 2px;
+}
+

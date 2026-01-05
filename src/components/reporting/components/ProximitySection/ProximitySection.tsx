@@ -937,7 +937,7 @@ const ProximitySection: React.FC<ProximitySectionProps> = ({
               <div className="quadrant-grid" style={{ position: 'relative' }}>
                 {/* Hostages with proximity information */}
                 <div className="proximity-cell hostages">
-                  <div className="quadrant-title">{getDisplayNameForQuadrant('hostages')}</div>
+                  <div className="quadrant-title" translate="no">{getDisplayNameForQuadrant('hostages')}</div>
                   <div className="quadrant-value">{contextDistribution.hostages}</div>
                   <div className="quadrant-subtext">
                     ({((validData.filter((p: DataPoint) => 
@@ -984,7 +984,7 @@ const ProximitySection: React.FC<ProximitySectionProps> = ({
                 
                 {/* Loyalists with proximity information */}
                 <div className="proximity-cell loyalists">
-                  <div className="quadrant-title">{getDisplayNameForQuadrant('loyalists')}</div>
+                  <div className="quadrant-title" translate="no">{getDisplayNameForQuadrant('loyalists')}</div>
                   <div className="quadrant-value">
                     {contextDistribution.loyalists + (contextDistribution.apostles || 0) + (contextDistribution.near_apostles || 0)}
                   </div>
@@ -1064,7 +1064,7 @@ const ProximitySection: React.FC<ProximitySectionProps> = ({
 
                 {/* Defectors with proximity information */}
                 <div className="proximity-cell defectors">
-                  <div className="quadrant-title">{getDisplayNameForQuadrant('defectors')}</div>
+                  <div className="quadrant-title" translate="no">{getDisplayNameForQuadrant('defectors')}</div>
                   <div className="quadrant-value">
                     {contextDistribution.defectors + (contextDistribution.terrorists || 0)}
                   </div>
@@ -1125,7 +1125,7 @@ const ProximitySection: React.FC<ProximitySectionProps> = ({
                 
                 {/* Mercenaries with proximity information */}
                 <div className="proximity-cell mercenaries">
-                  <div className="quadrant-title">{getDisplayNameForQuadrant('mercenaries')}</div>
+                  <div className="quadrant-title" translate="no">{getDisplayNameForQuadrant('mercenaries')}</div>
                   <div className="quadrant-value">{contextDistribution.mercenaries}</div>
                   <div className="quadrant-subtext">
                     ({((validData.filter((p: DataPoint) => 
@@ -1633,7 +1633,7 @@ const ProximitySection: React.FC<ProximitySectionProps> = ({
                                       Equidistant from all quadrants
                                     </span>
                                   ) : (
-                                    <span className="quadrant-badge" style={getQuadrantBadgeStyle(customer.currentQuadrant || '')}>
+                                    <span className="quadrant-badge" style={getQuadrantBadgeStyle(customer.currentQuadrant || '')} translate="no">
                                       {getQuadrantDisplayName(customer.currentQuadrant || '')}
                                     </span>
                                   )}
@@ -1647,7 +1647,7 @@ const ProximitySection: React.FC<ProximitySectionProps> = ({
                                           key={`${path.id}-${path.targetQuadrant}-${pathIndex}`}
                                           className="crossroads-path-tag"
                                         >
-                                          <span className="quadrant-badge" style={getQuadrantBadgeStyle(path.targetQuadrant)}>
+                                          <span className="quadrant-badge" style={getQuadrantBadgeStyle(path.targetQuadrant)} translate="no">
                                             {getQuadrantDisplayName(path.targetQuadrant)}
                                           </span>
                                           <span className="crossroads-path-tag-chances">
@@ -2159,7 +2159,7 @@ const ProximitySection: React.FC<ProximitySectionProps> = ({
                                         ({customer.satisfaction}, {customer.loyalty})
                                       </div>
                                       <div className="col-quadrant">
-                                        <span className="quadrant-badge" style={getQuadrantBadgeStyle(customer.currentQuadrant || '')}>
+                                        <span className="quadrant-badge" style={getQuadrantBadgeStyle(customer.currentQuadrant || '')} translate="no">
                                           {getQuadrantDisplayName(customer.currentQuadrant || '')}
                                         </span>
                                       </div>
@@ -2322,7 +2322,7 @@ const ProximitySection: React.FC<ProximitySectionProps> = ({
                                     ({customer.satisfaction}, {customer.loyalty})
                                   </div>
                                   <div className="col-quadrant">
-                                    <span className="quadrant-badge" style={getQuadrantBadgeStyle(customer.currentQuadrant || '')}>
+                                    <span className="quadrant-badge" style={getQuadrantBadgeStyle(customer.currentQuadrant || '')} translate="no">
                                       {getQuadrantDisplayName(customer.currentQuadrant || '')}
                                     </span>
                                   </div>
@@ -2478,7 +2478,7 @@ const ProximitySection: React.FC<ProximitySectionProps> = ({
                                     ({customer.satisfaction}, {customer.loyalty})
                                   </div>
                                   <div className="col-quadrant">
-                                    <span className="quadrant-badge" style={getQuadrantBadgeStyle(customer.currentQuadrant || '')}>
+                                    <span className="quadrant-badge" style={getQuadrantBadgeStyle(customer.currentQuadrant || '')} translate="no">
                                       {getQuadrantDisplayName(customer.currentQuadrant || '')}
                                     </span>
                                   </div>

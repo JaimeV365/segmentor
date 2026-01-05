@@ -102,7 +102,7 @@ const QuadrantLabel: React.FC<QuadrantLabelProps> = ({
   };
 
   return (
-    <div style={labelStyle}>
+    <div style={labelStyle} translate="no">
       {info.icon}
       {info.label}
     </div>

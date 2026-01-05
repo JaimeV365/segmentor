@@ -1019,7 +1019,13 @@ export const DemoTour: React.FC<DemoTourProps> = ({
               className="demo-tour-description"
               style={{ whiteSpace: 'pre-line' }}
             >
-              {step.content}
+              {step.content.split(/(segmentor\.app|Segmentor)/gi).map((part, index) => 
+                /^(segmentor\.app|Segmentor)$/i.test(part) ? (
+                  <span key={index} translate="no">{part}</span>
+                ) : (
+                  part
+                )
+              )}
             </p>
           </div>
 
