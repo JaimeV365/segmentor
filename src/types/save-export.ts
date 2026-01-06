@@ -176,6 +176,12 @@ export interface ApostlesSaveData {
           opportunitiesRisks: boolean;
           actions: boolean;
         };
+        // PDF Export options
+        pdfExportOptions?: {
+          fontFamily: 'montserrat' | 'lato' | 'arial' | 'helvetica' | 'times';
+          showImageWatermarks: boolean;
+          showPageWatermarks: boolean;
+        };
       };
     };
     

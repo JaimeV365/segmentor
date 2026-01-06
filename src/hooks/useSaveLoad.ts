@@ -161,10 +161,18 @@ export const useSaveLoad = (params: UseSaveLoadParams) => {
           expandedSections = JSON.parse(savedExpandedSections);
         }
         
-        if (Object.keys(editableTexts).length > 0 || expandedSections) {
+        // Collect PDF export options
+        const savedPdfExportOptions = localStorage.getItem('actionReportsPdfExportOptions');
+        let pdfExportOptions: any = undefined;
+        if (savedPdfExportOptions) {
+          pdfExportOptions = JSON.parse(savedPdfExportOptions);
+        }
+        
+        if (Object.keys(editableTexts).length > 0 || expandedSections || pdfExportOptions) {
           actionReportsSettings = {
             editableTexts: Object.keys(editableTexts).length > 0 ? editableTexts : undefined,
-            expandedSections: expandedSections
+            expandedSections: expandedSections,
+            pdfExportOptions: pdfExportOptions
           };
         }
       } catch (e) {

@@ -531,6 +531,10 @@ useEffect(() => {
             if (context.reportSettings.actionReports.expandedSections) {
               localStorage.setItem('actionReportsExpandedSections', JSON.stringify(context.reportSettings.actionReports.expandedSections));
             }
+            // Restore PDF export options
+            if (context.reportSettings.actionReports.pdfExportOptions) {
+              localStorage.setItem('actionReportsPdfExportOptions', JSON.stringify(context.reportSettings.actionReports.pdfExportOptions));
+            }
           }
         }
         

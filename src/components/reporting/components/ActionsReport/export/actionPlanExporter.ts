@@ -296,6 +296,60 @@ function addStyledSectionHeader(
 }
 
 /**
+ * Gets the watermark logo URL from the main visualization chart
+ * Returns the logo URL being used in the chart, or DEFAULT_LOGO if not found
+ */
+function getMainChartWatermarkLogoUrl(): string {
+  try {
+    const chartContainer = document.querySelector('.chart-container');
+    if (!chartContainer) {
+      console.log('Chart container not found, using default logo');
+      return DEFAULT_LOGO;
+    }
+
+    // Try to find the watermark image element
+    const watermarkLayer = chartContainer.querySelector('.watermark-layer');
+    if (watermarkLayer) {
+      const watermarkImg = watermarkLayer.querySelector('img') as HTMLImageElement | null;
+      if (watermarkImg && watermarkImg.src) {
+        console.log('Found watermark logo URL from chart:', watermarkImg.src);
+        return watermarkImg.src;
+      }
+    }
+
+    // Fallback: Check localStorage for watermark effects
+    try {
+      const storedEffects = localStorage.getItem('watermarkEffects');
+      if (storedEffects) {
+        const effects = JSON.parse(storedEffects);
+        if (Array.isArray(effects)) {
+          // Check for custom logo URL
+          const customUrlEffect = effects.find((e: string) => e.startsWith('CUSTOM_LOGO_URL:'));
+          if (customUrlEffect) {
+            const logoUrl = customUrlEffect.replace('CUSTOM_LOGO_URL:', '');
+            console.log('Found custom logo URL from localStorage:', logoUrl);
+            return logoUrl;
+          }
+          // Check for TM logo
+          if (effects.includes('SHOW_TM_LOGO')) {
+            console.log('Found TM logo from localStorage');
+            return '/tm-logo.png';
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to read watermark effects from localStorage:', e);
+    }
+
+    console.log('Using default logo');
+    return DEFAULT_LOGO;
+  } catch (error) {
+    console.warn('Failed to get watermark logo from chart:', error);
+    return DEFAULT_LOGO;
+  }
+}
+
+/**
  * Gets the watermark rotation from the main visualization chart
  * Returns rotation in degrees (0 for flat, -90 for vertical)
  */
@@ -544,14 +598,14 @@ async function addWatermarkToChartImage(
         // Flat position: Use larger watermark size, moved 15 units to the right total (very close to edge)
         logoSize = Math.min(chartImg.width, chartImg.height) * 0.18; // 18% of smaller dimension (larger than other charts)
         maxLogoSize = 200; // Max 200px (larger than other charts)
-        paddingXPercent = 0.001; // 0.1% from right (moved 15% to the right from default 8%, essentially at the edge)
+        paddingXPercent = 0; // 0% from right (moved 16% to the right from default 8%, at the very edge)
         paddingYPercent = 0.15; // Default position from bottom
-        console.log('Recommendation Score (FLAT) - larger watermark: 18%/200px max, moved 15 units right total', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
+        console.log('Recommendation Score (FLAT) - larger watermark: 18%/200px max, moved 16 units right total (at edge)', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
       } else {
         // Vertical position: Use larger watermark size, moved 15 units to the right total (very close to edge)
         logoSize = Math.min(chartImg.width, chartImg.height) * 0.18; // 18% of smaller dimension (larger than other charts)
         maxLogoSize = 200; // Max 200px (larger than other charts)
-        paddingXPercent = 0.001; // 0.1% from right (moved 15% to the right from default 8%, essentially at the edge)
+        paddingXPercent = 0; // 0% from right (moved 16% to the right from default 8%, at the very edge)
         paddingYPercent = 0.15; // Default position from bottom
         console.log('Recommendation Score (VERTICAL) - larger watermark: 18%/200px max, moved 15 units right total', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
       }
@@ -943,7 +997,9 @@ function addPageWatermarkAndFooter(
  */
 interface PDFExportOptions {
   fontFamily?: 'montserrat' | 'lato' | 'arial' | 'helvetica' | 'times';
-  showWatermarks?: boolean;
+  showWatermarks?: boolean; // Deprecated: use showImageWatermarks and showPageWatermarks instead
+  showImageWatermarks?: boolean;
+  showPageWatermarks?: boolean;
 }
 
 // Helper function to get the correct font name for body text
@@ -964,11 +1020,19 @@ export async function exportActionPlanToPDF(
   actionPlan: ActionPlanReport,
   options?: PDFExportOptions
 ): Promise<void> {
-  const { fontFamily = 'montserrat', showWatermarks = true } = options || {};
+  const { 
+    fontFamily = 'montserrat', 
+    showWatermarks, // Legacy support
+    showImageWatermarks = showWatermarks !== undefined ? showWatermarks : true,
+    showPageWatermarks = showWatermarks !== undefined ? showWatermarks : true
+  } = options || {};
   const bodyFont = getBodyFont(fontFamily);
   
-  // Load logo for watermark (only if watermarks are enabled)
-  const logoInfo = showWatermarks ? await loadLogoForPDF(DEFAULT_LOGO) : null;
+  // Get logo URL from main chart watermark (supports TM users' custom logos)
+  const mainChartLogoUrl = getMainChartWatermarkLogoUrl();
+  
+  // Load logo for page watermark (only if page watermarks are enabled)
+  const logoInfo = showPageWatermarks ? await loadLogoForPDF(mainChartLogoUrl) : null;
   
   const pdf = new jsPDF({
     orientation: 'portrait',
@@ -1106,20 +1170,21 @@ export async function exportActionPlanToPDF(
         }
         try {
           // For Brand+ users, main chart is captured without watermark
-          // So we add watermark to ALL images (including main chart) if showWatermarks is true
+          // So we add watermark to ALL images (including main chart) if showImageWatermarks is true
           let imageDataUrl = chartImage.dataUrl;
-          if (showWatermarks) {
+          if (showImageWatermarks) {
             // Add watermark to all chart images (mirror main chart rotation)
+            // Use the logo from the main chart (supports TM users' custom logos)
             const mainChartRotation = getMainChartWatermarkRotation();
             imageDataUrl = await addWatermarkToChartImage(
               chartImage.dataUrl,
-              DEFAULT_LOGO,
+              mainChartLogoUrl,
               chartImage.chartType,
               chartImage.selector,
               mainChartRotation
             );
           }
-          // If showWatermarks is false, use image as-is (no watermark added)
+          // If showImageWatermarks is false, use image as-is (no watermark added)
           
           // Convert data URL to image and wait for it to load
           const img = new Image();
@@ -1501,19 +1566,20 @@ export async function exportActionPlanToPDF(
           // Handle watermark for action chart images
           let imageDataUrl = chartImage.dataUrl;
           // For Brand+ users, main chart is captured without watermark
-          // So we add watermark to ALL images (including main chart) if showWatermarks is true
-          if (showWatermarks) {
+          // So we add watermark to ALL images (including main chart) if showImageWatermarks is true
+          if (showImageWatermarks) {
             // Add watermark to all chart images (mirror main chart rotation)
+            // Use the logo from the main chart (supports TM users' custom logos)
             const mainChartRotation = getMainChartWatermarkRotation();
             imageDataUrl = await addWatermarkToChartImage(
               chartImage.dataUrl,
-              DEFAULT_LOGO,
+              mainChartLogoUrl,
               chartImage.chartType,
               chartImage.selector,
               mainChartRotation
             );
           }
-          // If showWatermarks is false, use image as-is (no watermark added)
+          // If showImageWatermarks is false, use image as-is (no watermark added)
           
           const img = new Image();
           img.src = imageDataUrl;
@@ -1599,11 +1665,11 @@ export async function exportActionPlanToPDF(
     }
   }
 
-  // Add watermark and footer to all pages (only if watermarks enabled)
+  // Add watermark and footer to all pages (only if page watermarks enabled)
   const totalPages = pdf.getNumberOfPages();
   for (let i = 1; i <= totalPages; i++) {
     pdf.setPage(i);
-    if (showWatermarks) {
+    if (showPageWatermarks) {
       addPageWatermarkAndFooter(pdf, i, totalPages, logoInfo, bodyFont);
     } else {
       // Still add footer (page number and disclaimer) but no watermark

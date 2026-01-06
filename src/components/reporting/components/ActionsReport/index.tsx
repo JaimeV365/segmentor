@@ -37,8 +37,52 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
   const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
   const [showExportPanel, setShowExportPanel] = useState(false);
   const [showPDFCustomizeOptions, setShowPDFCustomizeOptions] = useState(false);
-  const [pdfFontFamily, setPdfFontFamily] = useState<string>('lato');
-  const [pdfShowWatermarks, setPdfShowWatermarks] = useState<boolean>(true);
+  // PDF Export options - try to load from localStorage
+  const [pdfFontFamily, setPdfFontFamily] = useState<string>(() => {
+    try {
+      const saved = localStorage.getItem('actionReportsPdfExportOptions');
+      if (saved) {
+        const options = JSON.parse(saved);
+        return options.fontFamily || 'lato';
+      }
+    } catch (e) {
+      console.warn('Failed to load PDF export options from localStorage:', e);
+    }
+    return 'lato';
+  });
+  const [pdfShowImageWatermarks, setPdfShowImageWatermarks] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('actionReportsPdfExportOptions');
+      if (saved) {
+        const options = JSON.parse(saved);
+        return options.showImageWatermarks !== undefined ? options.showImageWatermarks : true;
+      }
+    } catch (e) {
+      console.warn('Failed to load PDF export options from localStorage:', e);
+    }
+    return true;
+  });
+  const [pdfShowPageWatermarks, setPdfShowPageWatermarks] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('actionReportsPdfExportOptions');
+      if (saved) {
+        const options = JSON.parse(saved);
+        return options.showPageWatermarks !== undefined ? options.showPageWatermarks : true;
+      }
+    } catch (e) {
+      console.warn('Failed to load PDF export options from localStorage:', e);
+    }
+    return true;
+  });
+  
+  // Persist PDF export options to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem('actionReportsPdfExportOptions', JSON.stringify({
+      fontFamily: pdfFontFamily,
+      showImageWatermarks: pdfShowImageWatermarks,
+      showPageWatermarks: pdfShowPageWatermarks
+    }));
+  }, [pdfFontFamily, pdfShowImageWatermarks, pdfShowPageWatermarks]);
   const [selectedExportOption, setSelectedExportOption] = useState<string | null>(null);
   const exportPanelRef = useRef<HTMLDivElement>(null);
   const calculationStartTime = React.useRef<number>(0);
@@ -357,7 +401,8 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
     try {
       await exportActionPlanToPDF(actionPlan, {
         fontFamily: pdfFontFamily as 'montserrat' | 'lato' | 'arial' | 'helvetica' | 'times',
-        showWatermarks: pdfShowWatermarks
+        showImageWatermarks: pdfShowImageWatermarks,
+        showPageWatermarks: pdfShowPageWatermarks
       });
       setShowExportPanel(false);
       setShowPDFCustomizeOptions(false);
@@ -1809,7 +1854,7 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                         </p>
                       </div>
 
-                      {/* Watermark Toggle - PDF only */}
+                      {/* Watermark Toggles - PDF only */}
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         <label style={{ fontSize: '14px', fontWeight: 600, color: '#374151', marginBottom: 4 }}>
                           Watermarks (PDF)
@@ -1817,11 +1862,20 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                         <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
                           <input
                             type="checkbox"
-                            checked={pdfShowWatermarks}
-                            onChange={(e) => setPdfShowWatermarks(e.target.checked)}
+                            checked={pdfShowImageWatermarks}
+                            onChange={(e) => setPdfShowImageWatermarks(e.target.checked)}
                             style={{ accentColor: '#3a863e', width: '18px', height: '18px', cursor: 'pointer' }}
                           />
-                          <span style={{ fontSize: '14px', color: '#6b7280' }}>Show watermarks in PDF export</span>
+                          <span style={{ fontSize: '14px', color: '#6b7280' }}>Show watermarks on chart images</span>
+                        </label>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={pdfShowPageWatermarks}
+                            onChange={(e) => setPdfShowPageWatermarks(e.target.checked)}
+                            style={{ accentColor: '#3a863e', width: '18px', height: '18px', cursor: 'pointer' }}
+                          />
+                          <span style={{ fontSize: '14px', color: '#6b7280' }}>Show watermarks on page headers</span>
                         </label>
                       </div>
 

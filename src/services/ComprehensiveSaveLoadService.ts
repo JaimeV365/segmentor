@@ -100,6 +100,11 @@ export interface CreateSaveDataParams {
         opportunitiesRisks: boolean;
         actions: boolean;
       };
+      pdfExportOptions?: {
+        fontFamily: 'montserrat' | 'lato' | 'arial' | 'helvetica' | 'times';
+        showImageWatermarks: boolean;
+        showPageWatermarks: boolean;
+      };
     };
   };
   
