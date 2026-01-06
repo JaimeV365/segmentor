@@ -484,8 +484,13 @@ useEffect(() => {
         setIsAdjustableMidpoint(context.uiState.isAdjustableMidpoint);
         setFrequencyFilterEnabled(context.uiState.frequencyFilterEnabled);
         setFrequencyThreshold(context.uiState.frequencyThreshold);
-        setIsPremium(context.premium?.isPremium || false);
-        setActiveEffects(new Set(context.premium?.effects || []));
+        // Only update isPremium if the file was created by a TM user (brandPlusUser)
+        // Otherwise, preserve the current authentication state
+        if (context.premium?.brandPlusUser) {
+          setIsPremium(context.premium.isPremium || false);
+          setActiveEffects(new Set(context.premium.effects || []));
+        }
+        // If file wasn't created by TM user, keep current isPremium state (don't log out TM users)
         
         // Load report visibility states
         if (context.reportVisibility) {
@@ -573,10 +578,13 @@ useEffect(() => {
           setFrequencyFilterEnabled((saveData as any).uiState.frequencyFilterEnabled ?? false);
           setFrequencyThreshold((saveData as any).uiState.frequencyThreshold ?? 1);
         }
-        if ((saveData as any).premium) {
+        // Only update isPremium if the file was created by a TM user (brandPlusUser)
+        // Otherwise, preserve the current authentication state
+        if ((saveData as any).premium?.brandPlusUser) {
           setIsPremium((saveData as any).premium.isPremium || false);
           setActiveEffects(new Set((saveData as any).premium.effects || []));
         }
+        // If file wasn't created by TM user, keep current isPremium state (don't log out TM users)
       }
       
       console.log('Progress loaded successfully:', saveData);
