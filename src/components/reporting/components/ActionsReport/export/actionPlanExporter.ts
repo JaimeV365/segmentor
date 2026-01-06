@@ -538,6 +538,23 @@ async function addWatermarkToChartImage(
         paddingYPercent = 0.15; // Keep same vertical position
         console.log('Customer Distribution (VERTICAL) - size increased to 15%/180px max, 5% right', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
       }
+    } else if (normalizedChartType === 'recommendation' || normalizedSelector.includes('recommendation-score') || normalizedSelector.includes('recommendation')) {
+      // Recommendation Score: Larger watermark to match larger chart size
+      if (isFlat) {
+        // Flat position: Use larger watermark size
+        logoSize = Math.min(chartImg.width, chartImg.height) * 0.18; // 18% of smaller dimension (larger than other charts)
+        maxLogoSize = 200; // Max 200px (larger than other charts)
+        paddingXPercent = 0.08; // Default position from right
+        paddingYPercent = 0.15; // Default position from bottom
+        console.log('Recommendation Score (FLAT) - larger watermark: 18%/200px max', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
+      } else {
+        // Vertical position: Use larger watermark size
+        logoSize = Math.min(chartImg.width, chartImg.height) * 0.18; // 18% of smaller dimension (larger than other charts)
+        maxLogoSize = 200; // Max 200px (larger than other charts)
+        paddingXPercent = 0.08; // Default position from right
+        paddingYPercent = 0.15; // Default position from bottom
+        console.log('Recommendation Score (VERTICAL) - larger watermark: 18%/200px max', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
+      }
     }
 
     // Apply max size limit
@@ -1191,10 +1208,10 @@ export async function exportActionPlanToPDF(
               imgHeight *= heightScale;
             }
           } else if (isRecommendationScore) {
-            // Recommendation Score: Make it larger (use 90% of content width, similar to Response Concentration)
+            // Recommendation Score: Make it much larger (use 95% of content width for maximum visibility)
             // Always scale to use full width to ensure it's visible and readable
-            const maxWidth = contentWidth * 0.9; // 90% of content width (~153mm)
-            const maxHeight = Math.min(120, availableHeight); // Allow up to 120mm height
+            const maxWidth = contentWidth * 0.95; // 95% of content width (~161mm) - larger than other charts
+            const maxHeight = Math.min(140, availableHeight); // Allow up to 140mm height (more than Response Concentration)
             
             // Always scale to maxWidth (scale up if smaller, scale down if larger)
             // This ensures Recommendation Score charts are always large and readable
@@ -1210,7 +1227,7 @@ export async function exportActionPlanToPDF(
             }
             
             // Ensure minimum size - if still too small after scaling, scale up further
-            const minWidth = contentWidth * 0.7; // At least 70% of content width
+            const minWidth = contentWidth * 0.85; // At least 85% of content width (higher minimum)
             if (imgWidth < minWidth) {
               const minScale = minWidth / imgWidth;
               imgWidth = minWidth;
