@@ -24,13 +24,37 @@ const ResponseConcentrationTitleWrapper: React.FC<{
   const [titleControls, setTitleControls] = useState<React.ReactNode>(null);
   
   // State for collapsible section with localStorage persistence
-  // Always default to collapsed (false) - user must manually expand
-  const [isExpanded, setIsExpanded] = useState(false);
+  // Initialize from localStorage on mount (for seg file loading)
+  const [isExpanded, setIsExpanded] = useState(() => {
+    const saved = localStorage.getItem('responseConcentrationExpanded');
+    return saved === 'true';
+  });
   
-  // Note: Removed auto-expand on navigation - section stays collapsed until user clicks
+  // Listen for seg file load events to update state
+  useEffect(() => {
+    const handleSegFileLoaded = () => {
+      const saved = localStorage.getItem('responseConcentrationExpanded');
+      setIsExpanded(saved === 'true');
+    };
+    
+    // Listen for custom event when seg file is loaded
+    document.addEventListener('segFileLoaded', handleSegFileLoaded);
+    
+    // Also listen for storage events (for cross-tab sync)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'responseConcentrationExpanded') {
+        setIsExpanded(e.newValue === 'true');
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      document.removeEventListener('segFileLoaded', handleSegFileLoaded);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
   
-  // Persist expanded state to localStorage only when user manually changes it
-  // Don't persist on initial load or navigation events
+  // Persist expanded state to localStorage when user manually changes it
   const isInitialMount = useRef(true);
   useEffect(() => {
     if (isInitialMount.current) {

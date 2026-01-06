@@ -57,8 +57,37 @@ export const DataReport: React.FC<DataReportProps> = ({
   const [isManualReconnecting, setIsManualReconnecting] = useState(false);
   const [hasLocalChanges, setHasLocalChanges] = useState(false);
   
-  // Note: Section is hidden by default. User must manually enable it via the settings menu.
-  // We don't load from localStorage to ensure it's always hidden by default.
+  // Initialize showRecommendationScore from localStorage on mount (for seg file loading)
+  useEffect(() => {
+    const saved = localStorage.getItem('showRecommendationScore');
+    if (saved === 'true') {
+      setShowRecommendationScore(true);
+    }
+  }, []); // Only run on mount
+  
+  // Listen for seg file load events to update state
+  useEffect(() => {
+    const handleSegFileLoaded = () => {
+      const saved = localStorage.getItem('showRecommendationScore');
+      setShowRecommendationScore(saved === 'true');
+    };
+    
+    // Listen for custom event when seg file is loaded
+    document.addEventListener('segFileLoaded', handleSegFileLoaded);
+    
+    // Also listen for storage events (for cross-tab sync)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'showRecommendationScore') {
+        setShowRecommendationScore(e.newValue === 'true');
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      document.removeEventListener('segFileLoaded', handleSegFileLoaded);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
   
   // Persist showRecommendationScore to localStorage when it changes
   useEffect(() => {

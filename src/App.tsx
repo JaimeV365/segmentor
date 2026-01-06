@@ -491,6 +491,8 @@ useEffect(() => {
         if (context.reportVisibility) {
           localStorage.setItem('showRecommendationScore', context.reportVisibility.showRecommendationScore.toString());
           localStorage.setItem('responseConcentrationExpanded', context.reportVisibility.responseConcentrationExpanded.toString());
+          // Dispatch custom event to notify components that seg file was loaded
+          document.dispatchEvent(new CustomEvent('segFileLoaded'));
         }
         
         // Load report settings and customizations
