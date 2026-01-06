@@ -1023,9 +1023,17 @@ export async function exportActionPlanToPDF(
   const { 
     fontFamily = 'montserrat', 
     showWatermarks, // Legacy support
-    showImageWatermarks = showWatermarks !== undefined ? showWatermarks : true,
-    showPageWatermarks = showWatermarks !== undefined ? showWatermarks : true
+    showImageWatermarks: providedShowImageWatermarks,
+    showPageWatermarks: providedShowPageWatermarks
   } = options || {};
+  
+  // Handle legacy showWatermarks option and defaults
+  const showImageWatermarks = providedShowImageWatermarks !== undefined 
+    ? providedShowImageWatermarks 
+    : (showWatermarks !== undefined ? showWatermarks : true);
+  const showPageWatermarks = providedShowPageWatermarks !== undefined 
+    ? providedShowPageWatermarks 
+    : (showWatermarks !== undefined ? showWatermarks : true);
   const bodyFont = getBodyFont(fontFamily);
   
   // Get logo URL from main chart watermark (supports TM users' custom logos)
