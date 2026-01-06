@@ -1119,6 +1119,13 @@ export async function exportActionPlanToPDF(
                                          finding.chartSelector?.includes('response-concentration') ||
                                          finding.chartSelector?.includes('concentration');
           
+          // Check if this is a Recommendation Score chart
+          const isRecommendationScore = chartImage.chartType === 'recommendation' ||
+                                       finding.id === 'chart-recommendation' ||
+                                       finding.id === 'chart-recommendation-simulator' ||
+                                       finding.chartSelector?.includes('recommendation-score') ||
+                                       finding.chartSelector?.includes('recommendation');
+          
           // Calculate dimensions to fit page
           const availableHeight = pageHeight - margin - footerHeight - yPosition - 15; // Leave 15mm buffer
           
@@ -1171,6 +1178,22 @@ export async function exportActionPlanToPDF(
               imgWidth *= heightScale;
               imgHeight *= heightScale;
             }
+          } else if (isRecommendationScore) {
+            // Recommendation Score: Make it larger (use 90% of content width, similar to Response Concentration)
+            const maxWidth = contentWidth * 0.9; // 90% of content width (~153mm)
+            const maxHeight = Math.min(120, availableHeight); // Allow up to 120mm height
+            
+            // Scale to fit width first
+            const widthScale = maxWidth / imgWidth;
+            imgWidth = maxWidth;
+            imgHeight *= widthScale;
+            
+            // If height exceeds max after scaling, scale down proportionally
+            if (imgHeight > maxHeight) {
+              const heightScale = maxHeight / imgHeight;
+              imgWidth *= heightScale;
+              imgHeight *= heightScale;
+            }
           } else {
             // Other charts: Use smaller max width (70% of content width) for better proportions
             const otherMaxWidth = contentWidth * 0.7; // 70% of content width (~119mm)
@@ -1203,12 +1226,33 @@ export async function exportActionPlanToPDF(
           yPosition += imgHeight + 5;
           
           // Caption (left-aligned, constrained to content width)
-          pdf.setFontSize(8);
-          const captionLines = pdf.splitTextToSize(chartImage.caption, contentWidth);
-          captionLines.forEach((line: string, index: number) => {
-            pdf.text(line, margin, yPosition + (index * 3));
-          });
-          yPosition += captionLines.length * 3 + 2;
+          // Only add caption if it doesn't duplicate the finding statement
+          // Normalize both texts by removing HTML tags, extra whitespace, and converting to lowercase for comparison
+          const normalizeText = (text: string): string => {
+            return text
+              .replace(/<[^>]*>/g, '') // Remove HTML tags
+              .replace(/\s+/g, ' ') // Normalize whitespace
+              .trim()
+              .toLowerCase();
+          };
+          
+          const normalizedFindingStatement = normalizeText(finding.statement);
+          const normalizedCaption = normalizeText(chartImage.caption || '');
+          
+          // Skip caption if it matches the finding statement (to avoid duplication)
+          // Also skip for Recommendation Score Simulator since we already added explanation before the image
+          const shouldSkipCaption = normalizedCaption === normalizedFindingStatement ||
+                                    finding.id === 'chart-recommendation-simulator' ||
+                                    chartImage.selector?.includes('recommendation-score-simulator');
+          
+          if (!shouldSkipCaption && chartImage.caption) {
+            pdf.setFontSize(8);
+            const captionLines = pdf.splitTextToSize(chartImage.caption, contentWidth);
+            captionLines.forEach((line: string, index: number) => {
+              pdf.text(line, margin, yPosition + (index * 3));
+            });
+            yPosition += captionLines.length * 3 + 2;
+          }
           yPosition += 5;
           pdf.setFontSize(10);
         } catch (error) {
@@ -1529,7 +1573,7 @@ export async function exportActionPlanToPDF(
   }
 
   // Save PDF
-  const filename = `actions-report-${new Date().toISOString().split('T')[0]}.pdf`;
+  const filename = `segmentor-actions-report-${new Date().toISOString().split('T')[0]}.pdf`;
   pdf.save(filename);
 }
 
@@ -1732,7 +1776,7 @@ export async function exportActionPlanToXLSX(
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `actions-report-${new Date().toISOString().split('T')[0]}.xlsx`;
+    link.download = `segmentor-actions-report-${new Date().toISOString().split('T')[0]}.xlsx`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
