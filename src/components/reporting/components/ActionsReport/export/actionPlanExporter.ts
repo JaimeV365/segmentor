@@ -1062,10 +1062,13 @@ export async function exportActionPlanToPDF(
       
       checkPageBreak(30);
       
-      // Finding statement
-      const lines = pdf.splitTextToSize(`${findingNumber}. ${finding.statement}`, contentWidth);
-      pdf.text(lines, margin, yPosition);
-      yPosition += lines.length * 5 + 3;
+      // Finding statement - only render if not empty
+      const statementText = finding.statement?.replace(/<[^>]*>/g, '').trim() || '';
+      if (statementText) {
+        const lines = pdf.splitTextToSize(`${findingNumber}. ${finding.statement}`, contentWidth);
+        pdf.text(lines, margin, yPosition);
+        yPosition += lines.length * 5 + 3;
+      }
       findingNumber++;
 
       // Chart image if available
@@ -1120,11 +1123,20 @@ export async function exportActionPlanToPDF(
                                          finding.chartSelector?.includes('concentration');
           
           // Check if this is a Recommendation Score chart
+          // Check both finding properties and chartImage properties for better detection
+          // Also check for specific Recommendation Score selectors
           const isRecommendationScore = chartImage.chartType === 'recommendation' ||
                                        finding.id === 'chart-recommendation' ||
                                        finding.id === 'chart-recommendation-simulator' ||
+                                       finding.category === 'recommendation' ||
                                        finding.chartSelector?.includes('recommendation-score') ||
-                                       finding.chartSelector?.includes('recommendation');
+                                       finding.chartSelector?.includes('recommendation') ||
+                                       finding.chartSelector?.includes('recommendation-score-widgets') ||
+                                       finding.chartSelector?.includes('recommendation-score-section') ||
+                                       chartImage.selector?.includes('recommendation-score') ||
+                                       chartImage.selector?.includes('recommendation') ||
+                                       chartImage.selector?.includes('recommendation-score-widgets') ||
+                                       chartImage.selector?.includes('recommendation-score-section');
           
           // Calculate dimensions to fit page
           const availableHeight = pageHeight - margin - footerHeight - yPosition - 15; // Leave 15mm buffer
@@ -1180,10 +1192,12 @@ export async function exportActionPlanToPDF(
             }
           } else if (isRecommendationScore) {
             // Recommendation Score: Make it larger (use 90% of content width, similar to Response Concentration)
+            // Always scale to use full width to ensure it's visible and readable
             const maxWidth = contentWidth * 0.9; // 90% of content width (~153mm)
             const maxHeight = Math.min(120, availableHeight); // Allow up to 120mm height
             
-            // Scale to fit width first
+            // Always scale to maxWidth (scale up if smaller, scale down if larger)
+            // This ensures Recommendation Score charts are always large and readable
             const widthScale = maxWidth / imgWidth;
             imgWidth = maxWidth;
             imgHeight *= widthScale;
@@ -1193,6 +1207,14 @@ export async function exportActionPlanToPDF(
               const heightScale = maxHeight / imgHeight;
               imgWidth *= heightScale;
               imgHeight *= heightScale;
+            }
+            
+            // Ensure minimum size - if still too small after scaling, scale up further
+            const minWidth = contentWidth * 0.7; // At least 70% of content width
+            if (imgWidth < minWidth) {
+              const minScale = minWidth / imgWidth;
+              imgWidth = minWidth;
+              imgHeight *= minScale;
             }
           } else {
             // Other charts: Use smaller max width (70% of content width) for better proportions
