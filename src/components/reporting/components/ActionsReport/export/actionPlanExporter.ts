@@ -920,7 +920,8 @@ function addPageWatermarkAndFooter(
   pageNumber: number,
   totalPages: number,
   logoInfo: { dataUrl: string; width: number; height: number } | null,
-  bodyFont?: string
+  bodyFont?: string,
+  logoUrl?: string
 ): void {
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
@@ -931,34 +932,46 @@ function addPageWatermarkAndFooter(
   // Add attribution text and logo at top right
   if (logoInfo) {
     try {
-      // Text first, then logo below
-      pdf.setFontSize(7);
-      pdf.setTextColor(100, 100, 100); // Gray color
-      // Try to use Montserrat, fallback to helvetica if not loaded
-      try {
-        const fontsLoaded = (pdf as any).__fontsLoaded;
-        if (fontsLoaded && fontsLoaded.has('Montserrat-bold')) {
-          pdf.setFont('Montserrat', 'bold');
-        } else {
-          pdf.setFont('helvetica', 'bold');
-        }
-      } catch {
-        pdf.setFont('helvetica', 'bold'); // Fallback if Montserrat not loaded
-      }
-      const textY = 10; // 10mm from top
-      // Position text to the left of logo
-      const logoWidth = 25; // mm width
-      const logoX = pageWidth - logoWidth - 10; // 10mm from right edge
-      // Position text - moved 15mm left, then 6mm right = net 9mm to the left
-      const logoCenterX = logoX + (logoWidth / 2); // Center of logo
-      const estimatedTextWidth = 40; // Approximate width of "Generated using" text
-      const textX = logoCenterX + (estimatedTextWidth / 2) - 9; // Move 9mm to the left (was 15mm, now 6mm to the right)
-      pdf.text('Generated using', textX, textY, { align: 'right' });
+      // Only show "Generated using" text if using the default segmentor logo
+      const isDefaultLogo = !logoUrl || logoUrl === DEFAULT_LOGO || logoUrl.endsWith('/segmentor-logo.png');
       
-      // Logo below text
-      const logoHeight = logoWidth * (logoInfo.height / logoInfo.width); // Maintain aspect ratio
-      const logoY = textY + 4; // 4mm below text
-      pdf.addImage(logoInfo.dataUrl, 'PNG', logoX, logoY, logoWidth, logoHeight);
+      if (isDefaultLogo) {
+        // Text first, then logo below
+        pdf.setFontSize(7);
+        pdf.setTextColor(100, 100, 100); // Gray color
+        // Try to use Montserrat, fallback to helvetica if not loaded
+        try {
+          const fontsLoaded = (pdf as any).__fontsLoaded;
+          if (fontsLoaded && fontsLoaded.has('Montserrat-bold')) {
+            pdf.setFont('Montserrat', 'bold');
+          } else {
+            pdf.setFont('helvetica', 'bold');
+          }
+        } catch {
+          pdf.setFont('helvetica', 'bold'); // Fallback if Montserrat not loaded
+        }
+        const textY = 10; // 10mm from top
+        // Position text to the left of logo
+        const logoWidth = 25; // mm width
+        const logoX = pageWidth - logoWidth - 10; // 10mm from right edge
+        // Position text - moved 15mm left, then 6mm right = net 9mm to the left
+        const logoCenterX = logoX + (logoWidth / 2); // Center of logo
+        const estimatedTextWidth = 40; // Approximate width of "Generated using" text
+        const textX = logoCenterX + (estimatedTextWidth / 2) - 9; // Move 9mm to the left (was 15mm, now 6mm to the right)
+        pdf.text('Generated using', textX, textY, { align: 'right' });
+        
+        // Logo below text
+        const logoHeight = logoWidth * (logoInfo.height / logoInfo.width); // Maintain aspect ratio
+        const logoY = textY + 4; // 4mm below text
+        pdf.addImage(logoInfo.dataUrl, 'PNG', logoX, logoY, logoWidth, logoHeight);
+      } else {
+        // For custom/TM logos, just show the logo without "Generated using" text
+        const logoWidth = 25; // mm width
+        const logoX = pageWidth - logoWidth - 10; // 10mm from right edge
+        const logoHeight = logoWidth * (logoInfo.height / logoInfo.width); // Maintain aspect ratio
+        const logoY = 10; // 10mm from top (centered vertically where text would be)
+        pdf.addImage(logoInfo.dataUrl, 'PNG', logoX, logoY, logoWidth, logoHeight);
+      }
     } catch (error) {
       console.warn('Failed to add logo watermark to PDF page:', error);
     }
@@ -1678,10 +1691,10 @@ export async function exportActionPlanToPDF(
   for (let i = 1; i <= totalPages; i++) {
     pdf.setPage(i);
     if (showPageWatermarks) {
-      addPageWatermarkAndFooter(pdf, i, totalPages, logoInfo, bodyFont);
+      addPageWatermarkAndFooter(pdf, i, totalPages, logoInfo, bodyFont, mainChartLogoUrl);
     } else {
       // Still add footer (page number and disclaimer) but no watermark
-      addPageWatermarkAndFooter(pdf, i, totalPages, null, bodyFont);
+      addPageWatermarkAndFooter(pdf, i, totalPages, null, bodyFont, mainChartLogoUrl);
     }
   }
 
