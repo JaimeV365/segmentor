@@ -541,19 +541,19 @@ async function addWatermarkToChartImage(
     } else if (normalizedChartType === 'recommendation' || normalizedSelector.includes('recommendation-score') || normalizedSelector.includes('recommendation')) {
       // Recommendation Score: Larger watermark to match larger chart size
       if (isFlat) {
-        // Flat position: Use larger watermark size
+        // Flat position: Use larger watermark size, moved 5 units to the right
         logoSize = Math.min(chartImg.width, chartImg.height) * 0.18; // 18% of smaller dimension (larger than other charts)
         maxLogoSize = 200; // Max 200px (larger than other charts)
-        paddingXPercent = 0.08; // Default position from right
+        paddingXPercent = 0.08 - 0.05; // 3% from right (moved 5% to the right from default 8%)
         paddingYPercent = 0.15; // Default position from bottom
-        console.log('Recommendation Score (FLAT) - larger watermark: 18%/200px max', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
+        console.log('Recommendation Score (FLAT) - larger watermark: 18%/200px max, moved 5 units right', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
       } else {
-        // Vertical position: Use larger watermark size
+        // Vertical position: Use larger watermark size, moved 5 units to the right
         logoSize = Math.min(chartImg.width, chartImg.height) * 0.18; // 18% of smaller dimension (larger than other charts)
         maxLogoSize = 200; // Max 200px (larger than other charts)
-        paddingXPercent = 0.08; // Default position from right
+        paddingXPercent = 0.08 - 0.05; // 3% from right (moved 5% to the right from default 8%)
         paddingYPercent = 0.15; // Default position from bottom
-        console.log('Recommendation Score (VERTICAL) - larger watermark: 18%/200px max', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
+        console.log('Recommendation Score (VERTICAL) - larger watermark: 18%/200px max, moved 5 units right', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
       }
     }
 
