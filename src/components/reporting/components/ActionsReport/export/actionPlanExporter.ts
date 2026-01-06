@@ -541,19 +541,19 @@ async function addWatermarkToChartImage(
     } else if (normalizedChartType === 'recommendation' || normalizedSelector.includes('recommendation-score') || normalizedSelector.includes('recommendation')) {
       // Recommendation Score: Larger watermark to match larger chart size
       if (isFlat) {
-        // Flat position: Use larger watermark size, moved 10 units to the right total
+        // Flat position: Use larger watermark size, moved 15 units to the right total (very close to edge)
         logoSize = Math.min(chartImg.width, chartImg.height) * 0.18; // 18% of smaller dimension (larger than other charts)
         maxLogoSize = 200; // Max 200px (larger than other charts)
-        paddingXPercent = 0.01; // 1% from right (moved 10% to the right from default 8%, or 5 more units from previous 3%)
+        paddingXPercent = 0.001; // 0.1% from right (moved 15% to the right from default 8%, essentially at the edge)
         paddingYPercent = 0.15; // Default position from bottom
-        console.log('Recommendation Score (FLAT) - larger watermark: 18%/200px max, moved 10 units right total', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
+        console.log('Recommendation Score (FLAT) - larger watermark: 18%/200px max, moved 15 units right total', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
       } else {
-        // Vertical position: Use larger watermark size, moved 10 units to the right total
+        // Vertical position: Use larger watermark size, moved 15 units to the right total (very close to edge)
         logoSize = Math.min(chartImg.width, chartImg.height) * 0.18; // 18% of smaller dimension (larger than other charts)
         maxLogoSize = 200; // Max 200px (larger than other charts)
-        paddingXPercent = 0.01; // 1% from right (moved 10% to the right from default 8%, or 5 more units from previous 3%)
+        paddingXPercent = 0.001; // 0.1% from right (moved 15% to the right from default 8%, essentially at the edge)
         paddingYPercent = 0.15; // Default position from bottom
-        console.log('Recommendation Score (VERTICAL) - larger watermark: 18%/200px max, moved 10 units right total', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
+        console.log('Recommendation Score (VERTICAL) - larger watermark: 18%/200px max, moved 15 units right total', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
       }
     }
 
