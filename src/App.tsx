@@ -376,25 +376,8 @@ useEffect(() => {
       // Load the .seg file
       const saveData = await comprehensiveSaveLoadService.loadComprehensiveProgress(file);
       
-      // Check if this is a Teresa Monroe staff save file
-      if (saveData.context?.premium?.brandPlusUser && !isPremium) {
-        // This save was created by Teresa Monroe staff, but current user is not authenticated
-        const shouldLogin = window.confirm(
-          'This save file was created with Teresa Monroe staff features. To access all features, please sign in as Teresa Monroe staff.\n\n' +
-          'Would you like to sign in now?'
-        );
-        
-        if (shouldLogin) {
-          window.location.href = '/tm';
-          return; // Don't load the file yet - wait for authentication
-        }
-        // User chose not to login - continue loading but without Teresa Monroe staff features
-        notification.showNotification({
-          title: 'Teresa Monroe Staff Features Disabled',
-          message: 'This file was created with Teresa Monroe staff features. Some features may not be available.',
-          type: 'warning'
-        });
-      }
+      // Note: If this is a TM file loaded by a free user, we'll load it directly
+      // Premium features won't be restored (handled below in the premium restoration logic)
       
       // Handle both old and new format
       if (saveData.version === '2.0.0' && saveData.dataTable) {
@@ -484,13 +467,17 @@ useEffect(() => {
         setIsAdjustableMidpoint(context.uiState.isAdjustableMidpoint);
         setFrequencyFilterEnabled(context.uiState.frequencyFilterEnabled);
         setFrequencyThreshold(context.uiState.frequencyThreshold);
-        // Only update isPremium if the file was created by a TM user (brandPlusUser)
-        // Otherwise, preserve the current authentication state
-        if (context.premium?.brandPlusUser) {
+        // Premium features restoration logic:
+        // - If TM user loads TM file: Restore premium features from file
+        // - If TM user loads regular file: Keep TM user logged in (preserve authentication)
+        // - If free user loads TM file: Don't restore premium features (skip this block)
+        if (context.premium?.brandPlusUser && isPremium) {
+          // File was created by TM user AND current user is TM - restore premium features
           setIsPremium(context.premium.isPremium || false);
           setActiveEffects(new Set(context.premium.effects || []));
         }
         // If file wasn't created by TM user, keep current isPremium state (don't log out TM users)
+        // If free user loads TM file, isPremium stays false and effects aren't restored (correct behavior)
         
         // Load report visibility states
         if (context.reportVisibility) {
@@ -582,13 +569,17 @@ useEffect(() => {
           setFrequencyFilterEnabled((saveData as any).uiState.frequencyFilterEnabled ?? false);
           setFrequencyThreshold((saveData as any).uiState.frequencyThreshold ?? 1);
         }
-        // Only update isPremium if the file was created by a TM user (brandPlusUser)
-        // Otherwise, preserve the current authentication state
-        if ((saveData as any).premium?.brandPlusUser) {
+        // Premium features restoration logic (legacy format):
+        // - If TM user loads TM file: Restore premium features from file
+        // - If TM user loads regular file: Keep TM user logged in (preserve authentication)
+        // - If free user loads TM file: Don't restore premium features (skip this block)
+        if ((saveData as any).premium?.brandPlusUser && isPremium) {
+          // File was created by TM user AND current user is TM - restore premium features
           setIsPremium((saveData as any).premium.isPremium || false);
           setActiveEffects(new Set((saveData as any).premium.effects || []));
         }
         // If file wasn't created by TM user, keep current isPremium state (don't log out TM users)
+        // If free user loads TM file, isPremium stays false and effects aren't restored (correct behavior)
       }
       
       console.log('Progress loaded successfully:', saveData);
