@@ -77,6 +77,7 @@ function generateReactIndex(assetManifestPath) {
     <link rel="icon" href="/tool/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="google" content="notranslate" />
+    <meta name="robots" content="noindex, nofollow" />
     <meta name="theme-color" content="#000000" />
     <meta name="description" content="Professional customer segmentation tool using the Apostles Model methodology" />
     <link rel="apple-touch-icon" href="/tool/logo192.png" />
