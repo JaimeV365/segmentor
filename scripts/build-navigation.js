@@ -335,6 +335,7 @@ function copyStaticFilesToBuild(publicDir, buildDir) {
     '_redirects',
     '_headers',
     'robots.txt',
+    'sitemap.xml',
     'segmentor-logo.png',
     'segmentor-demo.csv',
     'tm-logo.png',
