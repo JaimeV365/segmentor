@@ -35,6 +35,9 @@ interface DrawerSaveButtonProps {
   // Premium
   isPremium?: boolean;
   effects?: Set<string>;
+  
+  // Original premium data from loaded file (to preserve when free users save)
+  originalPremiumData?: { effects: string[]; brandPlusUser: boolean } | null;
 }
 
 export const DrawerSaveButton: React.FC<DrawerSaveButtonProps> = ({
@@ -54,7 +57,8 @@ export const DrawerSaveButton: React.FC<DrawerSaveButtonProps> = ({
   frequencyThreshold,
   filterState,
   isPremium = false,
-  effects = new Set()
+  effects = new Set(),
+  originalPremiumData = null
 }) => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -111,7 +115,8 @@ export const DrawerSaveButton: React.FC<DrawerSaveButtonProps> = ({
       frequencyThreshold,
       filterState,
       isPremium,
-      effects
+      effects,
+      originalPremiumData
     });
     saveProgress = saveLoadHook.saveProgress;
     contextIsSaving = saveLoadHook.isSaving;

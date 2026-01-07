@@ -43,6 +43,8 @@ const App: React.FC = () => {
 const visualizationRef = useRef<HTMLDivElement>(null);
   const [activeEffects, setActiveEffects] = useState<Set<string>>(new Set());
   const [hideWatermark, setHideWatermark] = useState(false);
+  // Store original premium data from loaded file to preserve when free users save
+  const originalPremiumDataRef = useRef<{ effects: string[]; brandPlusUser: boolean } | null>(null);
   // Update watermark visibility based on effects
   useEffect(() => {
     setHideWatermark(activeEffects.has('HIDE_WATERMARK'));
@@ -468,16 +470,28 @@ useEffect(() => {
         setFrequencyFilterEnabled(context.uiState.frequencyFilterEnabled);
         setFrequencyThreshold(context.uiState.frequencyThreshold);
         // Premium features restoration logic:
-        // - If TM user loads TM file: Restore premium features from file
-        // - If TM user loads regular file: Keep TM user logged in (preserve authentication)
-        // - If free user loads TM file: Don't restore premium features (skip this block)
-        if (context.premium?.brandPlusUser && isPremium) {
-          // File was created by TM user AND current user is TM - restore premium features
-          setIsPremium(context.premium.isPremium || false);
+        // - Everyone can SEE premium features from files (for display)
+        // - Only TM users can EDIT premium features (controls already restricted)
+        // - Free users preserve original premium data when saving
+        if (context.premium?.brandPlusUser) {
+          // Store original premium data to preserve when saving
+          originalPremiumDataRef.current = {
+            effects: context.premium.effects || [],
+            brandPlusUser: true
+          };
+          
+          // Restore premium effects for DISPLAY (everyone can see them)
           setActiveEffects(new Set(context.premium.effects || []));
+          
+          // Only update isPremium if current user is also premium (for editing permissions)
+          if (isPremium) {
+            setIsPremium(context.premium.isPremium || false);
+          }
+        } else {
+          // File wasn't created by TM user - clear original premium data
+          originalPremiumDataRef.current = null;
         }
         // If file wasn't created by TM user, keep current isPremium state (don't log out TM users)
-        // If free user loads TM file, isPremium stays false and effects aren't restored (correct behavior)
         
         // Load report visibility states
         if (context.reportVisibility) {
@@ -573,13 +587,29 @@ useEffect(() => {
         // - If TM user loads TM file: Restore premium features from file
         // - If TM user loads regular file: Keep TM user logged in (preserve authentication)
         // - If free user loads TM file: Don't restore premium features (skip this block)
-        if ((saveData as any).premium?.brandPlusUser && isPremium) {
-          // File was created by TM user AND current user is TM - restore premium features
-          setIsPremium((saveData as any).premium.isPremium || false);
+        // Premium features restoration logic (legacy format):
+        // - Everyone can SEE premium features from files (for display)
+        // - Only TM users can EDIT premium features (controls already restricted)
+        // - Free users preserve original premium data when saving
+        if ((saveData as any).premium?.brandPlusUser) {
+          // Store original premium data to preserve when saving
+          originalPremiumDataRef.current = {
+            effects: (saveData as any).premium.effects || [],
+            brandPlusUser: true
+          };
+          
+          // Restore premium effects for DISPLAY (everyone can see them)
           setActiveEffects(new Set((saveData as any).premium.effects || []));
+          
+          // Only update isPremium if current user is also premium (for editing permissions)
+          if (isPremium) {
+            setIsPremium((saveData as any).premium.isPremium || false);
+          }
+        } else {
+          // File wasn't created by TM user - clear original premium data
+          originalPremiumDataRef.current = null;
         }
         // If file wasn't created by TM user, keep current isPremium state (don't log out TM users)
-        // If free user loads TM file, isPremium stays false and effects aren't restored (correct behavior)
       }
       
       console.log('Progress loaded successfully:', saveData);
@@ -881,6 +911,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
                       frequencyThreshold={frequencyThreshold}
                       isPremium={isPremium}
                       effects={activeEffects}
+                      originalPremiumData={originalPremiumDataRef.current}
                     />
                   )}
                 </LeftDrawer>

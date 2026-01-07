@@ -58,6 +58,7 @@ export interface CreateSaveDataParams {
   // Premium
   isPremium?: boolean;
   effects?: Set<string>;
+  originalPremiumData?: { effects: string[]; brandPlusUser: boolean } | null;
   
   // Report Visibility States
   reportVisibility?: {
@@ -245,11 +246,17 @@ class ComprehensiveSaveLoadServiceImpl implements SaveLoadService {
         },
         
         premium: params.isPremium ? {
+          // TM user saving - use their current premium settings
           isPremium: true,
           effects: Array.from(params.effects || new Set()),
           brandPlusUser: true, // Mark this save as created by a Brand+ user
           brandPlusUserEmail: undefined // Could be populated from auth context in the future
-        } : undefined,
+        } : (params.originalPremiumData ? {
+          // Free user saving - preserve original premium data from file
+          isPremium: false,
+          effects: params.originalPremiumData.effects,
+          brandPlusUser: params.originalPremiumData.brandPlusUser
+        } : undefined),
         
         // Report Visibility States
         reportVisibility: params.reportVisibility || {

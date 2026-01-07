@@ -32,6 +32,9 @@ export interface UseSaveLoadParams {
   isPremium?: boolean;
   effects?: Set<string>;
   
+  // Original premium data from loaded file (to preserve when free users save)
+  originalPremiumData?: { effects: string[]; brandPlusUser: boolean } | null;
+  
   // Callbacks for loading
   onDataLoad?: (data: any[], scales: { satisfaction: string; loyalty: string }) => void;
   onSettingsLoad?: (settings: any) => void;
@@ -229,6 +232,7 @@ export const useSaveLoad = (params: UseSaveLoadParams) => {
         // Premium
         isPremium: params.isPremium,
         effects: params.effects,
+        originalPremiumData: params.originalPremiumData,
         
         // Report Visibility States
         reportVisibility: {
