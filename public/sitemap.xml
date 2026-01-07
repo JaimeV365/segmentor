@@ -3,7 +3,7 @@
   <!-- Main Tool (React App) -->
   <url>
     <loc>https://segmentor.app/tool/</loc>
-    <lastmod>2024-12-19</lastmod>
+    <lastmod>2025-01-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -11,7 +11,7 @@
   <!-- Root (redirects to tool) -->
   <url>
     <loc>https://segmentor.app/</loc>
-    <lastmod>2024-12-19</lastmod>
+    <lastmod>2025-01-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -19,7 +19,7 @@
   <!-- About Page -->
   <url>
     <loc>https://segmentor.app/about.html</loc>
-    <lastmod>2024-12-19</lastmod>
+    <lastmod>2025-01-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -27,7 +27,7 @@
   <!-- FAQ Page -->
   <url>
     <loc>https://segmentor.app/faq.html</loc>
-    <lastmod>2024-12-19</lastmod>
+    <lastmod>2025-01-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -35,7 +35,7 @@
   <!-- Contact Page -->
   <url>
     <loc>https://segmentor.app/contact.html</loc>
-    <lastmod>2024-12-19</lastmod>
+    <lastmod>2025-01-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -43,7 +43,7 @@
   <!-- Pricing Page -->
   <url>
     <loc>https://segmentor.app/pricing.html</loc>
-    <lastmod>2024-12-19</lastmod>
+    <lastmod>2025-01-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -51,7 +51,7 @@
   <!-- Privacy Page -->
   <url>
     <loc>https://segmentor.app/privacy.html</loc>
-    <lastmod>2024-12-19</lastmod>
+    <lastmod>2025-01-07</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -59,7 +59,7 @@
   <!-- Terms Page -->
   <url>
     <loc>https://segmentor.app/terms.html</loc>
-    <lastmod>2024-12-19</lastmod>
+    <lastmod>2025-01-07</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
