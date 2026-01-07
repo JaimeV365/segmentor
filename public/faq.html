@@ -541,6 +541,62 @@
                         </div>
                     </div>
 
+                    <div class="faq-item" data-keywords="proximity analysis distance calculation chebyshev manhattan how does it work">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>How does proximity analysis work? What distance calculations do you use?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Proximity analysis identifies customers positioned near segment boundaries who could move between segments with targeted interventions. We use different distance calculation methods depending on the type of proximity:</p>
+                            <p><strong>Lateral Proximity</strong> (adjacent quadrants, like Loyalists near Mercenaries):</p>
+                            <ul>
+                                <li>Uses single-dimension distance measurement</li>
+                                <li>Calculates distance in one direction only (either satisfaction OR loyalty, whichever is relevant to the boundary)</li>
+                                <li>Fixed threshold of 2.0 points from the boundary</li>
+                                <li>Example: A Loyalist at satisfaction 4.5, loyalty 6.0 (with midpoint at 4, 5) is 1.0 points away from the Mercenaries boundary (loyalty dimension)</li>
+                            </ul>
+                            <p><strong>Diagonal Proximity</strong> (opposite quadrants, like Defectors near Loyalists):</p>
+                            <ul>
+                                <li>Uses Chebyshev distance (also called maximum metric)</li>
+                                <li>Formula: max(|satisfaction difference|, |loyalty difference|)</li>
+                                <li>Fixed threshold of 2.0 for all diagonal relationships</li>
+                                <li>Includes diagonal neighbors as "1 space away" (visually adjacent on the grid)</li>
+                                <li>Example: A customer at (2,2) to target at (3,3) = max(1,1) = 1 point away ✅</li>
+                            </ul>
+                            <p><strong>Special Zone Proximity</strong> (near Apostles or Terrorists zones):</p>
+                            <ul>
+                                <li>Uses Chebyshev distance to zone boundaries</li>
+                                <li>Maximum distance of 1 position from zone perimeter</li>
+                                <li>Includes all 8 surrounding positions (including diagonals) as "1 space away"</li>
+                            </ul>
+                            <p>These calculations help identify customers who are at risk of moving between segments or who have high potential for strategic intervention.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="chebyshev distance difference euclidean manhattan what is">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What's the difference between Chebyshev and other distance calculations?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Chebyshev distance (also called maximum metric or chessboard distance) measures distance as the maximum of the absolute differences in each dimension. This means diagonal neighbors are considered "1 space away" just like horizontal or vertical neighbors.</p>
+                            <p><strong>Chebyshev Distance Formula:</strong> max(|x2-x1|, |y2-y1|)</p>
+                            <p><strong>Why we use it:</strong></p>
+                            <ul>
+                                <li>For diagonal proximity: It naturally includes diagonal neighbors, which makes sense when identifying customers at risk of moving to opposite quadrants</li>
+                                <li>For special zones: It treats all 8 surrounding positions (up, down, left, right, and all 4 diagonals) as equally close, which aligns with how customers might move on the satisfaction-loyalty grid</li>
+                            </ul>
+                            <p><strong>Example:</strong></p>
+                            <ul>
+                                <li>Point A at (5, 8) to Point B at (6, 9)</li>
+                                <li>Chebyshev: max(|6-5|, |9-8|) = max(1, 1) = 1 ✅ (includes diagonal)</li>
+                                <li>Euclidean: √((6-5)² + (9-8)²) = √2 ≈ 1.41</li>
+                                <li>Manhattan: |6-5| + |9-8| = 1 + 1 = 2</li>
+                            </ul>
+                            <p>For our proximity analysis, Chebyshev distance provides the most intuitive and business-relevant measurement of customer movement risk.</p>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- Getting Started Section -->

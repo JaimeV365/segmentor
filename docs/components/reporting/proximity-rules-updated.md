@@ -10,14 +10,14 @@ This document provides the authoritative reference for proximity analysis calcul
 ### Rule 1: Lateral Proximity Thresholds
 - **1-3 scales**: ❌ No proximity analysis (scale too small for meaningful boundaries)
 - **All other scales**: ✅ **Fixed threshold of 2.0** for all lateral proximity relationships
-- **Distance calculation**: Manhattan distance to quadrant boundaries
+- **Distance calculation**: Single-dimension absolute distance to quadrant boundaries (measures distance in one direction only: either satisfaction OR loyalty, not both)
 - **Threshold application**: Customers within 2.0 distance qualify for proximity
 
 ### Rule 2: Two-Step Process for Lateral Proximity
 - **Step 1**: Calculate potential search area using space cap rules
 - **Step 2**: Apply distance threshold (2.0) and other qualification filters
 - **Space cap rules**: ≤3 positions available → 1 position qualifies, >3 positions → 2 positions qualify
-- **Distance metric**: Manhattan distance to quadrant boundaries
+- **Distance metric**: Single-dimension absolute distance to quadrant boundaries
 
 ### Rule 2.5: Space Cap Application for Lateral Proximity
 - **Space cap applied only to relevant dimension** (the dimension used for distance calculation)
@@ -45,7 +45,7 @@ This document provides the authoritative reference for proximity analysis calcul
 ## Special Zone Proximity Rules
 
 ### Rule 6: Special Zone Distance Calculation
-- **Maximum distance**: 1 position Manhattan distance only
+- **Maximum distance**: 1 position Chebyshev distance only
 - **Example**: If apostles zone is at (4,4), proximity includes positions (3,3), (3,4), (3,5), (4,3), (4,5), (5,3), (5,4), (5,5)
 - **Scale constraints**: No proximity analysis for scales 1-3 (too small)
 
@@ -63,7 +63,7 @@ This document provides the authoritative reference for proximity analysis calcul
 
 ### Rule 9: Size-Aware Special Zone Analysis
 - **Variable zone sizes supported**: 1x1, 2x2, 3x3, etc.
-- **Proximity definition**: 1 Manhattan distance from zone perimeter (not center)
+- **Proximity definition**: 1 Chebyshev distance from zone perimeter (not center)
 - **Example**: 2x2 apostles zone at (4,4)-(5,5) has proximity boundary around entire perimeter
 
 ### Rule 10: Activation Conditions
