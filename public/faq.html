@@ -27,6 +27,80 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/favicon.ico">
     <script src="/logo-replacement.js"></script>
+    
+    <!-- FAQPage Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is my customers' data safe?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, absolutely. Your data never leaves your device. Segmentor.app runs entirely in your browser using local processing—we never see, store, or transmit your customer data anywhere. Think of it like using a calculator: the numbers you enter stay on your device. We don't have servers collecting your information because there's nothing to collect. Your customer data remains 100% private and under your control. Key security features: Zero cloud storage—all processing happens locally, No data transmission to external servers, Your files stay on your computer, You can work offline once the page loads."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do you use cookies?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No, we don't use cookies. Segmentor.app doesn't track you, create user profiles, or store any browsing data. We respect your privacy by design. The tool runs entirely in your browser with no account requirements for standard use."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Where is my data stored?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Only on your device. Your customer data is stored in two ways, both completely under your control: 1. Browser temporary storage (automatic): When you're working on a segmentation, your data is temporarily held in your browser's memory. You can clear this anytime through your browser settings. 2. .seg project files (manual): Use the Save button to export your complete project as a .seg file to your computer. You choose where to store it—it's just a regular file you control."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the Apostles Model?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The Apostles Model is a customer segmentation framework that classifies customers into four groups based on two dimensions: satisfaction and loyalty. It was developed by Thomas O. Jones and W. Earl Sasser Jr. in their groundbreaking 1995 Harvard Business Review article 'Why Satisfied Customers Defect.' The classic model identified four customer types: Loyalists (High satisfaction + High loyalty, includes Apostles sub-zone), Mercenaries (High satisfaction + Low loyalty), Hostages (Low satisfaction + High loyalty), and Defectors (Low satisfaction + Low loyalty, includes Terrorists sub-zone)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I get started with segmentor.app?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Getting started is simple: 1. Visit the main tool page, 2. Enter your data using one of three options: Upload a CSV file with your customer data, Enter data manually using the form, or Try sample data to explore (Explore mode), 3. Or try our demo mode with a guided tour, 4. View your customers automatically segmented into the four quadrants, 5. Use filters and analysis tools to gain insights. No registration required—just enter your data and start analysing!"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What data do I need to upload?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You only need two mandatory columns: Satisfaction Score (How satisfied they are on a 1-3, 1-5, or 1-7 scale) and Loyalty Score (How likely they are to stay on a 1-5, 1-7, 1-10, or 0-10 scale). Optional columns you can add: Customer Name/ID (Unique identifier for each customer), Email (For tracking customers over time), Date (For filtering by time periods), Country, Language, or any other attributes (For filtering and analysis purposes). Try with sample data first to see the format."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does proximity analysis work? What distance calculations do you use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Proximity analysis identifies customers positioned near segment boundaries who could move between segments with targeted interventions. We use different distance calculation methods depending on the type of proximity: Lateral Proximity (adjacent quadrants) uses single-dimension distance measurement with a fixed threshold of 2.0 points. Diagonal Proximity (opposite quadrants) uses Chebyshev distance (max(|satisfaction difference|, |loyalty difference|)) with a fixed threshold of 2.0. Special Zone Proximity (near Apostles or Terrorists zones) uses Chebyshev distance to zone boundaries with a maximum distance of 1 position from zone perimeter. These calculations help identify customers who are at risk of moving between segments or who have high potential for strategic intervention."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What's the difference between Chebyshev and other distance calculations?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Chebyshev distance (also called maximum metric or chessboard distance) measures distance as the maximum of the absolute differences in each dimension. This means diagonal neighbors are considered '1 space away' just like horizontal or vertical neighbors. Formula: max(|x2-x1|, |y2-y1|). We use it because: For diagonal proximity, it naturally includes diagonal neighbors, which makes sense when identifying customers at risk of moving to opposite quadrants. For special zones, it treats all 8 surrounding positions (up, down, left, right, and all 4 diagonals) as equally close, which aligns with how customers might move on the satisfaction-loyalty grid. For our proximity analysis, Chebyshev distance provides the most intuitive and business-relevant measurement of customer movement risk."
+          }
+        }
+      ]
+    }
+    </script>
 </head>
 <body>
 
