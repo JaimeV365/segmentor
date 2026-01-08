@@ -331,6 +331,8 @@ function copyStaticFilesToBuild(publicDir, buildDir) {
     'terms.html',
     'brand-plus.html',
     'brand-plus-auth.html',
+    'tm.html',
+    'login.html',
     '404.html',
     '_redirects',
     '_headers',
