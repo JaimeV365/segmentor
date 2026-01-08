@@ -24,14 +24,14 @@
     <meta property="og:description" content="Combine satisfaction AND loyalty into instant segments, then get strategic roadmaps for each. Solves the #1 CX frustration: 'We have scores, now what?' Privacy-first, no registration needed." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://segmentor.app/about.html" />
-    <meta property="og:image" content="%PUBLIC_URL%/segmentor-logo.png" />
+    <meta property="og:image" content="https://segmentor.app/segmentor-logo.png" />
     <meta property="og:site_name" content="segmentor.app" />
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="About segmentor.app - Turn Customer Feedback Into Action Plans" />
     <meta name="twitter:description" content="Combine satisfaction AND loyalty into instant segments, then get strategic roadmaps for each. Solves the #1 CX frustration: 'We have scores, now what?' Privacy-first, no registration needed." />
-    <meta name="twitter:image" content="%PUBLIC_URL%/segmentor-logo.png" />
+    <meta name="twitter:image" content="https://segmentor.app/segmentor-logo.png" />
     
     <!-- Additional SEO Meta Tags -->
     <meta name="theme-color" content="#3a863e" />
@@ -160,19 +160,38 @@
     }
     </script>
     
+    <!-- BreadcrumbList Schema for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://segmentor.app"
+      },{
+        "@type": "ListItem",
+        "position": 2,
+        "name": "About",
+        "item": "https://segmentor.app/about.html"
+      }]
+    }
+    </script>
+    
     <!-- Branding -->
     <link rel="stylesheet" href="/assets/css/shared.css">
     <link rel="stylesheet" href="/assets/css/about.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet"></noscript>
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/favicon.ico">
-    <script src="/logo-replacement.js"></script>
 </head>
 <body>
 
@@ -219,7 +238,7 @@
                 </div>
                 <div id="cta-description" class="sr-only">Start using segmentor.app to analyse your customer data</div>
                 <div class="hero-image" style="margin-top: 48px; text-align: center;">
-                    <img src="/screenshot-segments.png" alt="Segmentor.app customer segmentation visualisation showing four segments: Loyalists (top right), Mercenaries (bottom right), Hostages (top left), and Defectors (bottom left)" style="width: 100%; max-width: 800px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" loading="lazy" />
+                    <img src="/screenshot-segments.png" alt="Segmentor.app customer segmentation visualisation showing four segments: Loyalists (top right), Mercenaries (bottom right), Hostages (top left), and Defectors (bottom left)" width="800" height="600" style="width: 100%; max-width: 800px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" loading="lazy" />
                 </div>
             </section>
 
@@ -307,13 +326,13 @@
                             <p style="color: #666; font-size: 1.05rem; line-height: 1.7;">Visualise customers across four segments to understand loyalty and satisfaction patterns. See at a glance who your true advocates are, which customers are flight risks, and where to focus your retention efforts.</p>
                         </div>
                         <div>
-                            <img src="/screenshot-segments.png" alt="Four segment customer segmentation visualisation showing customers plotted by satisfaction and loyalty scores" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" loading="lazy" />
+                            <img src="/screenshot-segments.png" alt="Four segment customer segmentation visualisation showing customers plotted by satisfaction and loyalty scores" width="800" height="600" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" loading="lazy" />
                         </div>
                     </div>
                     
                     <div class="screenshot-item" style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; margin-bottom: 64px;">
                         <div style="order: 1;">
-                            <img src="/screenshot-opportunity.png" alt="Opportunity analysis dashboard showing actionable insights and recommendations for each customer segment" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" loading="lazy" />
+                            <img src="/screenshot-opportunity.png" alt="Opportunity analysis dashboard showing actionable insights and recommendations for each customer segment" width="800" height="600" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" loading="lazy" />
                         </div>
                         <div style="order: 2;">
                             <h4 style="color: #3a863e; font-size: 1.5rem; font-weight: 600; margin-bottom: 16px;">Instant, Actionable Strategies</h4>
@@ -327,13 +346,13 @@
                             <p style="color: #666; font-size: 1.05rem; line-height: 1.7;">Analyse data from surveys where customers answered the classic question: "How likely are you to recommend us?" Use our conversion calculator to see exactly how many Detractors you need to convert to Promoters to hit your targets.</p>
                         </div>
                         <div>
-                            <img src="/screenshot-recommendation.png" alt="Recommendation score analysis chart showing Promoters and Detractors with conversion calculator to determine targets" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" loading="lazy" />
+                            <img src="/screenshot-recommendation.png" alt="Recommendation score analysis chart showing Promoters and Detractors with conversion calculator to determine targets" width="800" height="600" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" loading="lazy" />
                         </div>
                     </div>
                     
                     <div class="screenshot-item" style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; margin-bottom: 32px;">
                         <div style="order: 1;">
-                            <img src="/screenshot-proximity.png" alt="Proximity analysis visualisation identifying customers positioned near segment boundaries who could move between segments" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" loading="lazy" />
+                            <img src="/screenshot-proximity.png" alt="Proximity analysis visualisation identifying customers positioned near segment boundaries who could move between segments" width="800" height="600" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" loading="lazy" />
                         </div>
                         <div style="order: 2;">
                             <h4 style="color: #3a863e; font-size: 1.5rem; font-weight: 600; margin-bottom: 16px;">Proximity Analysis</h4>
@@ -503,7 +522,7 @@
                         <p style="font-size: 1.1em; line-height: 1.6; margin-bottom: 20px;">We've partnered with <strong>Teresa Monroe</strong>, Europe's leading Customer Experience (CX) and Employee Experience (EX) consulting agency. Whether you need help designing your CX program from the ground up or want expert analysis of your segmentation results, Teresa Monroe brings decades of experience turning customer data into business transformation.</p>
                         <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
                             <a href="/contact.html" class="btn btn-primary" style="background: #3a863e; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; transition: background-color 0.2s;">Explore Consulting Services <span aria-hidden="true">→</span></a>
-                            <img src="/tm-logo.png" alt="Teresa Monroe" style="height: 24px; opacity: 0.7; margin-left: 8px;" />
+                            <img src="/tm-logo.png" alt="Teresa Monroe" width="120" height="24" style="height: 24px; opacity: 0.7; margin-left: 8px;" />
                         </div>
                     </div>
                 </div>
@@ -1282,6 +1301,7 @@
             }
         });
     </script>
+    <script src="/logo-replacement.js" defer></script>
 </body>
 </html>
 
