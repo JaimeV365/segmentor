@@ -29,7 +29,8 @@ export const hasHistoricalData = (data: DataPoint[]): boolean => {
   });
   
   // Check if any customer has 2+ data points with different dates
-  for (const [, points] of customerMap) {
+  const customerEntries = Array.from(customerMap.values());
+  for (const points of customerEntries) {
     const dates = new Set(
       points
         .filter(p => p.date)
