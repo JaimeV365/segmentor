@@ -14,33 +14,41 @@ export const detectDuplicates = (newData: any[], existingData: DataPoint[]): Dup
   // Create a map to track all reasons for each row by ID
   const duplicateMap = new Map<string, { item: any, reasons: Set<string> }>();
   
-  // Check for duplicate IDs within the file
-  const idsInFile = newData.filter(row => row.id).map(row => row.id);
-  const uniqueIds = new Set<string>();
-  const duplicateIds = new Set<string>();
+  // HISTORICAL TRACKING: Check for duplicate IDs within the file
+  // Only flag as duplicate if same ID AND same date (allows historical tracking)
+  const idDateMap = new Map<string, Map<string, any[]>>(); // Map<id, Map<date, items[]>>
   
-  // Find duplicated IDs within this import
-  idsInFile.forEach(id => {
-    if (uniqueIds.has(id)) {
-      duplicateIds.add(id);
-    } else {
-      uniqueIds.add(id);
+  newData.forEach(row => {
+    if (row.id) {
+      const normalizedDate = (row.date || '').trim();
+      if (!idDateMap.has(row.id)) {
+        idDateMap.set(row.id, new Map());
+      }
+      const dateMap = idDateMap.get(row.id)!;
+      if (!dateMap.has(normalizedDate)) {
+        dateMap.set(normalizedDate, []);
+      }
+      dateMap.get(normalizedDate)!.push(row);
     }
   });
   
-  console.log('Found duplicate IDs within file:', Array.from(duplicateIds));
-  
-  // Add all instances of duplicated IDs to the map
-  duplicateIds.forEach(dupId => {
-    const items = newData.filter(row => row.id === dupId);
-    items.forEach(item => {
-      const id = item.id || `noID-${Math.random().toString(36).substring(2, 9)}`;
-      if (!duplicateMap.has(id)) {
-        duplicateMap.set(id, { item, reasons: new Set() });
+  // Find IDs that have multiple entries with the same date (true duplicates)
+  idDateMap.forEach((dateMap, id) => {
+    dateMap.forEach((items, date) => {
+      if (items.length > 1) {
+        // Same ID + same date = duplicate
+        items.forEach(item => {
+          const itemId = item.id || `noID-${Math.random().toString(36).substring(2, 9)}`;
+          if (!duplicateMap.has(itemId)) {
+            duplicateMap.set(itemId, { item, reasons: new Set() });
+          }
+          duplicateMap.get(itemId)?.reasons.add(`Duplicate ID within imported file (same ID and date: ${id}, ${date || 'no date'})`);
+        });
       }
-      duplicateMap.get(id)?.reasons.add('Duplicate ID within imported file');
     });
   });
+  
+  const idsInFile = newData.filter(row => row.id).map(row => row.id);
   
   // HISTORICAL TRACKING: Check for IDs that already exist in the system
   // ID must always be unique (even with different dates)
@@ -61,23 +69,25 @@ export const detectDuplicates = (newData: any[], existingData: DataPoint[]): Dup
         if (existingItem) {
           const normalizedExistingDate = (existingItem.date || '').trim();
           
-          // Flag as duplicate if:
-          // 1. Same ID AND same date (true duplicate)
-          // 2. Same ID AND no dates provided (assume duplicate to be safe)
-          // 3. Same ID AND one has date, one doesn't (flag to be safe)
-          if ((normalizedExistingDate !== '' && normalizedNewDate !== '' && normalizedExistingDate === normalizedNewDate) ||
-              (normalizedExistingDate === '' && normalizedNewDate === '') ||
-              (normalizedExistingDate !== '' && normalizedNewDate === '') ||
-              (normalizedExistingDate === '' && normalizedNewDate !== '')) {
+          // HISTORICAL TRACKING: Only flag as duplicate if same ID AND same date
+          // Same ID with different dates = allowed (historical tracking)
+          const bothHaveDates = normalizedExistingDate !== '' && normalizedNewDate !== '';
+          const neitherHasDates = normalizedExistingDate === '' && normalizedNewDate === '';
+          
+          if (bothHaveDates && normalizedExistingDate === normalizedNewDate) {
+            // Same ID + same date = duplicate
             const itemId = newItem.id || `noID-${Math.random().toString(36).substring(2, 9)}`;
             if (!duplicateMap.has(itemId)) {
               duplicateMap.set(itemId, { item: newItem, reasons: new Set() });
             }
-            if (normalizedExistingDate === normalizedNewDate && normalizedExistingDate !== '') {
-              duplicateMap.get(itemId)?.reasons.add(`ID already exists with same date (${id}, ${newItem.date})`);
-            } else {
-              duplicateMap.get(itemId)?.reasons.add(`ID already exists in system (${id})`);
+            duplicateMap.get(itemId)?.reasons.add(`ID already exists with same date (${id}, ${newItem.date})`);
+          } else if (neitherHasDates) {
+            // Same ID + no dates = duplicate (can't differentiate time periods)
+            const itemId = newItem.id || `noID-${Math.random().toString(36).substring(2, 9)}`;
+            if (!duplicateMap.has(itemId)) {
+              duplicateMap.set(itemId, { item: newItem, reasons: new Set() });
             }
+            duplicateMap.get(itemId)?.reasons.add(`ID already exists in system (${id}) - add dates to allow historical tracking`);
           }
           // If same ID but different dates, it's NOT flagged (allows historical tracking with ID)
         }

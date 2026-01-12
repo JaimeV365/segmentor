@@ -139,23 +139,42 @@ export const CSVImport: React.FC<CSVImportProps> = ({
       forceOverwrite
     });
     
-    // Check for internal duplicates within the file (needed in both modes)
-    const internalDuplicates = validatedData
-      .map(item => item.id)
-      .filter((id, index, array) => array.indexOf(id) !== index);
+    // HISTORICAL TRACKING: Check for internal duplicates within the file
+    // Only flag as duplicate if same ID AND same date (allows historical tracking)
+    const idDateMap = new Map<string, Set<string>>(); // Map<id, Set<dates>>
+    const trueDuplicates: Array<{id: string, date: string}> = [];
     
-    console.log("Internal duplicates check:", internalDuplicates);
+    validatedData.forEach(item => {
+      if (item.id) {
+        const normalizedDate = (item.date || '').trim();
+        const idDateKey = `${item.id}|${normalizedDate}`;
+        
+        if (!idDateMap.has(item.id)) {
+          idDateMap.set(item.id, new Set());
+        }
+        
+        const dateSet = idDateMap.get(item.id)!;
+        if (dateSet.has(normalizedDate)) {
+          // Same ID + same date = duplicate
+          trueDuplicates.push({ id: item.id, date: normalizedDate || 'no date' });
+        } else {
+          dateSet.add(normalizedDate);
+        }
+      }
+    });
     
-    if (internalDuplicates.length > 0) {
+    console.log("Internal duplicates check (same ID + same date):", trueDuplicates);
+    
+    if (trueDuplicates.length > 0) {
       console.log("Found internal duplicates, showing error");
-      // Create a unique list without using spread on a Set
-      const uniqueDuplicateIds = Array.from(new Set(internalDuplicates));
+      // Create a unique list of duplicate IDs
+      const uniqueDuplicateIds = Array.from(new Set(trueDuplicates.map(d => d.id)));
       
       setError({
         title: 'Duplicate IDs Found',
-        message: 'Your CSV contains entries with duplicate IDs.',
-        details: 'Duplicate IDs: ' + uniqueDuplicateIds.join(', '),
-        fix: 'Please ensure all IDs in your CSV are unique'
+        message: 'Your CSV contains entries with the same ID and date.',
+        details: 'Duplicate IDs (same ID + same date): ' + uniqueDuplicateIds.join(', '),
+        fix: 'IDs can be the same if they have different dates (for historical tracking). Please ensure entries with the same ID have different dates, or use unique IDs.'
       });
       setProgress(null); // Clear progress to unblock the upload area
       return false;
