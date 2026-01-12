@@ -107,7 +107,21 @@ const DataEntryModule: React.FC<DataEntryModuleProps> = ({
   ) => {
     try {
       let newId = id;
-      if (!newId) {
+      
+      // HISTORICAL TRACKING: If no ID provided but email exists, reuse ID from existing entry with same email
+      // This ensures same customer (same email) gets same ID across different time periods
+      if (!newId && email) {
+        const normalizedEmail = email.trim().toLowerCase();
+        const existingEntryWithEmail = data.find(
+          item => item.email && item.email.trim().toLowerCase() === normalizedEmail
+        );
+        if (existingEntryWithEmail) {
+          newId = existingEntryWithEmail.id;
+          console.log(`Reusing ID ${newId} for existing email ${email} (historical tracking)`);
+        } else {
+          newId = idCounter.getNextId();
+        }
+      } else if (!newId) {
         newId = idCounter.getNextId();
       }
 

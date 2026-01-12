@@ -1,5 +1,5 @@
 // import { ValidationResult } from '../types';
-import { ScaleFormat } from '@/types/base';
+import { ScaleFormat, DataPoint } from '@/types/base';
 import { parseDateString, formatDate, getDateFormatFromHeader } from './dateProcessing';
 import { idCounter } from '../../../utils/idCounter';
 
@@ -181,8 +181,24 @@ export const validateDataRows = (
         }
         
         // Process the row data
+        // HISTORICAL TRACKING: If no ID provided but email exists, reuse ID from existing entry with same email
+        let rowId = row.ID || row.id;
+        if (!rowId && email && existingData) {
+          const normalizedEmail = email.trim().toLowerCase();
+          const existingEntryWithEmail = existingData.find(
+            item => item.email && item.email.trim().toLowerCase() === normalizedEmail
+          );
+          if (existingEntryWithEmail) {
+            rowId = existingEntryWithEmail.id;
+            console.log(`Reusing ID ${rowId} for existing email ${email} (historical tracking)`);
+          }
+        }
+        if (!rowId) {
+          rowId = idCounter.getNextId();
+        }
+        
         let processedRow: any = {
-          id: row.ID || row.id || idCounter.getNextId(),
+          id: rowId,
           name: name,
           email: email || undefined,
           satisfaction,

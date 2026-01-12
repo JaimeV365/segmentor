@@ -27,23 +27,20 @@ export const DuplicateCheckService = {
       // Skip comparing to self when editing (using ID)
       if (excludedId && existing.id === excludedId) return false;
       
-      // CRITICAL: Same ID is always a duplicate (ID must be unique)
-      if (existing.id === newDataPoint.id) return true;
-      
       // Normalize existing values
       const normalizedExistingName = existing.name?.trim() || '';
       const normalizedExistingEmail = existing.email?.trim().toLowerCase() || '';
       const normalizedExistingDate = existing.date?.trim() || '';
 
-      // HISTORICAL TRACKING: Allow same email/ID with different dates
-      // Only flag as duplicate if:
-      // 1. Same email AND same date (same customer, same time = duplicate)
-      // 2. Same ID (ID must always be unique)
-      // 3. Same name AND same date (if no email/ID provided)
+      // HISTORICAL TRACKING LOGIC:
+      // Allow same email/ID with different dates for historical tracking
+      // Only flag as duplicate if same customer (email/ID) AND same date
       
       const hasEmailMatch = normalizedExistingEmail !== '' && 
                            normalizedNewEmail !== '' && 
                            normalizedExistingEmail === normalizedNewEmail;
+      
+      const hasIdMatch = existing.id === newDataPoint.id;
       
       const hasDateMatch = normalizedExistingDate !== '' && 
                           normalizedNewDate !== '' && 
@@ -53,15 +50,43 @@ export const DuplicateCheckService = {
                           normalizedNewName !== '' && 
                           normalizedExistingName === normalizedNewName;
       
-      // Duplicate if: (same email AND same date) OR (same name AND same date)
-      // This allows historical tracking: same customer (email/ID) with different dates = NOT duplicate
-      if (hasEmailMatch && hasDateMatch) return true; // Same customer, same time period
-      if (hasNameMatch && hasDateMatch && normalizedNewEmail === '' && normalizedExistingEmail === '') {
-        // Only flag name+date if no email exists (name is the only identifier)
-        return true;
+      const bothHaveDates = normalizedExistingDate !== '' && normalizedNewDate !== '';
+      const neitherHasDates = normalizedExistingDate === '' && normalizedNewDate === '';
+      
+      // CASE 1: Same ID
+      if (hasIdMatch) {
+        if (bothHaveDates) {
+          // With dates: Only duplicate if same date (allows historical tracking)
+          return hasDateMatch;
+        } else {
+          // Without dates: Same ID = always duplicate (can't differentiate time periods)
+          return true;
+        }
       }
       
-      // Not a duplicate (different date = different time period = historical data)
+      // CASE 2: Same Email
+      if (hasEmailMatch) {
+        if (bothHaveDates) {
+          // With dates: Only duplicate if same date (allows historical tracking)
+          return hasDateMatch;
+        } else {
+          // Without dates: Same email = duplicate (can't track history)
+          return true;
+        }
+      }
+      
+      // CASE 3: Same Name (only if no email/ID to identify customer)
+      if (hasNameMatch && normalizedNewEmail === '' && normalizedExistingEmail === '' && !hasIdMatch) {
+        if (bothHaveDates) {
+          // With dates: Only duplicate if same date
+          return hasDateMatch;
+        } else {
+          // Without dates: Same name = duplicate (no other identifiers)
+          return true;
+        }
+      }
+      
+      // Not a duplicate
       return false;
     });
 
@@ -73,18 +98,29 @@ export const DuplicateCheckService = {
       const normalizedExistingEmail = duplicate.email?.trim().toLowerCase() || '';
       const normalizedExistingDate = duplicate.date?.trim() || '';
       
+      const normalizedExistingDate = duplicate.date?.trim() || '';
+      const bothHaveDates = normalizedExistingDate !== '' && normalizedNewDate !== '';
+      
       if (duplicate.id === newDataPoint.id) {
-        reason = 'id';
+        if (bothHaveDates) {
+          reason = 'id and date';
+        } else {
+          reason = 'id';
+        }
       } else if (normalizedExistingEmail !== '' && normalizedNewEmail !== '' && 
-          normalizedExistingEmail === normalizedNewEmail && 
-          normalizedExistingDate !== '' && normalizedNewDate !== '' && 
-          normalizedExistingDate === normalizedNewDate) {
-        reason = 'email and date';
+          normalizedExistingEmail === normalizedNewEmail) {
+        if (bothHaveDates) {
+          reason = 'email and date';
+        } else {
+          reason = 'email';
+        }
       } else if (normalizedExistingName !== '' && normalizedNewName !== '' && 
-                normalizedExistingName === normalizedNewName &&
-                normalizedExistingDate !== '' && normalizedNewDate !== '' && 
-                normalizedExistingDate === normalizedNewDate) {
-        reason = 'name and date';
+                normalizedExistingName === normalizedNewName) {
+        if (bothHaveDates) {
+          reason = 'name and date';
+        } else {
+          reason = 'name';
+        }
       } else {
         // Fallback
         reason = 'matching data values'; 

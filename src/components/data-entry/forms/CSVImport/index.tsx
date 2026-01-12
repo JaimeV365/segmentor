@@ -457,7 +457,8 @@ export const CSVImport: React.FC<CSVImportProps> = ({
             headerResult.satisfactionHeader,
             headerResult.loyaltyHeader,
             finalHeaderScales.scales.satisfaction,
-            finalHeaderScales.scales.loyalty
+            finalHeaderScales.scales.loyalty,
+            existingData // Pass existing data for ID reuse (historical tracking)
           );
           
           const validatedData = validationResult.data;
@@ -621,7 +622,8 @@ export const CSVImport: React.FC<CSVImportProps> = ({
             headerResult.satisfactionHeader, 
             headerResult.loyaltyHeader,
             pendingFileData.headerScales.satisfaction,
-            pendingFileData.headerScales.loyalty
+            pendingFileData.headerScales.loyalty,
+            existingData // Pass existing data for ID reuse (historical tracking)
           );
           
           const validatedData = validationResult.data;
