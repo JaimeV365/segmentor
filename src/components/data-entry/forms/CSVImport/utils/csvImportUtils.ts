@@ -1,5 +1,6 @@
 import { validateEmail, validateDate } from '../../../utils/validation';
-import { ScaleFormat } from '@/types/base';
+import { ScaleFormat, DataPoint } from '@/types/base';
+import { idCounter } from '../../utils/idCounter';
 
 export interface DuplicateReport {
   count: number;
@@ -288,7 +289,8 @@ export const validateDataRows = (
   satisfactionHeader: string, 
   loyaltyHeader: string,
   satisfactionScale: string,
-  loyaltyScale: string
+  loyaltyScale: string,
+  existingData?: DataPoint[] // Optional: existing data for ID reuse (historical tracking)
 ) => {
   console.log('Starting data validation with headers:', { satisfactionHeader, loyaltyHeader });
   if (data.length > 0) {
@@ -373,8 +375,24 @@ export const validateDataRows = (
         }
         
         // Process optional columns
+        // HISTORICAL TRACKING: If no ID provided but email exists, reuse ID from existing entry with same email
+        let rowId = row.ID || '';
+        if (!rowId && email && existingData) {
+          const normalizedEmail = email.trim().toLowerCase();
+          const existingEntryWithEmail = existingData.find(
+            item => item.email && item.email.trim().toLowerCase() === normalizedEmail
+          );
+          if (existingEntryWithEmail) {
+            rowId = existingEntryWithEmail.id;
+            console.log(`Reusing ID ${rowId} for existing email ${email} (historical tracking)`);
+          }
+        }
+        if (!rowId) {
+          rowId = idCounter.getNextId();
+        }
+        
         let processedRow: any = {
-          id: row.ID || '',
+          id: rowId,
           name: name,
           email: email || undefined,  // Use undefined instead of empty string
           satisfaction,
