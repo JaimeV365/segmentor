@@ -1,0 +1,31 @@
+/* Historical Progress Section Styles */
+.historical-progress-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.historical-progress-placeholder {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.historical-progress-placeholder ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.historical-progress-placeholder li {
+  margin: 0.5rem 0;
+}
+
+.report-section-description {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
