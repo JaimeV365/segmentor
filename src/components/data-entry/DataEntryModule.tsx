@@ -78,18 +78,20 @@ const DataEntryModule: React.FC<DataEntryModuleProps> = ({
   }, [startEditing]);
 
   useEffect(() => {
-    if (externalData?.length) return;
+    // Only load from storage if externalData is empty (initial load)
+    if (externalData?.length) {
+      // External data provided - use it (this handles overwrite scenarios)
+      setData(externalData);
+      return;
+    }
     
+    // No external data - try loading from storage
     const savedState = storageManager.loadState();
     if (savedState?.data?.length) {
       setData(savedState.data);
       // We're intentionally NOT loading upload history from storage
       // to start with a clean history on each page load
     }
-  }, [externalData?.length]);
-
-  useEffect(() => {
-    setData(externalData);
   }, [externalData]);
 
   const determineGroup = (satisfaction: number, loyalty: number): string => {
@@ -286,6 +288,12 @@ if (editingData) {
       
       // Always pass headerScales to ensure scales are properly set
       onDataChange(newData, headerScales);
+      
+      // Save to storage to persist the changes
+      storageManager.saveState({
+        data: newData,
+        uploadHistory
+      });
     
       return processedData.map(item => item.id);
     } catch (error) {
