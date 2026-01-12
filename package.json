@@ -34,6 +34,8 @@
   },
   "scripts": {
     "start": "cross-env PUBLIC_URL= react-scripts start",
+    "start:dev": "node scripts/prepare-dev-index.js && cross-env PUBLIC_URL= BROWSER=none react-scripts start",
+    "restore:dev": "node scripts/restore-dev-index.js",
     "build": "cross-env CI=false react-scripts build && node scripts/cleanup-old-nav.js && node scripts/build-navigation.js && npm run deploy:prepare",
     "build:nav": "node scripts/build-navigation.js",
     "cleanup:nav": "node scripts/cleanup-old-nav.js",

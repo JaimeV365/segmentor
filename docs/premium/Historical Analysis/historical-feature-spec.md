@@ -29,6 +29,18 @@ The Historical Analysis feature enhances the Apostles Model by introducing tempo
 - Provide confidence indicators for changes
 - Support statistical analysis of movements
 
+### 5. Trend Forecasting
+- Project future satisfaction and loyalty trends based on historical patterns
+- Forecast quadrant movements if current tendencies continue
+- Provide confidence intervals for predictions
+- Support multiple forecasting methods:
+  - Linear regression for trend projection
+  - Moving average for smoothing
+  - Exponential smoothing for weighted predictions
+  - Seasonal adjustment (if applicable)
+- Forecast time horizons (1 month, 3 months, 6 months, 1 year)
+- Visualize "if tendency continues" scenarios
+
 ## User Experience
 
 ### Data Entry
@@ -60,15 +72,34 @@ The Historical Analysis feature enhances the Apostles Model by introducing tempo
    - Cohort comparisons
    - Behavioral validation analysis
 
-2. Enhanced Data Report
+2. Progress Report (New)
+   - **Historical Movements in Satisfaction and Loyalty**
+     - Separate trend lines for satisfaction over time
+     - Separate trend lines for loyalty over time
+     - Combined view showing both metrics together
+     - Period-over-period comparisons
+   - **Quadrant Movement Analysis**
+     - Positive movements (improving quadrants)
+     - Negative movements (declining quadrants)
+     - Movement flow diagrams showing transitions
+     - Net movement statistics per quadrant
+   - **Forecast Visualizations**
+     - "If tendency continues" projections
+     - Forecasted satisfaction and loyalty scores
+     - Predicted quadrant assignments
+     - Confidence bands around forecasts
+     - Multiple scenario projections (best case, worst case, most likely)
+
+3. Enhanced Data Report
    - Time period snapshots
    - Filter controls for date ranges
    - Aggregate statistics
 
-3. Enhanced Action Report
+4. Enhanced Action Report
    - Time-based recommendations
    - Trend-based insights
    - Movement-specific actions
+   - Forecast-based proactive recommendations
 
 ## Technical Requirements
 
@@ -103,7 +134,37 @@ interface HistoricalAnalysis {
     new: CohortAnalysis;
     lost: CohortAnalysis;
   }[];
+  forecasts?: {
+    satisfaction: TrendForecast;
+    loyalty: TrendForecast;
+    quadrantDistribution: QuadrantForecast[];
+    confidence: ConfidenceLevel;
+  };
 }
+
+interface TrendForecast {
+  currentValue: number;
+  projectedValue: number;
+  trend: 'increasing' | 'decreasing' | 'stable';
+  rateOfChange: number; // per time period
+  confidenceInterval: {
+    lower: number;
+    upper: number;
+  };
+  projectionDate: Date;
+  method: 'linear' | 'movingAverage' | 'exponential' | 'seasonal';
+}
+
+interface QuadrantForecast {
+  quadrant: QuadrantType;
+  currentCount: number;
+  projectedCount: number;
+  change: number;
+  changePercentage: number;
+  confidence: ConfidenceLevel;
+}
+
+type ConfidenceLevel = 'high' | 'medium' | 'low';
 ```
 
 ### Storage Considerations
@@ -117,6 +178,8 @@ All historical analysis features will be premium-only:
 - Behavioral validation
 - Cohort analysis
 - Significance testing
+- Trend forecasting and projections
+- Progress Report
 - Enhanced reporting
 
 ## Implementation Phases
@@ -139,6 +202,13 @@ All historical analysis features will be premium-only:
 - Create behavioral validation
 - Enhance reporting system
 
+### Phase 3.5: Forecasting Implementation
+- Implement trend analysis algorithms
+- Create forecasting service with multiple methods
+- Build forecast visualization components
+- Add confidence interval calculations
+- Integrate forecasts into Progress Report
+
 ### Phase 4: Premium Integration
 - Implement premium checks
 - Add premium UI elements
@@ -158,6 +228,8 @@ All historical analysis features will be premium-only:
 - Complex query performance
 - Visualization rendering
 - Report generation
+- Forecast calculation performance
+- Real-time trend updates
 
 ### Premium Feature Testing
 - Feature access control
@@ -198,3 +270,12 @@ All historical analysis features will be premium-only:
 ### User Adoption
 - Risk: Complex feature confusion
 - Mitigation: Clear documentation and UI guidance
+
+### Forecasting Accuracy
+- Risk: Forecasts may be inaccurate with limited data
+- Mitigation: 
+  - Require minimum data points for forecasts (e.g., 3+ periods)
+  - Display confidence levels prominently
+  - Provide disclaimers about forecast limitations
+  - Allow users to adjust forecast parameters
+  - Show historical forecast accuracy when available
