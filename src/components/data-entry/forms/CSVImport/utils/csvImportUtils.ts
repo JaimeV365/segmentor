@@ -1,6 +1,6 @@
 import { validateEmail, validateDate } from '../../../utils/validation';
 import { ScaleFormat, DataPoint } from '@/types/base';
-import { idCounter } from '../../utils/idCounter';
+import { idCounter } from '../../../utils/idCounter';
 
 export interface DuplicateReport {
   count: number;
