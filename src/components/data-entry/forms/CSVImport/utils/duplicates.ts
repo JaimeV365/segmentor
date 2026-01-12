@@ -42,40 +42,47 @@ export const detectDuplicates = (newData: any[], existingData: DataPoint[]): Dup
     });
   });
   
-  // Check for IDs that already exist in the system
+  // HISTORICAL TRACKING: Check for IDs that already exist in the system
+  // ID must always be unique (even with different dates)
+  // But we should check if it's the same ID + same date (true duplicate) vs same ID + different date (might be intentional)
   if (existingIds.length > 0) {
     // Get the count of matching IDs between this file and existing data
     const matchingIds = idsInFile.filter(id => existingIds.includes(id));
     console.log('Found existing IDs:', matchingIds.length);
     
-    // If ALL IDs match existing ones (re-upload of same file or similar), flag all as duplicates
-    if (matchingIds.length === idsInFile.length && idsInFile.length > 0) {
-      console.log('All IDs match existing ones');
-      idsInFile.forEach(id => {
-        const item = newData.find(row => row.id === id);
-        if (item) {
-          const itemId = item.id || `noID-${Math.random().toString(36).substring(2, 9)}`;
-          if (!duplicateMap.has(itemId)) {
-            duplicateMap.set(itemId, { item, reasons: new Set() });
+    // Check each matching ID to see if it's a true duplicate (same ID + same date)
+    matchingIds.forEach(id => {
+      const newItem = newData.find(row => row.id === id);
+      if (newItem) {
+        const normalizedNewDate = (newItem.date || '').trim();
+        
+        // Find existing item with same ID
+        const existingItem = existingData.find(item => item.id === id);
+        if (existingItem) {
+          const normalizedExistingDate = (existingItem.date || '').trim();
+          
+          // Flag as duplicate if:
+          // 1. Same ID AND same date (true duplicate)
+          // 2. Same ID AND no dates provided (assume duplicate to be safe)
+          // 3. Same ID AND one has date, one doesn't (flag to be safe)
+          if ((normalizedExistingDate !== '' && normalizedNewDate !== '' && normalizedExistingDate === normalizedNewDate) ||
+              (normalizedExistingDate === '' && normalizedNewDate === '') ||
+              (normalizedExistingDate !== '' && normalizedNewDate === '') ||
+              (normalizedExistingDate === '' && normalizedNewDate !== '')) {
+            const itemId = newItem.id || `noID-${Math.random().toString(36).substring(2, 9)}`;
+            if (!duplicateMap.has(itemId)) {
+              duplicateMap.set(itemId, { item: newItem, reasons: new Set() });
+            }
+            if (normalizedExistingDate === normalizedNewDate && normalizedExistingDate !== '') {
+              duplicateMap.get(itemId)?.reasons.add(`ID already exists with same date (${id}, ${newItem.date})`);
+            } else {
+              duplicateMap.get(itemId)?.reasons.add(`ID already exists in system (${id})`);
+            }
           }
-          duplicateMap.get(itemId)?.reasons.add('ID already exists in system');
+          // If same ID but different dates, it's NOT flagged (allows historical tracking with ID)
         }
-      });
-    } else {
-      // Normal case - just add individual matching IDs
-      const conflictingIds = matchingIds;
-      
-      conflictingIds.forEach(id => {
-        const item = newData.find(row => row.id === id);
-        if (item) {
-          const itemId = item.id || `noID-${Math.random().toString(36).substring(2, 9)}`;
-          if (!duplicateMap.has(itemId)) {
-            duplicateMap.set(itemId, { item, reasons: new Set() });
-          }
-          duplicateMap.get(itemId)?.reasons.add('ID already exists in system');
-        }
-      });
-    }
+      }
+    });
   }
   
   // Add email duplicate detection
@@ -157,22 +164,31 @@ export const detectDuplicates = (newData: any[], existingData: DataPoint[]): Dup
     }
   });
   
-  // Add NEW CODE: Check for email duplicates against existing data
-  // Check new data against existing emails
+  // HISTORICAL TRACKING: Check for email duplicates against existing data
+  // Only flag as duplicate if same email AND same date (allows historical tracking)
   newData.forEach(newItem => {
     if (newItem.email) {
       const normalizedEmail = newItem.email.toLowerCase().trim();
+      const normalizedNewDate = (newItem.date || '').trim();
       
       // Check against existing data emails
       existingData.forEach(existingItem => {
         if (existingItem.email && 
             existingItem.email.toLowerCase().trim() === normalizedEmail) {
-          // It's a duplicate email with existing data
-          const itemId = newItem.id || `noID-${Math.random().toString(36).substring(2, 9)}`;
-          if (!duplicateMap.has(itemId)) {
-            duplicateMap.set(itemId, { item: newItem, reasons: new Set() });
+          const normalizedExistingDate = (existingItem.date || '').trim();
+          
+          // Only flag as duplicate if same email AND same date
+          // This allows historical tracking: same customer, different dates = NOT duplicate
+          if (normalizedExistingDate !== '' && normalizedNewDate !== '' && 
+              normalizedExistingDate === normalizedNewDate) {
+            // Same customer, same time period = duplicate
+            const itemId = newItem.id || `noID-${Math.random().toString(36).substring(2, 9)}`;
+            if (!duplicateMap.has(itemId)) {
+              duplicateMap.set(itemId, { item: newItem, reasons: new Set() });
+            }
+            duplicateMap.get(itemId)?.reasons.add(`Duplicate email and date (${newItem.email}, ${newItem.date})`);
           }
-          duplicateMap.get(itemId)?.reasons.add(`Duplicate email (${newItem.email})`);
+          // If dates are different, it's NOT a duplicate (historical data for same customer)
         }
       });
     }
