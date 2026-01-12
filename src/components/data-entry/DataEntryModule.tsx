@@ -238,6 +238,14 @@ if (editingData) {
     headerScales: HeaderScales,
     overwrite?: boolean
   ): string[] => {
+    console.log("handleCSVImport called:", {
+      csvDataLength: csvData.length,
+      overwrite,
+      currentDataLength: data.length
+    });
+    // Mark as file upload so App.tsx can exit demo mode
+    const fileUploadEvent = new CustomEvent('file-upload-started');
+    document.dispatchEvent(fileUploadEvent);
     try {
       const processedData = csvData.map(row => {
         // Ensure we have an ID before processing
@@ -283,7 +291,14 @@ if (editingData) {
       });
     
       // If overwrite is true, replace all data
+      console.log("Creating new data array:", {
+        overwrite,
+        processedDataLength: processedData.length,
+        currentDataLength: data.length,
+        willReplace: overwrite
+      });
       const newData = overwrite ? [...processedData] : [...data, ...processedData];
+      console.log("New data array created with length:", newData.length);
       setData(newData);
       
       // Always pass headerScales to ensure scales are properly set

@@ -56,6 +56,7 @@ const visualizationRef = useRef<HTMLDivElement>(null);
   const [showWelcomeBanner, setShowWelcomeBanner] = useState(true);
   const [showDemoTour, setShowDemoTour] = useState(false);
   const [isLoadingDemo, setIsLoadingDemo] = useState(false);
+  const isDemoDataLoadRef = useRef(false); // Track if we're currently loading demo data
 
   // Check Cloudflare Access authentication on mount and periodically
   useEffect(() => {
@@ -101,6 +102,7 @@ const visualizationRef = useRef<HTMLDivElement>(null);
     try {
       setIsLoadingDemo(true);
       setIsDemoMode(true);
+      isDemoDataLoadRef.current = true; // Mark that we're loading demo data
       // Don't auto-enable Premium mode for demo - keep it as regular demo
       
       const response = await fetch('/segmentor-demo.csv');
@@ -174,12 +176,17 @@ const visualizationRef = useRef<HTMLDivElement>(null);
         };
       });
       
-      setData(demoData);
+      // Use handleDataChange to set demo data, then reset the ref
+      handleDataChange(demoData, {
+        satisfaction: '1-5',
+        loyalty: '0-10'
+      });
       setScales({
         satisfactionScale: '1-5',
         loyaltyScale: '0-10',
         isLocked: false
       });
+      isDemoDataLoadRef.current = false; // Reset after demo data is loaded
       
       notification.showNotification({
         title: 'Demo Data Loaded',
@@ -208,8 +215,9 @@ const visualizationRef = useRef<HTMLDivElement>(null);
       });
       setIsDemoMode(false);
       setIsPremium(false);
-    } finally {
+      } finally {
       setIsLoadingDemo(false);
+      isDemoDataLoadRef.current = false; // Reset ref after demo load completes (success or error)
     }
   };
 
@@ -371,6 +379,7 @@ useEffect(() => {
   // Load progress handler
   const handleLoadProgress = async (file: File) => {
     console.log('Loading progress from file:', file.name);
+    isFileUploadRef.current = true; // Mark as file upload (.seg file)
     try {
       // Import the comprehensive save/load service
       const { comprehensiveSaveLoadService } = await import('./services/ComprehensiveSaveLoadService');
@@ -424,6 +433,9 @@ useEffect(() => {
             type: 'info'
           });
         }
+        
+        // Mark as file upload (.seg file) so we exit demo mode
+        isFileUploadRef.current = true;
         
         // Load the data with proper scales from headers
         handleDataChange(finalDataPoints, {
@@ -564,6 +576,9 @@ useEffect(() => {
           });
         }
         
+        // Mark as file upload (.seg file) so we exit demo mode
+        isFileUploadRef.current = true;
+        
         handleDataChange(finalDataPoints, {
           satisfaction: (saveData as any).data?.scales?.satisfaction as ScaleFormat || '1-5',
           loyalty: (saveData as any).data?.scales?.loyalty as ScaleFormat || '1-5'
@@ -633,12 +648,32 @@ const handleTerroristsZoneSizeChange = (size: number) => {
 
 
 
+  // Listen for file upload events (CSV/.seg) to mark them
+  useEffect(() => {
+    const handleFileUpload = () => {
+      isFileUploadRef.current = true;
+    };
+    
+    document.addEventListener('file-upload-started', handleFileUpload);
+    return () => {
+      document.removeEventListener('file-upload-started', handleFileUpload);
+    };
+  }, []);
+
   const handleDataChange = (newData: DataPoint[], headerScales?: HeaderScales) => {
     // Process data to ensure group property
     const processedData = newData.map(point => ({
       ...point,
       group: point.group || 'default'
     }));
+  
+    // If user is uploading their own file (CSV/.seg, not demo data and not manual entry), exit demo mode
+    if (isDemoMode && !isDemoDataLoadRef.current && isFileUploadRef.current) {
+      setIsDemoMode(false);
+    }
+    
+    // Reset file upload flag after processing
+    isFileUploadRef.current = false;
   
     // Only set scales on first data entry or when explicitly provided by headerScales
     if (data.length === 0 || headerScales) {

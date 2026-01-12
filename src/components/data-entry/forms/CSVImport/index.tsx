@@ -245,9 +245,17 @@ export const CSVImport: React.FC<CSVImportProps> = ({
       let dataToImport = validatedData;
       let truncatedCount = 0;
       
+      console.log("Demo mode check:", {
+        isDemoMode,
+        forceOverwrite,
+        validatedDataLength: validatedData.length,
+        existingDataLength: existingData.length
+      });
+      
       if (isDemoMode) {
         if (forceOverwrite) {
-          // For overwrite mode, limit to demo max entries
+          // For overwrite mode, limit to demo max entries (don't check against existing data)
+          console.log("Overwrite mode: limiting new data to", DEMO_MAX_ENTRIES, "entries");
           if (validatedData.length > DEMO_MAX_ENTRIES) {
             dataToImport = validatedData.slice(0, DEMO_MAX_ENTRIES);
             truncatedCount = validatedData.length - DEMO_MAX_ENTRIES;
@@ -257,10 +265,13 @@ export const CSVImport: React.FC<CSVImportProps> = ({
           const currentCount = existingData.length;
           const availableSlots = DEMO_MAX_ENTRIES - currentCount;
           
+          console.log("Append mode: current count =", currentCount, ", available slots =", availableSlots);
+          
           if (availableSlots <= 0) {
+            console.log("No available slots, showing error");
             showNotification({
               title: 'Demo Limitation',
-              message: `Demo limited to ${DEMO_MAX_ENTRIES} entries. You have reached the limit.`,
+              message: `Demo mode is limited to ${DEMO_MAX_ENTRIES} entries. You have reached the limit. Use "Replace All" to replace existing data, or exit demo mode for unlimited data.`,
               type: 'warning'
             });
             setProgress(null);
@@ -284,7 +295,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
       let successMessage = `Successfully ${forceOverwrite ? 'replaced all data' : 'imported'} ${dataToImport.length} entries from ${fileName}`;
       
       if (isDemoMode && truncatedCount > 0) {
-        successMessage += `. Demo limited to ${DEMO_MAX_ENTRIES} entries. ${truncatedCount} entries were not imported.`;
+        successMessage += `. Note: Demo mode is limited to ${DEMO_MAX_ENTRIES} entries. ${truncatedCount} entries were not imported. Exit demo mode for unlimited data.`;
       }
       
       showNotification({
@@ -310,7 +321,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
       setProgress(null); // Clear progress state even on error
       return false;
     }
-  }, [onImport, onUploadSuccess, satisfactionScale, loyaltyScale, scalesLocked, setError, showNotification, existingIds, clearValidationState]);
+  }, [onImport, onUploadSuccess, satisfactionScale, loyaltyScale, scalesLocked, setError, showNotification, existingIds, existingData, isDemoMode, clearValidationState, setProgress]);
 
   const handleCompleteImport = useCallback((
     validatedData: any[], 
@@ -591,13 +602,14 @@ export const CSVImport: React.FC<CSVImportProps> = ({
     }
     
     const overwrite = mode === 'overwrite';
-    console.log("Mode selected:", overwrite ? "overwrite" : "append");
+    console.log("Mode selected:", overwrite ? "overwrite" : "append", "| overwrite flag =", overwrite);
     
     // If we already have validated data, use it directly
     if (pendingFileData.validatedData) {
       // For overwrite mode, skip the external validation checks
       if (overwrite) {
         console.log("Using validated data, overwrite mode - bypassing external validations");
+        console.log("Calling processParsedData with forceOverwrite =", true, "| data length =", pendingFileData.validatedData.length);
         processParsedData(
           pendingFileData.validatedData, 
           pendingFileData.headerScales, 
