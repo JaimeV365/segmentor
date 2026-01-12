@@ -77,7 +77,8 @@ export const validateDataRows = (
   satisfactionHeader: string, 
   loyaltyHeader: string,
   satisfactionScale: string,
-  loyaltyScale: string
+  loyaltyScale: string,
+  existingData?: DataPoint[] // Optional: existing data for ID reuse (historical tracking)
 ): InternalValidationResult => {
   console.log('Starting data validation with headers:', { satisfactionHeader, loyaltyHeader });
   if (data.length > 0) {
