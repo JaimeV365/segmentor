@@ -98,7 +98,6 @@ export const DuplicateCheckService = {
       const normalizedExistingEmail = duplicate.email?.trim().toLowerCase() || '';
       const normalizedExistingDate = duplicate.date?.trim() || '';
       
-      const normalizedExistingDate = duplicate.date?.trim() || '';
       const bothHaveDates = normalizedExistingDate !== '' && normalizedNewDate !== '';
       
       if (duplicate.id === newDataPoint.id) {
