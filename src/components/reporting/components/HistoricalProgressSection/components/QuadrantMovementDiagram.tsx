@@ -152,7 +152,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                   {circlePositions.map((pos, idx) => {
                     const sourceX = pos.x;
                     const sourceY = pos.y;
-                    const arrowEnd = getArrowEndPoint(pos.to);
+                    const arrowEnd = getArrowEndPoint(sourceX, sourceY, quadrant, pos.to);
                     const endX = arrowEnd.x;
                     const endY = arrowEnd.y;
                     

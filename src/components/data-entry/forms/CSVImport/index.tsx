@@ -351,8 +351,8 @@ export const CSVImport: React.FC<CSVImportProps> = ({
       setDuplicateReport(duplicateInfo);
     }
     
-    // Only show Add/Replace if there's existing data - regardless of duplicate status
-    if (existingIds.length > 0) {
+    // Only show Add/Replace if there's existing data - check both existingIds and existingData
+    if (existingIds.length > 0 && existingData && existingData.length > 0) {
       console.log("Existing data found, showing import mode dialog");
       // Store data to be used after mode selection
       setPendingFileData({ 
