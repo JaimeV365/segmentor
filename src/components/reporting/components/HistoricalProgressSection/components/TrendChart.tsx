@@ -130,7 +130,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
 
   // Handle point click
   const handlePointClick = (data: any, index: number, metricType: 'satisfaction' | 'loyalty') => {
-    const pointData = customerLinesData[index];
+    const pointData = chartDataWithCustomers[index];
     if (!pointData) return;
 
     // Get all customers at this date
@@ -191,7 +191,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
       <div className="trend-chart-container">
         <h4 className="trend-chart-title">{title}</h4>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={customerLinesData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <LineChart data={chartDataWithCustomers} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis 
               dataKey="date" 
@@ -223,30 +223,17 @@ export const TrendChart: React.FC<TrendChartProps> = ({
             />
             
             {/* Individual customer lines - only show if not too many (performance) */}
-            {customerLines.length <= 20 && customerLines.map((line) => {
-              const lineKey = `customer-${line.customerId}`;
-              // Create data array aligned with main chart dates
-              const customerData = customerLinesData.map(chartPoint => {
-                const customerPoint = line.dataPoints.get(chartPoint.date);
-                return {
-                  date: chartPoint.date,
-                  satisfaction: customerPoint?.satisfaction ?? null,
-                  loyalty: customerPoint?.loyalty ?? null
-                };
-              });
-              
+            {showIndividualLines && timelines.slice(0, 20).map((timeline, idx) => {
               if (metric === 'satisfaction' || metric === 'both') {
                 return (
                   <Line
-                    key={`${lineKey}-sat`}
+                    key={`customer-${idx}-sat`}
                     type="monotone"
-                    dataKey="satisfaction"
-                    data={customerData}
+                    dataKey={`customer_${idx}_satisfaction`}
                     stroke="#cbd5e1"
                     strokeWidth={1}
                     dot={false}
                     connectNulls={true}
-                    name={lineKey}
                     hide={true}
                     isAnimationActive={false}
                   />
@@ -255,15 +242,13 @@ export const TrendChart: React.FC<TrendChartProps> = ({
               if (metric === 'loyalty' || metric === 'both') {
                 return (
                   <Line
-                    key={`${lineKey}-loy`}
+                    key={`customer-${idx}-loy`}
                     type="monotone"
-                    dataKey="loyalty"
-                    data={customerData}
+                    dataKey={`customer_${idx}_loyalty`}
                     stroke="#cbd5e1"
                     strokeWidth={1}
                     dot={false}
                     connectNulls={true}
-                    name={lineKey}
                     hide={true}
                     isAnimationActive={false}
                   />
@@ -297,7 +282,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
             )}
           </LineChart>
         </ResponsiveContainer>
-        {customerLines.length > 20 && (
+        {!showIndividualLines && (
           <p className="trend-chart-note" style={{ fontSize: '12px', color: '#6b7280', marginTop: '8px' }}>
             Note: Showing average only (too many customers to display individual lines)
           </p>
