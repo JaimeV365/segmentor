@@ -112,23 +112,29 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
               <div className="trend-charts-grid">
                 <TrendChart
                   data={trendData}
+                  timelines={timelines}
                   scale={satisfactionScale}
                   metric="satisfaction"
                   title="Satisfaction Trend Over Time"
+                  dateFormat={dateFormat}
                 />
                 <TrendChart
                   data={trendData}
+                  timelines={timelines}
                   scale={loyaltyScale}
                   metric="loyalty"
                   title="Loyalty Trend Over Time"
+                  dateFormat={dateFormat}
                 />
               </div>
               
               <TrendChart
                 data={trendData}
+                timelines={timelines}
                 scale={satisfactionScale}
                 metric="both"
                 title="Combined Satisfaction & Loyalty Trends"
+                dateFormat={dateFormat}
               />
             </div>
           )}

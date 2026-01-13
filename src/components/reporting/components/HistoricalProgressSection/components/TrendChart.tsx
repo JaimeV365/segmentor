@@ -1,28 +1,114 @@
-import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import React, { useState, useMemo } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Dot } from 'recharts';
 import { TrendDataPoint } from '../services/historicalAnalysisService';
-import { ScaleFormat } from '@/types/base';
+import { CustomerTimeline } from '../utils/historicalDataUtils';
+import { ScaleFormat, DataPoint } from '@/types/base';
+import { ProximityPointInfoBox } from '../../DistributionSection/ProximityPointInfoBox';
+import { parseDate } from '../utils/historicalDataUtils';
 
 interface TrendChartProps {
   data: TrendDataPoint[];
+  timelines: CustomerTimeline[];
   scale: ScaleFormat;
   metric: 'satisfaction' | 'loyalty' | 'both';
   title: string;
+  dateFormat?: string;
+}
+
+interface ClickedPoint {
+  date: string;
+  points: DataPoint[];
+  metric: 'satisfaction' | 'loyalty';
+  value: number;
+  position: { x: number; y: number };
 }
 
 export const TrendChart: React.FC<TrendChartProps> = ({
   data,
+  timelines,
   scale,
   metric,
-  title
+  title,
+  dateFormat
 }) => {
-  // Format data for Recharts
-  const chartData = data.map(point => ({
-    date: point.date,
-    satisfaction: point.averageSatisfaction,
-    loyalty: point.averageLoyalty,
-    count: point.count
-  }));
+  const [clickedPoint, setClickedPoint] = useState<ClickedPoint | null>(null);
+
+  // Prepare individual customer lines data
+  const customerLinesData = useMemo(() => {
+    const dateMap = new Map<string, Map<string, { satisfaction: number; loyalty: number }>>();
+    
+    // Collect all customer data points by date
+    timelines.forEach(timeline => {
+      timeline.dataPoints.forEach(point => {
+        if (point.date) {
+          const normalizedDate = point.date.trim();
+          if (!dateMap.has(normalizedDate)) {
+            dateMap.set(normalizedDate, new Map());
+          }
+          const customerMap = dateMap.get(normalizedDate)!;
+          customerMap.set(timeline.identifier, {
+            satisfaction: point.satisfaction,
+            loyalty: point.loyalty
+          });
+        }
+      });
+    });
+
+    // Convert to array format for Recharts
+    const chartData: Array<{
+      date: string;
+      dateObj: Date;
+      averageSatisfaction: number;
+      averageLoyalty: number;
+      count: number;
+      customers: Map<string, { satisfaction: number; loyalty: number }>;
+    }> = [];
+
+    dateMap.forEach((customers, dateStr) => {
+      const dateObj = parseDate(dateStr, dateFormat);
+      if (dateObj) {
+        const satisfactionValues = Array.from(customers.values()).map(c => c.satisfaction);
+        const loyaltyValues = Array.from(customers.values()).map(c => c.loyalty);
+        
+        chartData.push({
+          date: dateStr,
+          dateObj,
+          averageSatisfaction: satisfactionValues.reduce((a, b) => a + b, 0) / satisfactionValues.length,
+          averageLoyalty: loyaltyValues.reduce((a, b) => a + b, 0) / loyaltyValues.length,
+          count: customers.size,
+          customers
+        });
+      }
+    });
+
+    chartData.sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
+    return chartData;
+  }, [timelines, dateFormat]);
+
+  // Prepare individual customer line data for Recharts
+  const customerLines = useMemo(() => {
+    const lines: Array<{ customerId: string; data: Array<{ date: string; satisfaction: number; loyalty: number }> }> = [];
+    
+    timelines.forEach(timeline => {
+      const customerData = timeline.dataPoints
+        .filter(p => p.date)
+        .map(p => ({
+          date: p.date!.trim(),
+          satisfaction: p.satisfaction,
+          loyalty: p.loyalty
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+      
+      if (customerData.length > 0) {
+        lines.push({
+          customerId: timeline.identifier,
+          data: customerData
+        });
+      }
+    });
+
+    return lines;
+  }, [timelines]);
 
   // Determine Y-axis domain based on scale
   const getYAxisDomain = (scale: ScaleFormat): [number, number] => {
@@ -37,62 +123,182 @@ export const TrendChart: React.FC<TrendChartProps> = ({
 
   const [yMin, yMax] = getYAxisDomain(scale);
 
+  // Handle point click
+  const handlePointClick = (data: any, index: number, metricType: 'satisfaction' | 'loyalty') => {
+    const pointData = customerLinesData[index];
+    if (!pointData) return;
+
+    // Get all customers at this date
+    const customersAtDate: DataPoint[] = [];
+    timelines.forEach(timeline => {
+      const point = timeline.dataPoints.find(p => p.date && p.date.trim() === pointData.date);
+      if (point) {
+        customersAtDate.push(point);
+      }
+    });
+
+    if (customersAtDate.length > 0) {
+      // Calculate position for modal (approximate based on chart)
+      const chartElement = document.querySelector('.trend-chart-container');
+      const rect = chartElement?.getBoundingClientRect();
+      
+      setClickedPoint({
+        date: pointData.date,
+        points: customersAtDate,
+        metric: metricType,
+        value: metricType === 'satisfaction' ? pointData.averageSatisfaction : pointData.averageLoyalty,
+        position: {
+          x: rect ? rect.left + rect.width / 2 : window.innerWidth / 2,
+          y: rect ? rect.top + rect.height / 2 : window.innerHeight / 2
+        }
+      });
+    }
+  };
+
+  // Custom dot component that shows size based on customer count
+  const CustomDot = (props: any) => {
+    const { cx, cy, payload } = props;
+    const pointData = customerLinesData.find(d => d.date === payload.date);
+    const customerCount = pointData?.count || 1;
+    const radius = Math.min(4 + customerCount * 0.5, 8); // Scale from 4 to 8 based on count
+    
+    return (
+      <circle
+        cx={cx}
+        cy={cy}
+        r={radius}
+        fill={props.fill}
+        stroke={props.stroke}
+        strokeWidth={2}
+        style={{ cursor: 'pointer' }}
+        onClick={(e) => {
+          e.stopPropagation();
+          const metricType = props.dataKey === 'satisfaction' ? 'satisfaction' : 'loyalty';
+          const index = customerLinesData.findIndex(d => d.date === payload.date);
+          handlePointClick(payload, index, metricType);
+        }}
+      />
+    );
+  };
+
   return (
-    <div className="trend-chart-container">
-      <h4 className="trend-chart-title">{title}</h4>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis 
-            dataKey="date" 
-            stroke="#6b7280"
-            style={{ fontSize: '12px' }}
-            angle={-45}
-            textAnchor="end"
-            height={60}
-          />
-          <YAxis 
-            domain={[yMin, yMax]}
-            stroke="#6b7280"
-            style={{ fontSize: '12px' }}
-          />
-          <Tooltip 
-            contentStyle={{ 
-              backgroundColor: '#fff', 
-              border: '1px solid #e5e7eb',
-              borderRadius: '6px',
-              fontSize: '12px'
-            }}
-            formatter={(value: number, name: string) => {
-              return [value.toFixed(2), name === 'satisfaction' ? 'Satisfaction' : 'Loyalty'];
-            }}
-            labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
-          />
-          <Legend 
-            wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
-          />
-          {(metric === 'satisfaction' || metric === 'both') && (
-            <Line 
-              type="monotone" 
-              dataKey="satisfaction" 
-              stroke="#3a863e" 
-              strokeWidth={2}
-              dot={{ r: 4 }}
-              name="Satisfaction"
+    <>
+      <div className="trend-chart-container">
+        <h4 className="trend-chart-title">{title}</h4>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={customerLinesData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis 
+              dataKey="date" 
+              stroke="#6b7280"
+              style={{ fontSize: '12px' }}
+              angle={-45}
+              textAnchor="end"
+              height={60}
             />
-          )}
-          {(metric === 'loyalty' || metric === 'both') && (
-            <Line 
-              type="monotone" 
-              dataKey="loyalty" 
-              stroke="#2563eb" 
-              strokeWidth={2}
-              dot={{ r: 4 }}
-              name="Loyalty"
+            <YAxis 
+              domain={[yMin, yMax]}
+              stroke="#6b7280"
+              style={{ fontSize: '12px' }}
             />
-          )}
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+            <Tooltip 
+              contentStyle={{ 
+                backgroundColor: '#fff', 
+                border: '1px solid #e5e7eb',
+                borderRadius: '6px',
+                fontSize: '12px'
+              }}
+              formatter={(value: number, name: string) => {
+                return [value.toFixed(2), name === 'satisfaction' ? 'Satisfaction (Avg)' : name === 'loyalty' ? 'Loyalty (Avg)' : name];
+              }}
+              labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
+            />
+            <Legend 
+              wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+            />
+            
+            {/* Individual customer lines - only show if not too many (performance) */}
+            {customerLines.length <= 20 && customerLines.map((line, index) => {
+              const lineKey = `customer-${line.customerId}`;
+              if (metric === 'satisfaction' || metric === 'both') {
+                return (
+                  <Line
+                    key={`${lineKey}-sat`}
+                    type="monotone"
+                    dataKey="satisfaction"
+                    data={line.data}
+                    stroke="#cbd5e1"
+                    strokeWidth={1}
+                    dot={false}
+                    connectNulls={true}
+                    name={lineKey}
+                    hide={true}
+                    isAnimationActive={false}
+                  />
+                );
+              }
+              if (metric === 'loyalty' || metric === 'both') {
+                return (
+                  <Line
+                    key={`${lineKey}-loy`}
+                    type="monotone"
+                    dataKey="loyalty"
+                    data={line.data}
+                    stroke="#cbd5e1"
+                    strokeWidth={1}
+                    dot={false}
+                    connectNulls={true}
+                    name={lineKey}
+                    hide={true}
+                    isAnimationActive={false}
+                  />
+                );
+              }
+              return null;
+            })}
+            
+            {/* Average lines - prominent */}
+            {(metric === 'satisfaction' || metric === 'both') && (
+              <Line 
+                type="monotone" 
+                dataKey="averageSatisfaction" 
+                stroke="#3a863e" 
+                strokeWidth={3}
+                dot={<CustomDot fill="#3a863e" stroke="#3a863e" dataKey="satisfaction" />}
+                name="Satisfaction (Average)"
+                isAnimationActive={false}
+              />
+            )}
+            {(metric === 'loyalty' || metric === 'both') && (
+              <Line 
+                type="monotone" 
+                dataKey="averageLoyalty" 
+                stroke="#2563eb" 
+                strokeWidth={3}
+                dot={<CustomDot fill="#2563eb" stroke="#2563eb" dataKey="loyalty" />}
+                name="Loyalty (Average)"
+                isAnimationActive={false}
+              />
+            )}
+          </LineChart>
+        </ResponsiveContainer>
+        {customerLines.length > 20 && (
+          <p className="trend-chart-note" style={{ fontSize: '12px', color: '#6b7280', marginTop: '8px' }}>
+            Note: Showing average only (too many customers to display individual lines)
+          </p>
+        )}
+      </div>
+
+      {/* Customer list modal */}
+      {clickedPoint && (
+        <ProximityPointInfoBox
+          points={clickedPoint.points}
+          position={clickedPoint.position}
+          quadrant=""
+          onClose={() => setClickedPoint(null)}
+          context="distribution"
+        />
+      )}
+    </>
   );
 };

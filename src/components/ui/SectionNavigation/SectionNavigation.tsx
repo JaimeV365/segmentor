@@ -129,6 +129,12 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
         selector: '[data-section-id="report-proximity"]'
       },
       {
+        id: 'report-historical-progress',
+        label: 'Historical Progress',
+        icon: <TrendingUp size={16} />,
+        selector: '[data-section-id="report-historical-progress"]'
+      },
+      {
         id: 'report-actions',
         label: 'Actions Report',
         icon: <Lightbulb size={16} />,
