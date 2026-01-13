@@ -194,13 +194,13 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                           markerEnd={`url(#${markerId})`}
                           opacity={0.75}
                         />
-                        {/* Circle with number - white fill, colored border */}
+                        {/* Circle with number - white fill, border in destination color, number in source color */}
                         <circle
                           cx={sourceX}
                           cy={sourceY}
                           r={circleRadius}
                           fill="#fff"
-                          stroke={QUADRANT_COLORS[quadrant]}
+                          stroke={QUADRANT_COLORS[pos.to]}
                           strokeWidth={borderWidth}
                         />
                         <text
@@ -218,25 +218,37 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     );
                   })}
                   
-                  {/* Arrow marker definitions - simple two-line tip for each quadrant color */}
+                  {/* Arrow marker definitions - clean simple two-line V-shape tip */}
                   <defs>
                     {Object.entries(QUADRANT_COLORS).map(([quad, color]) => (
                       <marker
                         key={`arrowhead-${quad}`}
                         id={`arrowhead-${quad}`}
-                        markerWidth="10"
-                        markerHeight="10"
-                        refX="9"
-                        refY="5"
+                        markerWidth="8"
+                        markerHeight="8"
+                        refX="7"
+                        refY="4"
                         orient="auto"
-                        markerUnits="strokeWidth"
+                        markerUnits="userSpaceOnUse"
                       >
-                        <path
-                          d="M 0 0 L 10 5 L 0 10"
-                          fill="none"
+                        {/* Simple two-line arrow tip */}
+                        <line
+                          x1="0"
+                          y1="0"
+                          x2="8"
+                          y2="4"
                           stroke={color}
-                          strokeWidth={2}
-                          opacity={0.75}
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                        <line
+                          x1="0"
+                          y1="8"
+                          x2="8"
+                          y2="4"
+                          stroke={color}
+                          strokeWidth="2"
+                          strokeLinecap="round"
                         />
                       </marker>
                     ))}
