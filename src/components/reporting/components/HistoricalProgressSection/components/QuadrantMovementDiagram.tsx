@@ -35,10 +35,6 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     return grouped;
   }, [mainMovements]);
 
-  if (mainMovements.length === 0) {
-    return null;
-  }
-
   // Positioning matrix for circles based on source and destination
   // Format: { source: { destination: { x, y } } }
   const CIRCLE_POSITION_MATRIX: Record<string, Record<string, { x: number; y: number }>> = {
@@ -173,14 +169,6 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     return { x: 50, y: 50 };
   };
 
-  // Quadrant colors for circles and arrows
-  const QUADRANT_COLORS: Record<string, string> = {
-    'loyalists': '#4CAF50',
-    'mercenaries': '#F7B731',
-    'hostages': '#4682B4',
-    'defectors': '#DC2626'
-  };
-
   // Convert quadrant-relative positions to absolute grid positions
   // Grid layout: Hostages (0,0), Loyalists (1,0), Defectors (0,1), Mercenaries (1,1)
   const getAbsolutePosition = (quadrant: string, relativeX: number, relativeY: number): { x: number; y: number } => {
@@ -202,7 +190,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     };
   };
 
-  // Collect all circles and arrows for the single overlay
+  // Collect all circles and arrows for the single overlay (must be before early return)
   const allArrowsAndCircles = useMemo(() => {
     const items: Array<{
       quadrant: string;
@@ -241,6 +229,18 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     
     return items;
   }, [movementsBySource]);
+
+  if (mainMovements.length === 0) {
+    return null;
+  }
+
+  // Quadrant colors for circles and arrows
+  const QUADRANT_COLORS: Record<string, string> = {
+    'loyalists': '#4CAF50',
+    'mercenaries': '#F7B731',
+    'hostages': '#4682B4',
+    'defectors': '#DC2626'
+  };
 
   return (
     <div className="quadrant-movement-diagram">
