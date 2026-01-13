@@ -23,11 +23,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     mainQuadrants.includes(m.from) && mainQuadrants.includes(m.to)
   );
 
-  if (mainMovements.length === 0) {
-    return null;
-  }
-
-  // Group movements by source quadrant
+  // Group movements by source quadrant (must be before early return)
   const movementsBySource = useMemo(() => {
     const grouped: Record<string, Array<{ to: QuadrantType; count: number }>> = {};
     mainMovements.forEach(movement => {
@@ -38,6 +34,10 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     });
     return grouped;
   }, [mainMovements]);
+
+  if (mainMovements.length === 0) {
+    return null;
+  }
 
   // Calculate circle positions within each quadrant (percentage-based)
   const getCirclePositions = (movements: Array<{ to: QuadrantType; count: number }>) => {
