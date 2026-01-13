@@ -39,33 +39,42 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     return null;
   }
 
-  // Calculate circle positions within each quadrant based on destination
-  // Circles are positioned closer to their destination quadrant
-  const getCirclePositionForDestination = (sourceQuadrant: string, destinationQuadrant: string): { x: number; y: number } => {
-    // Position circles near the edge closest to destination quadrant
-    if (destinationQuadrant === 'hostages') {
-      // Top-left destination: position in top-center area of source
-      if (sourceQuadrant === 'defectors') return { x: 50, y: 20 }; // Top-center of defectors
-      if (sourceQuadrant === 'mercenaries') return { x: 20, y: 20 }; // Top-left of mercenaries
-      if (sourceQuadrant === 'loyalists') return { x: 20, y: 20 }; // Top-left of loyalists
-    } else if (destinationQuadrant === 'loyalists') {
-      // Top-right destination: position in top-right area of source
-      if (sourceQuadrant === 'defectors') return { x: 80, y: 20 }; // Top-right of defectors
-      if (sourceQuadrant === 'mercenaries') return { x: 80, y: 20 }; // Top-right of mercenaries
-      if (sourceQuadrant === 'hostages') return { x: 80, y: 20 }; // Top-right of hostages
-    } else if (destinationQuadrant === 'mercenaries') {
-      // Bottom-right destination: position in right-center area of source
-      if (sourceQuadrant === 'defectors') return { x: 80, y: 50 }; // Right-center of defectors
-      if (sourceQuadrant === 'hostages') return { x: 80, y: 80 }; // Bottom-right of hostages
-      if (sourceQuadrant === 'loyalists') return { x: 80, y: 80 }; // Bottom-right of loyalists
-    } else if (destinationQuadrant === 'defectors') {
-      // Bottom-left destination: position in bottom-left area of source
-      if (sourceQuadrant === 'hostages') return { x: 20, y: 80 }; // Bottom-left of hostages
-      if (sourceQuadrant === 'loyalists') return { x: 20, y: 80 }; // Bottom-left of loyalists
-      if (sourceQuadrant === 'mercenaries') return { x: 20, y: 80 }; // Bottom-left of mercenaries
+  // Positioning matrix for circles based on source and destination
+  // Format: { source: { destination: { x, y } } }
+  const CIRCLE_POSITION_MATRIX: Record<string, Record<string, { x: number; y: number }>> = {
+    'hostages': {
+      'loyalists': { x: 80, y: 20 },   // Top-right of hostages (toward loyalists)
+      'mercenaries': { x: 80, y: 80 }, // Bottom-right of hostages (toward mercenaries)
+      'defectors': { x: 20, y: 80 }    // Bottom-left of hostages (toward defectors)
+    },
+    'loyalists': {
+      'hostages': { x: 20, y: 20 },    // Top-left of loyalists (toward hostages)
+      'mercenaries': { x: 80, y: 80 }, // Bottom-right of loyalists (toward mercenaries)
+      'defectors': { x: 20, y: 80 }     // Bottom-left of loyalists (toward defectors)
+    },
+    'defectors': {
+      'hostages': { x: 50, y: 20 },    // Top-center of defectors (toward hostages)
+      'loyalists': { x: 80, y: 20 },   // Top-right of defectors (toward loyalists)
+      'mercenaries': { x: 80, y: 50 }  // Right-center of defectors (toward mercenaries)
+    },
+    'mercenaries': {
+      'hostages': { x: 20, y: 20 },    // Top-left of mercenaries (toward hostages)
+      'loyalists': { x: 80, y: 20 },   // Top-right of mercenaries (toward loyalists)
+      'defectors': { x: 20, y: 50 }    // Left-center of mercenaries (toward defectors)
     }
-    // Default: center
-    return { x: 50, y: 50 };
+  };
+
+  // Arrow end point matrix - aligned positions for clean arrows
+  // Format: { destination: { x, y } } - where arrow should end
+  const ARROW_END_MATRIX: Record<string, { x: number; y: number }> = {
+    'hostages': { x: 10, y: 10 },      // Top-left corner of hostages quadrant
+    'loyalists': { x: 90, y: 10 },     // Top-right corner of loyalists quadrant
+    'defectors': { x: 10, y: 90 },     // Bottom-left corner of defectors quadrant
+    'mercenaries': { x: 90, y: 90 }    // Bottom-right corner of mercenaries quadrant
+  };
+
+  const getCirclePositionForDestination = (sourceQuadrant: string, destinationQuadrant: string): { x: number; y: number } => {
+    return CIRCLE_POSITION_MATRIX[sourceQuadrant]?.[destinationQuadrant] || { x: 50, y: 50 };
   };
 
   // Calculate circle positions within each quadrant (percentage-based)
@@ -103,15 +112,9 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     return positions;
   };
 
-  // Get destination quadrant center position (percentage-based)
-  const getDestinationCenter = (quadrant: string): { x: number; y: number } => {
-    const positions: Record<string, { x: number; y: number }> = {
-      'loyalists': { x: 75, y: 25 },      // Top-right
-      'mercenaries': { x: 75, y: 75 },    // Bottom-right
-      'hostages': { x: 25, y: 25 },       // Top-left
-      'defectors': { x: 25, y: 75 }       // Bottom-left
-    };
-    return positions[quadrant] || { x: 50, y: 50 };
+  // Get arrow end point from matrix (aligned positions)
+  const getArrowEndPoint = (destinationQuadrant: string): { x: number; y: number } => {
+    return ARROW_END_MATRIX[destinationQuadrant] || { x: 50, y: 50 };
   };
 
   // Quadrant colors for circles and arrows
@@ -147,18 +150,11 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                 >
                   {/* Draw circles with numbers and arrows */}
                   {circlePositions.map((pos, idx) => {
-                    const destCenter = getDestinationCenter(pos.to);
                     const sourceX = pos.x;
                     const sourceY = pos.y;
-                    const destX = destCenter.x;
-                    const destY = destCenter.y;
-                    
-                    // Calculate arrow path
-                    const dx = destX - sourceX;
-                    const dy = destY - sourceY;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    const unitX = dx / distance;
-                    const unitY = dy / distance;
+                    const arrowEnd = getArrowEndPoint(pos.to);
+                    const endX = arrowEnd.x;
+                    const endY = arrowEnd.y;
                     
                     // Circle properties
                     const circleRadius = 8;
@@ -168,55 +164,12 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     const startX = sourceX;
                     const startY = sourceY;
                     
-                    // End point (edge of destination quadrant - calculate based on quadrant position)
-                    let endX, endY;
-                    // Calculate which edge of destination quadrant to hit
-                    if (pos.to === 'loyalists') {
-                      // Top-right: hit top or right edge depending on angle
-                      if (Math.abs(dy) > Math.abs(dx)) {
-                        // More vertical, hit top edge
-                        endX = destX + (destX - sourceX) / Math.abs(dy) * (destY - 5);
-                        endY = 5;
-                      } else {
-                        // More horizontal, hit right edge
-                        endX = 95;
-                        endY = destY + (destY - sourceY) / Math.abs(dx) * (destX - 5);
-                      }
-                    } else if (pos.to === 'mercenaries') {
-                      // Bottom-right: hit bottom or right edge
-                      if (Math.abs(dy) > Math.abs(dx)) {
-                        endX = destX + (destX - sourceX) / Math.abs(dy) * (95 - destY);
-                        endY = 95;
-                      } else {
-                        endX = 95;
-                        endY = destY + (destY - sourceY) / Math.abs(dx) * (destX - 5);
-                      }
-                    } else if (pos.to === 'hostages') {
-                      // Top-left: hit top or left edge
-                      if (Math.abs(dy) > Math.abs(dx)) {
-                        endX = destX - (destX - sourceX) / Math.abs(dy) * (destY - 5);
-                        endY = 5;
-                      } else {
-                        endX = 5;
-                        endY = destY - (destY - sourceY) / Math.abs(dx) * (95 - destX);
-                      }
-                    } else { // defectors
-                      // Bottom-left: hit bottom or left edge
-                      if (Math.abs(dy) > Math.abs(dx)) {
-                        endX = destX - (destX - sourceX) / Math.abs(dy) * (95 - destY);
-                        endY = 95;
-                      } else {
-                        endX = 5;
-                        endY = destY - (destY - sourceY) / Math.abs(dx) * (95 - destX);
-                      }
-                    }
-                    
                     // Create unique marker ID for each destination color to avoid conflicts
                     const markerId = `arrowhead-${pos.to}`;
                     
                     return (
                       <g key={`${quadrant}-${pos.to}-${idx}`}>
-                        {/* Arrow line */}
+                        {/* Arrow line - drawn first so circle appears on top */}
                         <line
                           x1={startX}
                           y1={startY}
@@ -225,7 +178,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                           stroke={QUADRANT_COLORS[pos.to]}
                           strokeWidth={2.5}
                           markerEnd={`url(#${markerId})`}
-                          opacity={0.75}
+                          opacity={0.8}
                         />
                         {/* Circle with number - white fill, border in destination color, number in source color */}
                         <circle

@@ -154,7 +154,7 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 10;
+  z-index: 20; /* Higher z-index to ensure arrows are on top of quadrants */
   /* Ensure circles render as perfect circles */
   shape-rendering: geometricPrecision;
 }
