@@ -352,7 +352,11 @@ export const CSVImport: React.FC<CSVImportProps> = ({
     }
     
     // Only show Add/Replace if there's existing data - check both existingIds and existingData
-    if (existingIds.length > 0 && existingData && existingData.length > 0) {
+    // Make sure we have actual data, not just empty arrays
+    const hasExistingData = existingData && Array.isArray(existingData) && existingData.length > 0;
+    const hasExistingIds = existingIds && Array.isArray(existingIds) && existingIds.length > 0;
+    
+    if (hasExistingIds && hasExistingData) {
       console.log("Existing data found, showing import mode dialog");
       // Store data to be used after mode selection
       setPendingFileData({ 

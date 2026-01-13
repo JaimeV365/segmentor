@@ -106,75 +106,75 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     // Boundary is at 50%, so we extend to 15-20% from opposite edge to clearly cross boundaries
     
     // Defectors (bottom-left) to Hostages (top-left): vertical up, end longer into quadrant
-    // Hostages local: y=0 is top, y=100 is bottom (boundary). End 10% into quadrant = 90%
+    // Hostages local: y=0 is top, y=100 is bottom (boundary). End 12% into quadrant = 88%
     if (sourceQuadrant === 'defectors' && destinationQuadrant === 'hostages') {
-      return { x: sourceX, y: 90 }; // 10% into hostages quadrant
+      return { x: sourceX, y: 88 }; // 12% into hostages quadrant
     }
     
     // Hostages (top-left) to Defectors (bottom-left): vertical down, end longer into quadrant
-    // Defectors local: y=0 is top (boundary), y=100 is bottom. End 10% into quadrant = 10%
+    // Defectors local: y=0 is top (boundary), y=100 is bottom. End 12% into quadrant = 12%
     if (sourceQuadrant === 'hostages' && destinationQuadrant === 'defectors') {
-      return { x: sourceX, y: 10 }; // 10% into defectors quadrant
+      return { x: sourceX, y: 12 }; // 12% into defectors quadrant
     }
     
     // Defectors (bottom-left) to Loyalists (top-right): diagonal up-right, end longer into quadrant
-    // Loyalists local: x=0 is left (boundary), y=0 is top, y=100 is bottom (boundary). End 10% into quadrant
+    // Loyalists local: x=0 is left (boundary), y=0 is top, y=100 is bottom (boundary). End 12% into quadrant
     if (sourceQuadrant === 'defectors' && destinationQuadrant === 'loyalists') {
-      return { x: 10, y: 90 }; // 10% into loyalists quadrant
+      return { x: 12, y: 88 }; // 12% into loyalists quadrant
     }
     
     // Defectors (bottom-left) to Mercenaries (bottom-right): horizontal right, end longer into quadrant
-    // Mercenaries local: x=0 is left (boundary), y=0 is top (boundary), y=100 is bottom. End 10% into quadrant
+    // Mercenaries local: x=0 is left (boundary), y=0 is top (boundary), y=100 is bottom. End 12% into quadrant
     if (sourceQuadrant === 'defectors' && destinationQuadrant === 'mercenaries') {
-      return { x: 10, y: sourceY }; // 10% into mercenaries quadrant
+      return { x: 12, y: sourceY }; // 12% into mercenaries quadrant
     }
     
     // Hostages (top-left) to Loyalists (top-right): horizontal right, end longer into quadrant
-    // Loyalists local: x=0 is left (boundary), x=100 is right. End 10% into quadrant
+    // Loyalists local: x=0 is left (boundary), x=100 is right. End 12% into quadrant
     if (sourceQuadrant === 'hostages' && destinationQuadrant === 'loyalists') {
-      return { x: 10, y: sourceY }; // 10% into loyalists quadrant
+      return { x: 12, y: sourceY }; // 12% into loyalists quadrant
     }
     
     // Hostages (top-left) to Mercenaries (bottom-right): diagonal down-right, end longer into quadrant
-    // Mercenaries local: x=0 is left (boundary), y=0 is top (boundary). End 10% into quadrant
+    // Mercenaries local: x=0 is left (boundary), y=0 is top (boundary). End 12% into quadrant
     if (sourceQuadrant === 'hostages' && destinationQuadrant === 'mercenaries') {
-      return { x: 10, y: 10 }; // 10% into mercenaries quadrant
+      return { x: 12, y: 12 }; // 12% into mercenaries quadrant
     }
     
     // Loyalists (top-right) to Hostages (top-left): horizontal left, end longer into quadrant
-    // Hostages local: x=100 is right (boundary), x=0 is left. End 10% into quadrant = 90%
+    // Hostages local: x=100 is right (boundary), x=0 is left. End 12% into quadrant = 88%
     if (sourceQuadrant === 'loyalists' && destinationQuadrant === 'hostages') {
-      return { x: 90, y: sourceY }; // 10% into hostages quadrant
+      return { x: 88, y: sourceY }; // 12% into hostages quadrant
     }
     
     // Loyalists (top-right) to Defectors (bottom-left): diagonal down-left, end longer into quadrant
-    // Defectors local: x=100 is right (boundary), y=0 is top (boundary). End 10% into quadrant
+    // Defectors local: x=100 is right (boundary), y=0 is top (boundary). End 12% into quadrant
     if (sourceQuadrant === 'loyalists' && destinationQuadrant === 'defectors') {
-      return { x: 90, y: 10 }; // 10% into defectors quadrant
+      return { x: 88, y: 12 }; // 12% into defectors quadrant
     }
     
     // Loyalists (top-right) to Mercenaries (bottom-right): vertical down, end longer into quadrant
-    // Mercenaries local: y=0 is top (boundary), y=100 is bottom. End 10% into quadrant = 10%
+    // Mercenaries local: y=0 is top (boundary), y=100 is bottom. End 12% into quadrant = 12%
     if (sourceQuadrant === 'loyalists' && destinationQuadrant === 'mercenaries') {
-      return { x: sourceX, y: 10 }; // 10% into mercenaries quadrant
+      return { x: sourceX, y: 12 }; // 12% into mercenaries quadrant
     }
     
     // Mercenaries (bottom-right) to Hostages (top-left): diagonal up-left, end longer into quadrant
-    // Hostages local: x=100 is right (boundary), y=100 is bottom (boundary). End 10% into quadrant
+    // Hostages local: x=100 is right (boundary), y=100 is bottom (boundary). End 12% into quadrant
     if (sourceQuadrant === 'mercenaries' && destinationQuadrant === 'hostages') {
-      return { x: 90, y: 90 }; // 10% into hostages quadrant
+      return { x: 88, y: 88 }; // 12% into hostages quadrant
     }
     
     // Mercenaries (bottom-right) to Loyalists (top-right): vertical up, end longer into quadrant
-    // Loyalists local: y=100 is bottom (boundary), y=0 is top. End 10% into quadrant = 90%
+    // Loyalists local: y=100 is bottom (boundary), y=0 is top. End 12% into quadrant = 88%
     if (sourceQuadrant === 'mercenaries' && destinationQuadrant === 'loyalists') {
-      return { x: sourceX, y: 90 }; // 10% into loyalists quadrant
+      return { x: sourceX, y: 88 }; // 12% into loyalists quadrant
     }
     
     // Mercenaries (bottom-right) to Defectors (bottom-left): horizontal left, end longer into quadrant
-    // Defectors local: x=100 is right (boundary), x=0 is left. End 10% into quadrant = 90%
+    // Defectors local: x=100 is right (boundary), x=0 is left. End 12% into quadrant = 88%
     if (sourceQuadrant === 'mercenaries' && destinationQuadrant === 'defectors') {
-      return { x: 90, y: sourceY }; // 10% into defectors quadrant
+      return { x: 88, y: sourceY }; // 12% into defectors quadrant
     }
     
     // Default fallback
