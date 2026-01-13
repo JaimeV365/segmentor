@@ -151,13 +151,7 @@ const visualizationRef = useRef<HTMLDivElement>(null);
       const customerMap = new Map<string, { id: string; email: string }>();
       let customerCounter = 1;
       
-      // Process all rows (not just first 90) to ensure we get customers with multiple dates
-      // But limit to 90 unique customers to stay within demo limit
-      const processedRows: DataPoint[] = [];
-      const customerCount = new Map<string, number>();
-      
-      for (let index = 0; index < dataRows.length && processedRows.length < 90; index++) {
-        const row = dataRows[index];
+      const demoData: DataPoint[] = dataRows.slice(0, 90).map((row, index) => {
         const values = row.split(',').map(v => v.trim());
         
         // Get customer name
@@ -171,7 +165,6 @@ const visualizationRef = useRef<HTMLDivElement>(null);
             email: `demo${customerCounter}@example.com`
           };
           customerMap.set(customerName, customerInfo);
-          customerCount.set(customerName, 0);
           customerCounter++;
         }
         
@@ -187,8 +180,7 @@ const visualizationRef = useRef<HTMLDivElement>(null);
           dateValue = `${day}/${month}/${year}`;
         }
         
-        // Add this data point (allows same customer with different dates)
-        processedRows.push({
+        return {
           id: customerInfo.id,
           name: customerName,
           satisfaction: (satisfactionIndex >= 0 ? parseInt(values[satisfactionIndex]) : parseInt(values[2])) || 1,
@@ -202,13 +194,8 @@ const visualizationRef = useRef<HTMLDivElement>(null);
             language: ['English', 'French', 'Spanish', 'German'][index % 4],
             purchases: Math.floor(Math.random() * 10) + 1
           }
-        });
-        
-        // Track how many entries we have for this customer
-        customerCount.set(customerName, (customerCount.get(customerName) || 0) + 1);
-      }
-      
-      const demoData = processedRows;
+        };
+      });
       
       // Use handleDataChange to set demo data, then reset the ref
       handleDataChange(demoData, {
