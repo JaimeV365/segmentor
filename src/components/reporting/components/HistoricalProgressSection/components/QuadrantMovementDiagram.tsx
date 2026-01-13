@@ -109,7 +109,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                 <svg 
                   className="movement-overlay-svg" 
                   viewBox="0 0 100 100" 
-                  preserveAspectRatio="none"
+                  preserveAspectRatio="xMidYMid meet"
                 >
                   {/* Draw circles with numbers and arrows */}
                   {circlePositions.map((pos, idx) => {
@@ -126,25 +126,55 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     const unitX = dx / distance;
                     const unitY = dy / distance;
                     
+                    // Circle properties
+                    const circleRadius = 8;
+                    const borderWidth = 2.5;
+                    
                     // Start point (edge of circle)
-                    const circleRadius = 7;
                     const startX = sourceX + unitX * circleRadius;
                     const startY = sourceY + unitY * circleRadius;
                     
-                    // End point (edge of destination quadrant - adjust based on position)
+                    // End point (edge of destination quadrant - calculate based on quadrant position)
                     let endX, endY;
+                    // Calculate which edge of destination quadrant to hit
                     if (pos.to === 'loyalists') {
-                      endX = 90;
-                      endY = 10;
+                      // Top-right: hit top or right edge depending on angle
+                      if (Math.abs(dy) > Math.abs(dx)) {
+                        // More vertical, hit top edge
+                        endX = destX + (destX - sourceX) / Math.abs(dy) * (destY - 5);
+                        endY = 5;
+                      } else {
+                        // More horizontal, hit right edge
+                        endX = 95;
+                        endY = destY + (destY - sourceY) / Math.abs(dx) * (destX - 5);
+                      }
                     } else if (pos.to === 'mercenaries') {
-                      endX = 90;
-                      endY = 90;
+                      // Bottom-right: hit bottom or right edge
+                      if (Math.abs(dy) > Math.abs(dx)) {
+                        endX = destX + (destX - sourceX) / Math.abs(dy) * (95 - destY);
+                        endY = 95;
+                      } else {
+                        endX = 95;
+                        endY = destY + (destY - sourceY) / Math.abs(dx) * (destX - 5);
+                      }
                     } else if (pos.to === 'hostages') {
-                      endX = 10;
-                      endY = 10;
+                      // Top-left: hit top or left edge
+                      if (Math.abs(dy) > Math.abs(dx)) {
+                        endX = destX - (destX - sourceX) / Math.abs(dy) * (destY - 5);
+                        endY = 5;
+                      } else {
+                        endX = 5;
+                        endY = destY - (destY - sourceY) / Math.abs(dx) * (95 - destX);
+                      }
                     } else { // defectors
-                      endX = 10;
-                      endY = 90;
+                      // Bottom-left: hit bottom or left edge
+                      if (Math.abs(dy) > Math.abs(dx)) {
+                        endX = destX - (destX - sourceX) / Math.abs(dy) * (95 - destY);
+                        endY = 95;
+                      } else {
+                        endX = 5;
+                        endY = destY - (destY - sourceY) / Math.abs(dx) * (95 - destX);
+                      }
                     }
                     
                     return (
@@ -158,25 +188,25 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                           stroke={QUADRANT_COLORS[pos.to]}
                           strokeWidth={2.5}
                           markerEnd="url(#arrowhead)"
-                          opacity={0.8}
+                          opacity={0.75}
                         />
-                        {/* Circle with number */}
+                        {/* Circle with number - white fill, colored border */}
                         <circle
                           cx={sourceX}
                           cy={sourceY}
                           r={circleRadius}
-                          fill={QUADRANT_COLORS[quadrant]}
-                          stroke="#fff"
-                          strokeWidth={2}
+                          fill="#fff"
+                          stroke={QUADRANT_COLORS[quadrant]}
+                          strokeWidth={borderWidth}
                         />
                         <text
                           x={sourceX}
                           y={sourceY}
                           textAnchor="middle"
                           dominantBaseline="middle"
-                          fontSize="6.5"
+                          fontSize="7"
                           fontWeight="700"
-                          fill="#fff"
+                          fill={QUADRANT_COLORS[quadrant]}
                         >
                           {pos.count}
                         </text>
