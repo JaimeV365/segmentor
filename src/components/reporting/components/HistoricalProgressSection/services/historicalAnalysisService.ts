@@ -1,8 +1,6 @@
 import { DataPoint } from '@/types/base';
 import { CustomerTimeline, parseDate } from '../utils/historicalDataUtils';
-
-// Use the full QuadrantType that includes all quadrants (from visualization context)
-type QuadrantType = 'loyalists' | 'mercenaries' | 'hostages' | 'defectors' | 'apostles' | 'terrorists' | 'near_apostles' | 'near_terrorists' | 'neutral';
+import type { QuadrantType } from '../../../../visualization/context/QuadrantAssignmentContext';
 
 export interface TrendDataPoint {
   date: string;
