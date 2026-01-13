@@ -57,6 +57,7 @@ const visualizationRef = useRef<HTMLDivElement>(null);
   const [showDemoTour, setShowDemoTour] = useState(false);
   const [isLoadingDemo, setIsLoadingDemo] = useState(false);
   const isDemoDataLoadRef = useRef(false); // Track if we're currently loading demo data
+  const isFileUploadRef = useRef(false); // Track if data is coming from CSV/.seg file upload (triggers demo exit)
 
   // Check Cloudflare Access authentication on mount and periodically
   useEffect(() => {
