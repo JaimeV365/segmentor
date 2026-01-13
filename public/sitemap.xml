@@ -3,7 +3,7 @@
   <!-- About Page - Main SEO Landing Page -->
   <url>
     <loc>https://segmentor.app/about.html</loc>
-    <lastmod>2026-01-08</lastmod>
+    <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -11,7 +11,7 @@
   <!-- FAQ Page - Good for long-tail keywords -->
   <url>
     <loc>https://segmentor.app/faq.html</loc>
-    <lastmod>2025-01-07</lastmod>
+    <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -19,7 +19,7 @@
   <!-- Pricing Page - Important for conversion -->
   <url>
     <loc>https://segmentor.app/pricing.html</loc>
-    <lastmod>2025-01-07</lastmod>
+    <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -27,7 +27,7 @@
   <!-- Contact Page - Useful for business queries -->
   <url>
     <loc>https://segmentor.app/contact.html</loc>
-    <lastmod>2025-01-07</lastmod>
+    <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -35,7 +35,7 @@
   <!-- Privacy Page - Compliance, low priority -->
   <url>
     <loc>https://segmentor.app/privacy.html</loc>
-    <lastmod>2025-01-07</lastmod>
+    <lastmod>2026-01-13</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
@@ -43,7 +43,7 @@
   <!-- Terms Page - Compliance, low priority -->
   <url>
     <loc>https://segmentor.app/terms.html</loc>
-    <lastmod>2025-01-07</lastmod>
+    <lastmod>2026-01-13</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

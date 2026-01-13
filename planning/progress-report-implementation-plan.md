@@ -80,18 +80,12 @@ HistoricalProgressSection/
 3. **Basic Forecast**
    - "If tendency continues" projections
    - Simple linear trend projection
-   - Confidence indicators
+   - Basic confidence indicators
+   - Forecast horizons: 1 month, 3 months, 6 months
 
 ### Advanced Features (Phase 2 - Premium)
 
-4. **Advanced Forecasting**
-   - Multiple forecasting methods (linear, moving average, exponential smoothing)
-   - Confidence intervals (high/medium/low confidence bands)
-   - Scenario projections (best case, worst case, most likely)
-   - Custom forecast horizons (1mo, 3mo, 6mo, 1yr)
-   - See: `docs/premium/Historical Analysis/advanced-forecasting-explanation.md`
-
-5. **Cohort Analysis**
+4. **Cohort Analysis**
    - Retained customers (appear in both periods - track their evolution)
    - New customers (appear in later period only - acquisition quality)
    - Lost customers (appear in earlier period only - churn analysis)
@@ -170,13 +164,17 @@ HistoricalProgressSection/
 4. Show positive/negative movement statistics
 
 ### Phase 5: Implement Basic Forecasting
-**Goal:** "If tendency continues" projections
+**Goal:** "If tendency continues" projections using linear regression
 
 **Steps:**
-1. Create forecast service
-2. Implement linear regression
-3. Calculate confidence levels
-4. Visualize forecasts
+1. Create forecast service with linear regression
+2. Calculate simple trend lines (satisfaction and loyalty separately)
+3. Project future values based on trend
+4. Add basic confidence indicators (high/medium/low based on data quality)
+5. Visualize forecasts with trend lines extending into future
+6. Show "if tendency continues" message
+
+**Note:** Keeping it simple - linear regression only. Advanced methods (moving average, exponential smoothing, scenarios) can be added later if needed.
 
 ## Technical Considerations
 
