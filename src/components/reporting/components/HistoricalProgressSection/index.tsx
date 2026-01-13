@@ -1,6 +1,16 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { DataPoint, ScaleFormat } from '@/types/base';
 import { hasHistoricalData, groupByCustomer } from './utils/historicalDataUtils';
+import { useQuadrantAssignment } from '../../../visualization/context/QuadrantAssignmentContext';
+import { 
+  calculateTrendData, 
+  calculateQuadrantMovements, 
+  calculatePeriodComparison 
+} from './services/historicalAnalysisService';
+import { generateForecast } from './services/forecastService';
+import { TrendChart } from './components/TrendChart';
+import { QuadrantMovementFlow } from './components/QuadrantMovementFlow';
+import { ForecastVisualization } from './components/ForecastVisualization';
 import './HistoricalProgressSection.css';
 
 interface HistoricalProgressSectionProps {
@@ -16,6 +26,9 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
   loyaltyScale,
   isPremium = false
 }) => {
+  // Get quadrant assignment function from context
+  const { getQuadrantForPoint } = useQuadrantAssignment();
+  
   // Check if we have historical data to show
   if (!hasHistoricalData(data)) {
     return null; // Don't render if no historical data
@@ -23,8 +36,34 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
   
   const timelines = groupByCustomer(data);
   
+  // Extract date format from first data point with date (if available)
+  const dateFormat = useMemo(() => {
+    const firstPointWithDate = data.find(p => p.date && p.dateFormat);
+    return firstPointWithDate?.dateFormat;
+  }, [data]);
+  
+  // Calculate trend data
+  const trendData = useMemo(() => {
+    return calculateTrendData(timelines, dateFormat);
+  }, [timelines, dateFormat]);
+  
+  // Calculate quadrant movements
+  const movementStats = useMemo(() => {
+    return calculateQuadrantMovements(timelines, getQuadrantForPoint);
+  }, [timelines, getQuadrantForPoint]);
+  
+  // Calculate period comparison
+  const periodComparison = useMemo(() => {
+    return calculatePeriodComparison(trendData);
+  }, [trendData]);
+  
+  // Generate forecast
+  const forecast = useMemo(() => {
+    return generateForecast(trendData);
+  }, [trendData]);
+  
   return (
-    <div className="report-card">
+    <div className="report-card" data-section-id="report-historical-progress">
       <div className="report-title-wrapper">
         <h3 className="report-title">Historical Progress</h3>
       </div>
@@ -46,20 +85,70 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
                 {timelines.reduce((sum, t) => sum + t.dataPoints.length, 0)}
               </span>
             </div>
+            {periodComparison && (
+              <>
+                <div className="report-stat-item">
+                  <span className="report-stat-label">Satisfaction Change</span>
+                  <span className={`report-stat-value ${periodComparison.satisfactionChange >= 0 ? 'positive' : 'negative'}`}>
+                    {periodComparison.satisfactionChange >= 0 ? '+' : ''}{periodComparison.satisfactionChange}
+                  </span>
+                </div>
+                <div className="report-stat-item">
+                  <span className="report-stat-label">Loyalty Change</span>
+                  <span className={`report-stat-value ${periodComparison.loyaltyChange >= 0 ? 'positive' : 'negative'}`}>
+                    {periodComparison.loyaltyChange >= 0 ? '+' : ''}{periodComparison.loyaltyChange}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
           
-          {/* Placeholder for future components */}
-          <div className="historical-progress-placeholder">
-            <p>Historical analysis components coming soon...</p>
-            <p className="text-sm text-gray-500">
-              This will include:
-            </p>
-            <ul className="text-sm text-gray-500 mt-2">
-              <li>• Satisfaction and Loyalty trend charts</li>
-              <li>• Quadrant movement analysis</li>
-              <li>• Basic forecasting</li>
-            </ul>
-          </div>
+          {/* Trend Charts */}
+          {trendData.length > 0 && (
+            <div className="historical-progress-charts">
+              <div className="trend-charts-grid">
+                <TrendChart
+                  data={trendData}
+                  scale={satisfactionScale}
+                  metric="satisfaction"
+                  title="Satisfaction Trend Over Time"
+                />
+                <TrendChart
+                  data={trendData}
+                  scale={loyaltyScale}
+                  metric="loyalty"
+                  title="Loyalty Trend Over Time"
+                />
+              </div>
+              
+              <TrendChart
+                data={trendData}
+                scale={satisfactionScale}
+                metric="both"
+                title="Combined Satisfaction & Loyalty Trends"
+              />
+            </div>
+          )}
+          
+          {/* Quadrant Movement Analysis */}
+          {movementStats.totalMovements > 0 && (
+            <div className="historical-progress-movements">
+              <h4 className="report-subtitle">Quadrant Movements</h4>
+              <QuadrantMovementFlow movementStats={movementStats} />
+            </div>
+          )}
+          
+          {/* Forecast Visualization */}
+          {forecast && trendData.length >= 3 && (
+            <div className="historical-progress-forecast">
+              <ForecastVisualization
+                forecast={forecast}
+                historicalData={trendData}
+                satisfactionScale={satisfactionScale}
+                loyaltyScale={loyaltyScale}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
