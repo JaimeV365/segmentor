@@ -6,6 +6,7 @@ import ProximitySection from './components/ProximitySection/ProximitySection';
 import DistributionSection from './components/DistributionSection';
 import ResponseConcentrationSection from './components/ResponseConcentrationSection';
 import { HistoricalProgressSection } from './components/HistoricalProgressSection';
+import { hasHistoricalData } from './components/HistoricalProgressSection/utils/historicalDataUtils';
 import './ReportingSection.css';
 import { useReportGenerator } from './hooks/useReportGenerator';
 import { useFilterContext } from '../visualization/context/FilterContext';
@@ -284,14 +285,16 @@ console.log('🚨🚨🚨 About to render DistributionSection with:', {
           />
         </div>
 
-        <div data-section-id="report-historical-progress">
-          <HistoricalProgressSection
-            data={filteredData}
-            satisfactionScale={satisfactionScale}
-            loyaltyScale={loyaltyScale}
-            isPremium={isPremium}
-          />
-        </div>
+        {hasHistoricalData(filteredData) && (
+          <div data-section-id="report-historical-progress">
+            <HistoricalProgressSection
+              data={filteredData}
+              satisfactionScale={satisfactionScale}
+              loyaltyScale={loyaltyScale}
+              isPremium={isPremium}
+            />
+          </div>
+        )}
 
         <div data-section-id="report-actions">
           <ActionsReport

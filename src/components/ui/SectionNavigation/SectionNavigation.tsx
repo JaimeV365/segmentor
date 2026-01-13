@@ -48,6 +48,9 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
   // Check if Response Concentration section is expanded
   const [isResponseConcentrationExpanded, setIsResponseConcentrationExpanded] = useState(false);
   
+  // Check if Historical Progress section exists
+  const [hasHistoricalProgress, setHasHistoricalProgress] = useState(false);
+  
   useEffect(() => {
     // Check if Recommendation Score section exists in DOM
     const checkRecommendationScore = () => {
@@ -72,13 +75,21 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
       }
     };
     
+    // Check if Historical Progress section exists in DOM
+    const checkHistoricalProgress = () => {
+      const element = document.querySelector('[data-section-id="report-historical-progress"]');
+      setHasHistoricalProgress(!!element);
+    };
+    
     checkRecommendationScore();
     checkResponseConcentrationExpanded();
+    checkHistoricalProgress();
     
     // Check periodically in case sections are added/removed or expanded/collapsed dynamically
     const interval = setInterval(() => {
       checkRecommendationScore();
       checkResponseConcentrationExpanded();
+      checkHistoricalProgress();
     }, 500);
     
     return () => clearInterval(interval);
@@ -128,20 +139,25 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
         label: 'Proximity Analysis',
         icon: <MapPin size={16} />,
         selector: '[data-section-id="report-proximity"]'
-      },
-      {
+      }
+    );
+    
+    // Add Historical Progress only if it exists (has historical data)
+    if (hasHistoricalProgress) {
+      reportSubItems.push({
         id: 'report-historical-progress',
         label: 'Historical Progress',
         icon: <History size={16} />,
         selector: '[data-section-id="report-historical-progress"]'
-      },
-      {
-        id: 'report-actions',
-        label: 'Actions Report',
-        icon: <Lightbulb size={16} />,
-        selector: '[data-section-id="report-actions"]'
-      }
-    );
+      });
+    }
+    
+    reportSubItems.push({
+      id: 'report-actions',
+      label: 'Actions Report',
+      icon: <Lightbulb size={16} />,
+      selector: '[data-section-id="report-actions"]'
+    });
     
     return [
       {

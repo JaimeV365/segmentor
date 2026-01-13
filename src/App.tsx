@@ -147,8 +147,26 @@ const visualizationRef = useRef<HTMLDivElement>(null);
         return dateStr.trim();
       };
       
+      // Map to track customer names and assign consistent IDs/emails
+      const customerMap = new Map<string, { id: string; email: string }>();
+      let customerCounter = 1;
+      
       const demoData: DataPoint[] = dataRows.slice(0, 90).map((row, index) => {
         const values = row.split(',').map(v => v.trim());
+        
+        // Get customer name
+        const customerName = (nameIndex >= 0 ? values[nameIndex] : null) || `Demo User ${index + 1}`;
+        
+        // Get or create consistent ID/email for this customer name
+        let customerInfo = customerMap.get(customerName);
+        if (!customerInfo) {
+          customerInfo = {
+            id: `DEMO_${customerCounter}`,
+            email: `demo${customerCounter}@example.com`
+          };
+          customerMap.set(customerName, customerInfo);
+          customerCounter++;
+        }
         
         // Get date from CSV or generate fallback
         let dateValue: string;
@@ -163,12 +181,13 @@ const visualizationRef = useRef<HTMLDivElement>(null);
         }
         
         return {
-          id: `DEMO_${index + 1}`,
-          name: (nameIndex >= 0 ? values[nameIndex] : null) || `Demo User ${index + 1}`,
+          id: customerInfo.id,
+          name: customerName,
           satisfaction: (satisfactionIndex >= 0 ? parseInt(values[satisfactionIndex]) : parseInt(values[2])) || 1,
           loyalty: (loyaltyIndex >= 0 ? parseInt(values[loyaltyIndex]) : parseInt(values[3])) || 1,
-          email: `demo${index + 1}@example.com`,
+          email: customerInfo.email,
           date: dateValue,
+          dateFormat: 'dd/mm/yyyy', // Add date format
           group: ['Apostles', 'Loyalists', 'Defectors', 'Terrorists'][index % 4],
           additionalAttributes: {
             country: ['USA', 'Canada', 'UK', 'Australia'][index % 4],
