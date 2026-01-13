@@ -105,64 +105,64 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     // Simple rules: draw straight lines (vertical, horizontal, or diagonal) well into destination
     // Boundary is at 50%, so we extend to 15-20% from opposite edge to clearly cross boundaries
     
-    // Defectors (bottom-left) to Hostages (top-left): vertical up, end halfway into hostages quadrant
+    // Defectors (bottom-left) to Hostages (top-left): vertical up, end just past boundary
     if (sourceQuadrant === 'defectors' && destinationQuadrant === 'hostages') {
-      return { x: sourceX, y: 40 }; // Straight up, halfway into top quadrant (40% from top = 10% into quadrant)
+      return { x: sourceX, y: 45 }; // Straight up, just 5% into top quadrant
     }
     
-    // Hostages (top-left) to Defectors (bottom-left): vertical down, end halfway into defectors quadrant
+    // Hostages (top-left) to Defectors (bottom-left): vertical down, end just past boundary
     if (sourceQuadrant === 'hostages' && destinationQuadrant === 'defectors') {
-      return { x: sourceX, y: 60 }; // Straight down, halfway into bottom quadrant (40% from bottom = 10% into quadrant)
+      return { x: sourceX, y: 55 }; // Straight down, just 5% into bottom quadrant
     }
     
-    // Defectors (bottom-left) to Loyalists (top-right): diagonal up-right, end halfway into loyalists quadrant
+    // Defectors (bottom-left) to Loyalists (top-right): diagonal up-right, end just past boundary
     if (sourceQuadrant === 'defectors' && destinationQuadrant === 'loyalists') {
-      return { x: 40, y: 40 }; // End halfway into top-right quadrant (40% from top and right edges = 10% into quadrant)
+      return { x: 45, y: 45 }; // End just 5% into top-right quadrant
     }
     
-    // Defectors (bottom-left) to Mercenaries (bottom-right): horizontal right, end halfway into mercenaries quadrant
+    // Defectors (bottom-left) to Mercenaries (bottom-right): horizontal right, end just past boundary
     if (sourceQuadrant === 'defectors' && destinationQuadrant === 'mercenaries') {
-      return { x: 60, y: sourceY }; // Straight right, halfway into right quadrant (40% from right = 10% into quadrant)
+      return { x: 55, y: sourceY }; // Straight right, just 5% into right quadrant
     }
     
-    // Hostages (top-left) to Loyalists (top-right): horizontal right, end halfway into loyalists quadrant
+    // Hostages (top-left) to Loyalists (top-right): horizontal right, end just past boundary
     if (sourceQuadrant === 'hostages' && destinationQuadrant === 'loyalists') {
-      return { x: 60, y: sourceY }; // Straight right, halfway into right quadrant (40% from right = 10% into quadrant)
+      return { x: 55, y: sourceY }; // Straight right, just 5% into right quadrant
     }
     
-    // Hostages (top-left) to Mercenaries (bottom-right): diagonal down-right, end halfway into mercenaries quadrant
+    // Hostages (top-left) to Mercenaries (bottom-right): diagonal down-right, end just past boundary
     if (sourceQuadrant === 'hostages' && destinationQuadrant === 'mercenaries') {
-      return { x: 40, y: 60 }; // End halfway into bottom-right quadrant (40% from bottom and right edges = 10% into quadrant)
+      return { x: 45, y: 55 }; // End just 5% into bottom-right quadrant
     }
     
-    // Loyalists (top-right) to Hostages (top-left): horizontal left, end halfway into hostages quadrant
+    // Loyalists (top-right) to Hostages (top-left): horizontal left, end just past boundary
     if (sourceQuadrant === 'loyalists' && destinationQuadrant === 'hostages') {
-      return { x: 40, y: sourceY }; // Straight left, halfway into left quadrant (40% from left = 10% into quadrant)
+      return { x: 45, y: sourceY }; // Straight left, just 5% into left quadrant
     }
     
-    // Loyalists (top-right) to Defectors (bottom-left): diagonal down-left, end halfway into defectors quadrant
+    // Loyalists (top-right) to Defectors (bottom-left): diagonal down-left, end just past boundary
     if (sourceQuadrant === 'loyalists' && destinationQuadrant === 'defectors') {
-      return { x: 60, y: 60 }; // End halfway into bottom-left quadrant (40% from bottom and left edges = 10% into quadrant)
+      return { x: 55, y: 55 }; // End just 5% into bottom-left quadrant
     }
     
-    // Loyalists (top-right) to Mercenaries (bottom-right): vertical down, end halfway into mercenaries quadrant
+    // Loyalists (top-right) to Mercenaries (bottom-right): vertical down, end just past boundary
     if (sourceQuadrant === 'loyalists' && destinationQuadrant === 'mercenaries') {
-      return { x: sourceX, y: 60 }; // Straight down, halfway into bottom quadrant (40% from bottom = 10% into quadrant)
+      return { x: sourceX, y: 55 }; // Straight down, just 5% into bottom quadrant
     }
     
-    // Mercenaries (bottom-right) to Hostages (top-left): diagonal up-left, end halfway into hostages quadrant
+    // Mercenaries (bottom-right) to Hostages (top-left): diagonal up-left, end just past boundary
     if (sourceQuadrant === 'mercenaries' && destinationQuadrant === 'hostages') {
-      return { x: 60, y: 40 }; // End halfway into top-left quadrant (40% from top and left edges = 10% into quadrant)
+      return { x: 55, y: 45 }; // End just 5% into top-left quadrant
     }
     
-    // Mercenaries (bottom-right) to Loyalists (top-right): vertical up, end halfway into loyalists quadrant
+    // Mercenaries (bottom-right) to Loyalists (top-right): vertical up, end just past boundary
     if (sourceQuadrant === 'mercenaries' && destinationQuadrant === 'loyalists') {
-      return { x: sourceX, y: 40 }; // Straight up, halfway into top quadrant (40% from top = 10% into quadrant)
+      return { x: sourceX, y: 45 }; // Straight up, just 5% into top quadrant
     }
     
-    // Mercenaries (bottom-right) to Defectors (bottom-left): horizontal left, end halfway into defectors quadrant
+    // Mercenaries (bottom-right) to Defectors (bottom-left): horizontal left, end just past boundary
     if (sourceQuadrant === 'mercenaries' && destinationQuadrant === 'defectors') {
-      return { x: 40, y: sourceY }; // Straight left, halfway into left quadrant (40% from left = 10% into quadrant)
+      return { x: 45, y: sourceY }; // Straight left, just 5% into left quadrant
     }
     
     // Default fallback
@@ -335,6 +335,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     fontSize="3"
                     fontWeight="700"
                     fill={QUADRANT_COLORS[item.quadrant]}
+                    dy="0.1"
                   >
                     {item.count}
                   </text>
