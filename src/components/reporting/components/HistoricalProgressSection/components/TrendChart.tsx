@@ -85,24 +85,29 @@ export const TrendChart: React.FC<TrendChartProps> = ({
     return chartData;
   }, [timelines, dateFormat]);
 
-  // Prepare individual customer line data for Recharts
+  // Prepare individual customer line data - need to align with main chart dates
+  const allDates = useMemo(() => {
+    return customerLinesData.map(d => d.date).sort();
+  }, [customerLinesData]);
+
   const customerLines = useMemo(() => {
-    const lines: Array<{ customerId: string; data: Array<{ date: string; satisfaction: number; loyalty: number }> }> = [];
+    const lines: Array<{ customerId: string; dataPoints: Map<string, { satisfaction: number; loyalty: number }> }> = [];
     
     timelines.forEach(timeline => {
-      const customerData = timeline.dataPoints
-        .filter(p => p.date)
-        .map(p => ({
-          date: p.date!.trim(),
-          satisfaction: p.satisfaction,
-          loyalty: p.loyalty
-        }))
-        .sort((a, b) => a.date.localeCompare(b.date));
+      const customerDataMap = new Map<string, { satisfaction: number; loyalty: number }>();
+      timeline.dataPoints.forEach(point => {
+        if (point.date) {
+          customerDataMap.set(point.date.trim(), {
+            satisfaction: point.satisfaction,
+            loyalty: point.loyalty
+          });
+        }
+      });
       
-      if (customerData.length > 0) {
+      if (customerDataMap.size > 0) {
         lines.push({
           customerId: timeline.identifier,
-          data: customerData
+          dataPoints: customerDataMap
         });
       }
     });
@@ -218,15 +223,25 @@ export const TrendChart: React.FC<TrendChartProps> = ({
             />
             
             {/* Individual customer lines - only show if not too many (performance) */}
-            {customerLines.length <= 20 && customerLines.map((line, index) => {
+            {customerLines.length <= 20 && customerLines.map((line) => {
               const lineKey = `customer-${line.customerId}`;
+              // Create data array aligned with main chart dates
+              const customerData = customerLinesData.map(chartPoint => {
+                const customerPoint = line.dataPoints.get(chartPoint.date);
+                return {
+                  date: chartPoint.date,
+                  satisfaction: customerPoint?.satisfaction ?? null,
+                  loyalty: customerPoint?.loyalty ?? null
+                };
+              });
+              
               if (metric === 'satisfaction' || metric === 'both') {
                 return (
                   <Line
                     key={`${lineKey}-sat`}
                     type="monotone"
                     dataKey="satisfaction"
-                    data={line.data}
+                    data={customerData}
                     stroke="#cbd5e1"
                     strokeWidth={1}
                     dot={false}
@@ -243,7 +258,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                     key={`${lineKey}-loy`}
                     type="monotone"
                     dataKey="loyalty"
-                    data={line.data}
+                    data={customerData}
                     stroke="#cbd5e1"
                     strokeWidth={1}
                     dot={false}
