@@ -269,28 +269,30 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                 <marker
                   key={`arrowhead-${quad}`}
                   id={`arrowhead-${quad}`}
-                  markerWidth="5"
-                  markerHeight="5"
-                  refX="4"
-                  refY="2.5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  refX="0"
+                  refY="3"
                   orient="auto"
                   markerUnits="userSpaceOnUse"
+                  overflow="visible"
+                  viewBox="0 0 6 6"
                 >
                   {/* Simple two-line arrow tip */}
                   <line
                     x1="0"
                     y1="0"
-                    x2="5"
-                    y2="2.5"
+                    x2="6"
+                    y2="3"
                     stroke={color}
                     strokeWidth="1.5"
                     strokeLinecap="round"
                   />
                   <line
                     x1="0"
-                    y1="5"
-                    x2="5"
-                    y2="2.5"
+                    y1="6"
+                    x2="6"
+                    y2="3"
                     stroke={color}
                     strokeWidth="1.5"
                     strokeLinecap="round"
