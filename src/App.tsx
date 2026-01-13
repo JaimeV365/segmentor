@@ -738,6 +738,10 @@ const handleTerroristsZoneSizeChange = (size: number) => {
         isLocked: false
       });
       
+      // Clear storage so DemoButton shows when data is empty
+      const { storageManager } = require('./components/data-entry/utils/storageManager');
+      storageManager.clearState();
+      
       // Dispatch a custom event to clear CSV warnings
       const clearWarningsEvent = new CustomEvent('clear-csv-warnings');
       document.dispatchEvent(clearWarningsEvent);
