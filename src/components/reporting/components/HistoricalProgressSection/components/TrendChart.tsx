@@ -85,35 +85,6 @@ export const TrendChart: React.FC<TrendChartProps> = ({
     return chartData;
   }, [timelines, dateFormat]);
 
-  // Prepare individual customer line data - need to align with main chart dates
-  const allDates = useMemo(() => {
-    return customerLinesData.map(d => d.date).sort();
-  }, [customerLinesData]);
-
-  const customerLines = useMemo(() => {
-    const lines: Array<{ customerId: string; dataPoints: Map<string, { satisfaction: number; loyalty: number }> }> = [];
-    
-    timelines.forEach(timeline => {
-      const customerDataMap = new Map<string, { satisfaction: number; loyalty: number }>();
-      timeline.dataPoints.forEach(point => {
-        if (point.date) {
-          customerDataMap.set(point.date.trim(), {
-            satisfaction: point.satisfaction,
-            loyalty: point.loyalty
-          });
-        }
-      });
-      
-      if (customerDataMap.size > 0) {
-        lines.push({
-          customerId: timeline.identifier,
-          dataPoints: customerDataMap
-        });
-      }
-    });
-
-    return lines;
-  }, [timelines]);
 
   // Determine Y-axis domain based on scale
   const getYAxisDomain = (scale: ScaleFormat): [number, number] => {
