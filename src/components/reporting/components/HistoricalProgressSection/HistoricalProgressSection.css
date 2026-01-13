@@ -159,6 +159,10 @@
   shape-rendering: geometricPrecision;
 }
 
+.movement-quadrant-grid {
+  position: relative; /* Ensure SVG overlay can be positioned absolutely */
+}
+
 .movement-diagram-note {
   font-size: 0.75rem;
   color: #6b7280;

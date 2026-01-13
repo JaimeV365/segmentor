@@ -181,124 +181,167 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     'defectors': '#DC2626'
   };
 
+  // Convert quadrant-relative positions to absolute grid positions
+  // Grid layout: Hostages (0,0), Loyalists (1,0), Defectors (0,1), Mercenaries (1,1)
+  const getAbsolutePosition = (quadrant: string, relativeX: number, relativeY: number): { x: number; y: number } => {
+    // Each quadrant is 50x50 in the 100x100 grid coordinate system
+    // Gap between quadrants is ~1.5% (0.75rem gap / ~500px = ~1.5%)
+    const quadrantPositions: Record<string, { baseX: number; baseY: number }> = {
+      'hostages': { baseX: 0, baseY: 0 },      // Top-left
+      'loyalists': { baseX: 50, baseY: 0 },    // Top-right
+      'defectors': { baseX: 0, baseY: 50 },    // Bottom-left
+      'mercenaries': { baseX: 50, baseY: 50 }  // Bottom-right
+    };
+    
+    const base = quadrantPositions[quadrant] || { baseX: 0, baseY: 0 };
+    // Convert relative position (0-100 within quadrant) to absolute (0-100 in grid)
+    // Account for gap: each quadrant is ~49% of the grid (with ~1% gap)
+    return {
+      x: base.baseX + (relativeX / 100) * 49,
+      y: base.baseY + (relativeY / 100) * 49
+    };
+  };
+
+  // Collect all circles and arrows for the single overlay
+  const allArrowsAndCircles = useMemo(() => {
+    const items: Array<{
+      quadrant: string;
+      sourceX: number;
+      sourceY: number;
+      destQuadrant: string;
+      count: number;
+      absoluteStart: { x: number; y: number };
+      absoluteEnd: { x: number; y: number };
+    }> = [];
+
+    ['hostages', 'loyalists', 'defectors', 'mercenaries'].forEach(quadrant => {
+      const movements = movementsBySource[quadrant] || [];
+      const circlePositions = getCirclePositions(movements, quadrant);
+      
+      circlePositions.forEach((pos) => {
+        const relativeX = pos.x;
+        const relativeY = pos.y;
+        const arrowEnd = getArrowEndPoint(relativeX, relativeY, quadrant, pos.to);
+        
+        // Convert to absolute positions
+        const absoluteStart = getAbsolutePosition(quadrant, relativeX, relativeY);
+        const absoluteEnd = getAbsolutePosition(pos.to, arrowEnd.x, arrowEnd.y);
+        
+        items.push({
+          quadrant,
+          sourceX: relativeX,
+          sourceY: relativeY,
+          destQuadrant: pos.to,
+          count: pos.count,
+          absoluteStart,
+          absoluteEnd
+        });
+      });
+    });
+    
+    return items;
+  }, [movementsBySource]);
+
   return (
     <div className="quadrant-movement-diagram">
       <h5 className="movement-diagram-title">Movement Flow Visualization</h5>
       <div className="movement-diagram-container">
         <div className="movement-quadrant-grid">
-          {/* Render in correct order: Hostages (top-left), Loyalists (top-right), Defectors (bottom-left), Mercenaries (bottom-right) */}
-          {['hostages', 'loyalists', 'defectors', 'mercenaries'].map(quadrant => {
-            const movements = movementsBySource[quadrant] || [];
-            const circlePositions = getCirclePositions(movements, quadrant);
-            
-            return (
-              <div
-                key={quadrant}
-                className={`draggable-quadrant ${quadrant}`}
-              >
-                <div className="quadrant-title">{QUADRANT_NAMES[quadrant]}</div>
-                
-                {/* SVG overlay for circles and arrows */}
-                <svg 
-                  className="movement-overlay-svg" 
-                  viewBox="0 0 100 100" 
-                  preserveAspectRatio="xMidYMid meet"
+          {/* Render quadrants without individual SVGs */}
+          {['hostages', 'loyalists', 'defectors', 'mercenaries'].map(quadrant => (
+            <div
+              key={quadrant}
+              className={`draggable-quadrant ${quadrant}`}
+            >
+              <div className="quadrant-title">{QUADRANT_NAMES[quadrant]}</div>
+            </div>
+          ))}
+          
+          {/* Single SVG overlay covering entire grid for arrows and circles */}
+          <svg 
+            className="movement-overlay-svg" 
+            viewBox="0 0 100 100" 
+            preserveAspectRatio="xMidYMid meet"
+          >
+            {/* Arrow marker definitions - clean simple two-line V-shape tip */}
+            <defs>
+              {Object.entries(QUADRANT_COLORS).map(([quad, color]) => (
+                <marker
+                  key={`arrowhead-${quad}`}
+                  id={`arrowhead-${quad}`}
+                  markerWidth="8"
+                  markerHeight="8"
+                  refX="7"
+                  refY="4"
+                  orient="auto"
+                  markerUnits="userSpaceOnUse"
                 >
-                  {/* Draw circles with numbers and arrows */}
-                  {circlePositions.map((pos, idx) => {
-                    const sourceX = pos.x;
-                    const sourceY = pos.y;
-                    const arrowEnd = getArrowEndPoint(sourceX, sourceY, quadrant, pos.to);
-                    const endX = arrowEnd.x;
-                    const endY = arrowEnd.y;
-                    
-                    // Circle properties
-                    const circleRadius = 8;
-                    const borderWidth = 2.5;
-                    
-                    // Start point (center of circle - arrow originates from center)
-                    const startX = sourceX;
-                    const startY = sourceY;
-                    
-                    // Create unique marker ID for each destination color to avoid conflicts
-                    const markerId = `arrowhead-${pos.to}`;
-                    
-                    return (
-                      <g key={`${quadrant}-${pos.to}-${idx}`}>
-                        {/* Arrow line - drawn first so circle appears on top */}
-                        <line
-                          x1={startX}
-                          y1={startY}
-                          x2={endX}
-                          y2={endY}
-                          stroke={QUADRANT_COLORS[pos.to]}
-                          strokeWidth={2.5}
-                          markerEnd={`url(#${markerId})`}
-                          opacity={0.8}
-                        />
-                        {/* Circle with number - white fill, border in destination color, number in source color */}
-                        <circle
-                          cx={sourceX}
-                          cy={sourceY}
-                          r={circleRadius}
-                          fill="#fff"
-                          stroke={QUADRANT_COLORS[pos.to]}
-                          strokeWidth={borderWidth}
-                        />
-                        <text
-                          x={sourceX}
-                          y={sourceY}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          fontSize="7"
-                          fontWeight="700"
-                          fill={QUADRANT_COLORS[quadrant]}
-                        >
-                          {pos.count}
-                        </text>
-                      </g>
-                    );
-                  })}
-                  
-                  {/* Arrow marker definitions - clean simple two-line V-shape tip */}
-                  <defs>
-                    {Object.entries(QUADRANT_COLORS).map(([quad, color]) => (
-                      <marker
-                        key={`arrowhead-${quad}`}
-                        id={`arrowhead-${quad}`}
-                        markerWidth="8"
-                        markerHeight="8"
-                        refX="7"
-                        refY="4"
-                        orient="auto"
-                        markerUnits="userSpaceOnUse"
-                      >
-                        {/* Simple two-line arrow tip */}
-                        <line
-                          x1="0"
-                          y1="0"
-                          x2="8"
-                          y2="4"
-                          stroke={color}
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                        <line
-                          x1="0"
-                          y1="8"
-                          x2="8"
-                          y2="4"
-                          stroke={color}
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                      </marker>
-                    ))}
-                  </defs>
-                </svg>
-              </div>
-            );
-          })}
+                  {/* Simple two-line arrow tip */}
+                  <line
+                    x1="0"
+                    y1="0"
+                    x2="8"
+                    y2="4"
+                    stroke={color}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="0"
+                    y1="8"
+                    x2="8"
+                    y2="4"
+                    stroke={color}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </marker>
+              ))}
+            </defs>
+            
+            {/* Draw all arrows and circles */}
+            {allArrowsAndCircles.map((item, idx) => {
+              const circleRadius = 8;
+              const borderWidth = 2.5;
+              const markerId = `arrowhead-${item.destQuadrant}`;
+              
+              return (
+                <g key={`${item.quadrant}-${item.destQuadrant}-${idx}`}>
+                  {/* Arrow line - drawn first so circle appears on top */}
+                  <line
+                    x1={item.absoluteStart.x}
+                    y1={item.absoluteStart.y}
+                    x2={item.absoluteEnd.x}
+                    y2={item.absoluteEnd.y}
+                    stroke={QUADRANT_COLORS[item.destQuadrant]}
+                    strokeWidth={2.5}
+                    markerEnd={`url(#${markerId})`}
+                    opacity={0.8}
+                  />
+                  {/* Circle with number - white fill, border in destination color, number in source color */}
+                  <circle
+                    cx={item.absoluteStart.x}
+                    cy={item.absoluteStart.y}
+                    r={circleRadius}
+                    fill="#fff"
+                    stroke={QUADRANT_COLORS[item.destQuadrant]}
+                    strokeWidth={borderWidth}
+                  />
+                  <text
+                    x={item.absoluteStart.x}
+                    y={item.absoluteStart.y}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize="7"
+                    fontWeight="700"
+                    fill={QUADRANT_COLORS[item.quadrant]}
+                  >
+                    {item.count}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
         </div>
       </div>
       <p className="movement-diagram-note">
