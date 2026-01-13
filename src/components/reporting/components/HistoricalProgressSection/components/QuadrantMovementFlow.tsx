@@ -2,6 +2,7 @@ import React from 'react';
 import { MovementStats, QuadrantMovement } from '../services/historicalAnalysisService';
 import { ArrowRight, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import type { QuadrantType } from '../../../../visualization/context/QuadrantAssignmentContext';
+import { QuadrantMovementDiagram } from './QuadrantMovementDiagram';
 
 interface QuadrantMovementFlowProps {
   movementStats: MovementStats;
