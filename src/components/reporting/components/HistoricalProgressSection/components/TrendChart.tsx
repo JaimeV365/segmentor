@@ -85,6 +85,36 @@ export const TrendChart: React.FC<TrendChartProps> = ({
     return chartData;
   }, [timelines, dateFormat]);
 
+  // Prepare chart data with individual customer values as additional keys
+  const chartDataWithCustomers = useMemo(() => {
+    // Limit to 20 customers for performance
+    const limitedTimelines = timelines.slice(0, 20);
+    
+    return customerLinesData.map(chartPoint => {
+      const dataPoint: any = {
+        date: chartPoint.date,
+        averageSatisfaction: chartPoint.averageSatisfaction,
+        averageLoyalty: chartPoint.averageLoyalty,
+        count: chartPoint.count
+      };
+      
+      // Add individual customer values as separate keys
+      limitedTimelines.forEach((timeline, idx) => {
+        const customerPoint = timeline.dataPoints.find(p => p.date && p.date.trim() === chartPoint.date);
+        if (customerPoint) {
+          dataPoint[`customer_${idx}_satisfaction`] = customerPoint.satisfaction;
+          dataPoint[`customer_${idx}_loyalty`] = customerPoint.loyalty;
+        } else {
+          dataPoint[`customer_${idx}_satisfaction`] = null;
+          dataPoint[`customer_${idx}_loyalty`] = null;
+        }
+      });
+      
+      return dataPoint;
+    });
+  }, [customerLinesData, timelines]);
+  
+  const showIndividualLines = timelines.length <= 20;
 
   // Determine Y-axis domain based on scale
   const getYAxisDomain = (scale: ScaleFormat): [number, number] => {
