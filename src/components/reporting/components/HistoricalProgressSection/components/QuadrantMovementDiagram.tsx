@@ -348,6 +348,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     dominantBaseline="central"
                     fontSize="3"
                     fontWeight="700"
+                    fontFamily="'Montserrat', sans-serif"
                     fill={QUADRANT_COLORS[item.quadrant]}
                     dy="0.1"
                   >
