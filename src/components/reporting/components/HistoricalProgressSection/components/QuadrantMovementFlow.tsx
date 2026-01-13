@@ -23,7 +23,7 @@ const getQuadrantDisplayName = (quadrant: QuadrantType): string => {
 };
 
 const getQuadrantColor = (quadrant: QuadrantType): string => {
-  // Use exact branded colors from the system
+  // Use exact branded colors from the system with appropriate opacity for backgrounds
   const colors: Record<QuadrantType, string> = {
     'apostles': '#10B981',        // Emerald
     'near_apostles': '#10B981',   // Emerald (same as apostles)
@@ -31,7 +31,7 @@ const getQuadrantColor = (quadrant: QuadrantType): string => {
     'mercenaries': '#F7B731',     // Orange (branded)
     'hostages': '#4682B4',        // Blue (branded)
     'neutral': '#6b7280',         // Gray
-    'defectors': '#DC2626',        // Red (branded)
+    'defectors': 'rgba(220, 38, 38, 0.15)',  // Red (branded) with reduced opacity for better readability
     'terrorists': '#EF4444'        // Red
   };
   return colors[quadrant] || '#6b7280';
