@@ -1,7 +1,9 @@
 import React from 'react';
 import { MovementStats, QuadrantMovement } from '../services/historicalAnalysisService';
 import { ArrowRight, TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import type { QuadrantType } from '../../../types';
+
+// Use the full QuadrantType that includes all quadrants (from visualization context)
+type QuadrantType = 'loyalists' | 'mercenaries' | 'hostages' | 'defectors' | 'apostles' | 'terrorists' | 'near_apostles' | 'near_terrorists' | 'neutral';
 
 interface QuadrantMovementFlowProps {
   movementStats: MovementStats;
