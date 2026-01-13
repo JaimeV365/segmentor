@@ -29,17 +29,15 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
   // Get quadrant assignment function from context
   const { getQuadrantForPoint } = useQuadrantAssignment();
   
-  // Check if we have historical data to show
-  if (!hasHistoricalData(data)) {
-    return null; // Don't render if no historical data
-  }
-  
-  const timelines = groupByCustomer(data);
-  
   // Extract date format from first data point with date (if available)
   const dateFormat = useMemo(() => {
     const firstPointWithDate = data.find(p => p.date && p.dateFormat);
     return firstPointWithDate?.dateFormat;
+  }, [data]);
+  
+  // Group data by customer (always calculate, even if we won't show)
+  const timelines = useMemo(() => {
+    return groupByCustomer(data);
   }, [data]);
   
   // Calculate trend data
@@ -61,6 +59,11 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
   const forecast = useMemo(() => {
     return generateForecast(trendData);
   }, [trendData]);
+  
+  // Check if we have historical data to show (after all hooks)
+  if (!hasHistoricalData(data)) {
+    return null; // Don't render if no historical data
+  }
   
   return (
     <div className="report-card" data-section-id="report-historical-progress">
