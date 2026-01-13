@@ -101,7 +101,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
 
   // Handle point click
   const handlePointClick = (data: any, index: number, metricType: 'satisfaction' | 'loyalty') => {
-    const pointData = chartDataWithCustomers[index];
+    const pointData = customerLinesData[index];
     if (!pointData) return;
 
     // Get all customers at this date
