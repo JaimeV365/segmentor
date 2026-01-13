@@ -16,7 +16,6 @@ const getQuadrantDisplayName = (quadrant: QuadrantType): string => {
     'hostages': 'Hostages',
     'neutral': 'Neutral',
     'defectors': 'Defectors',
-    'near_terrorists': 'Near Terrorists',
     'terrorists': 'Terrorists'
   };
   return names[quadrant] || quadrant;
@@ -31,7 +30,6 @@ const getQuadrantColor = (quadrant: QuadrantType): string => {
     'hostages': '#8b5cf6',
     'neutral': '#6b7280',
     'defectors': '#ef4444',
-    'near_terrorists': '#f97316',
     'terrorists': '#dc2626'
   };
   return colors[quadrant] || '#6b7280';

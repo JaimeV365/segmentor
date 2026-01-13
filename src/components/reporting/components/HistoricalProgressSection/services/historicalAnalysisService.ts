@@ -116,7 +116,6 @@ export const calculateQuadrantMovements = (
     'hostages': 4,
     'neutral': 3,
     'defectors': 2,
-    'near_terrorists': 1,
     'terrorists': 0
   };
   
