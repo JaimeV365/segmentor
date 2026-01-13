@@ -269,10 +269,10 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                 <marker
                   key={`arrowhead-${quad}`}
                   id={`arrowhead-${quad}`}
-                  markerWidth="6"
-                  markerHeight="6"
-                  refX="5"
-                  refY="3"
+                  markerWidth="5"
+                  markerHeight="5"
+                  refX="4"
+                  refY="2.5"
                   orient="auto"
                   markerUnits="userSpaceOnUse"
                 >
@@ -280,19 +280,19 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                   <line
                     x1="0"
                     y1="0"
-                    x2="8"
-                    y2="4"
+                    x2="5"
+                    y2="2.5"
                     stroke={color}
-                    strokeWidth="2"
+                    strokeWidth="1.5"
                     strokeLinecap="round"
                   />
                   <line
                     x1="0"
-                    y1="8"
-                    x2="8"
-                    y2="4"
+                    y1="5"
+                    x2="5"
+                    y2="2.5"
                     stroke={color}
-                    strokeWidth="2"
+                    strokeWidth="1.5"
                     strokeLinecap="round"
                   />
                 </marker>
@@ -301,8 +301,8 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
             
             {/* Draw all arrows and circles */}
             {allArrowsAndCircles.map((item, idx) => {
-              const circleRadius = 6;
-              const borderWidth = 2;
+              const circleRadius = 4;
+              const borderWidth = 1.5;
               const markerId = `arrowhead-${item.destQuadrant}`;
               
               return (
@@ -314,7 +314,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     x2={item.absoluteEnd.x}
                     y2={item.absoluteEnd.y}
                     stroke={QUADRANT_COLORS[item.destQuadrant]}
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                     markerEnd={`url(#${markerId})`}
                     opacity={0.8}
                   />
@@ -332,7 +332,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     y={item.absoluteStart.y}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fontSize="6"
+                    fontSize="5"
                     fontWeight="700"
                     fill={QUADRANT_COLORS[item.quadrant]}
                   >
