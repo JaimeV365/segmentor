@@ -107,62 +107,62 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     
     // Defectors (bottom-left) to Hostages (top-left): vertical up, end well into hostages quadrant
     if (sourceQuadrant === 'defectors' && destinationQuadrant === 'hostages') {
-      return { x: sourceX, y: 20 }; // Straight up, well into top quadrant (20% from top)
+      return { x: sourceX, y: 15 }; // Straight up, well into top quadrant (15% from top)
     }
     
     // Hostages (top-left) to Defectors (bottom-left): vertical down, end well into defectors quadrant
     if (sourceQuadrant === 'hostages' && destinationQuadrant === 'defectors') {
-      return { x: sourceX, y: 80 }; // Straight down, well into bottom quadrant (20% from bottom)
+      return { x: sourceX, y: 85 }; // Straight down, well into bottom quadrant (15% from bottom)
     }
     
     // Defectors (bottom-left) to Loyalists (top-right): diagonal up-right, end well into loyalists quadrant
     if (sourceQuadrant === 'defectors' && destinationQuadrant === 'loyalists') {
-      return { x: 20, y: 20 }; // End well into top-right quadrant (20% from top and right edges)
+      return { x: 15, y: 15 }; // End well into top-right quadrant (15% from top and right edges)
     }
     
     // Defectors (bottom-left) to Mercenaries (bottom-right): horizontal right, end well into mercenaries quadrant
     if (sourceQuadrant === 'defectors' && destinationQuadrant === 'mercenaries') {
-      return { x: 80, y: sourceY }; // Straight right, well into right quadrant (20% from right)
+      return { x: 85, y: sourceY }; // Straight right, well into right quadrant (15% from right)
     }
     
     // Hostages (top-left) to Loyalists (top-right): horizontal right, end well into loyalists quadrant
     if (sourceQuadrant === 'hostages' && destinationQuadrant === 'loyalists') {
-      return { x: 80, y: sourceY }; // Straight right, well into right quadrant (20% from right)
+      return { x: 85, y: sourceY }; // Straight right, well into right quadrant (15% from right)
     }
     
     // Hostages (top-left) to Mercenaries (bottom-right): diagonal down-right, end well into mercenaries quadrant
     if (sourceQuadrant === 'hostages' && destinationQuadrant === 'mercenaries') {
-      return { x: 20, y: 80 }; // End well into bottom-right quadrant (20% from bottom and right edges)
+      return { x: 15, y: 85 }; // End well into bottom-right quadrant (15% from bottom and right edges)
     }
     
     // Loyalists (top-right) to Hostages (top-left): horizontal left, end well into hostages quadrant
     if (sourceQuadrant === 'loyalists' && destinationQuadrant === 'hostages') {
-      return { x: 20, y: sourceY }; // Straight left, well into left quadrant (20% from left)
+      return { x: 15, y: sourceY }; // Straight left, well into left quadrant (15% from left)
     }
     
     // Loyalists (top-right) to Defectors (bottom-left): diagonal down-left, end well into defectors quadrant
     if (sourceQuadrant === 'loyalists' && destinationQuadrant === 'defectors') {
-      return { x: 80, y: 80 }; // End well into bottom-left quadrant (20% from bottom and left edges)
+      return { x: 85, y: 85 }; // End well into bottom-left quadrant (15% from bottom and left edges)
     }
     
     // Loyalists (top-right) to Mercenaries (bottom-right): vertical down, end well into mercenaries quadrant
     if (sourceQuadrant === 'loyalists' && destinationQuadrant === 'mercenaries') {
-      return { x: sourceX, y: 80 }; // Straight down, well into bottom quadrant (20% from bottom)
+      return { x: sourceX, y: 85 }; // Straight down, well into bottom quadrant (15% from bottom)
     }
     
     // Mercenaries (bottom-right) to Hostages (top-left): diagonal up-left, end well into hostages quadrant
     if (sourceQuadrant === 'mercenaries' && destinationQuadrant === 'hostages') {
-      return { x: 80, y: 20 }; // End well into top-left quadrant (20% from top and left edges)
+      return { x: 85, y: 15 }; // End well into top-left quadrant (15% from top and left edges)
     }
     
     // Mercenaries (bottom-right) to Loyalists (top-right): vertical up, end well into loyalists quadrant
     if (sourceQuadrant === 'mercenaries' && destinationQuadrant === 'loyalists') {
-      return { x: sourceX, y: 20 }; // Straight up, well into top quadrant (20% from top)
+      return { x: sourceX, y: 15 }; // Straight up, well into top quadrant (15% from top)
     }
     
     // Mercenaries (bottom-right) to Defectors (bottom-left): horizontal left, end well into defectors quadrant
     if (sourceQuadrant === 'mercenaries' && destinationQuadrant === 'defectors') {
-      return { x: 20, y: sourceY }; // Straight left, well into left quadrant (20% from left)
+      return { x: 15, y: sourceY }; // Straight left, well into left quadrant (15% from left)
     }
     
     // Default fallback
@@ -269,10 +269,10 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                 <marker
                   key={`arrowhead-${quad}`}
                   id={`arrowhead-${quad}`}
-                  markerWidth="8"
-                  markerHeight="8"
-                  refX="7"
-                  refY="4"
+                  markerWidth="6"
+                  markerHeight="6"
+                  refX="5"
+                  refY="3"
                   orient="auto"
                   markerUnits="userSpaceOnUse"
                 >
@@ -301,8 +301,8 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
             
             {/* Draw all arrows and circles */}
             {allArrowsAndCircles.map((item, idx) => {
-              const circleRadius = 8;
-              const borderWidth = 2.5;
+              const circleRadius = 6;
+              const borderWidth = 2;
               const markerId = `arrowhead-${item.destQuadrant}`;
               
               return (
@@ -314,7 +314,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     x2={item.absoluteEnd.x}
                     y2={item.absoluteEnd.y}
                     stroke={QUADRANT_COLORS[item.destQuadrant]}
-                    strokeWidth={2.5}
+                    strokeWidth={2}
                     markerEnd={`url(#${markerId})`}
                     opacity={0.8}
                   />
@@ -332,7 +332,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     y={item.absoluteStart.y}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fontSize="7"
+                    fontSize="6"
                     fontWeight="700"
                     fill={QUADRANT_COLORS[item.quadrant]}
                   >
