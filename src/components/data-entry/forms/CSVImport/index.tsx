@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import Papa from 'papaparse';
 import { DataPoint, ScaleFormat } from '@/types/base';
 import { useNotification } from '../../NotificationSystem';
@@ -74,6 +74,9 @@ export const CSVImport: React.FC<CSVImportProps> = ({
   } | null>(null);
   const [showScaleConfirmationModal, setShowScaleConfirmationModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Use ref to store setProgress so it can be accessed in processParsedData before useCSVParser is called
+  const setProgressRef = useRef<((progress: any) => void) | null>(null);
   
   const {
     error,
@@ -176,7 +179,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
         details: 'Duplicate IDs (same ID + same date): ' + uniqueDuplicateIds.join(', '),
         fix: 'IDs can be the same if they have different dates (for historical tracking). Please ensure entries with the same ID have different dates, or use unique IDs.'
       });
-      setProgress(null); // Clear progress to unblock the upload area
+      setProgressRef.current?.(null); // Clear progress to unblock the upload area
       return false;
     }
     
@@ -204,7 +207,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
             details: 'Duplicate IDs: ' + uniqueConflictIds.join(', '),
             fix: 'Please use unique IDs or choose to replace all data instead.'
           });
-          setProgress(null); // Clear progress to unblock the upload area
+          setProgressRef.current?.(null); // Clear progress to unblock the upload area
           return false;
         }
       }
@@ -219,7 +222,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
             message: `CSV uses different Satisfaction scale (${headerScales.satisfaction}) than current (${satisfactionScale})`,
             fix: 'Please adjust your CSV file scales to match the current settings or use replace mode'
           });
-          setProgress(null);
+          setProgressRef.current?.(null);
           return false;
         }
 
@@ -230,7 +233,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
             message: `CSV uses different Loyalty scale (${headerScales.loyalty}) than current (${loyaltyScale})`,
             fix: 'Please adjust your CSV file scales to match the current settings or use replace mode'
           });
-          setProgress(null);
+          setProgressRef.current?.(null);
           return false;
         }
       }
@@ -274,7 +277,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
               message: `Demo mode is limited to ${DEMO_MAX_ENTRIES} entries. You have reached the limit. Use "Replace All" to replace existing data, or exit demo mode for unlimited data.`,
               type: 'warning'
             });
-            setProgress(null);
+            setProgressRef.current?.(null);
             return false;
           }
           
@@ -305,7 +308,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
       });
       
       console.log("Clearing progress state");
-      setProgress(null); // Clear progress state to unblock the upload area
+      setProgressRef.current?.(null); // Clear progress state to unblock the upload area
       
       // Instead of clearing all validation states, only clear errors
       // This preserves warnings like duplicates
@@ -318,10 +321,10 @@ export const CSVImport: React.FC<CSVImportProps> = ({
         message: err instanceof Error ? err.message : 'Unknown error occurred',
         fix: 'Please try again or contact support'
       });
-      setProgress(null); // Clear progress state even on error
+      setProgressRef.current?.(null); // Clear progress state even on error
       return false;
     }
-  }, [onImport, onUploadSuccess, satisfactionScale, loyaltyScale, scalesLocked, setError, showNotification, existingIds, existingData, isDemoMode, clearValidationState, setProgress]);
+  }, [onImport, onUploadSuccess, satisfactionScale, loyaltyScale, scalesLocked, setError, showNotification, existingIds, existingData, isDemoMode, clearValidationState]);
 
   const handleCompleteImport = useCallback((
     validatedData: any[], 
@@ -384,6 +387,11 @@ export const CSVImport: React.FC<CSVImportProps> = ({
     showImportModeDialog
   });
   
+  // Store setProgress in ref so it can be accessed in processParsedData
+  useEffect(() => {
+    setProgressRef.current = setProgress;
+  }, [setProgress]);
+  
   // Manage loading state - only show for actual data processing
   useEffect(() => {
     // Hide loading popup if any user interaction modal is open
@@ -441,7 +449,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
       // Complete the import with confirmed scales
       const success = processParsedData(validatedData, finalHeaderScales.scales, fileName, false);
       if (success) {
-        setProgress(null);
+        setProgressRef.current?.(null);
       }
       return;
     }
@@ -476,7 +484,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
               message: 'Missing header information for validation',
               fix: 'Please try uploading the file again'
             });
-            setProgress(null);
+            setProgressRef.current?.(null);
             return;
           }
           
@@ -513,7 +521,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
           );
           
           if (success) {
-            setProgress(null);
+            setProgressRef.current?.(null);
           }
           
         } catch (err) {
@@ -523,7 +531,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
             message: err instanceof Error ? err.message : 'Unknown error occurred',
             fix: 'Please try uploading the file again'
           });
-          setProgress(null);
+          setProgressRef.current?.(null);
         }
       },
       error: (error: Error) => {
@@ -534,7 +542,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
           details: error.message,
           fix: 'Please try uploading the file again'
         });
-        setProgress(null);
+        setProgressRef.current?.(null);
       }
     });
   }, [pendingFileData, handleCompleteImport, processParsedData, setDateIssuesReport, setDateWarningsReport, setError]);
@@ -543,7 +551,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
     console.log("Scale confirmation cancelled");
     setShowScaleConfirmationModal(false);
     setPendingFileData(null);
-    setProgress(null);
+    setProgressRef.current?.(null);
   }, []);
 
   // Sync dates issues and warnings from the parser
@@ -597,7 +605,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
     
     if (!pendingFileData) {
       console.log("No pending file data, clearing progress");
-      setProgress(null); // Clear progress to unblock the upload area
+      setProgressRef.current?.(null); // Clear progress to unblock the upload area
       return;
     }
     
@@ -682,7 +690,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
             fix: 'Please check your file format and try again'
           });
           setPendingFileData(null);
-          setProgress(null); // Clear progress on error
+          setProgressRef.current?.(null); // Clear progress on error
         }
       },
       header: true,
@@ -695,7 +703,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
           fix: 'Make sure your file is a properly formatted CSV'
         });
         setPendingFileData(null);
-        setProgress(null); // Clear progress on error
+        setProgressRef.current?.(null); // Clear progress on error
       }
     });
   };
@@ -738,7 +746,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
           console.log("Import mode modal closed");
           setShowImportModeModal(false);
           setPendingFileData(null);
-          setProgress(null); // Clear progress when modal is closed
+          setProgressRef.current?.(null); // Clear progress when modal is closed
         }}
         onSelectMode={handleImportModeSelect}
       />
