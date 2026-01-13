@@ -23,18 +23,18 @@ const getQuadrantDisplayName = (quadrant: QuadrantType): string => {
 };
 
 const getQuadrantColor = (quadrant: QuadrantType): string => {
-  // Use branded colors with appropriate opacity for backgrounds (matching DistributionSection style)
+  // Use branded colors with sufficient opacity for visibility (0.3 for better readability)
   const colors: Record<QuadrantType, string> = {
-    'apostles': 'rgba(16, 185, 129, 0.15)',   // Emerald with opacity
-    'near_apostles': 'rgba(16, 185, 129, 0.15)', // Emerald with opacity
-    'loyalists': 'rgba(76, 175, 80, 0.15)',    // Green (branded) with opacity
-    'mercenaries': 'rgba(247, 183, 49, 0.15)', // Orange (branded) with opacity
-    'hostages': 'rgba(70, 130, 180, 0.15)',    // Blue (branded) with opacity
-    'neutral': 'rgba(107, 114, 128, 0.15)',    // Gray with opacity
-    'defectors': 'rgba(220, 38, 38, 0.15)',    // Red (branded) with opacity
-    'terrorists': 'rgba(239, 68, 68, 0.15)'    // Red with opacity
+    'apostles': 'rgba(16, 185, 129, 0.3)',   // Emerald with opacity
+    'near_apostles': 'rgba(16, 185, 129, 0.3)', // Emerald with opacity
+    'loyalists': 'rgba(76, 175, 80, 0.3)',    // Green (branded) with opacity
+    'mercenaries': 'rgba(247, 183, 49, 0.3)', // Orange (branded) with opacity
+    'hostages': 'rgba(70, 130, 180, 0.3)',    // Blue (branded) with opacity
+    'neutral': 'rgba(107, 114, 128, 0.3)',    // Gray with opacity
+    'defectors': 'rgba(220, 38, 38, 0.3)',    // Red (branded) with opacity
+    'terrorists': 'rgba(239, 68, 68, 0.3)'    // Red with opacity
   };
-  return colors[quadrant] || 'rgba(107, 114, 128, 0.15)';
+  return colors[quadrant] || 'rgba(107, 114, 128, 0.3)';
 };
 
 export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
