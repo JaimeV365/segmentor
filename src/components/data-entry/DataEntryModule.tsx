@@ -425,8 +425,8 @@ if (editingData) {
         onTabChange={setActiveTab}
       />
       
-      {/* Demo Button - Always visible below tabs */}
-      {data.length === 0 && onDemoDataLoad && (
+      {/* Demo Button - Always visible below tabs when no data */}
+      {(!externalData || externalData.length === 0) && data.length === 0 && onDemoDataLoad && (
         <DemoButton 
           onDemoDataLoad={onDemoDataLoad}
           disabled={false}
