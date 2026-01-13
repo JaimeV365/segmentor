@@ -87,10 +87,13 @@ const DataEntryModule: React.FC<DataEntryModuleProps> = ({
     
     // No external data - try loading from storage
     const savedState = storageManager.loadState();
-    if (savedState?.data?.length) {
+    if (savedState?.data && Array.isArray(savedState.data) && savedState.data.length > 0) {
       setData(savedState.data);
       // We're intentionally NOT loading upload history from storage
       // to start with a clean history on each page load
+    } else {
+      // Ensure data is empty array if no saved state
+      setData([]);
     }
   }, [externalData]);
 
