@@ -3,7 +3,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { ForecastResult, ForecastPoint } from '../services/forecastService';
 import { TrendDataPoint } from '../services/historicalAnalysisService';
 import { ScaleFormat } from '@/types/base';
-import { AlertCircle } from 'lucide-react';
+import { InfoRibbon } from '../../InfoRibbon';
 
 interface ForecastVisualizationProps {
   forecast: ForecastResult;
@@ -76,10 +76,7 @@ export const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
     <div className="forecast-visualization">
       <div className="forecast-header">
         <h4 className="forecast-title">Forecast: If Trend Continues</h4>
-        <div className="forecast-warning">
-          <AlertCircle size={16} />
-          <span>Forecast based on linear trend projection. Actual results may vary.</span>
-        </div>
+        <InfoRibbon text="Forecast based on linear trend projection. Actual results may vary." />
       </div>
 
       <div className="forecast-charts">

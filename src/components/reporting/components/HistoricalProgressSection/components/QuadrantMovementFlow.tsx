@@ -22,15 +22,16 @@ const getQuadrantDisplayName = (quadrant: QuadrantType): string => {
 };
 
 const getQuadrantColor = (quadrant: QuadrantType): string => {
+  // Use exact branded colors from the system
   const colors: Record<QuadrantType, string> = {
-    'apostles': '#10b981',
-    'near_apostles': '#34d399',
-    'loyalists': '#3a863e',
-    'mercenaries': '#f59e0b',
-    'hostages': '#8b5cf6',
-    'neutral': '#6b7280',
-    'defectors': '#ef4444',
-    'terrorists': '#dc2626'
+    'apostles': '#10B981',        // Emerald
+    'near_apostles': '#10B981',   // Emerald (same as apostles)
+    'loyalists': '#4CAF50',       // Green (branded)
+    'mercenaries': '#F7B731',     // Orange (branded)
+    'hostages': '#4682B4',        // Blue (branded)
+    'neutral': '#6b7280',         // Gray
+    'defectors': '#DC2626',        // Red (branded)
+    'terrorists': '#EF4444'        // Red
   };
   return colors[quadrant] || '#6b7280';
 };
@@ -43,6 +44,9 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
 
   return (
     <div className="quadrant-movement-flow">
+      {/* Visual quadrant movement diagram */}
+      <QuadrantMovementDiagram movementStats={movementStats} />
+      
       <div className="movement-stats-summary">
         <div className="movement-stat-card positive">
           <TrendingUp size={20} />

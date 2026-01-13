@@ -274,9 +274,9 @@ export const TrendChart: React.FC<TrendChartProps> = ({
               <Line 
                 type="monotone" 
                 dataKey="averageLoyalty" 
-                stroke="#2563eb" 
+                stroke="#4682B4" 
                 strokeWidth={3}
-                dot={<CustomDot fill="#2563eb" stroke="#2563eb" dataKey="loyalty" />}
+                dot={<CustomDot fill="#4682B4" stroke="#4682B4" dataKey="loyalty" />}
                 name="Loyalty (Average)"
                 isAnimationActive={false}
               />

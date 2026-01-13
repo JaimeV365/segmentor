@@ -11,7 +11,8 @@ import {
   MapPin,
   Lightbulb,
   Activity,
-  Star
+  Star,
+  History
 } from 'lucide-react';
 import './SectionNavigation.css';
 
@@ -131,7 +132,7 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
       {
         id: 'report-historical-progress',
         label: 'Historical Progress',
-        icon: <TrendingUp size={16} />,
+        icon: <History size={16} />,
         selector: '[data-section-id="report-historical-progress"]'
       },
       {
