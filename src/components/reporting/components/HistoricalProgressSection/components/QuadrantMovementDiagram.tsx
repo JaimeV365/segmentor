@@ -39,33 +39,66 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     return null;
   }
 
-  // Calculate circle positions within each quadrant (percentage-based)
-  const getCirclePositions = (movements: Array<{ to: QuadrantType; count: number }>) => {
-    const positions: Array<{ x: number; y: number; to: QuadrantType; count: number }> = [];
-    const count = movements.length;
-    
-    if (count === 1) {
-      positions.push({ x: 50, y: 50, to: movements[0].to, count: movements[0].count });
-    } else if (count === 2) {
-      positions.push({ x: 30, y: 50, to: movements[0].to, count: movements[0].count });
-      positions.push({ x: 70, y: 50, to: movements[1].to, count: movements[1].count });
-    } else if (count === 3) {
-      positions.push({ x: 50, y: 30, to: movements[0].to, count: movements[0].count });
-      positions.push({ x: 30, y: 70, to: movements[1].to, count: movements[1].count });
-      positions.push({ x: 70, y: 70, to: movements[2].to, count: movements[2].count });
-    } else {
-      // Four or more: grid formation
-      movements.forEach((movement, index) => {
-        const row = Math.floor(index / 2);
-        const col = index % 2;
-        positions.push({ 
-          x: 25 + col * 50, 
-          y: 25 + row * 50, 
-          to: movement.to, 
-          count: movement.count 
-        });
-      });
+  // Calculate circle positions within each quadrant based on destination
+  // Circles are positioned closer to their destination quadrant
+  const getCirclePositionForDestination = (sourceQuadrant: string, destinationQuadrant: string): { x: number; y: number } => {
+    // Position circles near the edge closest to destination quadrant
+    if (destinationQuadrant === 'hostages') {
+      // Top-left destination: position in top-center area of source
+      if (sourceQuadrant === 'defectors') return { x: 50, y: 20 }; // Top-center of defectors
+      if (sourceQuadrant === 'mercenaries') return { x: 20, y: 20 }; // Top-left of mercenaries
+      if (sourceQuadrant === 'loyalists') return { x: 20, y: 20 }; // Top-left of loyalists
+    } else if (destinationQuadrant === 'loyalists') {
+      // Top-right destination: position in top-right area of source
+      if (sourceQuadrant === 'defectors') return { x: 80, y: 20 }; // Top-right of defectors
+      if (sourceQuadrant === 'mercenaries') return { x: 80, y: 20 }; // Top-right of mercenaries
+      if (sourceQuadrant === 'hostages') return { x: 80, y: 20 }; // Top-right of hostages
+    } else if (destinationQuadrant === 'mercenaries') {
+      // Bottom-right destination: position in right-center area of source
+      if (sourceQuadrant === 'defectors') return { x: 80, y: 50 }; // Right-center of defectors
+      if (sourceQuadrant === 'hostages') return { x: 80, y: 80 }; // Bottom-right of hostages
+      if (sourceQuadrant === 'loyalists') return { x: 80, y: 80 }; // Bottom-right of loyalists
+    } else if (destinationQuadrant === 'defectors') {
+      // Bottom-left destination: position in bottom-left area of source
+      if (sourceQuadrant === 'hostages') return { x: 20, y: 80 }; // Bottom-left of hostages
+      if (sourceQuadrant === 'loyalists') return { x: 20, y: 80 }; // Bottom-left of loyalists
+      if (sourceQuadrant === 'mercenaries') return { x: 20, y: 80 }; // Bottom-left of mercenaries
     }
+    // Default: center
+    return { x: 50, y: 50 };
+  };
+
+  // Calculate circle positions within each quadrant (percentage-based)
+  const getCirclePositions = (movements: Array<{ to: QuadrantType; count: number }>, sourceQuadrant: string) => {
+    const positions: Array<{ x: number; y: number; to: QuadrantType; count: number }> = [];
+    
+    // If multiple movements to same destination, offset them slightly
+    const destinationGroups: Record<string, Array<{ to: QuadrantType; count: number }>> = {};
+    movements.forEach(movement => {
+      if (!destinationGroups[movement.to]) {
+        destinationGroups[movement.to] = [];
+      }
+      destinationGroups[movement.to].push(movement);
+    });
+
+    Object.entries(destinationGroups).forEach(([dest, destMovements]) => {
+      if (destMovements.length === 1) {
+        const pos = getCirclePositionForDestination(sourceQuadrant, dest);
+        positions.push({ ...pos, to: dest as QuadrantType, count: destMovements[0].count });
+      } else {
+        // Multiple movements to same destination - offset them slightly
+        const basePos = getCirclePositionForDestination(sourceQuadrant, dest);
+        destMovements.forEach((movement, idx) => {
+          const offset = (idx - (destMovements.length - 1) / 2) * 8; // 8% offset per circle
+          positions.push({ 
+            x: basePos.x + (basePos.x > 50 ? -Math.abs(offset) : Math.abs(offset)), 
+            y: basePos.y + (basePos.y > 50 ? -Math.abs(offset) : Math.abs(offset)),
+            to: dest as QuadrantType, 
+            count: movement.count 
+          });
+        });
+      }
+    });
     
     return positions;
   };
@@ -97,7 +130,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
           {/* Render in correct order: Hostages (top-left), Loyalists (top-right), Defectors (bottom-left), Mercenaries (bottom-right) */}
           {['hostages', 'loyalists', 'defectors', 'mercenaries'].map(quadrant => {
             const movements = movementsBySource[quadrant] || [];
-            const circlePositions = getCirclePositions(movements);
+            const circlePositions = getCirclePositions(movements, quadrant);
             
             return (
               <div
@@ -131,9 +164,9 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     const circleRadius = 8;
                     const borderWidth = 2.5;
                     
-                    // Start point (edge of circle)
-                    const startX = sourceX + unitX * circleRadius;
-                    const startY = sourceY + unitY * circleRadius;
+                    // Start point (center of circle - arrow originates from center)
+                    const startX = sourceX;
+                    const startY = sourceY;
                     
                     // End point (edge of destination quadrant - calculate based on quadrant position)
                     let endX, endY;
