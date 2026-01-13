@@ -94,7 +94,8 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
       <h5 className="movement-diagram-title">Movement Flow Visualization</h5>
       <div className="movement-diagram-container">
         <div className="movement-quadrant-grid">
-          {mainQuadrants.map(quadrant => {
+          {/* Render in correct order: Hostages (top-left), Loyalists (top-right), Defectors (bottom-left), Mercenaries (bottom-right) */}
+          {['hostages', 'loyalists', 'defectors', 'mercenaries'].map(quadrant => {
             const movements = movementsBySource[quadrant] || [];
             const circlePositions = getCirclePositions(movements);
             
@@ -177,6 +178,9 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                       }
                     }
                     
+                    // Create unique marker ID for each destination color to avoid conflicts
+                    const markerId = `arrowhead-${pos.to}`;
+                    
                     return (
                       <g key={`${quadrant}-${pos.to}-${idx}`}>
                         {/* Arrow line */}
@@ -187,7 +191,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                           y2={endY}
                           stroke={QUADRANT_COLORS[pos.to]}
                           strokeWidth={2.5}
-                          markerEnd="url(#arrowhead)"
+                          markerEnd={`url(#${markerId})`}
                           opacity={0.75}
                         />
                         {/* Circle with number - white fill, colored border */}
@@ -214,22 +218,28 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     );
                   })}
                   
-                  {/* Arrow marker definition */}
+                  {/* Arrow marker definitions - simple two-line tip for each quadrant color */}
                   <defs>
-                    <marker
-                      id="arrowhead"
-                      markerWidth="8"
-                      markerHeight="8"
-                      refX="7"
-                      refY="4"
-                      orient="auto"
-                    >
-                      <polygon
-                        points="0 0, 8 4, 0 8"
-                        fill="#374151"
-                        opacity={0.8}
-                      />
-                    </marker>
+                    {Object.entries(QUADRANT_COLORS).map(([quad, color]) => (
+                      <marker
+                        key={`arrowhead-${quad}`}
+                        id={`arrowhead-${quad}`}
+                        markerWidth="10"
+                        markerHeight="10"
+                        refX="9"
+                        refY="5"
+                        orient="auto"
+                        markerUnits="strokeWidth"
+                      >
+                        <path
+                          d="M 0 0 L 10 5 L 0 10"
+                          fill="none"
+                          stroke={color}
+                          strokeWidth={2}
+                          opacity={0.75}
+                        />
+                      </marker>
+                    ))}
                   </defs>
                 </svg>
               </div>
