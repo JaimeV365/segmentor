@@ -98,6 +98,55 @@
   aspect-ratio: 1/1;
 }
 
+/* Import quadrant styles from DistributionSection */
+.movement-quadrant-grid .draggable-quadrant {
+  padding: 1.25rem;
+  text-align: center;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease;
+  height: 100%;
+  position: relative;
+  box-sizing: border-box;
+  overflow: visible !important;
+}
+
+.movement-quadrant-grid .draggable-quadrant.loyalists {
+  background-color: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.movement-quadrant-grid .draggable-quadrant.hostages {
+  background-color: rgba(70, 130, 180, 0.1);
+  border: 1px solid rgba(70, 130, 180, 0.2);
+}
+
+.movement-quadrant-grid .draggable-quadrant.mercenaries {
+  background-color: rgba(247, 183, 49, 0.1);
+  border: 1px solid rgba(247, 183, 49, 0.2);
+}
+
+.movement-quadrant-grid .draggable-quadrant.defectors {
+  background-color: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.movement-quadrant-grid .quadrant-title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  z-index: 1;
+  position: relative;
+}
+
 .movement-overlay-svg {
   position: absolute;
   top: 0;
