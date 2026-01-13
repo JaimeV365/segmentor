@@ -211,7 +211,7 @@ export const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
               <Line 
                 type="monotone" 
                 dataKey="loyalty" 
-                stroke="#2563eb" 
+                stroke="#4682B4" 
                 strokeWidth={2}
                 dot={(props: any) => {
                   const isForecast = props.payload?.isForecast;
@@ -220,8 +220,8 @@ export const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
                       cx={props.cx} 
                       cy={props.cy} 
                       r={isForecast ? 5 : 4} 
-                      fill="#2563eb"
-                      stroke={isForecast ? "#f59e0b" : "#2563eb"}
+                      fill="#4682B4"
+                      stroke={isForecast ? "#f59e0b" : "#4682B4"}
                       strokeWidth={isForecast ? 2 : 1}
                     />
                   );
