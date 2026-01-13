@@ -105,64 +105,64 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     // Simple rules: draw straight lines (vertical, horizontal, or diagonal) well into destination
     // Boundary is at 50%, so we extend to 15-20% from opposite edge to clearly cross boundaries
     
-    // Defectors (bottom-left) to Hostages (top-left): vertical up, end just past boundary
+    // Defectors (bottom-left) to Hostages (top-left): vertical up, end barely past boundary
     if (sourceQuadrant === 'defectors' && destinationQuadrant === 'hostages') {
-      return { x: sourceX, y: 45 }; // Straight up, just 5% into top quadrant
+      return { x: sourceX, y: 47 }; // Straight up, just 3% into top quadrant
     }
     
-    // Hostages (top-left) to Defectors (bottom-left): vertical down, end just past boundary
+    // Hostages (top-left) to Defectors (bottom-left): vertical down, end barely past boundary
     if (sourceQuadrant === 'hostages' && destinationQuadrant === 'defectors') {
-      return { x: sourceX, y: 55 }; // Straight down, just 5% into bottom quadrant
+      return { x: sourceX, y: 53 }; // Straight down, just 3% into bottom quadrant
     }
     
-    // Defectors (bottom-left) to Loyalists (top-right): diagonal up-right, end just past boundary
+    // Defectors (bottom-left) to Loyalists (top-right): diagonal up-right, end barely past boundary
     if (sourceQuadrant === 'defectors' && destinationQuadrant === 'loyalists') {
-      return { x: 45, y: 45 }; // End just 5% into top-right quadrant
+      return { x: 47, y: 47 }; // End just 3% into top-right quadrant
     }
     
-    // Defectors (bottom-left) to Mercenaries (bottom-right): horizontal right, end just past boundary
+    // Defectors (bottom-left) to Mercenaries (bottom-right): horizontal right, end barely past boundary
     if (sourceQuadrant === 'defectors' && destinationQuadrant === 'mercenaries') {
-      return { x: 55, y: sourceY }; // Straight right, just 5% into right quadrant
+      return { x: 53, y: sourceY }; // Straight right, just 3% into right quadrant
     }
     
-    // Hostages (top-left) to Loyalists (top-right): horizontal right, end just past boundary
+    // Hostages (top-left) to Loyalists (top-right): horizontal right, end barely past boundary
     if (sourceQuadrant === 'hostages' && destinationQuadrant === 'loyalists') {
-      return { x: 55, y: sourceY }; // Straight right, just 5% into right quadrant
+      return { x: 53, y: sourceY }; // Straight right, just 3% into right quadrant
     }
     
-    // Hostages (top-left) to Mercenaries (bottom-right): diagonal down-right, end just past boundary
+    // Hostages (top-left) to Mercenaries (bottom-right): diagonal down-right, end barely past boundary
     if (sourceQuadrant === 'hostages' && destinationQuadrant === 'mercenaries') {
-      return { x: 45, y: 55 }; // End just 5% into bottom-right quadrant
+      return { x: 47, y: 53 }; // End just 3% into bottom-right quadrant
     }
     
-    // Loyalists (top-right) to Hostages (top-left): horizontal left, end just past boundary
+    // Loyalists (top-right) to Hostages (top-left): horizontal left, end barely past boundary
     if (sourceQuadrant === 'loyalists' && destinationQuadrant === 'hostages') {
-      return { x: 45, y: sourceY }; // Straight left, just 5% into left quadrant
+      return { x: 47, y: sourceY }; // Straight left, just 3% into left quadrant
     }
     
-    // Loyalists (top-right) to Defectors (bottom-left): diagonal down-left, end just past boundary
+    // Loyalists (top-right) to Defectors (bottom-left): diagonal down-left, end barely past boundary
     if (sourceQuadrant === 'loyalists' && destinationQuadrant === 'defectors') {
-      return { x: 55, y: 55 }; // End just 5% into bottom-left quadrant
+      return { x: 53, y: 53 }; // End just 3% into bottom-left quadrant
     }
     
-    // Loyalists (top-right) to Mercenaries (bottom-right): vertical down, end just past boundary
+    // Loyalists (top-right) to Mercenaries (bottom-right): vertical down, end barely past boundary
     if (sourceQuadrant === 'loyalists' && destinationQuadrant === 'mercenaries') {
-      return { x: sourceX, y: 55 }; // Straight down, just 5% into bottom quadrant
+      return { x: sourceX, y: 53 }; // Straight down, just 3% into bottom quadrant
     }
     
-    // Mercenaries (bottom-right) to Hostages (top-left): diagonal up-left, end just past boundary
+    // Mercenaries (bottom-right) to Hostages (top-left): diagonal up-left, end barely past boundary
     if (sourceQuadrant === 'mercenaries' && destinationQuadrant === 'hostages') {
-      return { x: 55, y: 45 }; // End just 5% into top-left quadrant
+      return { x: 53, y: 47 }; // End just 3% into top-left quadrant
     }
     
-    // Mercenaries (bottom-right) to Loyalists (top-right): vertical up, end just past boundary
+    // Mercenaries (bottom-right) to Loyalists (top-right): vertical up, end barely past boundary
     if (sourceQuadrant === 'mercenaries' && destinationQuadrant === 'loyalists') {
-      return { x: sourceX, y: 45 }; // Straight up, just 5% into top quadrant
+      return { x: sourceX, y: 47 }; // Straight up, just 3% into top quadrant
     }
     
-    // Mercenaries (bottom-right) to Defectors (bottom-left): horizontal left, end just past boundary
+    // Mercenaries (bottom-right) to Defectors (bottom-left): horizontal left, end barely past boundary
     if (sourceQuadrant === 'mercenaries' && destinationQuadrant === 'defectors') {
-      return { x: 45, y: sourceY }; // Straight left, just 5% into left quadrant
+      return { x: 47, y: sourceY }; // Straight left, just 3% into left quadrant
     }
     
     // Default fallback
@@ -285,7 +285,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     x2="6"
                     y2="3"
                     stroke={color}
-                    strokeWidth="1.5"
+                    strokeWidth="1"
                     strokeLinecap="round"
                   />
                   <line
@@ -294,7 +294,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     x2="6"
                     y2="3"
                     stroke={color}
-                    strokeWidth="1.5"
+                    strokeWidth="1"
                     strokeLinecap="round"
                   />
                 </marker>
@@ -304,7 +304,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
             {/* Draw all arrows and circles */}
             {allArrowsAndCircles.map((item, idx) => {
               const circleRadius = 4;
-              const borderWidth = 1.5;
+              const borderWidth = 1;
               const markerId = `arrowhead-${item.destQuadrant}`;
               
               return (
@@ -316,7 +316,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     x2={item.absoluteEnd.x}
                     y2={item.absoluteEnd.y}
                     stroke={QUADRANT_COLORS[item.destQuadrant]}
-                    strokeWidth={1.5}
+                    strokeWidth={1}
                     markerEnd={`url(#${markerId})`}
                     opacity={0.8}
                   />
