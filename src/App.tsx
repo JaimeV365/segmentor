@@ -22,6 +22,7 @@ import { BrandPlusIndicator } from './components/ui/BrandPlusIndicator/BrandPlus
 import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 import { Footer } from './components/ui/Footer/Footer';
 import { TranslationBanner } from './components/ui/TranslationBanner/TranslationBanner';
+import { storageManager } from './components/data-entry/utils/storageManager';
 import './App.css';
 import './components/visualization/controls/ResponsiveDesign.css';
 
