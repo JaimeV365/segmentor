@@ -176,6 +176,9 @@ export const TrendChart: React.FC<TrendChartProps> = ({
     const customerCount = pointData?.count || 1;
     const radius = Math.min(4 + customerCount * 0.5, 8); // Scale from 4 to 8 based on count
     
+    // Determine metric type from the line's dataKey or from props
+    const metricType = props.metricType || (props.dataKey?.includes('satisfaction') ? 'satisfaction' : 'loyalty');
+    
     return (
       <circle
         cx={cx}
@@ -187,7 +190,6 @@ export const TrendChart: React.FC<TrendChartProps> = ({
         style={{ cursor: 'pointer', pointerEvents: 'all' }}
         onClick={(e) => {
           e.stopPropagation();
-          const metricType = props.dataKey === 'satisfaction' ? 'satisfaction' : 'loyalty';
           const index = customerLinesData.findIndex(d => d.date === payload.date);
           if (index >= 0) {
             handlePointClick(payload, index, metricType, e);
@@ -247,6 +249,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                     connectNulls={true}
                     hide={true}
                     isAnimationActive={false}
+                    legendType="none"
                   />
                 );
               }
@@ -262,6 +265,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                     connectNulls={true}
                     hide={true}
                     isAnimationActive={false}
+                    legendType="none"
                   />
                 );
               }

@@ -78,8 +78,15 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
     // Check if Historical Progress section exists in DOM
     const checkHistoricalProgress = () => {
       const element = document.querySelector('[data-section-id="report-historical-progress"]');
-      const isVisible = element && element.getBoundingClientRect().height > 0;
-      setHasHistoricalProgress(!!isVisible);
+      if (element) {
+        // Check if element is visible (not hidden by display:none or has height)
+        const rect = element.getBoundingClientRect();
+        const style = window.getComputedStyle(element);
+        const isVisible = rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+        setHasHistoricalProgress(isVisible);
+      } else {
+        setHasHistoricalProgress(false);
+      }
     };
     
     checkRecommendationScore();

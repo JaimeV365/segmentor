@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MovementStats, QuadrantMovement } from '../services/historicalAnalysisService';
-import { ArrowRight, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { ArrowRight, TrendingUp, TrendingDown, Minus, ChevronDown, ChevronRight } from 'lucide-react';
 import type { QuadrantType } from '../../../../visualization/context/QuadrantAssignmentContext';
 import { QuadrantMovementDiagram } from './QuadrantMovementDiagram';
 import { DataPoint } from '@/types/base';
 import { CustomerTimeline } from '../utils/historicalDataUtils';
+import { ProximityPointInfoBox } from '../../DistributionSection/ProximityPointInfoBox';
 
 interface QuadrantMovementFlowProps {
   movementStats: MovementStats;
@@ -48,6 +49,56 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
 }) => {
   // Show top 10 movements by count
   const topMovements = movementStats.movements.slice(0, 10);
+  const [expandedMovements, setExpandedMovements] = useState<Set<number>>(new Set());
+  const [clickedMovement, setClickedMovement] = useState<{
+    points: DataPoint[];
+    position: { x: number; y: number };
+    fromQuadrant: string;
+    toQuadrant: string;
+  } | null>(null);
+
+  // Helper to get DataPoints for a movement
+  const getDataPointsForMovement = (movement: QuadrantMovement): DataPoint[] => {
+    const dataPoints: DataPoint[] = [];
+    movement.customers.forEach(customer => {
+      const timeline = timelines.find(t => t.identifier === customer.identifier);
+      if (timeline) {
+        const point = timeline.dataPoints.find(p => p.date && p.date.trim() === customer.toDate);
+        if (point) {
+          dataPoints.push(point);
+        }
+      }
+    });
+    return dataPoints;
+  };
+
+  const toggleMovement = (index: number) => {
+    setExpandedMovements(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(index)) {
+        newSet.delete(index);
+      } else {
+        newSet.add(index);
+      }
+      return newSet;
+    });
+  };
+
+  const handleMovementClick = (e: React.MouseEvent, movement: QuadrantMovement) => {
+    e.stopPropagation();
+    const points = getDataPointsForMovement(movement);
+    if (points.length > 0) {
+      setClickedMovement({
+        points,
+        position: {
+          x: e.clientX,
+          y: e.clientY
+        },
+        fromQuadrant: movement.from,
+        toQuadrant: movement.to
+      });
+    }
+  };
 
   return (
     <div className="quadrant-movement-flow">
@@ -88,25 +139,92 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
           <p className="no-movements">No movements detected</p>
         ) : (
           <div className="movement-items">
-            {topMovements.map((movement, index) => (
-              <div key={index} className="movement-item">
-                <div 
-                  className="movement-quadrant from-quadrant"
-                  style={{ backgroundColor: getQuadrantColor(movement.from) }}
-                >
-                  {getQuadrantDisplayName(movement.from)}
+            {topMovements.map((movement, index) => {
+              const isExpanded = expandedMovements.has(index);
+              const points = isExpanded ? getDataPointsForMovement(movement) : [];
+              
+              return (
+                <div key={index} className="movement-item">
+                  <div 
+                    className="movement-item-header"
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '8px',
+                      cursor: 'pointer',
+                      padding: '8px',
+                      borderRadius: '4px',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onClick={() => toggleMovement(index)}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                    <div 
+                      className="movement-quadrant from-quadrant"
+                      style={{ backgroundColor: getQuadrantColor(movement.from) }}
+                    >
+                      {getQuadrantDisplayName(movement.from)}
+                    </div>
+                    <ArrowRight size={16} className="movement-arrow" />
+                    <div 
+                      className="movement-quadrant to-quadrant"
+                      style={{ backgroundColor: getQuadrantColor(movement.to) }}
+                    >
+                      {getQuadrantDisplayName(movement.to)}
+                    </div>
+                    <div 
+                      className="movement-count"
+                      onClick={(e) => handleMovementClick(e, movement)}
+                      style={{ 
+                        cursor: 'pointer',
+                        textDecoration: 'underline',
+                        color: '#3b82f6'
+                      }}
+                    >
+                      {movement.count} customers
+                    </div>
+                  </div>
+                  {isExpanded && points.length > 0 && (
+                    <div className="movement-customers-list" style={{ 
+                      padding: '8px 32px',
+                      backgroundColor: '#f9fafb',
+                      borderTop: '1px solid #e5e7eb'
+                    }}>
+                      {points.map((point, pointIdx) => (
+                        <div 
+                          key={pointIdx}
+                          style={{
+                            padding: '4px 0',
+                            fontSize: '13px',
+                            color: '#374151'
+                          }}
+                        >
+                          {point.name || point.email || `Customer ${point.id}`} 
+                          <span style={{ color: '#6b7280', marginLeft: '8px' }}>
+                            (S: {point.satisfaction}, L: {point.loyalty})
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <ArrowRight size={16} className="movement-arrow" />
-                <div 
-                  className="movement-quadrant to-quadrant"
-                  style={{ backgroundColor: getQuadrantColor(movement.to) }}
-                >
-                  {getQuadrantDisplayName(movement.to)}
-                </div>
-                <div className="movement-count">{movement.count} customers</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
+          
+          {/* Customer list modal */}
+          {clickedMovement && (
+            <ProximityPointInfoBox
+              points={clickedMovement.points}
+              position={clickedMovement.position}
+              quadrant={clickedMovement.toQuadrant}
+              onClose={() => setClickedMovement(null)}
+              context="distribution"
+              customTitle={`${getQuadrantDisplayName(clickedMovement.fromQuadrant as QuadrantType)} to ${getQuadrantDisplayName(clickedMovement.toQuadrant as QuadrantType)}`}
+            />
+          )}
         )}
       </div>
     </div>

@@ -440,6 +440,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
           quadrant={clickedMovement.toQuadrant}
           onClose={() => setClickedMovement(null)}
           context="distribution"
+          customTitle={`${QUADRANT_NAMES[clickedMovement.fromQuadrant] || clickedMovement.fromQuadrant} to ${QUADRANT_NAMES[clickedMovement.toQuadrant] || clickedMovement.toQuadrant}`}
         />
       )}
     </div>

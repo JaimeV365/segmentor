@@ -20,6 +20,7 @@ export const ProximityPointInfoBox: React.FC<{
   secondaryPoints?: DataPoint[];
   secondaryQuadrant?: string;
   secondaryProximityType?: string;
+  customTitle?: string;
 }> = ({ 
   points, 
   position, 
@@ -60,6 +61,11 @@ export const ProximityPointInfoBox: React.FC<{
 
   // Get the title based on context and proximity type
   const getFormattedTitle = (): string => {
+    // Use custom title if provided
+    if (customTitle) {
+      return customTitle;
+    }
+    
     if (context === 'proximity' && proximityType) {
       // For proximity reports: "Loyalists near Mercenaries"
       const sourceQuadrant = quadrant.charAt(0).toUpperCase() + quadrant.slice(1);
