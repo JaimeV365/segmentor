@@ -132,13 +132,18 @@ export const TrendChart: React.FC<TrendChartProps> = ({
 
   // Handle point click
   const handlePointClick = (data: any, index: number, metricType: 'satisfaction' | 'loyalty', event?: React.MouseEvent) => {
+    console.log('[TrendChart] Point clicked:', { data, index, metricType, customerLinesDataLength: customerLinesData.length });
     const pointData = customerLinesData[index];
-    if (!pointData) return;
+    if (!pointData) {
+      console.log('[TrendChart] No pointData found for index:', index);
+      return;
+    }
 
     // Get all customers at this date - use normalized date comparison
     const customersAtDate: DataPoint[] = [];
     const normalizedTargetDate = pointData.date.trim();
     
+    console.log('[TrendChart] Looking for customers on date:', normalizedTargetDate);
     timelines.forEach(timeline => {
       timeline.dataPoints.forEach(point => {
         if (point.date && point.date.trim() === normalizedTargetDate) {
@@ -146,6 +151,8 @@ export const TrendChart: React.FC<TrendChartProps> = ({
         }
       });
     });
+
+    console.log('[TrendChart] Found customers:', customersAtDate.length);
 
     if (customersAtDate.length > 0) {
       // Use event position if available, otherwise center of chart
@@ -178,7 +185,8 @@ export const TrendChart: React.FC<TrendChartProps> = ({
     const { cx, cy, payload } = props;
     const pointData = customerLinesData.find(d => d.date === payload.date);
     const customerCount = pointData?.count || 1;
-    const radius = Math.min(4 + customerCount * 0.5, 8); // Scale from 4 to 8 based on count
+    // Make size more noticeable: base 4, add 1 per customer, max 12
+    const radius = Math.min(4 + customerCount * 1, 12);
     
     // Determine metric type from the line's dataKey or from props
     const metricType = props.metricType || (props.dataKey?.includes('satisfaction') ? 'satisfaction' : 'loyalty');
@@ -288,7 +296,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                 dataKey="averageSatisfaction" 
                 stroke="#3a863e" 
                 strokeWidth={3}
-                dot={<CustomDot fill="#3a863e" stroke="#3a863e" dataKey="averageSatisfaction" metricType="satisfaction" />}
+                dot={(props: any) => <CustomDot {...props} fill="#3a863e" stroke="#3a863e" dataKey="averageSatisfaction" metricType="satisfaction" />}
                 name="Satisfaction (Average)"
                 isAnimationActive={false}
                 activeDot={{ 
@@ -310,7 +318,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                 dataKey="averageLoyalty" 
                 stroke="#4682B4" 
                 strokeWidth={3}
-                dot={<CustomDot fill="#4682B4" stroke="#4682B4" dataKey="loyalty" />}
+                dot={(props: any) => <CustomDot {...props} fill="#4682B4" stroke="#4682B4" dataKey="averageLoyalty" metricType="loyalty" />}
                 name="Loyalty (Average)"
                 isAnimationActive={false}
                 activeDot={{ 

@@ -145,14 +145,20 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
           <TrendingUp size={20} />
           <div>
             <div className="movement-stat-value">{movementStats.positiveMovements}</div>
-            <div className="movement-stat-label">Positive Movements</div>
+            <div className="movement-stat-label">Positive Transitions</div>
+            <div className="movement-stat-description" style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
+              Individual customer moves
+            </div>
           </div>
         </div>
         <div className="movement-stat-card negative">
           <TrendingDown size={20} />
           <div>
             <div className="movement-stat-value">{movementStats.negativeMovements}</div>
-            <div className="movement-stat-label">Negative Movements</div>
+            <div className="movement-stat-label">Negative Transitions</div>
+            <div className="movement-stat-description" style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
+              Individual customer moves
+            </div>
           </div>
         </div>
         <div className="movement-stat-card neutral">
@@ -160,6 +166,9 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
           <div>
             <div className="movement-stat-value">{movementStats.neutralMovements}</div>
             <div className="movement-stat-label">No Change</div>
+            <div className="movement-stat-description" style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
+              Same quadrant
+            </div>
           </div>
         </div>
       </div>
