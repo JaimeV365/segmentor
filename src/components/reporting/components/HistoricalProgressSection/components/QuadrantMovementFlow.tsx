@@ -5,7 +5,6 @@ import type { QuadrantType } from '../../../../visualization/context/QuadrantAss
 import { QuadrantMovementDiagram } from './QuadrantMovementDiagram';
 import { DataPoint } from '@/types/base';
 import { CustomerTimeline } from '../utils/historicalDataUtils';
-import { ProximityPointInfoBox } from '../../DistributionSection/ProximityPointInfoBox';
 
 interface QuadrantMovementFlowProps {
   movementStats: MovementStats;
@@ -50,26 +49,74 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
   // Show top 10 movements by count
   const topMovements = movementStats.movements.slice(0, 10);
   const [expandedMovements, setExpandedMovements] = useState<Set<number>>(new Set());
-  const [clickedMovement, setClickedMovement] = useState<{
-    points: DataPoint[];
-    position: { x: number; y: number };
-    fromQuadrant: string;
-    toQuadrant: string;
-  } | null>(null);
 
-  // Helper to get DataPoints for a movement
-  const getDataPointsForMovement = (movement: QuadrantMovement): DataPoint[] => {
-    const dataPoints: DataPoint[] = [];
+  // Helper to get all customer data with their full timeline for a movement
+  const getCustomerDataForMovement = (movement: QuadrantMovement): Array<{
+    customer: DataPoint;
+    timeline: CustomerTimeline;
+    allDates: string[];
+    firstDate: string;
+    lastDate: string;
+    middleDates: string[];
+    originPoint: DataPoint | null;
+    destinyPoint: DataPoint | null;
+  }> => {
+    const customerData: Array<{
+      customer: DataPoint;
+      timeline: CustomerTimeline;
+      allDates: string[];
+      firstDate: string;
+      lastDate: string;
+      middleDates: string[];
+      originPoint: DataPoint | null;
+      destinyPoint: DataPoint | null;
+    }> = [];
+    
     movement.customers.forEach(customer => {
-      const timeline = timelines.find(t => t.identifier === customer.identifier);
-      if (timeline) {
-        const point = timeline.dataPoints.find(p => p.date && p.date.trim() === customer.toDate);
-        if (point) {
-          dataPoints.push(point);
+      // Normalize identifier for matching
+      const normalizedCustomerId = customer.identifier.toLowerCase().trim();
+      const timeline = timelines.find(t => {
+        const normalizedTimelineId = t.identifier.toLowerCase().trim();
+        return normalizedTimelineId === normalizedCustomerId && t.identifierType === customer.identifierType;
+      });
+      
+      if (timeline && timeline.dataPoints.length > 0) {
+        // Get all dates for this customer, sorted
+        const datesWithPoints = timeline.dataPoints
+          .filter(p => p.date)
+          .map(p => ({ date: p.date!.trim(), point: p }))
+          .sort((a, b) => a.date.localeCompare(b.date));
+        
+        if (datesWithPoints.length > 0) {
+          const allDates = datesWithPoints.map(d => d.date);
+          const firstDate = allDates[0];
+          const lastDate = allDates[allDates.length - 1];
+          const middleDates = allDates.length > 2 ? allDates.slice(1, -1) : [];
+          
+          // Find origin and destiny points
+          const normalizedFromDate = customer.fromDate.trim();
+          const normalizedToDate = customer.toDate.trim();
+          const originPoint = datesWithPoints.find(d => d.date === normalizedFromDate)?.point || null;
+          const destinyPoint = datesWithPoints.find(d => d.date === normalizedToDate)?.point || null;
+          
+          // Use the destiny point as the main customer data point
+          const mainPoint = destinyPoint || datesWithPoints[datesWithPoints.length - 1].point;
+          
+          customerData.push({
+            customer: mainPoint,
+            timeline,
+            allDates,
+            firstDate,
+            lastDate,
+            middleDates,
+            originPoint,
+            destinyPoint
+          });
         }
       }
     });
-    return dataPoints;
+    
+    return customerData;
   };
 
   const toggleMovement = (index: number) => {
@@ -82,22 +129,6 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
       }
       return newSet;
     });
-  };
-
-  const handleMovementClick = (e: React.MouseEvent, movement: QuadrantMovement) => {
-    e.stopPropagation();
-    const points = getDataPointsForMovement(movement);
-    if (points.length > 0) {
-      setClickedMovement({
-        points,
-        position: {
-          x: e.clientX,
-          y: e.clientY
-        },
-        fromQuadrant: movement.from,
-        toQuadrant: movement.to
-      });
-    }
   };
 
   return (
@@ -141,7 +172,7 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
           <div className="movement-items">
             {topMovements.map((movement, index) => {
               const isExpanded = expandedMovements.has(index);
-              const points = isExpanded ? getDataPointsForMovement(movement) : [];
+              const customerData = isExpanded ? getCustomerDataForMovement(movement) : [];
               
               return (
                 <div key={index} className="movement-item">
@@ -174,39 +205,67 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
                     >
                       {getQuadrantDisplayName(movement.to)}
                     </div>
-                    <div 
-                      className="movement-count"
-                      onClick={(e) => handleMovementClick(e, movement)}
-                      style={{ 
-                        cursor: 'pointer',
-                        textDecoration: 'underline',
-                        color: '#3b82f6'
-                      }}
-                    >
+                    <div className="movement-count">
                       {movement.count} customers
                     </div>
                   </div>
-                  {isExpanded && points.length > 0 && (
-                    <div className="movement-customers-list" style={{ 
-                      padding: '8px 32px',
+                  {isExpanded && customerData.length > 0 && (
+                    <div className="movement-customers-table" style={{ 
+                      padding: '16px',
                       backgroundColor: '#f9fafb',
-                      borderTop: '1px solid #e5e7eb'
+                      borderTop: '1px solid #e5e7eb',
+                      overflowX: 'auto'
                     }}>
-                      {points.map((point, pointIdx) => (
-                        <div 
-                          key={pointIdx}
-                          style={{
-                            padding: '4px 0',
-                            fontSize: '13px',
-                            color: '#374151'
-                          }}
-                        >
-                          {point.name || point.email || `Customer ${point.id}`} 
-                          <span style={{ color: '#6b7280', marginLeft: '8px' }}>
-                            (S: {point.satisfaction}, L: {point.loyalty})
-                          </span>
-                        </div>
-                      ))}
+                      <table style={{ 
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        fontSize: '13px'
+                      }}>
+                        <thead>
+                          <tr style={{ 
+                            backgroundColor: '#f3f4f6',
+                            borderBottom: '2px solid #e5e7eb'
+                          }}>
+                            <th style={{ padding: '8px', textAlign: 'left', fontWeight: '600' }}>Customer</th>
+                            <th style={{ padding: '8px', textAlign: 'left', fontWeight: '600' }}>Position</th>
+                            <th style={{ padding: '8px', textAlign: 'left', fontWeight: '600' }}>Date (Origin)</th>
+                            <th style={{ padding: '8px', textAlign: 'left', fontWeight: '600' }}>Date (Destiny)</th>
+                            {customerData.some(c => c.middleDates.length > 0) && (
+                              <th style={{ padding: '8px', textAlign: 'left', fontWeight: '600' }}>Middle Dates</th>
+                            )}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {customerData.map((item, idx) => {
+                            const customerName = item.customer.name || item.customer.email || `Customer ${item.customer.id}`;
+                            return (
+                              <tr 
+                                key={idx}
+                                style={{ 
+                                  borderBottom: '1px solid #e5e7eb',
+                                  backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fafafa'
+                                }}
+                              >
+                                <td style={{ padding: '8px' }}>{customerName}</td>
+                                <td style={{ padding: '8px' }}>
+                                  S: {item.customer.satisfaction}, L: {item.customer.loyalty}
+                                </td>
+                                <td style={{ padding: '8px' }}>
+                                  {item.originPoint?.date || item.firstDate}
+                                </td>
+                                <td style={{ padding: '8px' }}>
+                                  {item.destinyPoint?.date || item.lastDate}
+                                </td>
+                                {customerData.some(c => c.middleDates.length > 0) && (
+                                  <td style={{ padding: '8px', color: '#6b7280' }}>
+                                    {item.middleDates.length > 0 ? item.middleDates.join(', ') : '-'}
+                                  </td>
+                                )}
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
                     </div>
                   )}
                 </div>
@@ -215,18 +274,6 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
           </div>
         )}
       </div>
-      
-      {/* Customer list modal */}
-      {clickedMovement && (
-        <ProximityPointInfoBox
-          points={clickedMovement.points}
-          position={clickedMovement.position}
-          quadrant={clickedMovement.toQuadrant}
-          onClose={() => setClickedMovement(null)}
-          context="distribution"
-          customTitle={`${getQuadrantDisplayName(clickedMovement.fromQuadrant as QuadrantType)} to ${getQuadrantDisplayName(clickedMovement.toQuadrant as QuadrantType)}`}
-        />
-      )}
     </div>
   );
 };

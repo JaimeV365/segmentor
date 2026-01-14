@@ -286,14 +286,12 @@ console.log('🚨🚨🚨 About to render DistributionSection with:', {
         </div>
 
         {hasHistoricalData(filteredData) && (
-          <div data-section-id="report-historical-progress">
-            <HistoricalProgressSection
-              data={filteredData}
-              satisfactionScale={satisfactionScale}
-              loyaltyScale={loyaltyScale}
-              isPremium={isPremium}
-            />
-          </div>
+          <HistoricalProgressSection
+            data={filteredData}
+            satisfactionScale={satisfactionScale}
+            loyaltyScale={loyaltyScale}
+            isPremium={isPremium}
+          />
         )}
 
         <div data-section-id="report-actions">

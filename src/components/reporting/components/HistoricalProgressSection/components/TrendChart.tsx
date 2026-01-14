@@ -132,10 +132,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
   // Handle point click
   const handlePointClick = (data: any, index: number, metricType: 'satisfaction' | 'loyalty', event?: React.MouseEvent) => {
     const pointData = customerLinesData[index];
-    if (!pointData) {
-      console.log('TrendChart: No pointData found for index', index);
-      return;
-    }
+    if (!pointData) return;
 
     // Get all customers at this date - use normalized date comparison
     const customersAtDate: DataPoint[] = [];
@@ -208,7 +205,19 @@ export const TrendChart: React.FC<TrendChartProps> = ({
   return (
     <>
       <div className="trend-chart-container">
-        <h4 className="trend-chart-title">{title}</h4>
+        <div style={{ marginBottom: '8px' }}>
+          <h4 className="trend-chart-title">{title}</h4>
+          <p style={{ 
+            fontSize: '12px', 
+            color: '#6b7280', 
+            marginTop: '4px',
+            lineHeight: '1.5'
+          }}>
+            {metric === 'both' 
+              ? 'Shows average satisfaction and loyalty scores across all customers for each date. Click on any data point to see the individual customers and their values at that date.'
+              : `Shows average ${metric} scores across all customers for each date. Each point represents the average of all customers who have data on that date. Click on any data point to see the individual customers and their values.`}
+          </p>
+        </div>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartDataWithCustomers} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
