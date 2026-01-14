@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Dot } from 'recharts';
 import { TrendDataPoint } from '../services/historicalAnalysisService';
 import { CustomerTimeline } from '../utils/historicalDataUtils';
@@ -15,7 +15,6 @@ interface TrendChartProps {
   metric: 'satisfaction' | 'loyalty' | 'both';
   title: string;
   dateFormat?: string;
-  data?: DataPoint[]; // Optional: full data array for filtering context
 }
 
 interface ClickedPoint {

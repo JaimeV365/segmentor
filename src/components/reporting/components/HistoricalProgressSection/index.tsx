@@ -125,7 +125,6 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
                   metric="satisfaction"
                   title="Satisfaction Trend Over Time"
                   dateFormat={dateFormat}
-                  data={effectiveData}
                 />
                 <TrendChart
                   data={trendData}
@@ -134,7 +133,6 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
                   metric="loyalty"
                   title="Loyalty Trend Over Time"
                   dateFormat={dateFormat}
-                  data={effectiveData}
                 />
               </div>
               
@@ -145,7 +143,6 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
                 metric="both"
                 title="Combined Satisfaction & Loyalty Trends"
                 dateFormat={dateFormat}
-                data={effectiveData}
               />
             </div>
           )}
@@ -157,7 +154,7 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
               <QuadrantMovementFlow 
                 movementStats={movementStats}
                 timelines={timelines}
-                data={effectiveData}
+                data={data}
               />
             </div>
           )}
