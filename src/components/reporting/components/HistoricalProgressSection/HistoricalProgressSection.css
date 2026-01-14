@@ -67,7 +67,7 @@
 
 /* Import unified controls styles */
 @import '../../../visualization/controls/UnifiedChartControls.css';
-@import '../../DistributionSection/DistributionSection.css';
+@import '../DistributionSection/DistributionSection.css';
 
 .trend-chart-container {
   position: relative;
