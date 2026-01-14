@@ -31,7 +31,8 @@ export const ProximityPointInfoBox: React.FC<{
   isClassicModel = true,
   secondaryPoints,
   secondaryQuadrant,
-  secondaryProximityType
+  secondaryProximityType,
+  customTitle
 }) => {
   const boxRef = useRef<HTMLDivElement>(null);
   const [showAll, setShowAll] = useState(false);
