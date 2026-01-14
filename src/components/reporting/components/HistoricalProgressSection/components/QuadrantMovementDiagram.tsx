@@ -826,10 +826,12 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
       <p className="movement-diagram-note">
         Numbers in circles indicate customer count moving from source to destination quadrant. Click on a circle to see the customers.
         {diagramQuadrants.length === 4 && (
-          <br />
-          <span style={{ fontSize: '0.75rem', color: '#6b7280', fontStyle: 'italic' }}>
-            Note: This diagram shows movements between the 4 main quadrants by default. Movements involving {isClassicModel ? 'Apostles' : 'Advocates'}, {isClassicModel ? 'Near-Apostles' : 'Near-Advocates'}, Neutral, or {isClassicModel ? 'Terrorists' : 'Trolls'} are counted in the statistics above but not displayed here. Use the filter menu (☰) to include additional quadrants in the diagram.
-          </span>
+          <>
+            <br />
+            <span style={{ fontSize: '0.75rem', color: '#6b7280', fontStyle: 'italic' }}>
+              Note: This diagram shows movements between the 4 main quadrants by default. Movements involving {isClassicModel ? 'Apostles' : 'Advocates'}, {isClassicModel ? 'Near-Apostles' : 'Near-Advocates'}, Neutral, or {isClassicModel ? 'Terrorists' : 'Trolls'} are counted in the statistics above but not displayed here. Use the filter menu (☰) to include additional quadrants in the diagram.
+            </span>
+          </>
         )}
       </p>
       
