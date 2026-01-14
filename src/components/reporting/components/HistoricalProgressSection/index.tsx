@@ -143,7 +143,11 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
           {movementStats.totalMovements > 0 && (
             <div className="historical-progress-movements">
               <h4 className="report-subtitle">Quadrant Movements</h4>
-              <QuadrantMovementFlow movementStats={movementStats} />
+              <QuadrantMovementFlow 
+                movementStats={movementStats}
+                timelines={timelines}
+                data={data}
+              />
             </div>
           )}
           

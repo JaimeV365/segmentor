@@ -268,6 +268,15 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                 dot={<CustomDot fill="#3a863e" stroke="#3a863e" dataKey="satisfaction" />}
                 name="Satisfaction (Average)"
                 isAnimationActive={false}
+                activeDot={{ 
+                  r: 6, 
+                  onClick: (e: any, payload: any) => {
+                    const index = customerLinesData.findIndex(d => d.date === payload.date);
+                    if (index >= 0) {
+                      handlePointClick(payload, index, 'satisfaction');
+                    }
+                  }
+                }}
               />
             )}
             {(metric === 'loyalty' || metric === 'both') && (
@@ -279,6 +288,15 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                 dot={<CustomDot fill="#4682B4" stroke="#4682B4" dataKey="loyalty" />}
                 name="Loyalty (Average)"
                 isAnimationActive={false}
+                activeDot={{ 
+                  r: 6, 
+                  onClick: (e: any, payload: any) => {
+                    const index = customerLinesData.findIndex(d => d.date === payload.date);
+                    if (index >= 0) {
+                      handlePointClick(payload, index, 'loyalty');
+                    }
+                  }
+                }}
               />
             )}
           </LineChart>

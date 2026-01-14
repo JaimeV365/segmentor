@@ -1,9 +1,14 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { MovementStats } from '../services/historicalAnalysisService';
 import type { QuadrantType } from '../../../../visualization/context/QuadrantAssignmentContext';
+import { DataPoint } from '@/types/base';
+import { CustomerTimeline } from '../utils/historicalDataUtils';
+import { ProximityPointInfoBox } from '../../DistributionSection/ProximityPointInfoBox';
 
 interface QuadrantMovementDiagramProps {
   movementStats: MovementStats;
+  timelines: CustomerTimeline[];
+  data: DataPoint[];
 }
 
 // Quadrant display names
@@ -15,8 +20,16 @@ const QUADRANT_NAMES: Record<string, string> = {
 };
 
 export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = ({
-  movementStats
+  movementStats,
+  timelines,
+  data
 }) => {
+  const [clickedMovement, setClickedMovement] = useState<{
+    points: DataPoint[];
+    position: { x: number; y: number };
+    fromQuadrant: string;
+    toQuadrant: string;
+  } | null>(null);
   // Filter to only show movements between the 4 main quadrants
   const mainQuadrants: QuadrantType[] = ['loyalists', 'mercenaries', 'hostages', 'defectors'];
   const mainMovements = movementStats.movements.filter(m => 
@@ -202,6 +215,46 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     };
   };
 
+  // Helper function to get DataPoints for a specific movement
+  const getDataPointsForMovement = (fromQuadrant: string, toQuadrant: string): DataPoint[] => {
+    const movement = movementStats.movements.find(
+      m => m.from === fromQuadrant && m.to === toQuadrant
+    );
+    if (!movement) return [];
+
+    const dataPoints: DataPoint[] = [];
+    movement.customers.forEach(customer => {
+      // Find the timeline for this customer
+      const timeline = timelines.find(t => t.identifier === customer.identifier);
+      if (timeline) {
+        // Find the data point at the "to" date (destination quadrant)
+        const point = timeline.dataPoints.find(p => p.date && p.date.trim() === customer.toDate);
+        if (point) {
+          dataPoints.push(point);
+        }
+      }
+    });
+    return dataPoints;
+  };
+
+  // Handle circle click
+  const handleCircleClick = (e: React.MouseEvent, fromQuadrant: string, toQuadrant: string) => {
+    e.stopPropagation();
+    const points = getDataPointsForMovement(fromQuadrant, toQuadrant);
+    if (points.length > 0) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      setClickedMovement({
+        points,
+        position: {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2
+        },
+        fromQuadrant,
+        toQuadrant
+      });
+    }
+  };
+
   // Collect all circles and arrows for the single overlay (must be before early return)
   const allArrowsAndCircles = useMemo(() => {
     const items: Array<{
@@ -333,27 +386,33 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     opacity={0.8}
                   />
                   {/* Circle with number - white fill, border in destination color, number in source color */}
-                  <circle
-                    cx={item.absoluteStart.x}
-                    cy={item.absoluteStart.y}
-                    r={circleRadius}
-                    fill="#fff"
-                    stroke={QUADRANT_COLORS[item.destQuadrant]}
-                    strokeWidth={borderWidth}
-                  />
-                  <text
-                    x={item.absoluteStart.x}
-                    y={item.absoluteStart.y}
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    fontSize="3"
-                    fontWeight="700"
-                    fontFamily="'Montserrat', sans-serif"
-                    fill={QUADRANT_COLORS[item.quadrant]}
-                    dy="0.1"
+                  <g
+                    style={{ cursor: 'pointer' }}
+                    onClick={(e) => handleCircleClick(e, item.quadrant, item.destQuadrant)}
                   >
-                    {item.count}
-                  </text>
+                    <circle
+                      cx={item.absoluteStart.x}
+                      cy={item.absoluteStart.y}
+                      r={circleRadius}
+                      fill="#fff"
+                      stroke={QUADRANT_COLORS[item.destQuadrant]}
+                      strokeWidth={borderWidth}
+                    />
+                    <text
+                      x={item.absoluteStart.x}
+                      y={item.absoluteStart.y}
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      fontSize="3"
+                      fontWeight="700"
+                      fontFamily="'Montserrat', sans-serif"
+                      fill={QUADRANT_COLORS[item.quadrant]}
+                      dy="0.1"
+                      pointerEvents="none"
+                    >
+                      {item.count}
+                    </text>
+                  </g>
                 </g>
               );
             })}
@@ -361,8 +420,19 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
         </div>
       </div>
       <p className="movement-diagram-note">
-        Numbers in circles indicate customer count moving from source to destination quadrant.
+        Numbers in circles indicate customer count moving from source to destination quadrant. Click on a circle to see the customers.
       </p>
+      
+      {/* Customer list modal */}
+      {clickedMovement && (
+        <ProximityPointInfoBox
+          points={clickedMovement.points}
+          position={clickedMovement.position}
+          quadrant={clickedMovement.toQuadrant}
+          onClose={() => setClickedMovement(null)}
+          context="distribution"
+        />
+      )}
     </div>
   );
 };

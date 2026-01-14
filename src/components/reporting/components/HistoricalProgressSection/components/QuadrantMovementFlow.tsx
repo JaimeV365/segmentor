@@ -3,9 +3,13 @@ import { MovementStats, QuadrantMovement } from '../services/historicalAnalysisS
 import { ArrowRight, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import type { QuadrantType } from '../../../../visualization/context/QuadrantAssignmentContext';
 import { QuadrantMovementDiagram } from './QuadrantMovementDiagram';
+import { DataPoint } from '@/types/base';
+import { CustomerTimeline } from '../utils/historicalDataUtils';
 
 interface QuadrantMovementFlowProps {
   movementStats: MovementStats;
+  timelines: CustomerTimeline[];
+  data: DataPoint[];
 }
 
 const getQuadrantDisplayName = (quadrant: QuadrantType): string => {
@@ -38,7 +42,9 @@ const getQuadrantColor = (quadrant: QuadrantType): string => {
 };
 
 export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
-  movementStats
+  movementStats,
+  timelines,
+  data
 }) => {
   // Show top 10 movements by count
   const topMovements = movementStats.movements.slice(0, 10);
@@ -46,7 +52,11 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
   return (
     <div className="quadrant-movement-flow">
       {/* Visual quadrant movement diagram */}
-      <QuadrantMovementDiagram movementStats={movementStats} />
+      <QuadrantMovementDiagram 
+        movementStats={movementStats}
+        timelines={timelines}
+        data={data}
+      />
       
       <div className="movement-stats-summary">
         <div className="movement-stat-card positive">
