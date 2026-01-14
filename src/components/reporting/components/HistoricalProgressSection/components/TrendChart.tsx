@@ -189,8 +189,42 @@ export const TrendChart: React.FC<TrendChartProps> = ({
 
   // Custom dot component that shows size based on customer count
   const CustomDot = (props: any) => {
-    const { cx, cy, payload } = props;
-    const pointData = customerLinesData.find(d => d.date === payload.date);
+    const { cx, cy, payload, index: dotIndex } = props;
+    console.log('[TrendChart] CustomDot render:', { 
+      payload, 
+      dotIndex, 
+      payloadDate: payload?.date,
+      payloadDateIndex: payload?.dateIndex,
+      cx, 
+      cy 
+    });
+    
+    // Try multiple ways to find the data point
+    let pointData = null;
+    let dataIndex = -1;
+    
+    // Method 1: Use dateIndex if available
+    if (payload?.dateIndex !== undefined) {
+      dataIndex = payload.dateIndex;
+      pointData = customerLinesData[dataIndex];
+    }
+    // Method 2: Use dotIndex (Recharts provides this)
+    else if (dotIndex !== undefined && dotIndex >= 0 && dotIndex < customerLinesData.length) {
+      dataIndex = dotIndex;
+      pointData = customerLinesData[dataIndex];
+    }
+    // Method 3: Match by date string
+    else if (payload?.date) {
+      const payloadDate = payload.date.trim();
+      dataIndex = customerLinesData.findIndex(d => {
+        const dataDate = d.date ? d.date.trim() : '';
+        return dataDate === payloadDate;
+      });
+      if (dataIndex >= 0) {
+        pointData = customerLinesData[dataIndex];
+      }
+    }
+    
     const customerCount = pointData?.count || 1;
     // Make size more noticeable: base 4, add 1 per customer, max 12
     const radius = Math.min(4 + customerCount * 1, 12);
@@ -209,27 +243,26 @@ export const TrendChart: React.FC<TrendChartProps> = ({
         style={{ cursor: 'pointer', pointerEvents: 'all' }}
         onClick={(e) => {
           e.stopPropagation();
-          // Try to use dateIndex first, then fall back to date matching
-          let index = -1;
-          if (payload.dateIndex !== undefined) {
-            index = payload.dateIndex;
-          } else {
-            const payloadDate = payload.date ? payload.date.trim() : '';
-            index = customerLinesData.findIndex(d => {
-              const dataDate = d.date ? d.date.trim() : '';
-              return dataDate === payloadDate;
-            });
-          }
-          console.log('[TrendChart] CustomDot clicked:', { 
-            payloadDate: payload.date,
-            payloadDateIndex: payload.dateIndex,
-            index, 
-            found: index >= 0
+          e.preventDefault();
+          console.log('[TrendChart] CustomDot onClick:', { 
+            payload, 
+            dotIndex,
+            dataIndex,
+            payloadDate: payload?.date,
+            payloadDateIndex: payload?.dateIndex,
+            customerLinesDataLength: customerLinesData.length,
+            found: dataIndex >= 0
           });
-          if (index >= 0) {
-            handlePointClick(payload, index, metricType, e);
+          
+          if (dataIndex >= 0 && dataIndex < customerLinesData.length) {
+            handlePointClick(payload, dataIndex, metricType, e);
           } else {
-            console.log('[TrendChart] CustomDot: Could not find matching date in customerLinesData');
+            console.error('[TrendChart] CustomDot: Could not find matching data point', {
+              dataIndex,
+              payload,
+              dotIndex,
+              availableDates: customerLinesData.map((d, idx) => ({ idx, date: d.date }))
+            });
           }
         }}
       />
@@ -324,35 +357,51 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                 dot={(props: any) => <CustomDot {...props} fill="#3a863e" stroke="#3a863e" dataKey="averageSatisfaction" metricType="satisfaction" />}
                 name="Satisfaction (Average)"
                 isAnimationActive={false}
-                activeDot={{ 
-                  r: 8,
-                  style: { cursor: 'pointer', pointerEvents: 'all' },
-                  onClick: (e: any, payload: any) => {
-                    console.log('[TrendChart] activeDot clicked for satisfaction:', { payload, e });
-                    e?.stopPropagation();
-                    // Try to use dateIndex first, then fall back to date matching
-                    let index = -1;
-                    if (payload.dateIndex !== undefined) {
-                      index = payload.dateIndex;
-                    } else {
-                      const payloadDate = payload.date ? payload.date.trim() : '';
-                      index = customerLinesData.findIndex(d => {
-                        const dataDate = d.date ? d.date.trim() : '';
-                        return dataDate === payloadDate;
-                      });
-                    }
-                    console.log('[TrendChart] Found index for satisfaction:', { 
-                      index, 
-                      payloadDate: payload.date,
-                      payloadDateIndex: payload.dateIndex,
-                      found: index >= 0
+                activeDot={(props: any) => {
+                  const { payload, index: dotIndex } = props;
+                  console.log('[TrendChart] activeDot render for satisfaction:', { payload, dotIndex });
+                  
+                  // Try multiple ways to find the index
+                  let dataIndex = -1;
+                  if (payload?.dateIndex !== undefined) {
+                    dataIndex = payload.dateIndex;
+                  } else if (dotIndex !== undefined && dotIndex >= 0) {
+                    dataIndex = dotIndex;
+                  } else if (payload?.date) {
+                    const payloadDate = payload.date.trim();
+                    dataIndex = customerLinesData.findIndex(d => {
+                      const dataDate = d.date ? d.date.trim() : '';
+                      return dataDate === payloadDate;
                     });
-                    if (index >= 0) {
-                      handlePointClick(payload, index, 'satisfaction', e);
-                    } else {
-                      console.log('[TrendChart] activeDot satisfaction: Could not find matching date');
-                    }
                   }
+                  
+                  return (
+                    <circle
+                      {...props}
+                      r={8}
+                      style={{ cursor: 'pointer', pointerEvents: 'all' }}
+                      onClick={(e: any) => {
+                        console.log('[TrendChart] activeDot clicked for satisfaction:', { 
+                          payload, 
+                          dotIndex, 
+                          dataIndex,
+                          found: dataIndex >= 0
+                        });
+                        e?.stopPropagation();
+                        e?.preventDefault();
+                        if (dataIndex >= 0 && dataIndex < customerLinesData.length) {
+                          handlePointClick(payload, dataIndex, 'satisfaction', e);
+                        } else {
+                          console.error('[TrendChart] activeDot satisfaction: Could not find matching date', {
+                            dataIndex,
+                            payload,
+                            dotIndex,
+                            availableDates: customerLinesData.map((d, idx) => ({ idx, date: d.date }))
+                          });
+                        }
+                      }}
+                    />
+                  );
                 }}
               />
             )}
@@ -365,35 +414,51 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                 dot={(props: any) => <CustomDot {...props} fill="#4682B4" stroke="#4682B4" dataKey="averageLoyalty" metricType="loyalty" />}
                 name="Loyalty (Average)"
                 isAnimationActive={false}
-                activeDot={{ 
-                  r: 8,
-                  style: { cursor: 'pointer', pointerEvents: 'all' },
-                  onClick: (e: any, payload: any) => {
-                    console.log('[TrendChart] activeDot clicked for loyalty:', { payload, e });
-                    e?.stopPropagation();
-                    // Try to use dateIndex first, then fall back to date matching
-                    let index = -1;
-                    if (payload.dateIndex !== undefined) {
-                      index = payload.dateIndex;
-                    } else {
-                      const payloadDate = payload.date ? payload.date.trim() : '';
-                      index = customerLinesData.findIndex(d => {
-                        const dataDate = d.date ? d.date.trim() : '';
-                        return dataDate === payloadDate;
-                      });
-                    }
-                    console.log('[TrendChart] Found index for loyalty:', { 
-                      index, 
-                      payloadDate: payload.date,
-                      payloadDateIndex: payload.dateIndex,
-                      found: index >= 0
+                activeDot={(props: any) => {
+                  const { payload, index: dotIndex } = props;
+                  console.log('[TrendChart] activeDot render for loyalty:', { payload, dotIndex });
+                  
+                  // Try multiple ways to find the index
+                  let dataIndex = -1;
+                  if (payload?.dateIndex !== undefined) {
+                    dataIndex = payload.dateIndex;
+                  } else if (dotIndex !== undefined && dotIndex >= 0) {
+                    dataIndex = dotIndex;
+                  } else if (payload?.date) {
+                    const payloadDate = payload.date.trim();
+                    dataIndex = customerLinesData.findIndex(d => {
+                      const dataDate = d.date ? d.date.trim() : '';
+                      return dataDate === payloadDate;
                     });
-                    if (index >= 0) {
-                      handlePointClick(payload, index, 'loyalty', e);
-                    } else {
-                      console.log('[TrendChart] activeDot loyalty: Could not find matching date');
-                    }
                   }
+                  
+                  return (
+                    <circle
+                      {...props}
+                      r={8}
+                      style={{ cursor: 'pointer', pointerEvents: 'all' }}
+                      onClick={(e: any) => {
+                        console.log('[TrendChart] activeDot clicked for loyalty:', { 
+                          payload, 
+                          dotIndex, 
+                          dataIndex,
+                          found: dataIndex >= 0
+                        });
+                        e?.stopPropagation();
+                        e?.preventDefault();
+                        if (dataIndex >= 0 && dataIndex < customerLinesData.length) {
+                          handlePointClick(payload, dataIndex, 'loyalty', e);
+                        } else {
+                          console.error('[TrendChart] activeDot loyalty: Could not find matching date', {
+                            dataIndex,
+                            payload,
+                            dotIndex,
+                            availableDates: customerLinesData.map((d, idx) => ({ idx, date: d.date }))
+                          });
+                        }
+                      }}
+                    />
+                  );
                 }}
               />
             )}
