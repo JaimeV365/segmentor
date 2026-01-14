@@ -297,6 +297,7 @@ console.log('🚨🚨🚨 About to render DistributionSection with:', {
               data={filteredData}
               satisfactionScale={satisfactionScale}
               loyaltyScale={loyaltyScale}
+              isClassicModel={isClassicModel}
               isPremium={isPremium}
             />
           ) : null;

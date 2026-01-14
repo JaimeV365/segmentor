@@ -22,6 +22,7 @@ interface HistoricalProgressSectionProps {
   satisfactionScale: ScaleFormat;
   loyaltyScale: ScaleFormat;
   isPremium?: boolean;
+  isClassicModel?: boolean;
 }
 
 export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps> = ({
@@ -290,6 +291,7 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
                 movementStats={movementStats}
                 timelines={timelines}
                 data={data}
+                isClassicModel={isClassicModel}
               />
             </div>
           )}

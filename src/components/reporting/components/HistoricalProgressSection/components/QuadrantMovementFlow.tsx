@@ -10,6 +10,7 @@ interface QuadrantMovementFlowProps {
   movementStats: MovementStats;
   timelines: CustomerTimeline[];
   data: DataPoint[];
+  isClassicModel?: boolean;
 }
 
 const getQuadrantDisplayName = (quadrant: QuadrantType): string => {
@@ -44,7 +45,8 @@ const getQuadrantColor = (quadrant: QuadrantType): string => {
 export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
   movementStats,
   timelines,
-  data
+  data,
+  isClassicModel = true
 }) => {
   // Show top 10 movements by count
   const topMovements = movementStats.movements.slice(0, 10);
@@ -200,14 +202,14 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
                       className="movement-quadrant from-quadrant"
                       style={{ backgroundColor: getQuadrantColor(movement.from) }}
                     >
-                      {getQuadrantDisplayName(movement.from)}
+                      {getQuadrantDisplayName(movement.from, isClassicModel)}
                     </div>
                     <ArrowRight size={16} className="movement-arrow" />
                     <div 
                       className="movement-quadrant to-quadrant"
                       style={{ backgroundColor: getQuadrantColor(movement.to) }}
                     >
-                      {getQuadrantDisplayName(movement.to)}
+                      {getQuadrantDisplayName(movement.to, isClassicModel)}
                     </div>
                     <div className="movement-count">
                       {movement.count} customers

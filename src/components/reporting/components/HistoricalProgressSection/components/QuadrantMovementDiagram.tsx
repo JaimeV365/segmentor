@@ -10,20 +10,44 @@ interface QuadrantMovementDiagramProps {
   movementStats: MovementStats;
   timelines: CustomerTimeline[];
   data: DataPoint[];
+  isClassicModel?: boolean;
 }
 
-// Quadrant display names
-const QUADRANT_NAMES: Record<string, string> = {
-  'loyalists': 'Loyalists',
-  'mercenaries': 'Mercenaries',
-  'hostages': 'Hostages',
-  'defectors': 'Defectors'
+// Helper to get quadrant display names based on terminology
+const getQuadrantDisplayName = (quadrant: string, isClassicModel: boolean = true): string => {
+  if (isClassicModel) {
+    const names: Record<string, string> = {
+      'loyalists': 'Loyalists',
+      'mercenaries': 'Mercenaries',
+      'hostages': 'Hostages',
+      'defectors': 'Defectors',
+      'apostles': 'Apostles',
+      'near_apostles': 'Near-Apostles',
+      'terrorists': 'Terrorists',
+      'neutral': 'Neutral'
+    };
+    return names[quadrant] || quadrant;
+  } else {
+    // Modern terminology
+    const names: Record<string, string> = {
+      'loyalists': 'Loyalists',
+      'mercenaries': 'Mercenaries',
+      'hostages': 'Hostages',
+      'defectors': 'Defectors',
+      'apostles': 'Advocates',
+      'near_apostles': 'Near-Advocates',
+      'terrorists': 'Trolls',
+      'neutral': 'Neutral'
+    };
+    return names[quadrant] || quadrant;
+  }
 };
 
 export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = ({
   movementStats,
   timelines,
-  data
+  data,
+  isClassicModel = true
 }) => {
   const [clickedMovement, setClickedMovement] = useState<{
     points: DataPoint[];
@@ -40,6 +64,12 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
   const [includeNeutral, setIncludeNeutral] = useState(false);
   const [includeTerrorists, setIncludeTerrorists] = useState(false);
   const [groupTerroristsWithDefectors, setGroupTerroristsWithDefectors] = useState(true);
+  const [showInDiagram, setShowInDiagram] = useState({
+    apostles: false,
+    nearApostles: false,
+    neutral: false,
+    terrorists: false
+  });
   const settingsButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -145,10 +175,19 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     };
   }, [showControlsPanel]);
 
-  // Filter to only show movements between the 4 main quadrants (for display in diagram)
-  const mainQuadrants: QuadrantType[] = ['loyalists', 'mercenaries', 'hostages', 'defectors'];
+  // Determine which quadrants to show in the diagram
+  const diagramQuadrants: QuadrantType[] = useMemo(() => {
+    const quadrants: QuadrantType[] = ['loyalists', 'mercenaries', 'hostages', 'defectors'];
+    if (showInDiagram.apostles) quadrants.push('apostles');
+    if (showInDiagram.nearApostles) quadrants.push('near_apostles');
+    if (showInDiagram.neutral) quadrants.push('neutral');
+    if (showInDiagram.terrorists && !groupTerroristsWithDefectors) quadrants.push('terrorists');
+    return quadrants;
+  }, [showInDiagram, groupTerroristsWithDefectors]);
+
+  // Filter to only show movements between quadrants included in diagram
   const mainMovements = filteredMovements.filter(m => 
-    mainQuadrants.includes(m.from) && mainQuadrants.includes(m.to)
+    diagramQuadrants.includes(m.from) && diagramQuadrants.includes(m.to)
   );
 
   // Group movements by source quadrant (must be before early return)
@@ -400,7 +439,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
       absoluteEnd: { x: number; y: number };
     }> = [];
 
-    ['hostages', 'loyalists', 'defectors', 'mercenaries'].forEach(quadrant => {
+    diagramQuadrants.forEach(quadrant => {
       const movements = movementsBySource[quadrant] || [];
       const circlePositions = getCirclePositions(movements, quadrant);
       
@@ -549,7 +588,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                         onChange={(e) => setIncludeApostles(e.target.checked)}
                         style={{ cursor: 'pointer' }}
                       />
-                      <span style={{ fontSize: '13px', color: '#374151' }}>Apostles</span>
+                      <span style={{ fontSize: '13px', color: '#374151' }}>{isClassicModel ? 'Apostles' : 'Advocates'}</span>
                     </label>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
                       <input
@@ -558,7 +597,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                         onChange={(e) => setIncludeNearApostles(e.target.checked)}
                         style={{ cursor: 'pointer' }}
                       />
-                      <span style={{ fontSize: '13px', color: '#374151' }}>Near Apostles</span>
+                      <span style={{ fontSize: '13px', color: '#374151' }}>{isClassicModel ? 'Near-Apostles' : 'Near-Advocates'}</span>
                     </label>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
                       <input
@@ -576,7 +615,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                         onChange={(e) => setIncludeTerrorists(e.target.checked)}
                         style={{ cursor: 'pointer' }}
                       />
-                      <span style={{ fontSize: '13px', color: '#374151' }}>Terrorists</span>
+                      <span style={{ fontSize: '13px', color: '#374151' }}>{isClassicModel ? 'Terrorists' : 'Trolls'}</span>
                     </label>
                     {includeTerrorists && (
                       <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '24px', marginTop: '4px', cursor: 'pointer' }}>
@@ -589,6 +628,57 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                         <span style={{ fontSize: '12px', color: '#6b7280' }}>Group with Defectors</span>
                       </label>
                     )}
+                  </div>
+                  
+                  <div style={{ marginBottom: '20px', marginTop: '24px', paddingTop: '20px', borderTop: '1px solid #e5e7eb' }}>
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
+                      Show in Diagram
+                    </label>
+                    <p style={{ fontSize: '11px', color: '#6b7280', marginBottom: '12px' }}>
+                      Select which quadrants to display in the movement flow diagram (default: main 4 quadrants only)
+                    </p>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={showInDiagram.apostles}
+                        onChange={(e) => setShowInDiagram(prev => ({ ...prev, apostles: e.target.checked }))}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span style={{ fontSize: '13px', color: '#374151' }}>{isClassicModel ? 'Apostles' : 'Advocates'}</span>
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={showInDiagram.nearApostles}
+                        onChange={(e) => setShowInDiagram(prev => ({ ...prev, nearApostles: e.target.checked }))}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span style={{ fontSize: '13px', color: '#374151' }}>{isClassicModel ? 'Near-Apostles' : 'Near-Advocates'}</span>
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={showInDiagram.neutral}
+                        onChange={(e) => setShowInDiagram(prev => ({ ...prev, neutral: e.target.checked }))}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span style={{ fontSize: '13px', color: '#374151' }}>Neutral</span>
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={showInDiagram.terrorists}
+                        onChange={(e) => setShowInDiagram(prev => ({ ...prev, terrorists: e.target.checked }))}
+                        style={{ cursor: 'pointer' }}
+                        disabled={includeTerrorists && groupTerroristsWithDefectors}
+                      />
+                      <span style={{ fontSize: '13px', color: showInDiagram.terrorists || (includeTerrorists && groupTerroristsWithDefectors) ? '#374151' : '#9ca3af' }}>
+                        {isClassicModel ? 'Terrorists' : 'Trolls'}
+                      </span>
+                      {includeTerrorists && groupTerroristsWithDefectors && (
+                        <span style={{ fontSize: '11px', color: '#6b7280', marginLeft: '4px' }}>(grouped with Defectors)</span>
+                      )}
+                    </label>
                   </div>
                 </div>
               </div>
@@ -604,6 +694,12 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     setIncludeNeutral(false);
                     setIncludeTerrorists(false);
                     setGroupTerroristsWithDefectors(true);
+                    setShowInDiagram({
+                      apostles: false,
+                      nearApostles: false,
+                      neutral: false,
+                      terrorists: false
+                    });
                   }}
                 >
                   Reset to Default
@@ -729,10 +825,12 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
       </div>
       <p className="movement-diagram-note">
         Numbers in circles indicate customer count moving from source to destination quadrant. Click on a circle to see the customers.
-        <br />
-        <span style={{ fontSize: '0.75rem', color: '#6b7280', fontStyle: 'italic' }}>
-          Note: This diagram shows movements between the 4 main quadrants only. Movements involving Apostles, Near Apostles, Neutral, or Terrorists are counted in the statistics above but not displayed here. Use the filter menu (☰) to include additional quadrants.
-        </span>
+        {diagramQuadrants.length === 4 && (
+          <br />
+          <span style={{ fontSize: '0.75rem', color: '#6b7280', fontStyle: 'italic' }}>
+            Note: This diagram shows movements between the 4 main quadrants by default. Movements involving {isClassicModel ? 'Apostles' : 'Advocates'}, {isClassicModel ? 'Near-Apostles' : 'Near-Advocates'}, Neutral, or {isClassicModel ? 'Terrorists' : 'Trolls'} are counted in the statistics above but not displayed here. Use the filter menu (☰) to include additional quadrants in the diagram.
+          </span>
+        )}
       </p>
       
       {/* Customer list modal */}
@@ -743,7 +841,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
           quadrant={clickedMovement.toQuadrant}
           onClose={() => setClickedMovement(null)}
           context="distribution"
-          customTitle={`${QUADRANT_NAMES[clickedMovement.fromQuadrant] || clickedMovement.fromQuadrant} to ${QUADRANT_NAMES[clickedMovement.toQuadrant] || clickedMovement.toQuadrant}`}
+          customTitle={`${getQuadrantDisplayName(clickedMovement.fromQuadrant, isClassicModel)} to ${getQuadrantDisplayName(clickedMovement.toQuadrant, isClassicModel)}`}
         />
       )}
     </div>
