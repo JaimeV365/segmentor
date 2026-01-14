@@ -213,20 +213,20 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
               );
             })}
           </div>
-          
-          {/* Customer list modal */}
-          {clickedMovement && (
-            <ProximityPointInfoBox
-              points={clickedMovement.points}
-              position={clickedMovement.position}
-              quadrant={clickedMovement.toQuadrant}
-              onClose={() => setClickedMovement(null)}
-              context="distribution"
-              customTitle={`${getQuadrantDisplayName(clickedMovement.fromQuadrant as QuadrantType)} to ${getQuadrantDisplayName(clickedMovement.toQuadrant as QuadrantType)}`}
-            />
-          )}
         )}
       </div>
+      
+      {/* Customer list modal */}
+      {clickedMovement && (
+        <ProximityPointInfoBox
+          points={clickedMovement.points}
+          position={clickedMovement.position}
+          quadrant={clickedMovement.toQuadrant}
+          onClose={() => setClickedMovement(null)}
+          context="distribution"
+          customTitle={`${getQuadrantDisplayName(clickedMovement.fromQuadrant as QuadrantType)} to ${getQuadrantDisplayName(clickedMovement.toQuadrant as QuadrantType)}`}
+        />
+      )}
     </div>
   );
 };
