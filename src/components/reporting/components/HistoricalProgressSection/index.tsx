@@ -1,7 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import { DataPoint, ScaleFormat } from '@/types/base';
 import { hasHistoricalData, groupByCustomer } from './utils/historicalDataUtils';
 import { useQuadrantAssignment } from '../../../visualization/context/QuadrantAssignmentContext';
+import { useFilterContextSafe } from '../../../visualization/context/FilterContext';
+import { useNotification } from '../../../data-entry/hooks/useNotification';
+import FilterPanel from '../../../visualization/filters/FilterPanel';
 import { 
   calculateTrendData, 
   calculateQuadrantMovements, 
@@ -11,6 +14,7 @@ import { generateForecast } from './services/forecastService';
 import { TrendChart } from './components/TrendChart';
 import { QuadrantMovementFlow } from './components/QuadrantMovementFlow';
 import { ForecastVisualization } from './components/ForecastVisualization';
+import { Filter, X, Link2, Link2Off } from 'lucide-react';
 import './HistoricalProgressSection.css';
 
 interface HistoricalProgressSectionProps {
@@ -36,9 +40,10 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
   }, [data]);
   
   // Group data by customer (always calculate, even if we won't show)
+  // Use effectiveData (filtered) for calculations
   const timelines = useMemo(() => {
-    return groupByCustomer(data);
-  }, [data]);
+    return groupByCustomer(effectiveData);
+  }, [effectiveData]);
   
   // Calculate trend data
   const trendData = useMemo(() => {
@@ -120,6 +125,7 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
                   metric="satisfaction"
                   title="Satisfaction Trend Over Time"
                   dateFormat={dateFormat}
+                  data={effectiveData}
                 />
                 <TrendChart
                   data={trendData}
@@ -128,6 +134,7 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
                   metric="loyalty"
                   title="Loyalty Trend Over Time"
                   dateFormat={dateFormat}
+                  data={effectiveData}
                 />
               </div>
               
@@ -138,6 +145,7 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
                 metric="both"
                 title="Combined Satisfaction & Loyalty Trends"
                 dateFormat={dateFormat}
+                data={effectiveData}
               />
             </div>
           )}
@@ -149,7 +157,7 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
               <QuadrantMovementFlow 
                 movementStats={movementStats}
                 timelines={timelines}
-                data={data}
+                data={effectiveData}
               />
             </div>
           )}
@@ -167,6 +175,102 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
           )}
         </div>
       </div>
+      
+      {/* Filter Panel */}
+      {showFilterPanel && (
+        <div className="unified-controls-panel proximity-controls-panel" ref={panelRef}>
+          <div className="unified-controls-header">
+            <div className="unified-controls-tabs">
+              <div className="unified-tab active">
+                <Filter size={16} />
+                Filters
+                <span 
+                  className="connection-status-icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isConnected) {
+                      setShowReconnectModal(true);
+                    }
+                  }}
+                  title={isConnected ? 'Connected to main filters' : 'Click to reconnect to main filters'}
+                  style={{ cursor: !isConnected ? 'pointer' : 'default' }}
+                >
+                  {isConnected ? <Link2 size={14} /> : <Link2Off size={14} />}
+                </span>
+                {filterCount > 0 && (
+                  <span className="unified-filter-badge">{filterCount}</span>
+                )}
+              </div>
+            </div>
+            <button className="unified-close-button" onClick={() => setShowFilterPanel(false)}>
+              <X size={20} />
+            </button>
+          </div>
+          
+          <div className="unified-controls-content">
+            <div className="unified-tab-content">
+              <div className="unified-tab-body">
+                {filterContext && (
+                  <FilterPanel
+                    data={data || []}
+                    onFilterChange={handleFilterChange}
+                    onClose={() => {}}
+                    isOpen={true}
+                    contentOnly={true}
+                    resetTrigger={filterResetTrigger}
+                    onShowNotification={showNotification}
+                    reportId={REPORT_ID}
+                    forceLocalState={true}
+                  />
+                )}
+              </div>
+              <div className="unified-tab-footer">
+                <button 
+                  className="unified-reset-button" 
+                  onClick={handleFilterReset}
+                >
+                  Reset Filters
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Reconnect Modal */}
+      {showReconnectModal && (
+        <div className="filter-connection-modal-overlay">
+          <div className="filter-connection-modal">
+            <div className="modal-header">
+              <h3>Connect to Main Filters?</h3>
+            </div>
+            <div className="modal-content">
+              <p>This will discard local Historical Progress filters and sync with the main chart filters.</p>
+            </div>
+            <div className="modal-actions">
+              <button 
+                className="modal-btn cancel-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowReconnectModal(false);
+                }}
+              >
+                Cancel
+              </button>
+              <button 
+                className="modal-btn confirm-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowReconnectModal(false);
+                  handleConnectionToggle();
+                }}
+              >
+                Connect
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

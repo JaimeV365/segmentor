@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Dot } from 'recharts';
 import { TrendDataPoint } from '../services/historicalAnalysisService';
 import { CustomerTimeline } from '../utils/historicalDataUtils';
@@ -6,6 +6,7 @@ import { ScaleFormat, DataPoint } from '@/types/base';
 import { ProximityPointInfoBox } from '../../DistributionSection/ProximityPointInfoBox';
 import { parseDate } from '../utils/historicalDataUtils';
 import { InfoRibbon } from '../../InfoRibbon/InfoRibbon';
+import { Menu as MenuIcon, X } from 'lucide-react';
 
 interface TrendChartProps {
   data: TrendDataPoint[];
@@ -14,6 +15,7 @@ interface TrendChartProps {
   metric: 'satisfaction' | 'loyalty' | 'both';
   title: string;
   dateFormat?: string;
+  data?: DataPoint[]; // Optional: full data array for filtering context
 }
 
 interface ClickedPoint {
@@ -276,7 +278,39 @@ export const TrendChart: React.FC<TrendChartProps> = ({
   return (
     <>
       <div className="trend-chart-container">
-        <h4 className="trend-chart-title">{title}</h4>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <h4 className="trend-chart-title" style={{ margin: 0 }}>{title}</h4>
+          <button
+            ref={settingsButtonRef}
+            className="trend-chart-settings-button"
+            onClick={() => setShowSettingsPanel(prev => !prev)}
+            title="Chart settings"
+            style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: '4px',
+              background: '#ffffff',
+              border: '1px solid #e5e7eb',
+              cursor: 'pointer',
+              color: '#3a863e',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#f3f4f6';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#ffffff';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            <MenuIcon size={16} />
+          </button>
+        </div>
         <InfoRibbon text={infoText} />
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartDataWithCustomers} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
@@ -409,9 +443,9 @@ export const TrendChart: React.FC<TrendChartProps> = ({
               <Line 
                 type="monotone" 
                 dataKey="averageLoyalty" 
-                stroke="#4682B4" 
+                stroke={chartColors.averageLoyaltyColor || '#4682B4'} 
                 strokeWidth={3}
-                dot={(props: any) => <CustomDot {...props} fill="#4682B4" stroke="#4682B4" dataKey="averageLoyalty" metricType="loyalty" />}
+                dot={(props: any) => <CustomDot {...props} fill={chartColors.averageLoyaltyColor || '#4682B4'} stroke={chartColors.averageLoyaltyColor || '#4682B4'} dataKey="averageLoyalty" metricType="loyalty" />}
                 name="Loyalty (Average)"
                 isAnimationActive={false}
                 activeDot={(props: any) => {
@@ -481,6 +515,109 @@ export const TrendChart: React.FC<TrendChartProps> = ({
           context="distribution"
           customTitle={`Customers on ${clickedPoint.date} (${clickedPoint.metric}: ${clickedPoint.value.toFixed(2)})`}
         />
+      )}
+      
+      {/* Settings Panel */}
+      {showSettingsPanel && (
+        <div 
+          ref={settingsPanelRef}
+          className="trend-chart-settings-panel"
+          style={{
+            position: 'absolute',
+            top: settingsButtonRef.current ? `${settingsButtonRef.current.offsetTop + settingsButtonRef.current.offsetHeight + 8}px` : '40px',
+            right: '16px',
+            width: '280px',
+            background: 'white',
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            zIndex: 1000,
+            padding: '16px'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <h5 style={{ margin: 0, fontSize: '14px', fontWeight: '600', color: '#374151' }}>Chart Colors</h5>
+            <button
+              onClick={() => setShowSettingsPanel(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#6b7280',
+                padding: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <X size={16} />
+            </button>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {(metric === 'satisfaction' || metric === 'both') && (
+              <div>
+                <label style={{ fontSize: '12px', fontWeight: '500', color: '#6b7280', marginBottom: '4px', display: 'block' }}>
+                  Satisfaction Color
+                </label>
+                <input
+                  type="color"
+                  value={chartColors.averageSatisfactionColor || '#3a863e'}
+                  onChange={(e) => setChartColors(prev => ({ ...prev, averageSatisfactionColor: e.target.value }))}
+                  style={{
+                    width: '100%',
+                    height: '32px',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                />
+              </div>
+            )}
+            {(metric === 'loyalty' || metric === 'both') && (
+              <div>
+                <label style={{ fontSize: '12px', fontWeight: '500', color: '#6b7280', marginBottom: '4px', display: 'block' }}>
+                  Loyalty Color
+                </label>
+                <input
+                  type="color"
+                  value={chartColors.averageLoyaltyColor || '#4682B4'}
+                  onChange={(e) => setChartColors(prev => ({ ...prev, averageLoyaltyColor: e.target.value }))}
+                  style={{
+                    width: '100%',
+                    height: '32px',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                />
+              </div>
+            )}
+            <button
+              onClick={() => {
+                setChartColors({
+                  satisfactionColor: '#3a863e',
+                  loyaltyColor: '#4682B4',
+                  averageSatisfactionColor: '#3a863e',
+                  averageLoyaltyColor: '#4682B4'
+                });
+              }}
+              style={{
+                marginTop: '8px',
+                padding: '8px 12px',
+                background: '#f3f4f6',
+                border: '1px solid #e5e7eb',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '12px',
+                color: '#374151',
+                fontWeight: '500'
+              }}
+            >
+              Reset to Default
+            </button>
+          </div>
+        </div>
       )}
     </>
   );

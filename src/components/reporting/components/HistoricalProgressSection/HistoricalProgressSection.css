@@ -1,4 +1,233 @@
 /* Historical Progress Section Styles */
+.historical-progress-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.historical-progress-filter-button {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  color: #3a863e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.historical-progress-filter-button:hover {
+  background-color: #f3f4f6;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.historical-progress-filter-button.active,
+.historical-progress-filter-button.has-filters {
+  background-color: #3a863e;
+  border-color: #3a863e;
+  color: #ffffff;
+}
+
+.historical-progress-filter-button.active:hover,
+.historical-progress-filter-button.has-filters:hover {
+  background-color: #34753a;
+  border-color: #34753a;
+}
+
+.historical-progress-filter-button .filter-badge {
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  background-color: #ef4444;
+  color: #ffffff;
+  border-radius: 0.75rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.25rem;
+  border: 1.5px solid #ffffff;
+}
+
+.historical-progress-filter-button .filter-badge.small {
+  font-size: 0.625rem;
+  min-width: 1rem;
+  height: 1rem;
+  padding: 0 0.2rem;
+}
+
+/* Import unified controls styles */
+@import '../../../visualization/controls/UnifiedChartControls.css';
+@import '../../DistributionSection/DistributionSection.css';
+
+.trend-chart-container {
+  position: relative;
+}
+
+.trend-chart-settings-panel {
+  position: absolute;
+  z-index: 1000;
+}
+
+.trend-chart-settings-button {
+  position: relative;
+}
+
+.trend-chart-settings-button.active {
+  background-color: #3a863e !important;
+  border-color: #3a863e !important;
+  color: #ffffff !important;
+}
+
+/* Connection status icon */
+.connection-status-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  margin-left: 4px;
+  transition: color 0.2s ease;
+}
+
+.connection-status-icon:hover {
+  color: #3a863e;
+}
+
+.unified-filter-badge {
+  background-color: #ef4444;
+  color: white;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  margin-left: 4px;
+}
+
+.unified-tab-footer {
+  padding: 16px;
+  border-top: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  flex-shrink: 0;
+}
+
+.unified-reset-button {
+  width: 100%;
+  padding: 10px 16px;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.unified-reset-button:hover:not(:disabled) {
+  background-color: #e5e7eb;
+  border-color: #d1d5db;
+}
+
+.unified-reset-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Filter connection modal */
+.filter-connection-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.filter-connection-modal {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.filter-connection-modal .modal-header {
+  margin-bottom: 16px;
+}
+
+.filter-connection-modal .modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.filter-connection-modal .modal-content {
+  margin-bottom: 24px;
+}
+
+.filter-connection-modal .modal-content p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.filter-connection-modal .modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.filter-connection-modal .modal-btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #e5e7eb;
+}
+
+.filter-connection-modal .cancel-btn {
+  background: white;
+  color: #374151;
+}
+
+.filter-connection-modal .cancel-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.filter-connection-modal .confirm-btn {
+  background-color: #3a863e;
+  color: white;
+  border-color: #3a863e;
+}
+
+.filter-connection-modal .confirm-btn:hover {
+  background-color: #34753a;
+  border-color: #34753a;
+}
+
 .historical-progress-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
