@@ -1,9 +1,10 @@
-import React, { useMemo, useState } from 'react';
-import { MovementStats } from '../services/historicalAnalysisService';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
+import { MovementStats, QuadrantMovement } from '../services/historicalAnalysisService';
 import type { QuadrantType } from '../../../../visualization/context/QuadrantAssignmentContext';
 import { DataPoint } from '@/types/base';
 import { CustomerTimeline } from '../utils/historicalDataUtils';
 import { ProximityPointInfoBox } from '../../DistributionSection/ProximityPointInfoBox';
+import { Menu as MenuIcon, X } from 'lucide-react';
 
 interface QuadrantMovementDiagramProps {
   movementStats: MovementStats;
@@ -30,9 +31,123 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     fromQuadrant: string;
     toQuadrant: string;
   } | null>(null);
-  // Filter to only show movements between the 4 main quadrants
+  const [showControlsPanel, setShowControlsPanel] = useState(false);
+  const [showPositive, setShowPositive] = useState(true);
+  const [showNegative, setShowNegative] = useState(true);
+  const [showNeutral, setShowNeutral] = useState(true);
+  const [includeApostles, setIncludeApostles] = useState(false);
+  const [includeNearApostles, setIncludeNearApostles] = useState(false);
+  const [includeNeutral, setIncludeNeutral] = useState(false);
+  const [includeTerrorists, setIncludeTerrorists] = useState(false);
+  const [groupTerroristsWithDefectors, setGroupTerroristsWithDefectors] = useState(true);
+  const settingsButtonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Quadrant hierarchy for determining positive/negative movements
+  const quadrantHierarchy: Record<QuadrantType, number> = {
+    'apostles': 8,
+    'near_apostles': 7,
+    'loyalists': 6,
+    'mercenaries': 5,
+    'hostages': 4,
+    'neutral': 3,
+    'defectors': 2,
+    'terrorists': 0
+  };
+
+  // Determine if a movement is positive, negative, or neutral
+  const getMovementType = (from: QuadrantType, to: QuadrantType): 'positive' | 'negative' | 'neutral' => {
+    const fromRank = quadrantHierarchy[from] || 0;
+    const toRank = quadrantHierarchy[to] || 0;
+    if (toRank > fromRank) return 'positive';
+    if (toRank < fromRank) return 'negative';
+    return 'neutral';
+  };
+
+  // Filter movements based on user preferences
+  const filteredMovements = useMemo(() => {
+    let movements = movementStats.movements;
+
+    // Filter by movement type (positive/negative/neutral)
+    movements = movements.filter(m => {
+      const movementType = getMovementType(m.from, m.to);
+      if (movementType === 'positive' && !showPositive) return false;
+      if (movementType === 'negative' && !showNegative) return false;
+      if (movementType === 'neutral' && !showNeutral) return false;
+      return true;
+    });
+
+    // Filter by quadrant inclusion
+    const allowedQuadrants: QuadrantType[] = ['loyalists', 'mercenaries', 'hostages', 'defectors'];
+    if (includeApostles) allowedQuadrants.push('apostles');
+    if (includeNearApostles) allowedQuadrants.push('near_apostles');
+    if (includeNeutral) allowedQuadrants.push('neutral');
+    if (includeTerrorists) {
+      if (groupTerroristsWithDefectors) {
+        // Group terrorists with defectors - treat terrorists as defectors for display
+        movements = movements.map(m => ({
+          ...m,
+          from: m.from === 'terrorists' ? 'defectors' : m.from,
+          to: m.to === 'terrorists' ? 'defectors' : m.to
+        }));
+        // Merge movements that now have same from/to after grouping
+        const merged: Record<string, QuadrantMovement> = {};
+        movements.forEach(m => {
+          const key = `${m.from}-${m.to}`;
+          if (merged[key]) {
+            merged[key].count += m.count;
+            merged[key].customers.push(...m.customers);
+          } else {
+            merged[key] = { ...m, customers: [...m.customers] };
+          }
+        });
+        movements = Object.values(merged);
+      } else {
+        allowedQuadrants.push('terrorists');
+      }
+    }
+
+    // Filter to only show movements between allowed quadrants
+    movements = movements.filter(m => 
+      allowedQuadrants.includes(m.from) && allowedQuadrants.includes(m.to)
+    );
+
+    return movements;
+  }, [
+    movementStats.movements,
+    showPositive,
+    showNegative,
+    showNeutral,
+    includeApostles,
+    includeNearApostles,
+    includeNeutral,
+    includeTerrorists,
+    groupTerroristsWithDefectors
+  ]);
+
+  // Close controls panel when clicking outside
+  useEffect(() => {
+    if (!showControlsPanel) return;
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      const targetElement = event.target as HTMLElement;
+      const isPanelClick = targetElement.closest('.unified-controls-panel');
+      const isControlButtonClick = settingsButtonRef.current?.contains(targetElement);
+      
+      if (!isPanelClick && !isControlButtonClick && panelRef.current) {
+        setShowControlsPanel(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showControlsPanel]);
+
+  // Filter to only show movements between the 4 main quadrants (for display in diagram)
   const mainQuadrants: QuadrantType[] = ['loyalists', 'mercenaries', 'hostages', 'defectors'];
-  const mainMovements = movementStats.movements.filter(m => 
+  const mainMovements = filteredMovements.filter(m => 
     mainQuadrants.includes(m.from) && mainQuadrants.includes(m.to)
   );
 
@@ -217,7 +332,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
 
   // Helper function to get DataPoints for a specific movement
   const getDataPointsForMovement = (fromQuadrant: string, toQuadrant: string): DataPoint[] => {
-    const movement = movementStats.movements.find(
+    const movement = filteredMovements.find(
       m => m.from === fromQuadrant && m.to === toQuadrant
     );
     if (!movement) {
@@ -327,7 +442,178 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
 
   return (
     <div className="quadrant-movement-diagram">
-      <h5 className="movement-diagram-title">Movement Flow Visualization</h5>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+        <h5 className="movement-diagram-title">Movement Flow Visualization</h5>
+        <button
+          ref={settingsButtonRef}
+          className={`trend-chart-settings-button ${showControlsPanel ? 'active' : ''}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            setShowControlsPanel(prev => !prev);
+          }}
+          title="Filter movements"
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '6px',
+            background: showControlsPanel ? '#3a863e' : '#ffffff',
+            border: '1px solid #e5e7eb',
+            cursor: 'pointer',
+            color: showControlsPanel ? '#ffffff' : '#3a863e',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s ease',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+          }}
+          onMouseEnter={(e) => {
+            if (!showControlsPanel) {
+              e.currentTarget.style.backgroundColor = '#f3f4f6';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.15)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!showControlsPanel) {
+              e.currentTarget.style.backgroundColor = '#ffffff';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+            }
+          }}
+        >
+          <MenuIcon size={22} />
+        </button>
+      </div>
+      
+      {/* Controls Panel */}
+      {showControlsPanel && (
+        <div className="unified-controls-panel trend-chart-controls-panel" ref={panelRef}>
+          <div className="unified-controls-header">
+            <div className="unified-controls-tabs">
+              <div className="unified-tab active">
+                <MenuIcon size={16} />
+                Movement Filters
+              </div>
+            </div>
+            <button className="unified-close-button" onClick={() => setShowControlsPanel(false)}>
+              <X size={20} />
+            </button>
+          </div>
+          
+          <div className="unified-controls-content">
+            <div className="unified-tab-content">
+              <div className="unified-tab-body">
+                <div className="chart-settings-content">
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
+                      Movement Types
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={showPositive}
+                        onChange={(e) => setShowPositive(e.target.checked)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span style={{ fontSize: '13px', color: '#374151' }}>Positive Movements</span>
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={showNegative}
+                        onChange={(e) => setShowNegative(e.target.checked)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span style={{ fontSize: '13px', color: '#374151' }}>Negative Movements</span>
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={showNeutral}
+                        onChange={(e) => setShowNeutral(e.target.checked)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span style={{ fontSize: '13px', color: '#374151' }}>No Change</span>
+                    </label>
+                  </div>
+                  
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
+                      Include Quadrants
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={includeApostles}
+                        onChange={(e) => setIncludeApostles(e.target.checked)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span style={{ fontSize: '13px', color: '#374151' }}>Apostles</span>
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={includeNearApostles}
+                        onChange={(e) => setIncludeNearApostles(e.target.checked)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span style={{ fontSize: '13px', color: '#374151' }}>Near Apostles</span>
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={includeNeutral}
+                        onChange={(e) => setIncludeNeutral(e.target.checked)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span style={{ fontSize: '13px', color: '#374151' }}>Neutral</span>
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={includeTerrorists}
+                        onChange={(e) => setIncludeTerrorists(e.target.checked)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span style={{ fontSize: '13px', color: '#374151' }}>Terrorists</span>
+                    </label>
+                    {includeTerrorists && (
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '24px', marginTop: '4px', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={groupTerroristsWithDefectors}
+                          onChange={(e) => setGroupTerroristsWithDefectors(e.target.checked)}
+                          style={{ cursor: 'pointer' }}
+                        />
+                        <span style={{ fontSize: '12px', color: '#6b7280' }}>Group with Defectors</span>
+                      </label>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="unified-tab-footer">
+                <button 
+                  className="unified-reset-button" 
+                  onClick={() => {
+                    setShowPositive(true);
+                    setShowNegative(true);
+                    setShowNeutral(true);
+                    setIncludeApostles(false);
+                    setIncludeNearApostles(false);
+                    setIncludeNeutral(false);
+                    setIncludeTerrorists(false);
+                    setGroupTerroristsWithDefectors(true);
+                  }}
+                >
+                  Reset to Default
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="movement-diagram-container">
         <div className="movement-quadrant-grid">
           {/* Render quadrants without individual SVGs */}
@@ -443,6 +729,10 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
       </div>
       <p className="movement-diagram-note">
         Numbers in circles indicate customer count moving from source to destination quadrant. Click on a circle to see the customers.
+        <br />
+        <span style={{ fontSize: '0.75rem', color: '#6b7280', fontStyle: 'italic' }}>
+          Note: This diagram shows movements between the 4 main quadrants only. Movements involving Apostles, Near Apostles, Neutral, or Terrorists are counted in the statistics above but not displayed here. Use the filter menu (☰) to include additional quadrants.
+        </span>
       </p>
       
       {/* Customer list modal */}
