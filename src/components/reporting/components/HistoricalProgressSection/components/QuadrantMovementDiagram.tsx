@@ -713,12 +713,12 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
       <div className="movement-diagram-container">
         <div className="movement-quadrant-grid">
           {/* Render quadrants without individual SVGs */}
-          {['hostages', 'loyalists', 'defectors', 'mercenaries'].map(quadrant => (
+          {diagramQuadrants.map(quadrant => (
             <div
               key={quadrant}
               className={`draggable-quadrant ${quadrant}`}
             >
-              <div className="quadrant-title">{QUADRANT_NAMES[quadrant]}</div>
+              <div className="quadrant-title">{getQuadrantDisplayName(quadrant, isClassicModel)}</div>
             </div>
           ))}
           
