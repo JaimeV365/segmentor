@@ -289,6 +289,9 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
         subItems: reportSubItems
       }
     ];
+    
+    console.log('[SectionNavigation] Final navigation items:', items.map(i => ({ id: i.id, subItemsCount: i.subItems?.length })));
+    return items;
   }, [dataLength, hasRecommendationScore, isResponseConcentrationExpanded, hasHistoricalProgress]);
 
   // Optional: Scroll tracking with Intersection Observer
