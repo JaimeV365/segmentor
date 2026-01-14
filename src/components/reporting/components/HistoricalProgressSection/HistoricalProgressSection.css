@@ -275,7 +275,6 @@
   font-weight: 600;
   color: #374151;
   margin: 2rem 0 1rem 0;
-  font-family: 'Montserrat', sans-serif;
 }
 
 /* Trend Charts */
@@ -324,7 +323,6 @@
   font-weight: 600;
   color: #374151;
   margin-bottom: 1rem;
-  font-family: 'Montserrat', sans-serif;
 }
 
 .movement-diagram-container {
@@ -471,7 +469,6 @@
   font-weight: 600;
   color: #374151;
   margin-bottom: 1rem;
-  font-family: 'Montserrat', sans-serif;
 }
 
 .movement-items {
@@ -547,7 +544,6 @@
   font-weight: 600;
   color: #374151;
   margin-bottom: 0.5rem;
-  font-family: 'Montserrat', sans-serif;
 }
 
 .forecast-warning {
