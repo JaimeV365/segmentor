@@ -7,6 +7,7 @@ import { ProximityPointInfoBox } from '../../DistributionSection/ProximityPointI
 import { parseDate } from '../utils/historicalDataUtils';
 import { InfoRibbon } from '../../InfoRibbon/InfoRibbon';
 import { Menu as MenuIcon, X } from 'lucide-react';
+import { ChartColorPicker } from './ChartColorPicker';
 
 interface TrendChartProps {
   data: TrendDataPoint[];
@@ -574,13 +575,15 @@ export const TrendChart: React.FC<TrendChartProps> = ({
             position: 'fixed',
             top: settingsButtonRef.current ? `${settingsButtonRef.current.getBoundingClientRect().bottom + 8}px` : '40px',
             right: settingsButtonRef.current ? `${window.innerWidth - settingsButtonRef.current.getBoundingClientRect().right}px` : '16px',
-            width: '280px',
+            width: '320px',
             background: 'white',
             border: '1px solid #e5e7eb',
             borderRadius: '8px',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
             zIndex: 10000,
-            padding: '16px'
+            padding: '16px',
+            maxHeight: '80vh',
+            overflowY: 'auto'
           }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -603,68 +606,53 @@ export const TrendChart: React.FC<TrendChartProps> = ({
             </button>
           </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div className="chart-settings-content">
             {(metric === 'satisfaction' || metric === 'both') && (
-              <div>
-                <label style={{ fontSize: '12px', fontWeight: '500', color: '#6b7280', marginBottom: '4px', display: 'block' }}>
-                  Satisfaction Color
-                </label>
-                <input
-                  type="color"
-                  value={chartColors.averageSatisfactionColor || '#3a863e'}
-                  onChange={(e) => setChartColors(prev => ({ ...prev, averageSatisfactionColor: e.target.value }))}
-                  style={{
-                    width: '100%',
-                    height: '32px',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '4px',
-                    cursor: 'pointer'
-                  }}
-                />
-              </div>
+              <ChartColorPicker
+                label="Satisfaction Color"
+                currentColor={chartColors.averageSatisfactionColor || '#3a863e'}
+                onColorChange={(color) => setChartColors(prev => ({ ...prev, averageSatisfactionColor: color }))}
+              />
             )}
             {(metric === 'loyalty' || metric === 'both') && (
-              <div>
-                <label style={{ fontSize: '12px', fontWeight: '500', color: '#6b7280', marginBottom: '4px', display: 'block' }}>
-                  Loyalty Color
-                </label>
-                <input
-                  type="color"
-                  value={chartColors.averageLoyaltyColor || '#4682B4'}
-                  onChange={(e) => setChartColors(prev => ({ ...prev, averageLoyaltyColor: e.target.value }))}
-                  style={{
-                    width: '100%',
-                    height: '32px',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '4px',
-                    cursor: 'pointer'
-                  }}
-                />
-              </div>
+              <ChartColorPicker
+                label="Loyalty Color"
+                currentColor={chartColors.averageLoyaltyColor || '#4682B4'}
+                onColorChange={(color) => setChartColors(prev => ({ ...prev, averageLoyaltyColor: color }))}
+              />
             )}
-            <button
-              onClick={() => {
-                setChartColors({
-                  satisfactionColor: '#3a863e',
-                  loyaltyColor: '#4682B4',
-                  averageSatisfactionColor: '#3a863e',
-                  averageLoyaltyColor: '#4682B4'
-                });
-              }}
-              style={{
-                marginTop: '8px',
-                padding: '8px 12px',
-                background: '#f3f4f6',
-                border: '1px solid #e5e7eb',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '12px',
-                color: '#374151',
-                fontWeight: '500'
-              }}
-            >
-              Reset to Default
-            </button>
+            <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #e5e7eb' }}>
+              <button
+                onClick={() => {
+                  setChartColors({
+                    satisfactionColor: '#3a863e',
+                    loyaltyColor: '#4682B4',
+                    averageSatisfactionColor: '#3a863e',
+                    averageLoyaltyColor: '#4682B4'
+                  });
+                }}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  background: '#f3f4f6',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  color: '#374151',
+                  fontWeight: '500',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#e5e7eb';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = '#f3f4f6';
+                }}
+              >
+                Reset to Default
+              </button>
+            </div>
           </div>
         </div>
       )}
