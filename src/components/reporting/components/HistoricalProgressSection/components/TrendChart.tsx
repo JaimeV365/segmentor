@@ -130,7 +130,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
   const [yMin, yMax] = getYAxisDomain(scale);
 
   // Handle point click
-  const handlePointClick = (data: any, index: number, metricType: 'satisfaction' | 'loyalty') => {
+  const handlePointClick = (data: any, index: number, metricType: 'satisfaction' | 'loyalty', event?: React.MouseEvent) => {
     const pointData = customerLinesData[index];
     if (!pointData) return;
 
@@ -144,19 +144,27 @@ export const TrendChart: React.FC<TrendChartProps> = ({
     });
 
     if (customersAtDate.length > 0) {
-      // Calculate position for modal (approximate based on chart)
-      const chartElement = document.querySelector('.trend-chart-container');
-      const rect = chartElement?.getBoundingClientRect();
+      // Use event position if available, otherwise center of chart
+      let position = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+      if (event) {
+        position = { x: event.clientX, y: event.clientY };
+      } else {
+        const chartElement = document.querySelector('.trend-chart-container');
+        const rect = chartElement?.getBoundingClientRect();
+        if (rect) {
+          position = {
+            x: rect.left + rect.width / 2,
+            y: rect.top + rect.height / 2
+          };
+        }
+      }
       
       setClickedPoint({
         date: pointData.date,
         points: customersAtDate,
         metric: metricType,
         value: metricType === 'satisfaction' ? pointData.averageSatisfaction : pointData.averageLoyalty,
-        position: {
-          x: rect ? rect.left + rect.width / 2 : window.innerWidth / 2,
-          y: rect ? rect.top + rect.height / 2 : window.innerHeight / 2
-        }
+        position
       });
     }
   };
@@ -176,12 +184,14 @@ export const TrendChart: React.FC<TrendChartProps> = ({
         fill={props.fill}
         stroke={props.stroke}
         strokeWidth={2}
-        style={{ cursor: 'pointer' }}
+        style={{ cursor: 'pointer', pointerEvents: 'all' }}
         onClick={(e) => {
           e.stopPropagation();
           const metricType = props.dataKey === 'satisfaction' ? 'satisfaction' : 'loyalty';
           const index = customerLinesData.findIndex(d => d.date === payload.date);
-          handlePointClick(payload, index, metricType);
+          if (index >= 0) {
+            handlePointClick(payload, index, metricType, e);
+          }
         }}
       />
     );
@@ -289,11 +299,13 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                 name="Loyalty (Average)"
                 isAnimationActive={false}
                 activeDot={{ 
-                  r: 6, 
+                  r: 6,
+                  style: { cursor: 'pointer', pointerEvents: 'all' },
                   onClick: (e: any, payload: any) => {
+                    e?.stopPropagation();
                     const index = customerLinesData.findIndex(d => d.date === payload.date);
                     if (index >= 0) {
-                      handlePointClick(payload, index, 'loyalty');
+                      handlePointClick(payload, index, 'loyalty', e);
                     }
                   }
                 }}

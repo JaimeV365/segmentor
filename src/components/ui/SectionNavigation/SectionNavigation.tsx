@@ -78,7 +78,8 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
     // Check if Historical Progress section exists in DOM
     const checkHistoricalProgress = () => {
       const element = document.querySelector('[data-section-id="report-historical-progress"]');
-      setHasHistoricalProgress(!!element);
+      const isVisible = element && element.getBoundingClientRect().height > 0;
+      setHasHistoricalProgress(!!isVisible);
     };
     
     checkRecommendationScore();
@@ -92,7 +93,15 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
       checkHistoricalProgress();
     }, 500);
     
-    return () => clearInterval(interval);
+    // Also check after a short delay to catch sections that render after initial mount
+    const timeout = setTimeout(() => {
+      checkHistoricalProgress();
+    }, 1000);
+    
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
   }, []);
   
   // Memoize navigation items based on dataLength, hasRecommendationScore, and isResponseConcentrationExpanded

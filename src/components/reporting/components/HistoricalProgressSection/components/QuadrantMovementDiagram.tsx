@@ -238,16 +238,21 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
   };
 
   // Handle circle click
-  const handleCircleClick = (e: React.MouseEvent, fromQuadrant: string, toQuadrant: string) => {
+  const handleCircleClick = (e: React.MouseEvent | MouseEvent, fromQuadrant: string, toQuadrant: string) => {
     e.stopPropagation();
     const points = getDataPointsForMovement(fromQuadrant, toQuadrant);
     if (points.length > 0) {
-      const rect = e.currentTarget.getBoundingClientRect();
+      // Get position from the SVG element or use mouse position
+      const svgElement = (e.currentTarget as HTMLElement).closest('svg');
+      const rect = svgElement?.getBoundingClientRect();
+      const mouseX = 'clientX' in e ? e.clientX : (rect ? rect.left + rect.width / 2 : window.innerWidth / 2);
+      const mouseY = 'clientY' in e ? e.clientY : (rect ? rect.top + rect.height / 2 : window.innerHeight / 2);
+      
       setClickedMovement({
         points,
         position: {
-          x: rect.left + rect.width / 2,
-          y: rect.top + rect.height / 2
+          x: mouseX,
+          y: mouseY
         },
         fromQuadrant,
         toQuadrant
@@ -388,7 +393,10 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                   {/* Circle with number - white fill, border in destination color, number in source color */}
                   <g
                     style={{ cursor: 'pointer' }}
-                    onClick={(e) => handleCircleClick(e, item.quadrant, item.destQuadrant)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCircleClick(e, item.quadrant, item.destQuadrant);
+                    }}
                   >
                     <circle
                       cx={item.absoluteStart.x}
@@ -397,6 +405,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                       fill="#fff"
                       stroke={QUADRANT_COLORS[item.destQuadrant]}
                       strokeWidth={borderWidth}
+                      pointerEvents="all"
                     />
                     <text
                       x={item.absoluteStart.x}
