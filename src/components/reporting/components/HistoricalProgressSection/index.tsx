@@ -32,12 +32,109 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
 }) => {
   // Get quadrant assignment function from context
   const { getQuadrantForPoint } = useQuadrantAssignment();
+  const filterContext = useFilterContextSafe();
+  const { showNotification } = useNotification();
+  const [showFilterPanel, setShowFilterPanel] = useState(false);
+  const [filterResetTrigger, setFilterResetTrigger] = useState(0);
+  const [filteredDataFromPanel, setFilteredDataFromPanel] = useState<DataPoint[] | null>(null);
+  const [hasLocalChanges, setHasLocalChanges] = useState(false);
+  const [isManualReconnecting, setIsManualReconnecting] = useState(false);
+  const [showReconnectModal, setShowReconnectModal] = useState(false);
+  const filterButtonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const REPORT_ID = useMemo(() => 'historicalProgressSection', []);
+  
+  // Initialize filter state
+  useLayoutEffect(() => {
+    if (filterContext && !filterContext.reportFilterStates[REPORT_ID]) {
+      filterContext.syncReportToMaster(REPORT_ID);
+    }
+  }, [filterContext, REPORT_ID]);
+  
+  useEffect(() => {
+    if (filterContext && !filterContext.reportFilterStates[REPORT_ID]) {
+      filterContext.syncReportToMaster(REPORT_ID);
+    }
+  }, [filterContext, REPORT_ID]);
+  
+  // Check if filters are connected to main chart
+  const isConnected = useMemo(() => {
+    if (!filterContext) {
+      return true;
+    }
+    const reportState = filterContext.reportFilterStates[REPORT_ID];
+    if (!reportState) {
+      return true;
+    }
+    return filterContext.compareFilterStates(reportState, filterContext.filterState);
+  }, [filterContext, REPORT_ID, filterContext?.reportFilterStates?.[REPORT_ID], filterContext?.filterState]);
+  
+  // Count active filters
+  const filterCount = useMemo(() => {
+    if (!filterContext) return 0;
+    const stateToUse = isConnected 
+      ? filterContext.filterState 
+      : (filterContext.getReportFilterState(REPORT_ID) || filterContext.filterState);
+    const hasDateFilter = stateToUse.dateRange?.preset && stateToUse.dateRange.preset !== 'all';
+    const attributeFilterCount = stateToUse.attributes?.filter(attr => attr.values && attr.values.size > 0).length || 0;
+    return (hasDateFilter ? 1 : 0) + attributeFilterCount;
+  }, [filterContext, isConnected, REPORT_ID]);
+  
+  // Get effective filtered data
+  const effectiveData = useMemo(() => {
+    if (!filterContext || !data) {
+      return data;
+    }
+    if (!isConnected && filteredDataFromPanel) {
+      return filteredDataFromPanel;
+    }
+    return filterContext.getReportFilteredData(REPORT_ID, data);
+  }, [data, filterContext, REPORT_ID, filteredDataFromPanel, isConnected]);
+  
+  // Handle filter changes
+  const handleFilterChange = useCallback((filteredData: DataPoint[], filters: any[], filterState?: any) => {
+    setFilteredDataFromPanel(filteredData);
+    setHasLocalChanges(true);
+  }, []);
+  
+  // Handle filter reset
+  const handleFilterReset = useCallback(() => {
+    setFilterResetTrigger(prev => prev + 1);
+    setFilteredDataFromPanel(null);
+    setHasLocalChanges(false);
+  }, []);
+  
+  // Handle connection toggle
+  const handleConnectionToggle = useCallback(() => {
+    if (!filterContext) return;
+    
+    if (isConnected) {
+      // Disconnect: sync current main state to report, then disconnect
+      filterContext.syncReportToMaster(REPORT_ID);
+      setIsManualReconnecting(true);
+      // The disconnect happens automatically when user changes filters
+    } else {
+      // Connect: sync report to main
+      filterContext.syncReportToMaster(REPORT_ID);
+      setFilteredDataFromPanel(null);
+      setHasLocalChanges(false);
+      setIsManualReconnecting(false);
+    }
+  }, [filterContext, REPORT_ID, isConnected]);
+  
+  // Clear local changes when connected
+  useEffect(() => {
+    if (isConnected && filteredDataFromPanel !== null) {
+      setFilteredDataFromPanel(null);
+      setHasLocalChanges(false);
+    }
+  }, [isConnected, filteredDataFromPanel]);
   
   // Extract date format from first data point with date (if available)
   const dateFormat = useMemo(() => {
-    const firstPointWithDate = data.find(p => p.date && p.dateFormat);
+    const firstPointWithDate = effectiveData.find(p => p.date && p.dateFormat);
     return firstPointWithDate?.dateFormat;
-  }, [data]);
+  }, [effectiveData]);
   
   // Group data by customer (always calculate, even if we won't show)
   // Use effectiveData (filtered) for calculations
