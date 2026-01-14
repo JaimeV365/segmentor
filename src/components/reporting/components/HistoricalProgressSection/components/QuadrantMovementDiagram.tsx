@@ -220,20 +220,33 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     const movement = movementStats.movements.find(
       m => m.from === fromQuadrant && m.to === toQuadrant
     );
-    if (!movement) return [];
+    if (!movement) {
+      console.log('QuadrantMovementDiagram: No movement found', { fromQuadrant, toQuadrant });
+      return [];
+    }
 
     const dataPoints: DataPoint[] = [];
     movement.customers.forEach(customer => {
-      // Find the timeline for this customer
-      const timeline = timelines.find(t => t.identifier === customer.identifier);
+      // Find the timeline for this customer - normalize identifiers for comparison
+      const normalizedCustomerId = customer.identifier.toLowerCase().trim();
+      const timeline = timelines.find(t => {
+        const normalizedTimelineId = t.identifier.toLowerCase().trim();
+        return normalizedTimelineId === normalizedCustomerId && t.identifierType === customer.identifierType;
+      });
+      
       if (timeline) {
         // Find the data point at the "to" date (destination quadrant)
-        const point = timeline.dataPoints.find(p => p.date && p.date.trim() === customer.toDate);
+        const normalizedToDate = customer.toDate.trim();
+        const point = timeline.dataPoints.find(p => {
+          if (!p.date) return false;
+          return p.date.trim() === normalizedToDate;
+        });
         if (point) {
           dataPoints.push(point);
         }
       }
     });
+    
     return dataPoints;
   };
 

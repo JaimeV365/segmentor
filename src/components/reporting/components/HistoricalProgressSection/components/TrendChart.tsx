@@ -132,15 +132,21 @@ export const TrendChart: React.FC<TrendChartProps> = ({
   // Handle point click
   const handlePointClick = (data: any, index: number, metricType: 'satisfaction' | 'loyalty', event?: React.MouseEvent) => {
     const pointData = customerLinesData[index];
-    if (!pointData) return;
+    if (!pointData) {
+      console.log('TrendChart: No pointData found for index', index);
+      return;
+    }
 
-    // Get all customers at this date
+    // Get all customers at this date - use normalized date comparison
     const customersAtDate: DataPoint[] = [];
+    const normalizedTargetDate = pointData.date.trim();
+    
     timelines.forEach(timeline => {
-      const point = timeline.dataPoints.find(p => p.date && p.date.trim() === pointData.date);
-      if (point) {
-        customersAtDate.push(point);
-      }
+      timeline.dataPoints.forEach(point => {
+        if (point.date && point.date.trim() === normalizedTargetDate) {
+          customersAtDate.push(point);
+        }
+      });
     });
 
     if (customersAtDate.length > 0) {
