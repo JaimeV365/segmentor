@@ -179,12 +179,7 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
                   <div 
                     className="movement-item-header"
                     style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: '8px',
                       cursor: 'pointer',
-                      padding: '8px',
-                      borderRadius: '4px',
                       transition: 'background-color 0.2s'
                     }}
                     onClick={() => toggleMovement(index)}

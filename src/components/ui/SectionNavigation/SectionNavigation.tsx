@@ -85,6 +85,7 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
       if (exists) {
         console.log('Historical Progress section detected in drawer');
       }
+      return exists;
     };
     
     checkRecommendationScore();
@@ -108,9 +109,49 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
       setTimeout(() => checkHistoricalProgress(), 5000)
     ];
     
+    // Use MutationObserver to watch for when the section appears in DOM (especially for demo data)
+    const observer = new MutationObserver((mutations) => {
+      let shouldCheck = false;
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              const element = node as Element;
+              // Check if the added node is the section or contains it
+              if (element.hasAttribute?.('data-section-id') && 
+                  element.getAttribute('data-section-id') === 'report-historical-progress') {
+                shouldCheck = true;
+              } else if (element.querySelector?.('[data-section-id="report-historical-progress"]')) {
+                shouldCheck = true;
+              }
+            }
+          });
+        }
+      });
+      if (shouldCheck) {
+        checkHistoricalProgress();
+      }
+    });
+    
+    // Observe the reporting section container for changes
+    const reportingSection = document.querySelector('.reporting-section');
+    if (reportingSection) {
+      observer.observe(reportingSection, {
+        childList: true,
+        subtree: true
+      });
+    }
+    
+    // Also observe the entire document body as fallback
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+    
     return () => {
       clearInterval(interval);
       timeouts.forEach(timeout => clearTimeout(timeout));
+      observer.disconnect();
     };
   }, []);
   

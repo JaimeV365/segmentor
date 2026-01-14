@@ -233,11 +233,19 @@
 
 .movement-item {
   display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  background: #f9fafb;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.movement-item-header {
+  display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  background: #f9fafb;
-  border-radius: 0.375rem;
 }
 
 .movement-quadrant {
