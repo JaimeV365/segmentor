@@ -29,7 +29,8 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
   data,
   satisfactionScale,
   loyaltyScale,
-  isPremium = false
+  isPremium = false,
+  isClassicModel = false
 }) => {
   // Get quadrant assignment function from context
   const { getQuadrantForPoint } = useQuadrantAssignment();
