@@ -13,18 +13,33 @@ interface QuadrantMovementFlowProps {
   isClassicModel?: boolean;
 }
 
-const getQuadrantDisplayName = (quadrant: QuadrantType): string => {
-  const names: Record<QuadrantType, string> = {
-    'apostles': 'Apostles',
-    'near_apostles': 'Near Apostles',
-    'loyalists': 'Loyalists',
-    'mercenaries': 'Mercenaries',
-    'hostages': 'Hostages',
-    'neutral': 'Neutral',
-    'defectors': 'Defectors',
-    'terrorists': 'Terrorists'
-  };
-  return names[quadrant] || quadrant;
+const getQuadrantDisplayName = (quadrant: QuadrantType, isClassicModel: boolean = true): string => {
+  if (isClassicModel) {
+    const names: Record<QuadrantType, string> = {
+      'apostles': 'Apostles',
+      'near_apostles': 'Near-Apostles',
+      'loyalists': 'Loyalists',
+      'mercenaries': 'Mercenaries',
+      'hostages': 'Hostages',
+      'neutral': 'Neutral',
+      'defectors': 'Defectors',
+      'terrorists': 'Terrorists'
+    };
+    return names[quadrant] || quadrant;
+  } else {
+    // Modern terminology
+    const names: Record<QuadrantType, string> = {
+      'apostles': 'Advocates',
+      'near_apostles': 'Near-Advocates',
+      'loyalists': 'Loyalists',
+      'mercenaries': 'Mercenaries',
+      'hostages': 'Hostages',
+      'neutral': 'Neutral',
+      'defectors': 'Defectors',
+      'terrorists': 'Trolls'
+    };
+    return names[quadrant] || quadrant;
+  }
 };
 
 const getQuadrantColor = (quadrant: QuadrantType): string => {
