@@ -185,8 +185,14 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
     };
   }, []);
   
-  // Memoize navigation items based on dataLength, hasRecommendationScore, and isResponseConcentrationExpanded
+  // Memoize navigation items based on dataLength, hasRecommendationScore, isResponseConcentrationExpanded, and hasHistoricalProgress
   const navigationItems: NavigationItem[] = useMemo(() => {
+    console.log('[SectionNavigation] Building navigation items with:', {
+      hasHistoricalProgress,
+      hasRecommendationScore,
+      isResponseConcentrationExpanded,
+      dataLength
+    });
     const reportSubItems: NavigationSubItem[] = [
       {
         id: 'report-data',
@@ -234,12 +240,15 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
     
     // Add Historical Progress only if it exists (has historical data)
     if (hasHistoricalProgress) {
+      console.log('[SectionNavigation] Adding Historical Progress to navigation items');
       reportSubItems.push({
         id: 'report-historical-progress',
         label: 'Historical Progress',
         icon: <History size={16} />,
         selector: '[data-section-id="report-historical-progress"]'
       });
+    } else {
+      console.log('[SectionNavigation] NOT adding Historical Progress - hasHistoricalProgress is false');
     }
     
     reportSubItems.push({
@@ -249,7 +258,7 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
       selector: '[data-section-id="report-actions"]'
     });
     
-    return [
+    const items = [
       {
         id: 'data-entry',
         label: 'Data Entry',
@@ -280,7 +289,7 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
         subItems: reportSubItems
       }
     ];
-  }, [dataLength, hasRecommendationScore, isResponseConcentrationExpanded]);
+  }, [dataLength, hasRecommendationScore, isResponseConcentrationExpanded, hasHistoricalProgress]);
 
   // Optional: Scroll tracking with Intersection Observer
   useEffect(() => {
