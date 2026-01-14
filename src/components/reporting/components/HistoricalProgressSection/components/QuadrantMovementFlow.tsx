@@ -155,6 +155,7 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
         movementStats={movementStats}
         timelines={timelines}
         data={data}
+        isClassicModel={isClassicModel}
       />
       
       <div className="movement-stats-summary">
