@@ -34,6 +34,41 @@ export const TrendChart: React.FC<TrendChartProps> = ({
   dateFormat
 }) => {
   const [clickedPoint, setClickedPoint] = useState<ClickedPoint | null>(null);
+  const [showSettingsPanel, setShowSettingsPanel] = useState(false);
+  const [chartColors, setChartColors] = useState<{
+    satisfactionColor?: string;
+    loyaltyColor?: string;
+    averageSatisfactionColor?: string;
+    averageLoyaltyColor?: string;
+  }>({
+    satisfactionColor: '#3a863e',
+    loyaltyColor: '#4682B4',
+    averageSatisfactionColor: '#3a863e',
+    averageLoyaltyColor: '#4682B4'
+  });
+  const settingsButtonRef = useRef<HTMLButtonElement>(null);
+  const settingsPanelRef = useRef<HTMLDivElement>(null);
+  
+  // Close settings panel when clicking outside
+  useEffect(() => {
+    if (!showSettingsPanel) return;
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        settingsPanelRef.current &&
+        !settingsPanelRef.current.contains(event.target as Node) &&
+        settingsButtonRef.current &&
+        !settingsButtonRef.current.contains(event.target as Node)
+      ) {
+        setShowSettingsPanel(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showSettingsPanel]);
 
   // Prepare individual customer lines data
   const customerLinesData = useMemo(() => {
