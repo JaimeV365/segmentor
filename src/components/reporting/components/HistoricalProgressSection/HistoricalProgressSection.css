@@ -73,11 +73,6 @@
   position: relative;
 }
 
-.trend-chart-settings-panel {
-  position: absolute;
-  z-index: 1000;
-}
-
 .trend-chart-settings-button {
   position: relative;
 }
@@ -86,6 +81,31 @@
   background-color: #3a863e !important;
   border-color: #3a863e !important;
   color: #ffffff !important;
+}
+
+.trend-chart-controls-panel {
+  position: fixed !important;
+  top: 80px !important;
+  right: 0 !important;
+  width: 380px !important;
+  height: calc(100vh - 80px) !important;
+  background: white !important;
+  border-left: 1px solid #e5e7eb !important;
+  box-shadow: -2px 0 16px rgba(0, 0, 0, 0.15) !important;
+  z-index: 999 !important;
+  animation: slideInFromRight 0.3s ease-out !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 /* Connection status icon */

@@ -35,7 +35,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
   dateFormat
 }) => {
   const [clickedPoint, setClickedPoint] = useState<ClickedPoint | null>(null);
-  const [showSettingsPanel, setShowSettingsPanel] = useState(false);
+  const [showControlsPanel, setShowControlsPanel] = useState(false);
   const [chartColors, setChartColors] = useState<{
     satisfactionColor?: string;
     loyaltyColor?: string;
@@ -48,28 +48,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
     averageLoyaltyColor: '#4682B4'
   });
   const settingsButtonRef = useRef<HTMLButtonElement>(null);
-  const settingsPanelRef = useRef<HTMLDivElement>(null);
-  
-  // Close settings panel when clicking outside
-  useEffect(() => {
-    if (!showSettingsPanel) return;
-    
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        settingsPanelRef.current &&
-        !settingsPanelRef.current.contains(event.target as Node) &&
-        settingsButtonRef.current &&
-        !settingsButtonRef.current.contains(event.target as Node)
-      ) {
-        setShowSettingsPanel(false);
-      }
-    };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showSettingsPanel]);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   // Prepare individual customer lines data
   const customerLinesData = useMemo(() => {
@@ -317,41 +296,31 @@ export const TrendChart: React.FC<TrendChartProps> = ({
           <h4 className="trend-chart-title" style={{ margin: 0 }}>{title}</h4>
           <button
             ref={settingsButtonRef}
-            className={`trend-chart-settings-button ${showSettingsPanel ? 'active' : ''}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              console.log('[TrendChart] Settings button clicked, current state:', showSettingsPanel);
-              setShowSettingsPanel(prev => {
-                console.log('[TrendChart] Toggling settings panel:', prev, '->', !prev);
-                return !prev;
-              });
-            }}
+            className={`trend-chart-settings-button ${showControlsPanel ? 'active' : ''}`}
+            onClick={() => setShowControlsPanel(prev => !prev)}
             title="Chart settings"
             style={{
               width: '28px',
               height: '28px',
               borderRadius: '4px',
-              background: showSettingsPanel ? '#3a863e' : '#ffffff',
+              background: showControlsPanel ? '#3a863e' : '#ffffff',
               border: '1px solid #e5e7eb',
               cursor: 'pointer',
-              color: showSettingsPanel ? '#ffffff' : '#3a863e',
+              color: showControlsPanel ? '#ffffff' : '#3a863e',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               transition: 'all 0.2s ease',
-              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-              position: 'relative',
-              zIndex: 1001
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
             }}
             onMouseEnter={(e) => {
-              if (!showSettingsPanel) {
+              if (!showControlsPanel) {
                 e.currentTarget.style.backgroundColor = '#f3f4f6';
                 e.currentTarget.style.transform = 'translateY(-1px)';
               }
             }}
             onMouseLeave={(e) => {
-              if (!showSettingsPanel) {
+              if (!showControlsPanel) {
                 e.currentTarget.style.backgroundColor = '#ffffff';
                 e.currentTarget.style.transform = 'translateY(0)';
               }
@@ -566,92 +535,56 @@ export const TrendChart: React.FC<TrendChartProps> = ({
         />
       )}
       
-      {/* Settings Panel */}
-      {showSettingsPanel && (
-        <div 
-          ref={settingsPanelRef}
-          className="trend-chart-settings-panel"
-          style={{
-            position: 'fixed',
-            top: settingsButtonRef.current ? `${settingsButtonRef.current.getBoundingClientRect().bottom + 8}px` : '40px',
-            right: settingsButtonRef.current ? `${window.innerWidth - settingsButtonRef.current.getBoundingClientRect().right}px` : '16px',
-            width: '320px',
-            background: 'white',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            zIndex: 10000,
-            padding: '16px',
-            maxHeight: '80vh',
-            overflowY: 'auto'
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <h5 style={{ margin: 0, fontSize: '14px', fontWeight: '600', color: '#374151' }}>Chart Colors</h5>
-            <button
-              onClick={() => setShowSettingsPanel(false)}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: '#6b7280',
-                padding: '4px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <X size={16} />
+      {/* Unified Controls Panel */}
+      {showControlsPanel && (
+        <div className="unified-controls-panel trend-chart-controls-panel" ref={panelRef}>
+          <div className="unified-controls-header">
+            <div className="unified-controls-tabs">
+              <div className="unified-tab active">
+                <MenuIcon size={16} />
+                Colors
+              </div>
+            </div>
+            <button className="unified-close-button" onClick={() => setShowControlsPanel(false)}>
+              <X size={20} />
             </button>
           </div>
           
-          <div className="chart-settings-content">
-            {(metric === 'satisfaction' || metric === 'both') && (
-              <ChartColorPicker
-                label="Satisfaction Color"
-                currentColor={chartColors.averageSatisfactionColor || '#3a863e'}
-                onColorChange={(color) => setChartColors(prev => ({ ...prev, averageSatisfactionColor: color }))}
-              />
-            )}
-            {(metric === 'loyalty' || metric === 'both') && (
-              <ChartColorPicker
-                label="Loyalty Color"
-                currentColor={chartColors.averageLoyaltyColor || '#4682B4'}
-                onColorChange={(color) => setChartColors(prev => ({ ...prev, averageLoyaltyColor: color }))}
-              />
-            )}
-            <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #e5e7eb' }}>
-              <button
-                onClick={() => {
-                  setChartColors({
-                    satisfactionColor: '#3a863e',
-                    loyaltyColor: '#4682B4',
-                    averageSatisfactionColor: '#3a863e',
-                    averageLoyaltyColor: '#4682B4'
-                  });
-                }}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  background: '#f3f4f6',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '12px',
-                  color: '#374151',
-                  fontWeight: '500',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#e5e7eb';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = '#f3f4f6';
-                }}
-              >
-                Reset to Default
-              </button>
+          <div className="unified-controls-content">
+            <div className="unified-tab-content">
+              <div className="unified-tab-body">
+                <div className="chart-settings-content">
+                  {(metric === 'satisfaction' || metric === 'both') && (
+                    <ChartColorPicker
+                      label="Satisfaction Color"
+                      currentColor={chartColors.averageSatisfactionColor || '#3a863e'}
+                      onColorChange={(color) => setChartColors(prev => ({ ...prev, averageSatisfactionColor: color }))}
+                    />
+                  )}
+                  {(metric === 'loyalty' || metric === 'both') && (
+                    <ChartColorPicker
+                      label="Loyalty Color"
+                      currentColor={chartColors.averageLoyaltyColor || '#4682B4'}
+                      onColorChange={(color) => setChartColors(prev => ({ ...prev, averageLoyaltyColor: color }))}
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="unified-tab-footer">
+                <button 
+                  className="unified-reset-button" 
+                  onClick={() => {
+                    setChartColors({
+                      satisfactionColor: '#3a863e',
+                      loyaltyColor: '#4682B4',
+                      averageSatisfactionColor: '#3a863e',
+                      averageLoyaltyColor: '#4682B4'
+                    });
+                  }}
+                >
+                  Reset to Default
+                </button>
+              </div>
             </div>
           </div>
         </div>
