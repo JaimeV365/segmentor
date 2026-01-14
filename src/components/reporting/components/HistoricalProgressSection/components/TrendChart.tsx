@@ -49,6 +49,27 @@ export const TrendChart: React.FC<TrendChartProps> = ({
   });
   const settingsButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  
+  // Close panel when clicking outside
+  useEffect(() => {
+    if (!showControlsPanel) return;
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      const targetElement = event.target as HTMLElement;
+      const isPanelClick = targetElement.closest('.unified-controls-panel');
+      const isControlButtonClick = settingsButtonRef.current?.contains(targetElement);
+      
+      // Close panel when clicking outside (but not on panel or button)
+      if (!isPanelClick && !isControlButtonClick && panelRef.current) {
+        setShowControlsPanel(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showControlsPanel]);
 
   // Prepare individual customer lines data
   const customerLinesData = useMemo(() => {
@@ -404,9 +425,9 @@ export const TrendChart: React.FC<TrendChartProps> = ({
               <Line 
                 type="monotone" 
                 dataKey="averageSatisfaction" 
-                stroke="#3a863e" 
+                stroke={chartColors.averageSatisfactionColor || '#3a863e'} 
                 strokeWidth={3}
-                dot={(props: any) => <CustomDot {...props} fill="#3a863e" stroke="#3a863e" dataKey="averageSatisfaction" metricType="satisfaction" />}
+                dot={(props: any) => <CustomDot {...props} fill={chartColors.averageSatisfactionColor || '#3a863e'} stroke={chartColors.averageSatisfactionColor || '#3a863e'} dataKey="averageSatisfaction" metricType="satisfaction" />}
                 name="Satisfaction (Average)"
                 isAnimationActive={false}
                 activeDot={(props: any) => {
@@ -427,10 +448,14 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                     });
                   }
                   
+                  const satisfactionColor = chartColors.averageSatisfactionColor || '#3a863e';
+                  
                   return (
                     <circle
                       {...props}
                       r={8}
+                      fill={satisfactionColor}
+                      stroke={satisfactionColor}
                       style={{ cursor: 'pointer', pointerEvents: 'all' }}
                       onClick={(e: any) => {
                         console.log('[TrendChart] activeDot clicked for satisfaction:', { 
@@ -484,10 +509,14 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                     });
                   }
                   
+                  const loyaltyColor = chartColors.averageLoyaltyColor || '#4682B4';
+                  
                   return (
                     <circle
                       {...props}
                       r={8}
+                      fill={loyaltyColor}
+                      stroke={loyaltyColor}
                       style={{ cursor: 'pointer', pointerEvents: 'all' }}
                       onClick={(e: any) => {
                         console.log('[TrendChart] activeDot clicked for loyalty:', { 
