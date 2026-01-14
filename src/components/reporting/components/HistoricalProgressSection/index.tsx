@@ -130,6 +130,29 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
     }
   }, [isConnected, filteredDataFromPanel]);
   
+  // Close filter panel when clicking outside
+  useEffect(() => {
+    if (!showFilterPanel) return;
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      const targetElement = event.target as HTMLElement;
+      const isPanelClick = targetElement.closest('.unified-controls-panel');
+      const isControlButtonClick = filterButtonRef.current?.contains(targetElement);
+      const isModalClick = targetElement.closest('.filter-connection-modal-overlay') || 
+                          targetElement.closest('.filter-connection-modal');
+      
+      // Close panel when clicking outside (but not on panel, button, or modal)
+      if (!isPanelClick && !isControlButtonClick && !isModalClick && panelRef.current) {
+        setShowFilterPanel(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showFilterPanel]);
+  
   // Extract date format from first data point with date (if available)
   const dateFormat = useMemo(() => {
     const firstPointWithDate = effectiveData.find(p => p.date && p.dateFormat);

@@ -321,9 +321,9 @@ export const TrendChart: React.FC<TrendChartProps> = ({
             onClick={() => setShowControlsPanel(prev => !prev)}
             title="Chart settings"
             style={{
-              width: '28px',
-              height: '28px',
-              borderRadius: '4px',
+              width: '36px',
+              height: '36px',
+              borderRadius: '6px',
               background: showControlsPanel ? '#3a863e' : '#ffffff',
               border: '1px solid #e5e7eb',
               cursor: 'pointer',
@@ -332,22 +332,24 @@ export const TrendChart: React.FC<TrendChartProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               transition: 'all 0.2s ease',
-              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
             }}
             onMouseEnter={(e) => {
               if (!showControlsPanel) {
                 e.currentTarget.style.backgroundColor = '#f3f4f6';
-                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.15)';
               }
             }}
             onMouseLeave={(e) => {
               if (!showControlsPanel) {
                 e.currentTarget.style.backgroundColor = '#ffffff';
                 e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
               }
             }}
           >
-            <MenuIcon size={16} />
+            <MenuIcon size={22} />
           </button>
         </div>
         <InfoRibbon text={infoText} />
