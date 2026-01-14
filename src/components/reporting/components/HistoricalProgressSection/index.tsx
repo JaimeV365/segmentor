@@ -173,7 +173,22 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
   return (
     <div className="report-card" data-section-id="report-historical-progress">
       <div className="report-title-wrapper">
-        <h3 className="report-title">Historical Progress</h3>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <h3 className="report-title">Historical Progress</h3>
+          <div className="historical-progress-header-controls">
+            <button
+              ref={filterButtonRef}
+              className={`historical-progress-filter-button ${showFilterPanel ? 'active' : ''} ${filterCount > 0 ? 'has-filters' : ''}`}
+              onClick={() => setShowFilterPanel(prev => !prev)}
+              title="Filter data for this section"
+            >
+              <Filter size={18} />
+              {filterCount > 0 && (
+                <span className="filter-badge small">{filterCount}</span>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
       
       <div className="report-content">

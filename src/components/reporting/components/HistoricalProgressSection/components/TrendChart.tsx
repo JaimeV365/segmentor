@@ -316,30 +316,44 @@ export const TrendChart: React.FC<TrendChartProps> = ({
           <h4 className="trend-chart-title" style={{ margin: 0 }}>{title}</h4>
           <button
             ref={settingsButtonRef}
-            className="trend-chart-settings-button"
-            onClick={() => setShowSettingsPanel(prev => !prev)}
+            className={`trend-chart-settings-button ${showSettingsPanel ? 'active' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              console.log('[TrendChart] Settings button clicked, current state:', showSettingsPanel);
+              setShowSettingsPanel(prev => {
+                console.log('[TrendChart] Toggling settings panel:', prev, '->', !prev);
+                return !prev;
+              });
+            }}
             title="Chart settings"
             style={{
               width: '28px',
               height: '28px',
               borderRadius: '4px',
-              background: '#ffffff',
+              background: showSettingsPanel ? '#3a863e' : '#ffffff',
               border: '1px solid #e5e7eb',
               cursor: 'pointer',
-              color: '#3a863e',
+              color: showSettingsPanel ? '#ffffff' : '#3a863e',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               transition: 'all 0.2s ease',
-              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+              position: 'relative',
+              zIndex: 1001
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#f3f4f6';
-              e.currentTarget.style.transform = 'translateY(-1px)';
+              if (!showSettingsPanel) {
+                e.currentTarget.style.backgroundColor = '#f3f4f6';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#ffffff';
-              e.currentTarget.style.transform = 'translateY(0)';
+              if (!showSettingsPanel) {
+                e.currentTarget.style.backgroundColor = '#ffffff';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }
             }}
           >
             <MenuIcon size={16} />
@@ -557,17 +571,18 @@ export const TrendChart: React.FC<TrendChartProps> = ({
           ref={settingsPanelRef}
           className="trend-chart-settings-panel"
           style={{
-            position: 'absolute',
-            top: settingsButtonRef.current ? `${settingsButtonRef.current.offsetTop + settingsButtonRef.current.offsetHeight + 8}px` : '40px',
-            right: '16px',
+            position: 'fixed',
+            top: settingsButtonRef.current ? `${settingsButtonRef.current.getBoundingClientRect().bottom + 8}px` : '40px',
+            right: settingsButtonRef.current ? `${window.innerWidth - settingsButtonRef.current.getBoundingClientRect().right}px` : '16px',
             width: '280px',
             background: 'white',
             border: '1px solid #e5e7eb',
             borderRadius: '8px',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            zIndex: 1000,
+            zIndex: 10000,
             padding: '16px'
           }}
+          onClick={(e) => e.stopPropagation()}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
             <h5 style={{ margin: 0, fontSize: '14px', fontWeight: '600', color: '#374151' }}>Chart Colors</h5>
