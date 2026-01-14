@@ -204,8 +204,8 @@ export const TrendChart: React.FC<TrendChartProps> = ({
   };
 
   const infoText = metric === 'both' 
-    ? 'This chart shows average satisfaction and loyalty scores by date. Click any data point to see individual customers and their values.'
-    : `This chart shows average ${metric} scores by date. Click any data point to see individual customers and their values.`;
+    ? 'This chart shows how average satisfaction and loyalty change over time. Each point is the average of all customers who have data on that date. For example, if 5 customers have data on Jan 1st, the point shows the average of those 5 customers. Click any point to see which customers contributed to that average.'
+    : `This chart shows how average ${metric} changes over time. Each point is the average of all customers who have data on that date. For example, if 5 customers have data on Jan 1st, the point shows the average of those 5 customers. Click any point to see which customers contributed to that average.`;
 
   return (
     <>

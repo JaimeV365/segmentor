@@ -62,8 +62,11 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
   
   // Check if we have historical data to show (after all hooks)
   if (!hasHistoricalData(data)) {
+    console.log('[HistoricalProgress] No historical data, not rendering. Data length:', data.length);
     return null; // Don't render if no historical data
   }
+  
+  console.log('[HistoricalProgress] Rendering section. Data length:', data.length, 'Timelines:', timelines.length);
   
   return (
     <div className="report-card" data-section-id="report-historical-progress">

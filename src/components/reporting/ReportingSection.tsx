@@ -285,14 +285,22 @@ console.log('🚨🚨🚨 About to render DistributionSection with:', {
           />
         </div>
 
-        {hasHistoricalData(filteredData) && (
-          <HistoricalProgressSection
-            data={filteredData}
-            satisfactionScale={satisfactionScale}
-            loyaltyScale={loyaltyScale}
-            isPremium={isPremium}
-          />
-        )}
+        {(() => {
+          const hasHistory = hasHistoricalData(filteredData);
+          console.log('[ReportingSection] Historical Progress check:', {
+            hasHistory,
+            filteredDataLength: filteredData.length,
+            filteredDataWithDates: filteredData.filter(d => d.date).length
+          });
+          return hasHistory ? (
+            <HistoricalProgressSection
+              data={filteredData}
+              satisfactionScale={satisfactionScale}
+              loyaltyScale={loyaltyScale}
+              isPremium={isPremium}
+            />
+          ) : null;
+        })()}
 
         <div data-section-id="report-actions">
           <ActionsReport

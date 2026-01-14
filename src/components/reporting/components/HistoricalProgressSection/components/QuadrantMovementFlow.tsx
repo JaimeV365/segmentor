@@ -244,7 +244,7 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
                               >
                                 <td style={{ padding: '8px' }}>{customerName}</td>
                                 <td style={{ padding: '8px' }}>
-                                  S: {item.customer.satisfaction}, L: {item.customer.loyalty}
+                                  {item.customer.satisfaction},{item.customer.loyalty}
                                 </td>
                                 <td style={{ padding: '8px' }}>
                                   {item.originPoint?.date || item.firstDate}

@@ -80,10 +80,31 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
       const element = document.querySelector('[data-section-id="report-historical-progress"]');
       // Just check if element exists - don't check visibility as it might be off-screen
       const exists = !!element;
+      const previousState = hasHistoricalProgress;
+      
+      console.log('[SectionNavigation] Checking Historical Progress:', {
+        exists,
+        previousState,
+        elementFound: !!element,
+        elementDetails: element ? {
+          className: element.className,
+          id: element.id,
+          parentElement: element.parentElement?.className
+        } : null,
+        allSections: Array.from(document.querySelectorAll('[data-section-id]')).map(el => ({
+          id: el.getAttribute('data-section-id'),
+          className: el.className
+        }))
+      });
+      
+      if (exists !== previousState) {
+        console.log('[SectionNavigation] Historical Progress state changed:', previousState, '->', exists);
+      }
+      
       setHasHistoricalProgress(exists);
       // If element found, log for debugging
       if (exists) {
-        console.log('Historical Progress section detected in drawer');
+        console.log('[SectionNavigation] Historical Progress section detected in drawer');
       }
       return exists;
     };
@@ -118,10 +139,18 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
             if (node.nodeType === Node.ELEMENT_NODE) {
               const element = node as Element;
               // Check if the added node is the section or contains it
-              if (element.hasAttribute?.('data-section-id') && 
-                  element.getAttribute('data-section-id') === 'report-historical-progress') {
+              const hasSectionId = element.hasAttribute?.('data-section-id');
+              const sectionIdValue = element.getAttribute?.('data-section-id');
+              const containsSection = element.querySelector?.('[data-section-id="report-historical-progress"]');
+              
+              if (hasSectionId && sectionIdValue === 'report-historical-progress') {
+                console.log('[SectionNavigation] MutationObserver: Found section directly added:', {
+                  tagName: element.tagName,
+                  className: element.className
+                });
                 shouldCheck = true;
-              } else if (element.querySelector?.('[data-section-id="report-historical-progress"]')) {
+              } else if (containsSection) {
+                console.log('[SectionNavigation] MutationObserver: Found section in added subtree');
                 shouldCheck = true;
               }
             }
@@ -129,6 +158,7 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
         }
       });
       if (shouldCheck) {
+        console.log('[SectionNavigation] MutationObserver: Triggering check');
         checkHistoricalProgress();
       }
     });
