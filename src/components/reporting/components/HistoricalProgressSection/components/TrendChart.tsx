@@ -279,15 +279,17 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                 dataKey="averageSatisfaction" 
                 stroke="#3a863e" 
                 strokeWidth={3}
-                dot={<CustomDot fill="#3a863e" stroke="#3a863e" dataKey="satisfaction" />}
+                dot={<CustomDot fill="#3a863e" stroke="#3a863e" dataKey="averageSatisfaction" metricType="satisfaction" />}
                 name="Satisfaction (Average)"
                 isAnimationActive={false}
                 activeDot={{ 
-                  r: 6, 
+                  r: 6,
+                  style: { cursor: 'pointer', pointerEvents: 'all' },
                   onClick: (e: any, payload: any) => {
+                    e?.stopPropagation();
                     const index = customerLinesData.findIndex(d => d.date === payload.date);
                     if (index >= 0) {
-                      handlePointClick(payload, index, 'satisfaction');
+                      handlePointClick(payload, index, 'satisfaction', e);
                     }
                   }
                 }}
