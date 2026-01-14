@@ -79,7 +79,12 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
     const checkHistoricalProgress = () => {
       const element = document.querySelector('[data-section-id="report-historical-progress"]');
       // Just check if element exists - don't check visibility as it might be off-screen
-      setHasHistoricalProgress(!!element);
+      const exists = !!element;
+      setHasHistoricalProgress(exists);
+      // If element found, log for debugging
+      if (exists) {
+        console.log('Historical Progress section detected in drawer');
+      }
     };
     
     checkRecommendationScore();
@@ -87,20 +92,25 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
     checkHistoricalProgress();
     
     // Check periodically in case sections are added/removed or expanded/collapsed dynamically
+    // Use shorter interval for more responsive detection
     const interval = setInterval(() => {
       checkRecommendationScore();
       checkResponseConcentrationExpanded();
       checkHistoricalProgress();
-    }, 500);
+    }, 300);
     
-    // Also check after a short delay to catch sections that render after initial mount
-    const timeout = setTimeout(() => {
-      checkHistoricalProgress();
-    }, 1000);
+    // Check multiple times with increasing delays to catch late-rendering sections (especially demo data)
+    const timeouts = [
+      setTimeout(() => checkHistoricalProgress(), 500),
+      setTimeout(() => checkHistoricalProgress(), 1000),
+      setTimeout(() => checkHistoricalProgress(), 2000),
+      setTimeout(() => checkHistoricalProgress(), 3000),
+      setTimeout(() => checkHistoricalProgress(), 5000)
+    ];
     
     return () => {
       clearInterval(interval);
-      clearTimeout(timeout);
+      timeouts.forEach(timeout => clearTimeout(timeout));
     };
   }, []);
   

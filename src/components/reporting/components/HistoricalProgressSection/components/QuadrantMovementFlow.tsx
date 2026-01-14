@@ -175,7 +175,7 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
               const customerData = isExpanded ? getCustomerDataForMovement(movement) : [];
               
               return (
-                <div key={index} className="movement-item">
+                <div key={index} className="movement-item" style={{ marginBottom: '16px' }}>
                   <div 
                     className="movement-item-header"
                     style={{ 
@@ -214,6 +214,7 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
                       padding: '16px',
                       backgroundColor: '#f9fafb',
                       borderTop: '1px solid #e5e7eb',
+                      marginTop: '8px',
                       overflowX: 'auto'
                     }}>
                       <table style={{ 
