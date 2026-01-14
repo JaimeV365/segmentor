@@ -300,11 +300,13 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                 name="Satisfaction (Average)"
                 isAnimationActive={false}
                 activeDot={{ 
-                  r: 6,
+                  r: 8,
                   style: { cursor: 'pointer', pointerEvents: 'all' },
                   onClick: (e: any, payload: any) => {
+                    console.log('[TrendChart] activeDot clicked for satisfaction:', { payload, e });
                     e?.stopPropagation();
                     const index = customerLinesData.findIndex(d => d.date === payload.date);
+                    console.log('[TrendChart] Found index for satisfaction:', index);
                     if (index >= 0) {
                       handlePointClick(payload, index, 'satisfaction', e);
                     }
@@ -322,11 +324,13 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                 name="Loyalty (Average)"
                 isAnimationActive={false}
                 activeDot={{ 
-                  r: 6,
+                  r: 8,
                   style: { cursor: 'pointer', pointerEvents: 'all' },
                   onClick: (e: any, payload: any) => {
+                    console.log('[TrendChart] activeDot clicked for loyalty:', { payload, e });
                     e?.stopPropagation();
                     const index = customerLinesData.findIndex(d => d.date === payload.date);
+                    console.log('[TrendChart] Found index for loyalty:', index);
                     if (index >= 0) {
                       handlePointClick(payload, index, 'loyalty', e);
                     }
@@ -348,9 +352,10 @@ export const TrendChart: React.FC<TrendChartProps> = ({
         <ProximityPointInfoBox
           points={clickedPoint.points}
           position={clickedPoint.position}
-          quadrant=""
+          quadrant="loyalists"
           onClose={() => setClickedPoint(null)}
           context="distribution"
+          customTitle={`Customers on ${clickedPoint.date} (${clickedPoint.metric}: ${clickedPoint.value.toFixed(2)})`}
         />
       )}
     </>
