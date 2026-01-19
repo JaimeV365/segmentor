@@ -361,6 +361,24 @@
   overflow: visible !important;
 }
 
+/* Hard-lock quadrant placement: never change positions (matches SVG overlay geometry) */
+.movement-quadrant-grid .draggable-quadrant.hostages {
+  grid-column: 1;
+  grid-row: 1;
+}
+.movement-quadrant-grid .draggable-quadrant.loyalists {
+  grid-column: 2;
+  grid-row: 1;
+}
+.movement-quadrant-grid .draggable-quadrant.defectors {
+  grid-column: 1;
+  grid-row: 2;
+}
+.movement-quadrant-grid .draggable-quadrant.mercenaries {
+  grid-column: 2;
+  grid-row: 2;
+}
+
 .movement-quadrant-grid .draggable-quadrant.loyalists {
   background-color: rgba(76, 175, 80, 0.1);
   border: 1px solid rgba(76, 175, 80, 0.2);

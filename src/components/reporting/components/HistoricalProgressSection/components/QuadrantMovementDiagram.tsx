@@ -50,6 +50,20 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
   data,
   isClassicModel = true
 }) => {
+  type MainQuadrantType = 'hostages' | 'loyalists' | 'defectors' | 'mercenaries';
+  type MergeTarget = 'none' | MainQuadrantType;
+  type MergeTargets = {
+    apostles: MergeTarget;
+    near_apostles: MergeTarget;
+    neutral: MergeTarget;
+    terrorists: MergeTarget;
+  };
+
+  const MAIN_QUADRANTS: MainQuadrantType[] = useMemo(
+    () => ['hostages', 'loyalists', 'defectors', 'mercenaries'],
+    []
+  );
+
   const [clickedMovement, setClickedMovement] = useState<{
     points: DataPoint[];
     position: { x: number; y: number };
@@ -59,102 +73,83 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
   const [showControlsPanel, setShowControlsPanel] = useState(false);
   const [showPositive, setShowPositive] = useState(true);
   const [showNegative, setShowNegative] = useState(true);
-  const [showNeutral, setShowNeutral] = useState(true);
-  const [includeApostles, setIncludeApostles] = useState(false);
-  const [includeNearApostles, setIncludeNearApostles] = useState(false);
-  const [includeNeutral, setIncludeNeutral] = useState(false);
-  const [includeTerrorists, setIncludeTerrorists] = useState(false);
-  const [groupTerroristsWithDefectors, setGroupTerroristsWithDefectors] = useState(true);
-  const [showInDiagram, setShowInDiagram] = useState({
-    apostles: false,
-    nearApostles: false,
-    neutral: false,
-    terrorists: false
+  const [mergeTargets, setMergeTargets] = useState<MergeTargets>({
+    apostles: 'none',
+    near_apostles: 'none',
+    neutral: 'none',
+    terrorists: 'none'
   });
   const settingsButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Quadrant hierarchy for determining positive/negative movements
-  const quadrantHierarchy: Record<QuadrantType, number> = {
-    'apostles': 8,
-    'near_apostles': 7,
-    'loyalists': 6,
-    'mercenaries': 5,
-    'hostages': 4,
-    'neutral': 3,
-    'defectors': 2,
-    'terrorists': 0
+  // Movement direction is calculated after merging into the 4 main quadrants.
+  // Layout is fixed: Hostages (TL), Loyalists (TR), Defectors (BL), Mercenaries (BR).
+  const mainQuadrantHierarchy: Record<MainQuadrantType, number> = {
+    'defectors': 1,
+    'hostages': 2,
+    'mercenaries': 3,
+    'loyalists': 4
   };
 
   // Determine if a movement is positive, negative, or neutral
-  const getMovementType = (from: QuadrantType, to: QuadrantType): 'positive' | 'negative' | 'neutral' => {
-    const fromRank = quadrantHierarchy[from] || 0;
-    const toRank = quadrantHierarchy[to] || 0;
+  const getMovementType = (from: MainQuadrantType, to: MainQuadrantType): 'positive' | 'negative' | 'neutral' => {
+    const fromRank = mainQuadrantHierarchy[from] || 0;
+    const toRank = mainQuadrantHierarchy[to] || 0;
     if (toRank > fromRank) return 'positive';
     if (toRank < fromRank) return 'negative';
     return 'neutral';
   };
 
-  // Filter movements based on user preferences
-  const filteredMovements = useMemo(() => {
-    let movements = movementStats.movements;
+  // Movements shown in the diagram:
+  // - Always between the 4 main quadrants
+  // - Extra quadrants can be merged into one of the 4 for display (counts/customers merge)
+  // - Layout/arrow geometry never changes
+  const displayMovements = useMemo((): QuadrantMovement[] => {
+    const mapToMainQuadrant = (q: QuadrantType): MainQuadrantType | null => {
+      if (q === 'hostages' || q === 'loyalists' || q === 'defectors' || q === 'mercenaries') {
+        return q;
+      }
+      if (q === 'apostles') return mergeTargets.apostles === 'none' ? null : mergeTargets.apostles;
+      if (q === 'near_apostles') return mergeTargets.near_apostles === 'none' ? null : mergeTargets.near_apostles;
+      if (q === 'neutral') return mergeTargets.neutral === 'none' ? null : mergeTargets.neutral;
+      if (q === 'terrorists') return mergeTargets.terrorists === 'none' ? null : mergeTargets.terrorists;
+      return null;
+    };
 
-    // Filter by movement type (positive/negative/neutral)
+    // First map movements into the 4-quadrant view (dropping anything not mapped).
+    const mapped: QuadrantMovement[] = [];
+    movementStats.movements.forEach(m => {
+      const from = mapToMainQuadrant(m.from);
+      const to = mapToMainQuadrant(m.to);
+      if (!from || !to) return;
+      // If a movement collapses into the same display quadrant after merging, it doesn't appear in the diagram.
+      if (from === to) return;
+      mapped.push({ ...m, from, to });
+    });
+
+    // Merge movements that now share the same display from/to.
+    const merged: Record<string, QuadrantMovement> = {};
+    mapped.forEach(m => {
+      const key = `${m.from}-${m.to}`;
+      if (merged[key]) {
+        merged[key].count += m.count;
+        merged[key].customers.push(...m.customers);
+      } else {
+        merged[key] = { ...m, customers: [...m.customers] };
+      }
+    });
+
+    // Apply movement type filters (positive/negative).
+    let movements = Object.values(merged);
     movements = movements.filter(m => {
-      const movementType = getMovementType(m.from, m.to);
+      const movementType = getMovementType(m.from as MainQuadrantType, m.to as MainQuadrantType);
       if (movementType === 'positive' && !showPositive) return false;
       if (movementType === 'negative' && !showNegative) return false;
-      if (movementType === 'neutral' && !showNeutral) return false;
       return true;
     });
 
-    // Filter by quadrant inclusion
-    const allowedQuadrants: QuadrantType[] = ['loyalists', 'mercenaries', 'hostages', 'defectors'];
-    if (includeApostles) allowedQuadrants.push('apostles');
-    if (includeNearApostles) allowedQuadrants.push('near_apostles');
-    if (includeNeutral) allowedQuadrants.push('neutral');
-    if (includeTerrorists) {
-      if (groupTerroristsWithDefectors) {
-        // Group terrorists with defectors - treat terrorists as defectors for display
-        movements = movements.map(m => ({
-          ...m,
-          from: m.from === 'terrorists' ? 'defectors' : m.from,
-          to: m.to === 'terrorists' ? 'defectors' : m.to
-        }));
-        // Merge movements that now have same from/to after grouping
-        const merged: Record<string, QuadrantMovement> = {};
-        movements.forEach(m => {
-          const key = `${m.from}-${m.to}`;
-          if (merged[key]) {
-            merged[key].count += m.count;
-            merged[key].customers.push(...m.customers);
-          } else {
-            merged[key] = { ...m, customers: [...m.customers] };
-          }
-        });
-        movements = Object.values(merged);
-      } else {
-        allowedQuadrants.push('terrorists');
-      }
-    }
-
-    // Filter to only show movements between allowed quadrants
-    movements = movements.filter(m => 
-      allowedQuadrants.includes(m.from) && allowedQuadrants.includes(m.to)
-    );
-
     return movements;
-  }, [
-    movementStats.movements,
-    showPositive,
-    showNegative,
-    showNeutral,
-    includeApostles,
-    includeNearApostles,
-    includeNeutral,
-    includeTerrorists,
-    groupTerroristsWithDefectors
-  ]);
+  }, [movementStats.movements, mergeTargets, showPositive, showNegative]);
 
   // Close controls panel when clicking outside
   useEffect(() => {
@@ -176,28 +171,13 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     };
   }, [showControlsPanel]);
 
-  // Determine which quadrants to show in the diagram
-  const diagramQuadrants: QuadrantType[] = useMemo(() => {
-    const quadrants: QuadrantType[] = ['loyalists', 'mercenaries', 'hostages', 'defectors'];
-    if (showInDiagram.apostles) quadrants.push('apostles');
-    if (showInDiagram.nearApostles) quadrants.push('near_apostles');
-    if (showInDiagram.neutral) quadrants.push('neutral');
-    if (showInDiagram.terrorists && !groupTerroristsWithDefectors) quadrants.push('terrorists');
-    return quadrants;
-  }, [showInDiagram, groupTerroristsWithDefectors]);
-
-  // Filter to only show movements between quadrants included in diagram
-  const mainMovements = filteredMovements.filter(m => 
-    diagramQuadrants.includes(m.from) && diagramQuadrants.includes(m.to)
-  );
+  // Diagram quadrants are always fixed in this exact 2x2 layout (see CSS placement rules).
+  // Do not change this order: Hostages (TL), Loyalists (TR), Defectors (BL), Mercenaries (BR).
+  const diagramQuadrants: QuadrantType[] = MAIN_QUADRANTS;
 
   const diagramInfoText = useMemo(() => {
     const base =
       'Numbers in circles indicate customer count moving from source to destination quadrant. Click on a circle to see the customers.';
-
-    if (diagramQuadrants.length !== 4) {
-      return base;
-    }
 
     const apostlesLabel = isClassicModel ? 'Apostles' : 'Advocates';
     const nearApostlesLabel = isClassicModel ? 'Near-Apostles' : 'Near-Advocates';
@@ -205,21 +185,21 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
 
     return (
       base +
-      `\n\nNote: This diagram shows movements between the 4 main quadrants by default. Movements involving ${apostlesLabel}, ${nearApostlesLabel}, Neutral, or ${terroristsLabel} are counted in the statistics above but not displayed here. Use the filter menu (☰) to include additional quadrants in the diagram.`
+      `\n\nNote: This diagram always keeps the same 4-quadrant layout. Movements involving ${apostlesLabel}, ${nearApostlesLabel}, Neutral, or ${terroristsLabel} can be merged into one of the 4 quadrants for display using the filter menu (☰).`
     );
-  }, [diagramQuadrants.length, isClassicModel]);
+  }, [isClassicModel]);
 
   // Group movements by source quadrant (must be before early return)
   const movementsBySource = useMemo(() => {
     const grouped: Record<string, Array<{ to: QuadrantType; count: number }>> = {};
-    mainMovements.forEach(movement => {
+    displayMovements.forEach(movement => {
       if (!grouped[movement.from]) {
         grouped[movement.from] = [];
       }
       grouped[movement.from].push({ to: movement.to, count: movement.count });
     });
     return grouped;
-  }, [mainMovements]);
+  }, [displayMovements]);
 
   // Positioning matrix for circles based on source and destination
   // Format: { source: { destination: { x, y } } }
@@ -390,7 +370,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
 
   // Helper function to get DataPoints for a specific movement
   const getDataPointsForMovement = (fromQuadrant: string, toQuadrant: string): DataPoint[] => {
-    const movement = filteredMovements.find(
+    const movement = displayMovements.find(
       m => m.from === fromQuadrant && m.to === toQuadrant
     );
     if (!movement) {
@@ -486,7 +466,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     return items;
   }, [movementsBySource]);
 
-  if (mainMovements.length === 0) {
+  if (displayMovements.length === 0) {
     return null;
   }
 
@@ -589,119 +569,85 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                       />
                       <span style={{ fontSize: '13px', color: '#374151' }}>Negative Movements</span>
                     </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={showNeutral}
-                        onChange={(e) => setShowNeutral(e.target.checked)}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <span style={{ fontSize: '13px', color: '#374151' }}>No Change</span>
-                    </label>
-                  </div>
-                  
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
-                      Include Quadrants
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={includeApostles}
-                        onChange={(e) => setIncludeApostles(e.target.checked)}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <span style={{ fontSize: '13px', color: '#374151' }}>{isClassicModel ? 'Apostles' : 'Advocates'}</span>
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={includeNearApostles}
-                        onChange={(e) => setIncludeNearApostles(e.target.checked)}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <span style={{ fontSize: '13px', color: '#374151' }}>{isClassicModel ? 'Near-Apostles' : 'Near-Advocates'}</span>
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={includeNeutral}
-                        onChange={(e) => setIncludeNeutral(e.target.checked)}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <span style={{ fontSize: '13px', color: '#374151' }}>Neutral</span>
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={includeTerrorists}
-                        onChange={(e) => setIncludeTerrorists(e.target.checked)}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <span style={{ fontSize: '13px', color: '#374151' }}>{isClassicModel ? 'Terrorists' : 'Trolls'}</span>
-                    </label>
-                    {includeTerrorists && (
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '24px', marginTop: '4px', cursor: 'pointer' }}>
-                        <input
-                          type="checkbox"
-                          checked={groupTerroristsWithDefectors}
-                          onChange={(e) => setGroupTerroristsWithDefectors(e.target.checked)}
-                          style={{ cursor: 'pointer' }}
-                        />
-                        <span style={{ fontSize: '12px', color: '#6b7280' }}>Group with Defectors</span>
-                      </label>
-                    )}
                   </div>
                   
                   <div style={{ marginBottom: '20px', marginTop: '24px', paddingTop: '20px', borderTop: '1px solid #e5e7eb' }}>
                     <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
-                      Show in Diagram
+                      Merge additional quadrants into diagram
                     </label>
                     <p style={{ fontSize: '11px', color: '#6b7280', marginBottom: '12px' }}>
-                      Select which quadrants to display in the movement flow diagram (default: main 4 quadrants only)
+                      The Movement Flow Visualization always stays in a fixed 2×2 layout. Use these settings to count extra quadrants inside one of the 4 main quadrants (affects only the diagram counts/arrows).
                     </p>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={showInDiagram.apostles}
-                        onChange={(e) => setShowInDiagram(prev => ({ ...prev, apostles: e.target.checked }))}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <span style={{ fontSize: '13px', color: '#374151' }}>{isClassicModel ? 'Apostles' : 'Advocates'}</span>
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={showInDiagram.nearApostles}
-                        onChange={(e) => setShowInDiagram(prev => ({ ...prev, nearApostles: e.target.checked }))}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <span style={{ fontSize: '13px', color: '#374151' }}>{isClassicModel ? 'Near-Apostles' : 'Near-Advocates'}</span>
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={showInDiagram.neutral}
-                        onChange={(e) => setShowInDiagram(prev => ({ ...prev, neutral: e.target.checked }))}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <span style={{ fontSize: '13px', color: '#374151' }}>Neutral</span>
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={showInDiagram.terrorists}
-                        onChange={(e) => setShowInDiagram(prev => ({ ...prev, terrorists: e.target.checked }))}
-                        style={{ cursor: 'pointer' }}
-                        disabled={includeTerrorists && groupTerroristsWithDefectors}
-                      />
-                      <span style={{ fontSize: '13px', color: showInDiagram.terrorists || (includeTerrorists && groupTerroristsWithDefectors) ? '#374151' : '#9ca3af' }}>
-                        {isClassicModel ? 'Terrorists' : 'Trolls'}
-                      </span>
-                      {includeTerrorists && groupTerroristsWithDefectors && (
-                        <span style={{ fontSize: '11px', color: '#6b7280', marginLeft: '4px' }}>(grouped with Defectors)</span>
-                      )}
-                    </label>
+
+                    <div style={{ display: 'grid', gap: '10px' }}>
+                      <div style={{ display: 'grid', gap: '6px' }}>
+                        <span style={{ fontSize: '13px', color: '#374151', fontWeight: 500 }}>
+                          {isClassicModel ? 'Apostles' : 'Advocates'}
+                        </span>
+                        <select
+                          value={mergeTargets.apostles}
+                          onChange={(e) => setMergeTargets(prev => ({ ...prev, apostles: e.target.value as MergeTarget }))}
+                          style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid #e5e7eb' }}
+                        >
+                          <option value="none">Not included</option>
+                          <option value="hostages">Hostages</option>
+                          <option value="loyalists">Loyalists</option>
+                          <option value="defectors">Defectors</option>
+                          <option value="mercenaries">Mercenaries</option>
+                        </select>
+                      </div>
+
+                      <div style={{ display: 'grid', gap: '6px' }}>
+                        <span style={{ fontSize: '13px', color: '#374151', fontWeight: 500 }}>
+                          {isClassicModel ? 'Near-Apostles' : 'Near-Advocates'}
+                        </span>
+                        <select
+                          value={mergeTargets.near_apostles}
+                          onChange={(e) => setMergeTargets(prev => ({ ...prev, near_apostles: e.target.value as MergeTarget }))}
+                          style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid #e5e7eb' }}
+                        >
+                          <option value="none">Not included</option>
+                          <option value="hostages">Hostages</option>
+                          <option value="loyalists">Loyalists</option>
+                          <option value="defectors">Defectors</option>
+                          <option value="mercenaries">Mercenaries</option>
+                        </select>
+                      </div>
+
+                      <div style={{ display: 'grid', gap: '6px' }}>
+                        <span style={{ fontSize: '13px', color: '#374151', fontWeight: 500 }}>
+                          Neutral
+                        </span>
+                        <select
+                          value={mergeTargets.neutral}
+                          onChange={(e) => setMergeTargets(prev => ({ ...prev, neutral: e.target.value as MergeTarget }))}
+                          style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid #e5e7eb' }}
+                        >
+                          <option value="none">Not included</option>
+                          <option value="hostages">Hostages</option>
+                          <option value="loyalists">Loyalists</option>
+                          <option value="defectors">Defectors</option>
+                          <option value="mercenaries">Mercenaries</option>
+                        </select>
+                      </div>
+
+                      <div style={{ display: 'grid', gap: '6px' }}>
+                        <span style={{ fontSize: '13px', color: '#374151', fontWeight: 500 }}>
+                          {isClassicModel ? 'Terrorists' : 'Trolls'}
+                        </span>
+                        <select
+                          value={mergeTargets.terrorists}
+                          onChange={(e) => setMergeTargets(prev => ({ ...prev, terrorists: e.target.value as MergeTarget }))}
+                          style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid #e5e7eb' }}
+                        >
+                          <option value="none">Not included</option>
+                          <option value="hostages">Hostages</option>
+                          <option value="loyalists">Loyalists</option>
+                          <option value="defectors">Defectors</option>
+                          <option value="mercenaries">Mercenaries</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -711,17 +657,11 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                   onClick={() => {
                     setShowPositive(true);
                     setShowNegative(true);
-                    setShowNeutral(true);
-                    setIncludeApostles(false);
-                    setIncludeNearApostles(false);
-                    setIncludeNeutral(false);
-                    setIncludeTerrorists(false);
-                    setGroupTerroristsWithDefectors(true);
-                    setShowInDiagram({
-                      apostles: false,
-                      nearApostles: false,
-                      neutral: false,
-                      terrorists: false
+                    setMergeTargets({
+                      apostles: 'none',
+                      near_apostles: 'none',
+                      neutral: 'none',
+                      terrorists: 'none'
                     });
                   }}
                 >
