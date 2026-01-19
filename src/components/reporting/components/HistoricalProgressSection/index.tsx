@@ -15,6 +15,7 @@ import { TrendChart } from './components/TrendChart';
 import { QuadrantMovementFlow } from './components/QuadrantMovementFlow';
 import { ForecastVisualization } from './components/ForecastVisualization';
 import { Filter, X, Link2, Link2Off } from 'lucide-react';
+import { ExportButton } from '../../../common/ExportButton';
 import './HistoricalProgressSection.css';
 
 interface HistoricalProgressSectionProps {
@@ -201,6 +202,32 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
           <h3 className="report-title">Historical Progress</h3>
           <div className="historical-progress-header-controls">
+            <ExportButton
+              targetSelector={'.report-card[data-section-id="report-historical-progress"] .report-content'}
+              filenamePrefix="segmentor-app_historical_progress"
+              label="Export"
+              padding={48}
+              iconOnly
+              buttonClassName="historical-progress-filter-button"
+              icon={
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-download-icon lucide-download"
+                >
+                  <path d="M12 15V3" />
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <path d="m7 10 5 5 5-5" />
+                </svg>
+              }
+            />
             <button
               ref={filterButtonRef}
               className={`historical-progress-filter-button ${showFilterPanel ? 'active' : ''} ${filterCount > 0 ? 'has-filters' : ''}`}

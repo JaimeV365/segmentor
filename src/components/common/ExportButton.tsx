@@ -9,6 +9,7 @@ interface ExportButtonProps {
   label?: string;
   padding?: number; // extra padding around target (export-time only)
   background?: string; // wrapper background color
+  filenamePrefix?: string; // base filename without extension (timestamp will be appended)
   iconOnly?: boolean;
   icon?: React.ReactNode;
   buttonStyle?: React.CSSProperties; // allow host to harmonize with surrounding controls
@@ -16,7 +17,7 @@ interface ExportButtonProps {
   buttonClassName?: string; // allow host to match exact button class
 }
 
-export const ExportButton: React.FC<ExportButtonProps> = ({ targetSelector, label = 'Export', padding = 92, background = '#ffffff', iconOnly = false, icon, buttonStyle, onOpenOptions, buttonClassName }) => {
+export const ExportButton: React.FC<ExportButtonProps> = ({ targetSelector, label = 'Export', padding = 92, background = '#ffffff', filenamePrefix = 'segmentor-app_main_chart', iconOnly = false, icon, buttonStyle, onOpenOptions, buttonClassName }) => {
   const [open, setOpen] = React.useState(false);
   const [format, setFormat] = React.useState<ExportFormat>('png');
   const scale = 2; // fixed crisp default
@@ -76,7 +77,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ targetSelector, labe
           const MM = String(d.getMinutes()).padStart(2, '0');
           const timestamp = `${dd}-${mm}-${yyyy}-${HH}-${MM}`;
           link.href = url;
-          link.download = `segmentor-app_main_chart_${timestamp}.png`;
+          link.download = `${filenamePrefix}_${timestamp}.png`;
           document.body.appendChild(link);
           link.click();
           setTimeout(() => {
@@ -100,7 +101,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ targetSelector, labe
         const HH = String(d.getHours()).padStart(2, '0');
         const MM = String(d.getMinutes()).padStart(2, '0');
         const timestamp = `${dd}-${mm}-${yyyy}-${HH}-${MM}`;
-        pdf.save(`segmentor-app_main_chart_${timestamp}.pdf`);
+        pdf.save(`${filenamePrefix}_${timestamp}.pdf`);
       }
     } catch (err) {
       // eslint-disable-next-line no-console
