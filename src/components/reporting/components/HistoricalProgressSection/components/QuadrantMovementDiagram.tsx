@@ -543,6 +543,10 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
           <MenuIcon size={22} />
         </button>
       </div>
+
+      <div style={{ marginTop: '-0.25rem', marginBottom: '1rem' }}>
+        <InfoRibbon text={diagramInfoText} />
+      </div>
       
       {/* Controls Panel */}
       {showControlsPanel && (
@@ -841,9 +845,6 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
             })}
           </svg>
         </div>
-      </div>
-      <div style={{ marginTop: '0.75rem' }}>
-        <InfoRibbon text={diagramInfoText} />
       </div>
       
       {/* Customer list modal */}

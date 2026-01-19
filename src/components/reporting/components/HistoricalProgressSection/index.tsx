@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import { DataPoint, ScaleFormat } from '@/types/base';
-import { hasHistoricalData, groupByCustomer } from './utils/historicalDataUtils';
+import { hasHistoricalData, groupByCustomer, parseDate } from './utils/historicalDataUtils';
 import { useQuadrantAssignment } from '../../../visualization/context/QuadrantAssignmentContext';
 import { useFilterContextSafe } from '../../../visualization/context/FilterContext';
 import { useNotification } from '../../../data-entry/hooks/useNotification';
@@ -15,7 +15,6 @@ import { TrendChart } from './components/TrendChart';
 import { QuadrantMovementFlow } from './components/QuadrantMovementFlow';
 import { ForecastVisualization } from './components/ForecastVisualization';
 import { Filter, X, Link2, Link2Off } from 'lucide-react';
-import { ExportButton } from '../../../common/ExportButton';
 import './HistoricalProgressSection.css';
 
 interface HistoricalProgressSectionProps {
@@ -167,6 +166,133 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
   const timelines = useMemo(() => {
     return groupByCustomer(effectiveData);
   }, [effectiveData]);
+
+  const exportHistoricalProgressCsv = useCallback(() => {
+    try {
+      if (!timelines || timelines.length === 0) {
+        showNotification({
+          title: 'Nothing to export',
+          message: 'No customers with 2+ dated records are available in the current filter selection.',
+          type: 'warning'
+        });
+        return;
+      }
+
+      const escapeCsv = (value: unknown) => {
+        const str = value === null || value === undefined ? '' : String(value);
+        const needsQuotes = /[",\n\r]/.test(str);
+        const escaped = str.replace(/"/g, '""');
+        return needsQuotes ? `"${escaped}"` : escaped;
+      };
+
+      const sortDates = (a: string, b: string) => {
+        const da = parseDate(a, dateFormat);
+        const db = parseDate(b, dateFormat);
+        if (da && db) return da.getTime() - db.getTime();
+        if (da && !db) return -1;
+        if (!da && db) return 1;
+        return a.localeCompare(b);
+      };
+
+      const perCustomer = timelines.map(timeline => {
+        // Use last point for name/group (best guess of "current")
+        const lastPoint = timeline.dataPoints[timeline.dataPoints.length - 1];
+        const displayEmail =
+          timeline.identifierType === 'email'
+            ? (timeline.dataPoints.find(p => p.email)?.email?.trim() || timeline.identifier)
+            : '';
+        const displayId = timeline.identifierType === 'id' ? timeline.identifier : (lastPoint?.id || '');
+
+        // Map dates -> point (last wins)
+        const pointByDate = new Map<string, DataPoint>();
+        timeline.dataPoints.forEach(p => {
+          if (!p.date) return;
+          pointByDate.set(p.date.trim(), p);
+        });
+
+        const sortedDates = Array.from(pointByDate.keys()).sort(sortDates);
+        return {
+          timeline,
+          displayEmail,
+          displayId,
+          name: lastPoint?.name || '',
+          group: lastPoint?.group || '',
+          sortedDates,
+          pointByDate
+        };
+      });
+
+      const maxDates = perCustomer.reduce((max, row) => Math.max(max, row.sortedDates.length), 0);
+
+      const headers: string[] = ['Identifier Type', 'Email', 'ID', 'Name', 'Group'];
+      for (let i = 1; i <= maxDates; i += 1) {
+        headers.push(`Date ${i}`, `Satisfaction ${i}`, `Loyalty ${i}`);
+      }
+
+      const lines: string[] = [];
+      lines.push(headers.map(escapeCsv).join(','));
+
+      perCustomer.forEach(row => {
+        const cells: string[] = [
+          row.timeline.identifierType,
+          row.displayEmail,
+          row.displayId,
+          row.name,
+          row.group
+        ];
+
+        for (let i = 0; i < maxDates; i += 1) {
+          const date = row.sortedDates[i];
+          if (!date) {
+            cells.push('', '', '');
+            continue;
+          }
+          const point = row.pointByDate.get(date);
+          cells.push(
+            date,
+            point ? point.satisfaction : '',
+            point ? point.loyalty : ''
+          );
+        }
+
+        lines.push(cells.map(escapeCsv).join(','));
+      });
+
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, '0');
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const yyyy = now.getFullYear();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      const filename = `segmentor-app_Historical_Progress_data_${dd}-${mm}-${yyyy}-${hh}-${min}.csv`;
+
+      const csv = lines.join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+
+      showNotification({
+        title: 'Export started',
+        message: `Downloading ${filename}`,
+        type: 'success'
+      });
+    } catch (error) {
+      console.error('[HistoricalProgress] CSV export failed:', error);
+      showNotification({
+        title: 'Export failed',
+        message: 'Unable to generate the Historical Progress CSV export.',
+        type: 'error'
+      });
+    }
+  }, [dateFormat, showNotification, timelines]);
   
   // Calculate trend data
   const trendData = useMemo(() => {
@@ -202,32 +328,34 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
           <h3 className="report-title">Historical Progress</h3>
           <div className="historical-progress-header-controls">
-            <ExportButton
-              targetSelector={'.report-card[data-section-id="report-historical-progress"] .report-content'}
-              filenamePrefix="segmentor-app_historical_progress"
-              label="Export"
-              padding={48}
-              iconOnly
-              buttonClassName="historical-progress-filter-button"
-              icon={
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-download-icon lucide-download"
-                >
-                  <path d="M12 15V3" />
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <path d="m7 10 5 5 5-5" />
-                </svg>
-              }
-            />
+            <button
+              type="button"
+              className="historical-progress-filter-button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                exportHistoricalProgressCsv();
+              }}
+              title="Export Historical Progress CSV"
+              aria-label="Export Historical Progress CSV"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-download-icon lucide-download"
+              >
+                <path d="M12 15V3" />
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <path d="m7 10 5 5 5-5" />
+              </svg>
+            </button>
             <button
               ref={filterButtonRef}
               className={`historical-progress-filter-button ${showFilterPanel ? 'active' : ''} ${filterCount > 0 ? 'has-filters' : ''}`}
