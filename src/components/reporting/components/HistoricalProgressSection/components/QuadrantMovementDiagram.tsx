@@ -51,13 +51,6 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
   isClassicModel = true
 }) => {
   type MainQuadrantType = 'hostages' | 'loyalists' | 'defectors' | 'mercenaries';
-  type MergeTarget = 'none' | MainQuadrantType;
-  type MergeTargets = {
-    apostles: MergeTarget;
-    near_apostles: MergeTarget;
-    neutral: MergeTarget;
-    terrorists: MergeTarget;
-  };
 
   const MAIN_QUADRANTS: MainQuadrantType[] = useMemo(
     () => ['hostages', 'loyalists', 'defectors', 'mercenaries'],
@@ -73,12 +66,9 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
   const [showControlsPanel, setShowControlsPanel] = useState(false);
   const [showPositive, setShowPositive] = useState(true);
   const [showNegative, setShowNegative] = useState(true);
-  const [mergeTargets, setMergeTargets] = useState<MergeTargets>({
-    apostles: 'none',
-    near_apostles: 'none',
-    neutral: 'none',
-    terrorists: 'none'
-  });
+  const [mergeAdvocatesIntoLoyalists, setMergeAdvocatesIntoLoyalists] = useState(false);
+  const [mergeNearAdvocatesIntoLoyalists, setMergeNearAdvocatesIntoLoyalists] = useState(false);
+  const [mergeTrollsIntoDefectors, setMergeTrollsIntoDefectors] = useState(false);
   const settingsButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -109,10 +99,14 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
       if (q === 'hostages' || q === 'loyalists' || q === 'defectors' || q === 'mercenaries') {
         return q;
       }
-      if (q === 'apostles') return mergeTargets.apostles === 'none' ? null : mergeTargets.apostles;
-      if (q === 'near_apostles') return mergeTargets.near_apostles === 'none' ? null : mergeTargets.near_apostles;
-      if (q === 'neutral') return mergeTargets.neutral === 'none' ? null : mergeTargets.neutral;
-      if (q === 'terrorists') return mergeTargets.terrorists === 'none' ? null : mergeTargets.terrorists;
+      // Simplified merge rules:
+      // - Advocates/Apostles and Near-Advocates/Near-Apostles can only be merged into Loyalists
+      // - Trolls/Terrorists can only be merged into Defectors
+      // - Neutral is not merged into the 4-quadrant diagram
+      if (q === 'apostles') return mergeAdvocatesIntoLoyalists ? 'loyalists' : null;
+      if (q === 'near_apostles') return mergeNearAdvocatesIntoLoyalists ? 'loyalists' : null;
+      if (q === 'terrorists') return mergeTrollsIntoDefectors ? 'defectors' : null;
+      if (q === 'neutral') return null;
       return null;
     };
 
@@ -149,7 +143,14 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     });
 
     return movements;
-  }, [movementStats.movements, mergeTargets, showPositive, showNegative]);
+  }, [
+    movementStats.movements,
+    mergeAdvocatesIntoLoyalists,
+    mergeNearAdvocatesIntoLoyalists,
+    mergeTrollsIntoDefectors,
+    showPositive,
+    showNegative
+  ]);
 
   // Close controls panel when clicking outside
   useEffect(() => {
@@ -185,7 +186,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
 
     return (
       base +
-      `\n\nNote: This diagram always keeps the same 4-quadrant layout. Movements involving ${apostlesLabel}, ${nearApostlesLabel}, Neutral, or ${terroristsLabel} can be merged into one of the 4 quadrants for display using the filter menu (☰).`
+      `\n\nNote: This diagram always keeps the same 4-quadrant layout. ${apostlesLabel} and ${nearApostlesLabel} can be merged into Loyalists, and ${terroristsLabel} can be merged into Defectors using the filter menu (☰).`
     );
   }, [isClassicModel]);
 
@@ -466,9 +467,15 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     return items;
   }, [movementsBySource]);
 
-  if (displayMovements.length === 0) {
-    return null;
-  }
+  const isMovementTypeFilterTooExclusive = !showPositive && !showNegative;
+  const hasMovementsToDisplay = displayMovements.length > 0;
+  const showDiagramEmptyState = isMovementTypeFilterTooExclusive || !hasMovementsToDisplay;
+  const emptyStateTitle = isMovementTypeFilterTooExclusive
+    ? 'Nothing to display'
+    : 'No movements match these filters';
+  const emptyStateMessage = isMovementTypeFilterTooExclusive
+    ? 'Your Movement Types selection is too exclusive. Use the filter menu (☰) to turn Positive and/or Negative movements back on.'
+    : 'Try adjusting Movement Types or the merge settings using the filter menu (☰).';
 
   // Quadrant colors for circles and arrows
   const QUADRANT_COLORS: Record<string, string> = {
@@ -576,77 +583,45 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                       Merge additional quadrants into diagram
                     </label>
                     <p style={{ fontSize: '11px', color: '#6b7280', marginBottom: '12px' }}>
-                      The Movement Flow Visualization always stays in a fixed 2×2 layout. Use these settings to count extra quadrants inside one of the 4 main quadrants (affects only the diagram counts/arrows).
+                      The Movement Flow Visualization always stays in a fixed 2×2 layout. Only Loyalists can include {isClassicModel ? 'Apostles' : 'Advocates'} and/or {isClassicModel ? 'Near-Apostles' : 'Near-Advocates'}, and only Defectors can include {isClassicModel ? 'Terrorists' : 'Trolls'}.
                     </p>
 
                     <div style={{ display: 'grid', gap: '10px' }}>
-                      <div style={{ display: 'grid', gap: '6px' }}>
-                        <span style={{ fontSize: '13px', color: '#374151', fontWeight: 500 }}>
-                          {isClassicModel ? 'Apostles' : 'Advocates'}
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={mergeAdvocatesIntoLoyalists}
+                          onChange={(e) => setMergeAdvocatesIntoLoyalists(e.target.checked)}
+                          style={{ cursor: 'pointer' }}
+                        />
+                        <span style={{ fontSize: '13px', color: '#374151' }}>
+                          Count {isClassicModel ? 'Apostles' : 'Advocates'} with Loyalists
                         </span>
-                        <select
-                          value={mergeTargets.apostles}
-                          onChange={(e) => setMergeTargets(prev => ({ ...prev, apostles: e.target.value as MergeTarget }))}
-                          style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid #e5e7eb' }}
-                        >
-                          <option value="none">Not included</option>
-                          <option value="hostages">Hostages</option>
-                          <option value="loyalists">Loyalists</option>
-                          <option value="defectors">Defectors</option>
-                          <option value="mercenaries">Mercenaries</option>
-                        </select>
-                      </div>
+                      </label>
 
-                      <div style={{ display: 'grid', gap: '6px' }}>
-                        <span style={{ fontSize: '13px', color: '#374151', fontWeight: 500 }}>
-                          {isClassicModel ? 'Near-Apostles' : 'Near-Advocates'}
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={mergeNearAdvocatesIntoLoyalists}
+                          onChange={(e) => setMergeNearAdvocatesIntoLoyalists(e.target.checked)}
+                          style={{ cursor: 'pointer' }}
+                        />
+                        <span style={{ fontSize: '13px', color: '#374151' }}>
+                          Count {isClassicModel ? 'Near-Apostles' : 'Near-Advocates'} with Loyalists
                         </span>
-                        <select
-                          value={mergeTargets.near_apostles}
-                          onChange={(e) => setMergeTargets(prev => ({ ...prev, near_apostles: e.target.value as MergeTarget }))}
-                          style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid #e5e7eb' }}
-                        >
-                          <option value="none">Not included</option>
-                          <option value="hostages">Hostages</option>
-                          <option value="loyalists">Loyalists</option>
-                          <option value="defectors">Defectors</option>
-                          <option value="mercenaries">Mercenaries</option>
-                        </select>
-                      </div>
+                      </label>
 
-                      <div style={{ display: 'grid', gap: '6px' }}>
-                        <span style={{ fontSize: '13px', color: '#374151', fontWeight: 500 }}>
-                          Neutral
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={mergeTrollsIntoDefectors}
+                          onChange={(e) => setMergeTrollsIntoDefectors(e.target.checked)}
+                          style={{ cursor: 'pointer' }}
+                        />
+                        <span style={{ fontSize: '13px', color: '#374151' }}>
+                          Count {isClassicModel ? 'Terrorists' : 'Trolls'} with Defectors
                         </span>
-                        <select
-                          value={mergeTargets.neutral}
-                          onChange={(e) => setMergeTargets(prev => ({ ...prev, neutral: e.target.value as MergeTarget }))}
-                          style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid #e5e7eb' }}
-                        >
-                          <option value="none">Not included</option>
-                          <option value="hostages">Hostages</option>
-                          <option value="loyalists">Loyalists</option>
-                          <option value="defectors">Defectors</option>
-                          <option value="mercenaries">Mercenaries</option>
-                        </select>
-                      </div>
-
-                      <div style={{ display: 'grid', gap: '6px' }}>
-                        <span style={{ fontSize: '13px', color: '#374151', fontWeight: 500 }}>
-                          {isClassicModel ? 'Terrorists' : 'Trolls'}
-                        </span>
-                        <select
-                          value={mergeTargets.terrorists}
-                          onChange={(e) => setMergeTargets(prev => ({ ...prev, terrorists: e.target.value as MergeTarget }))}
-                          style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid #e5e7eb' }}
-                        >
-                          <option value="none">Not included</option>
-                          <option value="hostages">Hostages</option>
-                          <option value="loyalists">Loyalists</option>
-                          <option value="defectors">Defectors</option>
-                          <option value="mercenaries">Mercenaries</option>
-                        </select>
-                      </div>
+                      </label>
                     </div>
                   </div>
                 </div>
@@ -657,12 +632,9 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                   onClick={() => {
                     setShowPositive(true);
                     setShowNegative(true);
-                    setMergeTargets({
-                      apostles: 'none',
-                      near_apostles: 'none',
-                      neutral: 'none',
-                      terrorists: 'none'
-                    });
+                    setMergeAdvocatesIntoLoyalists(false);
+                    setMergeNearAdvocatesIntoLoyalists(false);
+                    setMergeTrollsIntoDefectors(false);
                   }}
                 >
                   Reset to Default
@@ -674,7 +646,11 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
       )}
       
       <div className="movement-diagram-container">
-        <div className="movement-quadrant-grid">
+        <div style={{ position: 'relative', width: '100%', maxWidth: '500px' }}>
+        <div
+          className="movement-quadrant-grid"
+          style={showDiagramEmptyState ? { filter: 'blur(1.5px)', opacity: 0.55 } : undefined}
+        >
           {/* Render quadrants without individual SVGs */}
           {diagramQuadrants.map(quadrant => (
             <div
@@ -784,6 +760,41 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
               );
             })}
           </svg>
+        </div>
+
+        {showDiagramEmptyState && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '16px',
+              zIndex: 30,
+              pointerEvents: 'none'
+            }}
+          >
+            <div
+              style={{
+                background: 'rgba(255, 255, 255, 0.92)',
+                border: '1px solid #e5e7eb',
+                borderRadius: '12px',
+                padding: '12px 14px',
+                maxWidth: '380px',
+                textAlign: 'center',
+                boxShadow: '0 6px 18px rgba(0,0,0,0.08)'
+              }}
+            >
+              <div style={{ fontWeight: 700, color: '#111827', marginBottom: '6px' }}>
+                {emptyStateTitle}
+              </div>
+              <div style={{ fontSize: '12px', color: '#6b7280', lineHeight: 1.4 }}>
+                {emptyStateMessage}
+              </div>
+            </div>
+          </div>
+        )}
         </div>
       </div>
       
