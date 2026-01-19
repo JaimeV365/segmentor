@@ -233,7 +233,7 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
       lines.push(headers.map(escapeCsv).join(','));
 
       perCustomer.forEach(row => {
-        const cells: string[] = [
+        const cells: Array<string | number> = [
           row.timeline.identifierType,
           row.displayEmail,
           row.displayId,
