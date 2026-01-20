@@ -94,7 +94,7 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
   // - Always between the 4 main quadrants
   // - Extra quadrants can be merged into one of the 4 for display (counts/customers merge)
   // - Layout/arrow geometry never changes
-  const displayMovements = useMemo((): QuadrantMovement[] => {
+  const baseMovementsForDiagram = useMemo((): QuadrantMovement[] => {
     const mapToMainQuadrant = (q: QuadrantType): MainQuadrantType | null => {
       if (q === 'hostages' || q === 'loyalists' || q === 'defectors' || q === 'mercenaries') {
         return q;
@@ -148,9 +148,37 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     mergeAdvocatesIntoLoyalists,
     mergeNearAdvocatesIntoLoyalists,
     mergeTrollsIntoDefectors,
-    showPositive,
-    showNegative
   ]);
+
+  const availablePositiveInDiagram = useMemo(() => {
+    return baseMovementsForDiagram.some(m => getMovementType(m.from as MainQuadrantType, m.to as MainQuadrantType) === 'positive');
+  }, [baseMovementsForDiagram]);
+
+  const availableNegativeInDiagram = useMemo(() => {
+    return baseMovementsForDiagram.some(m => getMovementType(m.from as MainQuadrantType, m.to as MainQuadrantType) === 'negative');
+  }, [baseMovementsForDiagram]);
+
+  const displayMovements = useMemo((): QuadrantMovement[] => {
+    // Apply movement type filters (positive/negative).
+    return baseMovementsForDiagram.filter(m => {
+      const movementType = getMovementType(m.from as MainQuadrantType, m.to as MainQuadrantType);
+      if (movementType === 'positive' && !showPositive) return false;
+      if (movementType === 'negative' && !showNegative) return false;
+      return true;
+    });
+  }, [baseMovementsForDiagram, showPositive, showNegative]);
+
+  const hasAdvocatesToMerge = useMemo(() => {
+    return movementStats.movements.some(m => m.from === 'apostles' || m.to === 'apostles');
+  }, [movementStats.movements]);
+
+  const hasNearAdvocatesToMerge = useMemo(() => {
+    return movementStats.movements.some(m => m.from === 'near_apostles' || m.to === 'near_apostles');
+  }, [movementStats.movements]);
+
+  const hasTrollsToMerge = useMemo(() => {
+    return movementStats.movements.some(m => m.from === 'terrorists' || m.to === 'terrorists');
+  }, [movementStats.movements]);
 
   // Close controls panel when clicking outside
   useEffect(() => {
@@ -467,15 +495,35 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     return items;
   }, [movementsBySource]);
 
-  const isMovementTypeFilterTooExclusive = !showPositive && !showNegative;
+  const hasAnyMovementsForDiagram = baseMovementsForDiagram.length > 0;
   const hasMovementsToDisplay = displayMovements.length > 0;
+  const anyMovementTypeAvailable = availablePositiveInDiagram || availableNegativeInDiagram;
+  const isMovementTypeFilterTooExclusive =
+    anyMovementTypeAvailable &&
+    (!availablePositiveInDiagram || !showPositive) &&
+    (!availableNegativeInDiagram || !showNegative);
   const showDiagramEmptyState = isMovementTypeFilterTooExclusive || !hasMovementsToDisplay;
+
   const emptyStateTitle = isMovementTypeFilterTooExclusive
     ? 'Nothing to display'
-    : 'No movements match these filters';
-  const emptyStateMessage = isMovementTypeFilterTooExclusive
-    ? 'Your Movement Types selection is too exclusive. Use the filter menu (☰) to turn Positive and/or Negative movements back on.'
-    : 'Try adjusting Movement Types or the merge settings using the filter menu (☰).';
+    : (!hasAnyMovementsForDiagram ? 'No movements detected' : 'No movements match these filters');
+
+  const emptyStateMessage = (() => {
+    if (isMovementTypeFilterTooExclusive) {
+      const availableLabels: string[] = [];
+      if (availablePositiveInDiagram) availableLabels.push('Positive');
+      if (availableNegativeInDiagram) availableLabels.push('Negative');
+      const label =
+        availableLabels.length === 1
+          ? `${availableLabels[0]} movements`
+          : `${availableLabels.join(' and/or ')} movements`;
+      return `Your Movement Types selection is too exclusive. Use the filter menu (☰) to turn ${label} back on.`;
+    }
+    if (!hasAnyMovementsForDiagram) {
+      return 'No between-quadrant movements are available for the current data (and merge settings).';
+    }
+    return 'Try adjusting Movement Types or the merge settings using the filter menu (☰).';
+  })();
 
   // Quadrant colors for circles and arrows
   const QUADRANT_COLORS: Record<string, string> = {
@@ -558,24 +606,36 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
                       Movement Types
                     </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={showPositive}
-                        onChange={(e) => setShowPositive(e.target.checked)}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <span style={{ fontSize: '13px', color: '#374151' }}>Positive Movements</span>
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={showNegative}
-                        onChange={(e) => setShowNegative(e.target.checked)}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <span style={{ fontSize: '13px', color: '#374151' }}>Negative Movements</span>
-                    </label>
+                    {!availablePositiveInDiagram && !availableNegativeInDiagram ? (
+                      <p style={{ fontSize: '11px', color: '#6b7280', margin: 0 }}>
+                        No movements are available for the current data.
+                      </p>
+                    ) : (
+                      <>
+                        {availablePositiveInDiagram && (
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
+                            <input
+                              type="checkbox"
+                              checked={showPositive}
+                              onChange={(e) => setShowPositive(e.target.checked)}
+                              style={{ cursor: 'pointer' }}
+                            />
+                            <span style={{ fontSize: '13px', color: '#374151' }}>Positive Movements</span>
+                          </label>
+                        )}
+                        {availableNegativeInDiagram && (
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
+                            <input
+                              type="checkbox"
+                              checked={showNegative}
+                              onChange={(e) => setShowNegative(e.target.checked)}
+                              style={{ cursor: 'pointer' }}
+                            />
+                            <span style={{ fontSize: '13px', color: '#374151' }}>Negative Movements</span>
+                          </label>
+                        )}
+                      </>
+                    )}
                   </div>
                   
                   <div style={{ marginBottom: '20px', marginTop: '24px', paddingTop: '20px', borderTop: '1px solid #e5e7eb' }}>
@@ -587,41 +647,53 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
                     </p>
 
                     <div style={{ display: 'grid', gap: '10px' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                        <input
-                          type="checkbox"
-                          checked={mergeAdvocatesIntoLoyalists}
-                          onChange={(e) => setMergeAdvocatesIntoLoyalists(e.target.checked)}
-                          style={{ cursor: 'pointer' }}
-                        />
-                        <span style={{ fontSize: '13px', color: '#374151' }}>
-                          Count {isClassicModel ? 'Apostles' : 'Advocates'} with Loyalists
-                        </span>
-                      </label>
+                      {hasAdvocatesToMerge && (
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={mergeAdvocatesIntoLoyalists}
+                            onChange={(e) => setMergeAdvocatesIntoLoyalists(e.target.checked)}
+                            style={{ cursor: 'pointer' }}
+                          />
+                          <span style={{ fontSize: '13px', color: '#374151' }}>
+                            Count {isClassicModel ? 'Apostles' : 'Advocates'} as Loyalists
+                          </span>
+                        </label>
+                      )}
 
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                        <input
-                          type="checkbox"
-                          checked={mergeNearAdvocatesIntoLoyalists}
-                          onChange={(e) => setMergeNearAdvocatesIntoLoyalists(e.target.checked)}
-                          style={{ cursor: 'pointer' }}
-                        />
-                        <span style={{ fontSize: '13px', color: '#374151' }}>
-                          Count {isClassicModel ? 'Near-Apostles' : 'Near-Advocates'} with Loyalists
-                        </span>
-                      </label>
+                      {hasNearAdvocatesToMerge && (
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={mergeNearAdvocatesIntoLoyalists}
+                            onChange={(e) => setMergeNearAdvocatesIntoLoyalists(e.target.checked)}
+                            style={{ cursor: 'pointer' }}
+                          />
+                          <span style={{ fontSize: '13px', color: '#374151' }}>
+                            Count {isClassicModel ? 'Near-Apostles' : 'Near-Advocates'} as Loyalists
+                          </span>
+                        </label>
+                      )}
 
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                        <input
-                          type="checkbox"
-                          checked={mergeTrollsIntoDefectors}
-                          onChange={(e) => setMergeTrollsIntoDefectors(e.target.checked)}
-                          style={{ cursor: 'pointer' }}
-                        />
-                        <span style={{ fontSize: '13px', color: '#374151' }}>
-                          Count {isClassicModel ? 'Terrorists' : 'Trolls'} with Defectors
-                        </span>
-                      </label>
+                      {hasTrollsToMerge && (
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={mergeTrollsIntoDefectors}
+                            onChange={(e) => setMergeTrollsIntoDefectors(e.target.checked)}
+                            style={{ cursor: 'pointer' }}
+                          />
+                          <span style={{ fontSize: '13px', color: '#374151' }}>
+                            Count {isClassicModel ? 'Terrorists' : 'Trolls'} as Defectors
+                          </span>
+                        </label>
+                      )}
+
+                      {!hasAdvocatesToMerge && !hasNearAdvocatesToMerge && !hasTrollsToMerge && (
+                        <p style={{ fontSize: '11px', color: '#6b7280', margin: 0 }}>
+                          No additional quadrants are present to merge.
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
