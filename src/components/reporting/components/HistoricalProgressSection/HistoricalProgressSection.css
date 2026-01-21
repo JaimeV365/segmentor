@@ -482,6 +482,167 @@
   border: 1px solid #e5e7eb;
 }
 
+/* Customer Journeys (multi-movement) */
+.customer-journeys-section {
+  background: #fff;
+  padding: 1.25rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  margin-top: 1.5rem;
+}
+
+.customer-journeys-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  gap: 1rem;
+}
+
+.customer-journeys-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.customer-journeys-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.customer-journeys-count {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.customer-journeys-toggle {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #3a863e;
+  cursor: pointer;
+}
+
+.customer-journeys-toggle:hover {
+  background: #f3f4f6;
+}
+
+.customer-journeys-body {
+  margin-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1rem;
+}
+
+.customer-journeys-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.customer-journeys-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.customer-journeys-control select {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+  color: #374151;
+  background: #ffffff;
+}
+
+.customer-journeys-empty {
+  color: #6b7280;
+  font-size: 0.875rem;
+  padding: 1rem 0;
+  text-align: center;
+}
+
+.customer-journeys-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.customer-journeys-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.customer-journeys-table thead tr {
+  background: #f3f4f6;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.customer-journeys-table th,
+.customer-journeys-table td {
+  padding: 10px 8px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+.customer-journeys-table th.sortable {
+  cursor: pointer;
+}
+
+.customer-journeys-table td.chev {
+  width: 28px;
+  color: #6b7280;
+}
+
+.customer-cell .customer-name {
+  font-weight: 600;
+  color: #111827;
+}
+
+.customer-cell .customer-sub {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.customer-journeys-table td.path {
+  color: #374151;
+  min-width: 220px;
+}
+
+.customer-journeys-table tr.details td {
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.journey-steps-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.journey-steps-table th,
+.journey-steps-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.journey-steps-table thead tr {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
 .movement-flow-title {
   font-size: 1rem;
   font-weight: 600;

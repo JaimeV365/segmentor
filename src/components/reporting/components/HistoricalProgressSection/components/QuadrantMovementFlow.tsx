@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { MovementStats, QuadrantMovement } from '../services/historicalAnalysisService';
 import { ArrowRight, TrendingUp, TrendingDown, Minus, ChevronDown, ChevronRight } from 'lucide-react';
 import type { QuadrantType } from '../../../../visualization/context/QuadrantAssignmentContext';
 import { QuadrantMovementDiagram } from './QuadrantMovementDiagram';
 import { DataPoint } from '@/types/base';
 import { CustomerTimeline } from '../utils/historicalDataUtils';
+import { CustomerJourneysSection } from './CustomerJourneysSection';
 
 interface QuadrantMovementFlowProps {
   movementStats: MovementStats;
   timelines: CustomerTimeline[];
   data: DataPoint[];
+  getQuadrantForPoint: (point: DataPoint) => QuadrantType;
   isClassicModel?: boolean;
 }
 
@@ -61,11 +63,39 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
   movementStats,
   timelines,
   data,
+  getQuadrantForPoint,
   isClassicModel = true
 }) => {
   // Show top 10 movements by count
   const topMovements = movementStats.movements.slice(0, 10);
   const [expandedMovements, setExpandedMovements] = useState<Set<number>>(new Set());
+
+  const getJourneySummary = useMemo(() => {
+    return (timeline: CustomerTimeline) => {
+      const byDate = new Map<string, DataPoint>();
+      timeline.dataPoints.forEach(p => {
+        if (!p.date) return;
+        byDate.set(p.date.trim(), p);
+      });
+      const dates = Array.from(byDate.keys()).sort((a, b) => a.localeCompare(b));
+      const steps = dates.map(d => ({
+        date: d,
+        quadrant: getQuadrantForPoint(byDate.get(d)! as DataPoint)
+      }));
+
+      const compressed: QuadrantType[] = [];
+      steps.forEach(s => {
+        const last = compressed[compressed.length - 1];
+        if (!last || last !== s.quadrant) compressed.push(s.quadrant);
+      });
+
+      const movesCount = Math.max(0, compressed.length - 1);
+      const distinctQuadrantsCount = new Set(steps.map(s => s.quadrant)).size;
+      const pathLabel = compressed.map(q => getQuadrantDisplayName(q, isClassicModel)).join(' → ');
+
+      return { movesCount, distinctQuadrantsCount, pathLabel };
+    };
+  }, [getQuadrantForPoint, isClassicModel]);
 
   // Helper to get all customer data with their full timeline for a movement
   const getCustomerDataForMovement = (movement: QuadrantMovement): Array<{
@@ -77,6 +107,9 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
     middleDates: string[];
     originPoint: DataPoint | null;
     destinyPoint: DataPoint | null;
+    journeyMovesCount: number;
+    journeyDistinctQuadrantsCount: number;
+    journeyPathLabel: string;
   }> => {
     const customerData: Array<{
       customer: DataPoint;
@@ -87,6 +120,9 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
       middleDates: string[];
       originPoint: DataPoint | null;
       destinyPoint: DataPoint | null;
+      journeyMovesCount: number;
+      journeyDistinctQuadrantsCount: number;
+      journeyPathLabel: string;
     }> = [];
     
     movement.customers.forEach(customer => {
@@ -118,6 +154,7 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
           
           // Use the destiny point as the main customer data point
           const mainPoint = destinyPoint || datesWithPoints[datesWithPoints.length - 1].point;
+          const journey = getJourneySummary(timeline);
           
           customerData.push({
             customer: mainPoint,
@@ -127,7 +164,10 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
             lastDate,
             middleDates,
             originPoint,
-            destinyPoint
+            destinyPoint,
+            journeyMovesCount: journey.movesCount,
+            journeyDistinctQuadrantsCount: journey.distinctQuadrantsCount,
+            journeyPathLabel: journey.pathLabel
           });
         }
       }
@@ -253,6 +293,7 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
                             <th style={{ padding: '8px', textAlign: 'left', fontWeight: '600' }}>Position</th>
                             <th style={{ padding: '8px', textAlign: 'left', fontWeight: '600' }}>Date (Origin)</th>
                             <th style={{ padding: '8px', textAlign: 'left', fontWeight: '600' }}>Date (Destiny)</th>
+                            <th style={{ padding: '8px', textAlign: 'left', fontWeight: '600' }}>Journey</th>
                             {customerData.some(c => c.middleDates.length > 0) && (
                               <th style={{ padding: '8px', textAlign: 'left', fontWeight: '600' }}>Middle Dates</th>
                             )}
@@ -279,6 +320,14 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
                                 <td style={{ padding: '8px' }}>
                                   {item.destinyPoint?.date || item.lastDate}
                                 </td>
+                                <td style={{ padding: '8px', color: '#374151' }}>
+                                  <div style={{ fontWeight: 600, color: '#111827' }}>
+                                    {item.journeyMovesCount} moves
+                                  </div>
+                                  <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
+                                    {item.journeyPathLabel || '-'}
+                                  </div>
+                                </td>
                                 {customerData.some(c => c.middleDates.length > 0) && (
                                   <td style={{ padding: '8px', color: '#6b7280' }}>
                                     {item.middleDates.length > 0 ? item.middleDates.join(', ') : '-'}
@@ -297,6 +346,12 @@ export const QuadrantMovementFlow: React.FC<QuadrantMovementFlowProps> = ({
           </div>
         )}
       </div>
+
+      <CustomerJourneysSection
+        timelines={timelines}
+        getQuadrantForPoint={getQuadrantForPoint}
+        isClassicModel={isClassicModel}
+      />
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect, useLayoutEffect, useRef, useCallba
 import { DataPoint, ScaleFormat } from '@/types/base';
 import { hasHistoricalData, groupByCustomer, parseDate } from './utils/historicalDataUtils';
 import { useQuadrantAssignment } from '../../../visualization/context/QuadrantAssignmentContext';
+import type { QuadrantType } from '../../../visualization/context/QuadrantAssignmentContext';
 import { useFilterContextSafe } from '../../../visualization/context/FilterContext';
 import { useNotification } from '../../../data-entry/hooks/useNotification';
 import FilterPanel from '../../../visualization/filters/FilterPanel';
@@ -194,6 +195,33 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
         return a.localeCompare(b);
       };
 
+      const getQuadrantLabel = (quadrant: QuadrantType): string => {
+        if (isClassicModel) {
+          const names: Record<QuadrantType, string> = {
+            apostles: 'Apostles',
+            near_apostles: 'Near-Apostles',
+            loyalists: 'Loyalists',
+            mercenaries: 'Mercenaries',
+            hostages: 'Hostages',
+            neutral: 'Neutral',
+            defectors: 'Defectors',
+            terrorists: 'Terrorists'
+          };
+          return names[quadrant] || quadrant;
+        }
+        const names: Record<QuadrantType, string> = {
+          apostles: 'Advocates',
+          near_apostles: 'Near-Advocates',
+          loyalists: 'Loyalists',
+          mercenaries: 'Mercenaries',
+          hostages: 'Hostages',
+          neutral: 'Neutral',
+          defectors: 'Defectors',
+          terrorists: 'Trolls'
+        };
+        return names[quadrant] || quadrant;
+      };
+
       const perCustomer = timelines.map(timeline => {
         // Use last point for name/group (best guess of "current")
         const lastPoint = timeline.dataPoints[timeline.dataPoints.length - 1];
@@ -226,8 +254,9 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
 
       const headers: string[] = ['Identifier Type', 'Email', 'ID', 'Name', 'Group'];
       for (let i = 1; i <= maxDates; i += 1) {
-        headers.push(`Date ${i}`, `Satisfaction ${i}`, `Loyalty ${i}`);
+        headers.push(`Date ${i}`, `Quadrant ${i}`, `Satisfaction ${i}`, `Loyalty ${i}`);
       }
+      headers.push('Total Dates', 'Movement Count', 'Distinct Quadrants', 'Quadrant Path');
 
       const lines: string[] = [];
       lines.push(headers.map(escapeCsv).join(','));
@@ -241,19 +270,43 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
           row.group
         ];
 
+        const quadrantsByDate: Array<QuadrantType | null> = [];
+
         for (let i = 0; i < maxDates; i += 1) {
           const date = row.sortedDates[i];
           if (!date) {
-            cells.push('', '', '');
+            cells.push('', '', '', '');
+            quadrantsByDate.push(null);
             continue;
           }
           const point = row.pointByDate.get(date);
+          const quadrant = point ? getQuadrantForPoint(point) : null;
+          quadrantsByDate.push(quadrant);
           cells.push(
             date,
+            quadrant ? getQuadrantLabel(quadrant) : '',
             point ? point.satisfaction : '',
             point ? point.loyalty : ''
           );
         }
+
+        // Journey summary (compress consecutive duplicates, ignore nulls)
+        const compressed: QuadrantType[] = [];
+        quadrantsByDate.forEach(q => {
+          if (!q) return;
+          const last = compressed[compressed.length - 1];
+          if (!last || last !== q) compressed.push(q);
+        });
+        const movementCount = Math.max(0, compressed.length - 1);
+        const distinctQuadrantsCount = new Set(quadrantsByDate.filter((q): q is QuadrantType => !!q)).size;
+        const pathLabel = compressed.map(getQuadrantLabel).join(' → ');
+
+        cells.push(
+          row.sortedDates.length,
+          movementCount,
+          distinctQuadrantsCount,
+          pathLabel
+        );
 
         lines.push(cells.map(escapeCsv).join(','));
       });
@@ -292,7 +345,7 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
         type: 'error'
       });
     }
-  }, [dateFormat, showNotification, timelines]);
+  }, [dateFormat, getQuadrantForPoint, isClassicModel, showNotification, timelines]);
   
   // Calculate trend data
   const trendData = useMemo(() => {
@@ -447,6 +500,7 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
                 movementStats={movementStats}
                 timelines={timelines}
                 data={data}
+                getQuadrantForPoint={getQuadrantForPoint}
                 isClassicModel={isClassicModel}
               />
             </div>
