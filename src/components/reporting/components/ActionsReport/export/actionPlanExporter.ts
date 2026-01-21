@@ -587,7 +587,8 @@ async function addWatermarkToChartImage(
       // paddingXPercent is distance from RIGHT edge, so increasing it moves the logo left.
       logoSize = Math.min(chartImg.width, chartImg.height) * 0.12;
       maxLogoSize = 150;
-      paddingXPercent = Math.min(0.9, 0.08 + 0.50); // 58% from right (big left shift)
+      // Now move it ~"20 ticks" back to the right (reduce the left shift).
+      paddingXPercent = Math.min(0.9, 0.08 + 0.30); // 38% from right
       paddingYPercent = 0.15; // keep default vertical placement
     } else if (normalizedChartType === 'distribution' || normalizedSelector.includes('distribution')) {
       // Customer Distribution
@@ -1267,7 +1268,11 @@ export async function exportActionPlanToPDF(
           // Calculate dimensions to fit page
           // For Historical Progress, prefer giving it a fresh page so it can be rendered large and readable.
           if (isHistoricalProgress) {
-            checkPageBreak(220);
+            // If we're not near the top of a page, start a new page to maximise space.
+            if (yPosition > margin + 15) {
+              pdf.addPage();
+              yPosition = margin + 10;
+            }
           }
           let availableHeight = pageHeight - margin - footerHeight - yPosition - 15; // Leave 15mm buffer
           
@@ -1323,8 +1328,9 @@ export async function exportActionPlanToPDF(
           } else if (isHistoricalProgress) {
             // Historical Progress (Movement Flow): use normal chart sizing (large enough to be readable)
             // Make it noticeably larger for readability
-            const maxWidth = contentWidth; // full content width
-            const maxHeight = Math.min(240, availableHeight);
+            // Increase ~20% vs content width by allowing it into the margins (near full A4 width).
+            const maxWidth = Math.min(pageWidth - 10, contentWidth * 1.2);
+            const maxHeight = Math.min(260, availableHeight);
 
             // Always scale to maxWidth so it doesn't end up tiny
             const widthScale = maxWidth / imgWidth;
