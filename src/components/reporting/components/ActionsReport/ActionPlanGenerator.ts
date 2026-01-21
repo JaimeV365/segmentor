@@ -582,6 +582,57 @@ export async function generateActionPlan(
         chartSelector
       });
     }
+
+    // Fallback (important for demo / small-but-valid historical datasets):
+    // If Historical Progress exists but none of the higher-threshold OR/A triggers fired,
+    // add a light, non-quantitative reference so the user always sees it reflected in Ops/Risks and Actions.
+    const hasHistoricalOpp = opportunities.some(o => (o as any).source === 'historical');
+    const hasHistoricalRisk = risks.some(r => (r as any).source === 'historical');
+    const hasHistoricalAction = actions.some(a => a.id && a.id.startsWith('action-historical-'));
+
+    if (!hasHistoricalOpp && !hasHistoricalRisk && betweenQuadrantTransitions > 0) {
+      const directionLabel =
+        positiveTransitions > 0 && negativeTransitions > 0
+          ? 'both positive and negative'
+          : positiveTransitions > 0
+            ? 'positive'
+            : 'negative';
+
+      // Prefer a risk framing if there is any negative movement; otherwise an opportunity framing.
+      if (negativeTransitions > 0) {
+        risks.unshift({
+          id: 'risk-historical-movement-present',
+          source: 'historical',
+          severity: 'low',
+          statement: `Historical Progress shows ${directionLabel} between‑quadrant movement over time. Even with a modest sample, this is a useful operational signal—review the Movement Flow diagram to identify the main “leaks” and stabilise the drivers behind them.`,
+          supportingData: { trackedCustomers, totalTransitions, betweenQuadrantTransitions, positiveTransitions, negativeTransitions },
+          chartSelector
+        });
+      } else {
+        opportunities.unshift({
+          id: 'opportunity-historical-movement-present',
+          source: 'historical',
+          impact: 'low',
+          statement: `Historical Progress shows ${directionLabel} between‑quadrant movement over time. Even with a modest sample, this is a useful operational signal—review the Movement Flow diagram to identify what’s working and reinforce the drivers behind these improvements.`,
+          supportingData: { trackedCustomers, totalTransitions, betweenQuadrantTransitions, positiveTransitions, negativeTransitions },
+          chartSelector
+        });
+      }
+    }
+
+    if (!hasHistoricalAction) {
+      actions.push({
+        id: 'action-historical-review-top-transitions',
+        statement:
+          'Review the Movement Flow diagram and pick 1–2 top transitions to act on: investigate the experience drivers behind them, design targeted interventions, and re-measure at the next check-in to confirm movement stabilises in the desired direction.',
+        quadrant: undefined,
+        priority: 2,
+        actionability: 'medium',
+        expectedImpact: 'medium',
+        roi: 4,
+        supportingData: { trackedCustomers, totalTransitions, betweenQuadrantTransitions }
+      });
+    }
   }
 
   // Ensure terminology matches the model toggle across all report statements (Classic vs Modern).
