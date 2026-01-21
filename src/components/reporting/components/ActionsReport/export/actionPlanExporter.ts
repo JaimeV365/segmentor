@@ -587,8 +587,8 @@ async function addWatermarkToChartImage(
       // paddingXPercent is distance from RIGHT edge, so increasing it moves the logo left.
       logoSize = Math.min(chartImg.width, chartImg.height) * 0.12;
       maxLogoSize = 150;
-      // Now move it ~"20 ticks" back to the right (reduce the left shift).
-      paddingXPercent = Math.min(0.9, 0.08 + 0.30); // 38% from right
+      // Move it considerably to the right (~20 units): reduce the distance from the right edge.
+      paddingXPercent = Math.min(0.9, Math.max(0, 0.08 + 0.10)); // 18% from right
       paddingYPercent = 0.15; // keep default vertical placement
     } else if (normalizedChartType === 'distribution' || normalizedSelector.includes('distribution')) {
       // Customer Distribution
