@@ -64,13 +64,79 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
     toQuadrant: string;
   } | null>(null);
   const [showControlsPanel, setShowControlsPanel] = useState(false);
-  const [showPositive, setShowPositive] = useState(true);
-  const [showNegative, setShowNegative] = useState(true);
-  const [mergeAdvocatesIntoLoyalists, setMergeAdvocatesIntoLoyalists] = useState(false);
-  const [mergeNearAdvocatesIntoLoyalists, setMergeNearAdvocatesIntoLoyalists] = useState(false);
-  const [mergeTrollsIntoDefectors, setMergeTrollsIntoDefectors] = useState(false);
+  const DIAGRAM_SETTINGS_KEY = 'historicalProgressDiagramSettings';
+  const readDiagramSettings = (): Partial<{
+    showPositive: boolean;
+    showNegative: boolean;
+    mergeAdvocatesIntoLoyalists: boolean;
+    mergeNearAdvocatesIntoLoyalists: boolean;
+    mergeTrollsIntoDefectors: boolean;
+  }> => {
+    try {
+      const raw = localStorage.getItem(DIAGRAM_SETTINGS_KEY);
+      if (!raw) return {};
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object') return {};
+      return parsed;
+    } catch {
+      return {};
+    }
+  };
+  const writeDiagramSettings = (next: Partial<{
+    showPositive: boolean;
+    showNegative: boolean;
+    mergeAdvocatesIntoLoyalists: boolean;
+    mergeNearAdvocatesIntoLoyalists: boolean;
+    mergeTrollsIntoDefectors: boolean;
+  }>) => {
+    try {
+      const current = readDiagramSettings();
+      localStorage.setItem(DIAGRAM_SETTINGS_KEY, JSON.stringify({ ...current, ...next }));
+    } catch {
+      // ignore
+    }
+  };
+
+  const [showPositive, setShowPositive] = useState(() => {
+    const saved = readDiagramSettings().showPositive;
+    return typeof saved === 'boolean' ? saved : true;
+  });
+  const [showNegative, setShowNegative] = useState(() => {
+    const saved = readDiagramSettings().showNegative;
+    return typeof saved === 'boolean' ? saved : true;
+  });
+  const [mergeAdvocatesIntoLoyalists, setMergeAdvocatesIntoLoyalists] = useState(() => {
+    const saved = readDiagramSettings().mergeAdvocatesIntoLoyalists;
+    return typeof saved === 'boolean' ? saved : false;
+  });
+  const [mergeNearAdvocatesIntoLoyalists, setMergeNearAdvocatesIntoLoyalists] = useState(() => {
+    const saved = readDiagramSettings().mergeNearAdvocatesIntoLoyalists;
+    return typeof saved === 'boolean' ? saved : false;
+  });
+  const [mergeTrollsIntoDefectors, setMergeTrollsIntoDefectors] = useState(() => {
+    const saved = readDiagramSettings().mergeTrollsIntoDefectors;
+    return typeof saved === 'boolean' ? saved : false;
+  });
   const settingsButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  // Persist user preferences so Save/Load can capture them.
+  useEffect(() => {
+    writeDiagramSettings({
+      showPositive,
+      showNegative,
+      mergeAdvocatesIntoLoyalists,
+      mergeNearAdvocatesIntoLoyalists,
+      mergeTrollsIntoDefectors
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    showPositive,
+    showNegative,
+    mergeAdvocatesIntoLoyalists,
+    mergeNearAdvocatesIntoLoyalists,
+    mergeTrollsIntoDefectors
+  ]);
 
   // Movement direction is calculated after merging into the 4 main quadrants.
   // Layout is fixed: Hostages (TL), Loyalists (TR), Defectors (BL), Mercenaries (BR).

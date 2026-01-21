@@ -123,11 +123,60 @@ export const CustomerJourneysSection: React.FC<{
   getQuadrantForPoint: (point: DataPoint) => QuadrantType;
   isClassicModel?: boolean;
 }> = ({ timelines, getQuadrantForPoint, isClassicModel = true }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [minMoves, setMinMoves] = useState(2);
-  const [sortKey, setSortKey] = useState<SortKey>('moves');
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const JOURNEYS_SETTINGS_KEY = 'historicalProgressJourneysSettings';
+  const readJourneysSettings = (): Partial<{
+    isExpanded: boolean;
+    minMoves: number;
+    sortKey: SortKey;
+    sortDir: 'asc' | 'desc';
+  }> => {
+    try {
+      const raw = localStorage.getItem(JOURNEYS_SETTINGS_KEY);
+      if (!raw) return {};
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object') return {};
+      return parsed;
+    } catch {
+      return {};
+    }
+  };
+  const writeJourneysSettings = (next: Partial<{
+    isExpanded: boolean;
+    minMoves: number;
+    sortKey: SortKey;
+    sortDir: 'asc' | 'desc';
+  }>) => {
+    try {
+      const current = readJourneysSettings();
+      localStorage.setItem(JOURNEYS_SETTINGS_KEY, JSON.stringify({ ...current, ...next }));
+    } catch {
+      // ignore
+    }
+  };
+
+  const [isExpanded, setIsExpanded] = useState(() => {
+    const saved = readJourneysSettings().isExpanded;
+    return typeof saved === 'boolean' ? saved : false;
+  });
+  const [minMoves, setMinMoves] = useState(() => {
+    const saved = readJourneysSettings().minMoves;
+    return typeof saved === 'number' && Number.isFinite(saved) ? saved : 2;
+  });
+  const [sortKey, setSortKey] = useState<SortKey>(() => {
+    const saved = readJourneysSettings().sortKey;
+    return saved ? saved : 'moves';
+  });
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>(() => {
+    const saved = readJourneysSettings().sortDir;
+    return saved === 'asc' || saved === 'desc' ? saved : 'desc';
+  });
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+
+  // Persist user preferences so Save/Load can capture them.
+  useEffect(() => {
+    writeJourneysSettings({ isExpanded, minMoves, sortKey, sortDir });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isExpanded, minMoves, sortKey, sortDir]);
 
   const rows = useMemo(() => {
     const all = timelines

@@ -50,6 +50,24 @@ export const useReportGenerator = ({
     });
   }, [data, satisfactionScale, loyaltyScale, activeEffects]);
 
+  // Restore a previously generated Actions Report (including captured images) if it matches this dataset.
+  useEffect(() => {
+    try {
+      if (actionsReport) return;
+      const raw = localStorage.getItem('savedActionsReportSnapshot');
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      const hash = getCurrentStateHash();
+      if (parsed?.hash === hash && parsed?.report) {
+        setActionsReport(parsed.report as ActionsReport);
+        setLastGeneratedHash(hash);
+        setIsOutOfSync(false);
+      }
+    } catch {
+      // ignore corrupted storage
+    }
+  }, [actionsReport, getCurrentStateHash]);
+
   const handleGenerateReports = useCallback(async () => {
   try {
     console.log('🔄 useReportGenerator: About to generate reports');
@@ -103,6 +121,12 @@ export const useReportGenerator = ({
         contextDist
       );
       setActionsReport(actionsReportContent);
+      try {
+        const hash = getCurrentStateHash();
+        localStorage.setItem('savedActionsReportSnapshot', JSON.stringify({ hash, report: actionsReportContent }));
+      } catch {
+        // ignore
+      }
       // Update hash to mark Actions Report as in sync with current data
       setLastGeneratedHash(getCurrentStateHash());
       setIsOutOfSync(false);
@@ -123,6 +147,12 @@ export const useReportGenerator = ({
         contextDist
       );
       setActionsReport(actionsReportContent);
+      try {
+        const hash = getCurrentStateHash();
+        localStorage.setItem('savedActionsReportSnapshot', JSON.stringify({ hash, report: actionsReportContent }));
+      } catch {
+        // ignore
+      }
       // Update hash to mark Actions Report as in sync with current data
       setLastGeneratedHash(getCurrentStateHash());
       setIsOutOfSync(false);
@@ -147,6 +177,11 @@ export const useReportGenerator = ({
     if (isOutOfSyncNow && actionsReport) {
       console.log('🔄 Data changed - invalidating Actions Report to prevent stale screenshots');
       setActionsReport(null);
+      try {
+        localStorage.removeItem('savedActionsReportSnapshot');
+      } catch {
+        // ignore
+      }
     }
   }, [getCurrentStateHash, lastGeneratedHash, actionsReport]);
 

@@ -569,6 +569,25 @@ useEffect(() => {
             if (context.reportSettings.actionReports.pdfExportOptions) {
               localStorage.setItem('actionReportsPdfExportOptions', JSON.stringify(context.reportSettings.actionReports.pdfExportOptions));
             }
+
+            // Restore saved/generated Action Plan snapshot (final Actions Report)
+            if ((context.reportSettings.actionReports as any).savedActionPlanSnapshot) {
+              localStorage.setItem(
+                'savedActionsReportSnapshot',
+                JSON.stringify((context.reportSettings.actionReports as any).savedActionPlanSnapshot)
+              );
+            }
+          }
+
+          // Restore Historical Progress UI preferences
+          if ((context.reportSettings as any).historicalProgress) {
+            const hp = (context.reportSettings as any).historicalProgress;
+            if (hp.diagram) {
+              localStorage.setItem('historicalProgressDiagramSettings', JSON.stringify(hp.diagram));
+            }
+            if (hp.journeys) {
+              localStorage.setItem('historicalProgressJourneysSettings', JSON.stringify(hp.journeys));
+            }
           }
         }
         

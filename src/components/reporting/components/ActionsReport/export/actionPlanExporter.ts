@@ -1225,6 +1225,15 @@ export async function exportActionPlanToPDF(
                                          finding.id === 'chart-response-concentration' ||
                                          finding.chartSelector?.includes('response-concentration') ||
                                          finding.chartSelector?.includes('concentration');
+
+          // Check if this is Historical Progress (Movement Flow) chart
+          const isHistoricalProgress = chartImage.chartType === 'historical' ||
+                                       finding.category === 'historical' ||
+                                       finding.id?.includes('historical') ||
+                                       finding.chartSelector?.includes('report-historical-progress') ||
+                                       finding.chartSelector?.includes('historical-progress') ||
+                                       chartImage.selector?.includes('report-historical-progress') ||
+                                       chartImage.selector?.includes('historical-progress');
           
           // Check if this is a Recommendation Score chart
           // Check both finding properties and chartImage properties for better detection
@@ -1289,6 +1298,21 @@ export async function exportActionPlanToPDF(
             imgHeight *= widthScale;
             
             // If height exceeds max after scaling, scale down proportionally
+            if (imgHeight > maxHeight) {
+              const heightScale = maxHeight / imgHeight;
+              imgWidth *= heightScale;
+              imgHeight *= heightScale;
+            }
+          } else if (isHistoricalProgress) {
+            // Historical Progress (Movement Flow): use normal chart sizing (large enough to be readable)
+            const maxWidth = contentWidth * 0.9; // match other major charts
+            const maxHeight = Math.min(120, availableHeight);
+
+            // Always scale to maxWidth so it doesn't end up tiny
+            const widthScale = maxWidth / imgWidth;
+            imgWidth = maxWidth;
+            imgHeight *= widthScale;
+
             if (imgHeight > maxHeight) {
               const heightScale = maxHeight / imgHeight;
               imgWidth *= heightScale;
