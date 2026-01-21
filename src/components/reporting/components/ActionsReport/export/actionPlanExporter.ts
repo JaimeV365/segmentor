@@ -1305,8 +1305,9 @@ export async function exportActionPlanToPDF(
             }
           } else if (isHistoricalProgress) {
             // Historical Progress (Movement Flow): use normal chart sizing (large enough to be readable)
-            const maxWidth = contentWidth * 0.9; // match other major charts
-            const maxHeight = Math.min(120, availableHeight);
+            // Make it noticeably larger (≈50% more vertical allowance) for readability
+            const maxWidth = contentWidth * 0.95; // near-full content width
+            const maxHeight = Math.min(180, availableHeight);
 
             // Always scale to maxWidth so it doesn't end up tiny
             const widthScale = maxWidth / imgWidth;
