@@ -234,7 +234,8 @@ export async function generateActionPlan(
             negativeTransitions: movementStats.negativeMovements,
             noChangeTransitions: movementStats.neutralMovements,
             betweenQuadrantTransitions: movementStats.positiveMovements + movementStats.negativeMovements,
-            topTransitions: movementStats.movements.slice(0, 5).map(m => ({ from: m.from, to: m.to, count: m.count })),
+            // Keep more than 5 so we can reliably pick top positive/negative flows later in Ops/Risks/Actions.
+            topTransitions: movementStats.movements.slice(0, 15).map(m => ({ from: m.from, to: m.to, count: m.count })),
             multiMove2PlusCustomers,
             multiMove3PlusCustomers,
             cadence: {
@@ -351,83 +352,152 @@ export async function generateActionPlan(
   const actions = generateActions(evaluators, isClassicModel, actionableConversions, proximityAnalysis, dataForConversions, getQuadrantForPoint);
 
   // ===== HISTORICAL PROGRESS (Ops & Risks + Actions) =====
-  // Add a few general-purpose, cadence-aware statements derived from Historical Progress insights.
+  // Add cadence-aware statements derived from Historical Progress insights (per internal guide).
   const historicalProgress = (aggregated as AggregatedReportData).historicalProgress;
   if (historicalProgress && historicalProgress.trackedCustomers > 0 && historicalProgress.totalTransitions > 0) {
+    const trackedCustomers = historicalProgress.trackedCustomers;
+    const totalTransitions = historicalProgress.totalTransitions;
+    const betweenQuadrantTransitions = historicalProgress.betweenQuadrantTransitions;
+    const positiveTransitions = historicalProgress.positiveTransitions;
+    const negativeTransitions = historicalProgress.negativeTransitions;
+    const noChangeTransitions = historicalProgress.noChangeTransitions;
+    const multiMove2PlusCustomers = historicalProgress.multiMove2PlusCustomers;
+    const multiMove3PlusCustomers = historicalProgress.multiMove3PlusCustomers;
+
+    const multiMove2PlusPct = trackedCustomers > 0 ? multiMove2PlusCustomers / trackedCustomers : 0;
+    const multiMove3PlusPct = trackedCustomers > 0 ? multiMove3PlusCustomers / trackedCustomers : 0;
+
+    const hasQuantConfidence = trackedCustomers >= 10 && totalTransitions >= 20;
+    const hasPctConfidence = trackedCustomers >= 30 && totalTransitions >= 50;
+
     const formatPct = (numerator: number, denominator: number) => {
       if (denominator <= 0) return '0%';
       const pct = (numerator / denominator) * 100;
       return `${pct.toFixed(1)}%`;
     };
 
-    const transitions = historicalProgress.betweenQuadrantTransitions;
-    const positive = historicalProgress.positiveTransitions;
-    const negative = historicalProgress.negativeTransitions;
-    const multi2 = historicalProgress.multiMove2PlusCustomers;
-    const multi3 = historicalProgress.multiMove3PlusCustomers;
+    const mainQuadrantRank: Record<string, number> = {
+      defectors: 0,
+      hostages: 1,
+      mercenaries: 2,
+      loyalists: 3
+    };
+    const isMainQuadrant = (q: string) => Object.prototype.hasOwnProperty.call(mainQuadrantRank, q);
+    const formatTransitionName = (from: string, to: string) => `${from} → ${to}`;
 
+    const topTransitions = (historicalProgress.topTransitions || []).filter(
+      t => t.from && t.to && t.from !== t.to && isMainQuadrant(t.from) && isMainQuadrant(t.to)
+    );
+    const topPositive = topTransitions.find(t => (mainQuadrantRank[t.to] ?? 0) > (mainQuadrantRank[t.from] ?? 0));
+    const topNegative = topTransitions.find(t => (mainQuadrantRank[t.to] ?? 0) < (mainQuadrantRank[t.from] ?? 0));
+
+    const topPositiveMoveName = topPositive ? formatTransitionName(topPositive.from, topPositive.to) : null;
+    const topNegativeMoveName = topNegative ? formatTransitionName(topNegative.from, topNegative.to) : null;
+    const topPositiveMovePct =
+      topPositive && betweenQuadrantTransitions > 0 ? topPositive.count / betweenQuadrantTransitions : 0;
+    const topNegativeMovePct =
+      topNegative && betweenQuadrantTransitions > 0 ? topNegative.count / betweenQuadrantTransitions : 0;
+
+    // We capture the diagram in Findings; for Ops/Risks we reference it (no extra screenshot duplication).
     const chartSelector = '[data-section-id="report-historical-progress"] .movement-diagram-container';
 
-    // Opportunity: positive momentum
-    if (transitions >= 20 && positive >= 10 && positive > negative) {
-      opportunities.push({
-        id: 'opportunity-historical-positive-momentum',
+    // Always include at least one Historical Progress reference (light language if sample is small).
+    // Put these at the top so they’re easy to find in the UI.
+    if (!hasQuantConfidence) {
+      risks.unshift({
+        id: 'risk-historical-small-sample',
         source: 'historical',
-        impact: 'medium',
-        statement: `Historical Progress shows net positive momentum: ${formatPct(positive, transitions)} of between‑quadrant moves were positive vs ${formatPct(negative, transitions)} negative. This suggests your experience improvements are translating into real customer movement (not just static distribution).`,
-        supportingData: {
-          trackedCustomers: historicalProgress.trackedCustomers,
-          betweenQuadrantTransitions: transitions,
-          positiveTransitions: positive,
-          negativeTransitions: negative
-        },
+        severity: 'low',
+        statement: `Historical Progress is available, but the amount of historical data is limited (${trackedCustomers} customers with 2+ dated records). Treat movement signals as directional and prioritise collecting more consistent check-ins before drawing strong conclusions.`,
+        supportingData: { trackedCustomers, totalTransitions },
         chartSelector
+      });
+
+      actions.push({
+        id: 'action-historical-improve-checkins',
+        statement:
+          'Improve the consistency of historical check-ins: standardise when you measure satisfaction/loyalty (and for which customer cohorts) so Historical Progress movement can be interpreted with higher confidence.',
+        quadrant: undefined,
+        priority: 2,
+        actionability: 'medium',
+        expectedImpact: 'medium',
+        roi: 4,
+        supportingData: { trackedCustomers, totalTransitions }
       });
     }
 
-    // Risk: negative pressure
-    if (transitions >= 20 && negative >= 10 && negative > positive) {
-      risks.push({
+    // OR1 — Negative movement pressure
+    if (negativeTransitions >= 10 && negativeTransitions > positiveTransitions) {
+      risks.unshift({
         id: 'risk-historical-negative-pressure',
         source: 'historical',
         severity: 'high',
-        statement: `Historical Progress shows sustained negative movement pressure: ${formatPct(negative, transitions)} of between‑quadrant moves were negative vs ${formatPct(positive, transitions)} positive. Prioritise root‑cause fixes in the moments of truth driving these drops before they compound.`,
-        supportingData: {
-          trackedCustomers: historicalProgress.trackedCustomers,
-          betweenQuadrantTransitions: transitions,
-          positiveTransitions: positive,
-          negativeTransitions: negative
-        },
+        statement: hasPctConfidence
+          ? `Historical Progress risk: negative transitions outweigh positive ones. Across consecutive check-ins, ${formatPct(negativeTransitions, totalTransitions)} of transitions were negative vs ${formatPct(positiveTransitions, totalTransitions)} positive, indicating downward movement pressure to investigate and mitigate.`
+          : 'Historical Progress risk: negative transitions outweigh positive ones in the observed period, indicating downward movement pressure that should be investigated and mitigated.',
+        supportingData: { trackedCustomers, totalTransitions, positiveTransitions, negativeTransitions, noChangeTransitions },
         chartSelector
       });
     }
 
-    // Risk: volatility / boundary sensitivity (multi-movement)
-    if (historicalProgress.trackedCustomers >= 30 && multi2 >= 5) {
-      risks.push({
-        id: 'risk-historical-volatility',
+    // OR2 — Positive momentum
+    if (positiveTransitions >= 10 && positiveTransitions > negativeTransitions) {
+      opportunities.unshift({
+        id: 'opportunity-historical-positive-momentum',
         source: 'historical',
-        severity: multi3 >= 5 ? 'high' : 'medium',
-        statement: `A notable share of customers moved multiple times across their history (${multi2} with 2+ moves${multi3 > 0 ? `; ${multi3} with 3+` : ''}). This pattern often indicates “boundary sensitivity” (small changes around the midpoint) and/or inconsistent experiences, so distribution snapshots may hide underlying churn risk.`,
+        impact: 'medium',
+        statement: hasPctConfidence
+          ? `Historical Progress opportunity: positive transitions outweigh negative ones. Across consecutive check-ins, ${formatPct(positiveTransitions, totalTransitions)} of transitions were positive vs ${formatPct(negativeTransitions, totalTransitions)} negative, suggesting improvement momentum that can be reinforced and scaled.`
+          : 'Historical Progress opportunity: positive transitions outweigh negative ones, suggesting improvement momentum that can be reinforced and scaled.',
+        supportingData: { trackedCustomers, totalTransitions, positiveTransitions, negativeTransitions, noChangeTransitions },
+        chartSelector
+      });
+    }
+
+    // OR3 — Largest negative flow
+    if (topNegative && negativeTransitions >= 10 && topNegativeMovePct >= 0.15) {
+      risks.unshift({
+        id: 'risk-historical-top-negative-flow',
+        source: 'historical',
+        severity: 'high',
+        statement: `Historical Progress risk: the largest negative flow is ${topNegativeMoveName}, representing ${formatPct(topNegative.count, betweenQuadrantTransitions)} of between‑quadrant movement—this is the clearest leak to address.`,
         supportingData: {
-          trackedCustomers: historicalProgress.trackedCustomers,
-          multiMove2PlusCustomers: multi2,
-          multiMove3PlusCustomers: multi3
+          trackedCustomers,
+          betweenQuadrantTransitions,
+          topNegativeMove: { ...topNegative, pct: topNegativeMovePct }
         },
         chartSelector
       });
     }
 
-    // Risk + Action: cadence-aware rapid negative moves (only with confidence)
-    if (historicalProgress.cadence?.hasConfidence && historicalProgress.cadence.rapidNegativeMovesCount > 0) {
-      const typicalGap = historicalProgress.cadence.typicalGapDays;
-      risks.push({
+    // OR4 — Stability risk (multi-movement)
+    if (multiMove3PlusCustomers >= 5 || multiMove3PlusPct >= 0.1) {
+      risks.unshift({
+        id: 'risk-historical-stability-multi-movement',
+        source: 'historical',
+        severity: 'medium',
+        statement:
+          'Historical Progress stability risk: a subset of customers change segments three or more times, which may indicate inconsistent delivery, inconsistent expectations, or a threshold‑sensitive experience that requires operational tightening.',
+        supportingData: {
+          trackedCustomers,
+          multiMove3PlusCustomers,
+          multiMove3PlusPct
+        },
+        chartSelector
+      });
+    }
+
+    // OR5 — Rapid negative movement (cadence-aware, only with confidence)
+    if (historicalProgress.cadence?.hasConfidence && historicalProgress.cadence.rapidNegativeMovesCount >= 10) {
+      const typicalGapDays = historicalProgress.cadence.typicalGapDays;
+      risks.unshift({
         id: 'risk-historical-rapid-negative',
         source: 'historical',
-        severity: historicalProgress.cadence.rapidNegativeMovesCount >= 10 ? 'high' : 'medium',
-        statement: `Some negative moves happened within the typical time between check‑ins (${typicalGap !== null ? `${Math.round(typicalGap)} days` : 'your typical interval'}), suggesting fast deterioration once issues appear. Tighten early‑warning signals and close the loop on detractor feedback quickly.`,
+        severity: 'high',
+        statement: `Historical Progress risk: rapid negative movement within one typical time between check‑ins (cadence) may indicate incidents or complaints; prioritise investigation of the experience drivers behind these fast deteriorations.${typeof typicalGapDays === 'number' ? ` (Typical time between check‑ins (cadence): ~${Math.round(typicalGapDays)} days.)` : ''}`,
         supportingData: {
-          typicalGapDays: typicalGap,
+          typicalGapDays,
+          cadenceLabel: historicalProgress.cadence.cadenceLabel,
           rapidNegativeMovesCount: historicalProgress.cadence.rapidNegativeMovesCount
         },
         chartSelector
@@ -435,33 +505,81 @@ export async function generateActionPlan(
 
       actions.push({
         id: 'action-historical-early-warning',
-        statement: `Introduce an early‑warning loop for fast negative movement: monitor leading indicators between check‑ins (e.g., complaints, service incidents, product failures), trigger targeted outreach within the typical time between check‑ins (cadence), and verify recovery at the next measurement.`,
+        statement:
+          'Create an early‑warning loop for rapid negative movement: monitor leading indicators between check-ins (complaints, incidents, product failures), trigger proactive outreach within one typical time between check‑ins (cadence), and verify recovery at the next measurement.',
         quadrant: undefined,
-        priority: 8,
+        priority: 2,
         actionability: 'medium',
         expectedImpact: 'high',
         roi: 6,
         supportingData: {
-          typicalGapDays: typicalGap,
+          typicalGapDays,
           rapidNegativeMovesCount: historicalProgress.cadence.rapidNegativeMovesCount
         }
       });
     }
 
-    // Action: stabilise multi-movers
-    if (historicalProgress.trackedCustomers >= 30 && multi2 >= 10) {
+    // A1 — Stabilise multi-movement cohort
+    if (trackedCustomers >= 30 && multiMove2PlusPct >= 0.15) {
       actions.push({
         id: 'action-historical-stabilise-multi-movers',
-        statement: `Stabilise “multi‑movers”: review the journeys of customers who moved 2+ times to identify recurring triggers (moments of truth) and remove variability. Aim for fewer back‑and‑forth movements rather than only shifting the snapshot distribution.`,
+        statement:
+          'Create a stabilisation initiative for multi‑movement customers: identify common friction points, apply targeted improvements, and follow up to confirm they settle into a stronger segment.',
         quadrant: undefined,
-        priority: 9,
+        priority: 2,
         actionability: 'hard',
         expectedImpact: 'high',
         roi: 3,
+        supportingData: { trackedCustomers, multiMove2PlusCustomers, multiMove2PlusPct }
+      });
+    }
+
+    // A2 — Reduce top negative transition
+    if (topNegative && negativeTransitions >= 10 && topNegativeMovePct >= 0.15) {
+      actions.push({
+        id: 'action-historical-reduce-top-negative',
+        statement: `Prioritise interventions that reduce the top negative transition (${topNegativeMoveName}) via root‑cause analysis, service recovery, and process fixes.`,
+        quadrant: undefined,
+        priority: 2,
+        actionability: 'medium',
+        expectedImpact: 'high',
+        roi: 6,
         supportingData: {
-          trackedCustomers: historicalProgress.trackedCustomers,
-          multiMove2PlusCustomers: multi2
+          trackedCustomers,
+          betweenQuadrantTransitions,
+          topNegativeMove: { ...topNegative, pct: topNegativeMovePct }
         }
+      });
+    }
+
+    // A3 — Scale top positive transition
+    if (topPositive && positiveTransitions >= 10 && topPositiveMovePct >= 0.15) {
+      actions.push({
+        id: 'action-historical-scale-top-positive',
+        statement: `Scale the behaviours/processes associated with the top positive transition (${topPositiveMoveName}) and institutionalise them as standard practice.`,
+        quadrant: undefined,
+        priority: 2,
+        actionability: 'easy',
+        expectedImpact: 'high',
+        roi: 9,
+        supportingData: {
+          trackedCustomers,
+          betweenQuadrantTransitions,
+          topPositiveMove: { ...topPositive, pct: topPositiveMovePct }
+        }
+      });
+    }
+
+    // If we have historical data but no between-quadrant changes, call out stability explicitly.
+    if (betweenQuadrantTransitions === 0) {
+      opportunities.unshift({
+        id: 'opportunity-historical-stability',
+        source: 'historical',
+        impact: 'low',
+        statement:
+          'Historical Progress suggests stability: customers with historical records did not change quadrant between consecutive check-ins. This can be a strength, but it also means shifting segment distribution will likely require deliberate interventions rather than organic drift.',
+        supportingData: { trackedCustomers, totalTransitions, noChangeTransitions },
+        chartSelector
       });
     }
   }
