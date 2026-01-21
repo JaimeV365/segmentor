@@ -97,6 +97,30 @@
             "@type": "Answer",
             "text": "Chebyshev distance (also called maximum metric or chessboard distance) measures distance as the maximum of the absolute differences in each dimension. This means diagonal neighbors are considered '1 space away' just like horizontal or vertical neighbors. Formula: max(|x2-x1|, |y2-y1|). We use it because: For diagonal proximity, it naturally includes diagonal neighbors, which makes sense when identifying customers at risk of moving to opposite quadrants. For special zones, it treats all 8 surrounding positions (up, down, left, right, and all 4 diagonals) as equally close, which aligns with how customers might move on the satisfaction-loyalty grid. For our proximity analysis, Chebyshev distance provides the most intuitive and business-relevant measurement of customer movement risk."
           }
+        },
+        {
+          "@type": "Question",
+          "name": "Why do I sometimes not see the Historical Progress report at all?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Historical Progress only appears when at least one customer has 2+ different dates (tracked using email or ID). If most rows have no date, or each customer only appears once, there is no history to compare and the section won’t show."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What’s the difference between the Trend Chart and the Movement Flow Visualization in Historical Progress?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The Trend Chart shows how average satisfaction and loyalty change over time (each point is an average of customers who have data on that date). The Movement Flow Visualization shows step-by-step segment movements between consecutive dated check-ins (customers can contribute to multiple movements if they change segment multiple times)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What do the numbers in circles mean on the Movement Flow Visualization?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Each circle shows the count of customers moving from the source quadrant to the destination quadrant between two consecutive dated check-ins. Click a circle to see the customers behind that movement."
+          }
         }
       ]
     }
@@ -671,6 +695,31 @@
                         </div>
                     </div>
 
+                    <div class="faq-item" data-keywords="historical progress trend chart movement flow visualization difference">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What’s the difference between the Trend Chart and the Movement Flow Visualization in Historical Progress?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>They answer different questions:</strong></p>
+                            <ul>
+                                <li><strong>Trend Chart:</strong> Shows how <em>average satisfaction</em> and <em>average loyalty</em> change over time. Each point is an average of the customers who have data on that date.</li>
+                                <li><strong>Movement Flow Visualization:</strong> Shows <em>step-by-step movements</em> between segments from one dated check-in to the next. A single customer can contribute to multiple movements if they change segments multiple times.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="cadence average time between check-ins typical interval historical progress actions report">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>How should I interpret “Average time between check-ins (cadence)” in the Actions Report?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>It’s a data-driven way to talk about time without guessing.</strong> When enough dated history exists, the report estimates the typical gap between consecutive dated records (using the median gap across customers). We label this as <strong>Average time between check-ins (cadence)</strong>.</p>
+                            <p>We only use absolute-day language when there’s enough data to be confident. Otherwise, the report uses more cautious wording like “between consecutive check-ins.”</p>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- Getting Started Section -->
@@ -1130,6 +1179,43 @@ CUST002,6,4,Jane Doe</pre>
                         </div>
                     </div>
 
+                    <div class="faq-item" data-keywords="historical progress movement flow numbers in circles customer count click circle">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What do the numbers in circles mean on the Movement Flow Visualization?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Each circle shows the <strong>count of customers</strong> moving from the source quadrant to the destination quadrant between two consecutive dated check-ins.</p>
+                            <p><strong>Tip:</strong> Click a circle to see the customers behind that specific movement.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="historical progress statistics above diagram totals differ why">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Why do the Historical Progress “statistics above” and the Movement Flow diagram show different totals?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>This is normal. Different parts of Historical Progress summarize different things:</p>
+                            <ul>
+                                <li><strong>Diagram:</strong> Focuses on movements between the <strong>4 main quadrants</strong> (Hostages, Loyalists, Defectors, Mercenaries) between consecutive check-ins.</li>
+                                <li><strong>Stats above:</strong> May reflect a broader view of movements and can include cases that the diagram doesn’t draw directly (for example, movements involving extra zones depending on your counting preferences).</li>
+                            </ul>
+                            <p>If you turn on “count-as” merges (e.g., <em>Count Advocates as Loyalists</em>), the diagram counts those movements into the 4-quadrant view without changing the layout.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="historical progress journeys multi-movement top movements difference">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What is “Customer Journeys (multi-movement)” and how is it different from “Top Movements”?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Top Movements</strong> shows the most common <strong>single-step</strong> transitions (e.g., Hostages → Loyalists).</p>
+                            <p><strong>Customer Journeys (multi-movement)</strong> shows <strong>full paths per customer</strong> across multiple check-ins (e.g., Hostages → Loyalists → Mercenaries), and lets you filter by <strong>Minimum movements</strong> (2+, 3+, etc.).</p>
+                        </div>
+                    </div>
+
                     <div class="faq-item" data-keywords="browser close lose data session storage">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             <h3>What happens if I close my browser?</h3>
@@ -1175,6 +1261,20 @@ CUST002,6,4,Jane Doe</pre>
                         </div>
                         <div class="faq-answer">
                             <p>Yes! You can customize colors throughout the tool. Highlight KPIs with different colors, customize bar chart colors, and more. All color customization features are free.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="historical progress count as merge advocates loyalists trolls defectors diagram">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What does “Count Advocates as Loyalists” / “Count Trolls as Defectors” change in the Movement Flow?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>These options change <strong>how movements are counted</strong> into the 4-quadrant Movement Flow view.</p>
+                            <ul>
+                                <li>The <strong>diagram layout never changes</strong>: Hostages (top-left), Loyalists (top-right), Defectors (bottom-left), Mercenaries (bottom-right).</li>
+                                <li>When enabled, movements involving extra zones (e.g., Advocates/Near‑Advocates or Trolls) are <strong>counted into</strong> Loyalists or Defectors for the purposes of the diagram and customer lists.</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -1452,6 +1552,28 @@ CUST002,6,4,Jane Doe</pre>
                                 <li>Longer report generation times</li>
                             </ul>
                             <p>This is normal for local processing. If performance becomes an issue, try filtering your data to a smaller subset for analysis.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="historical progress missing not showing dates multi date">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Why do I sometimes not see the Historical Progress report at all?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Historical Progress only appears when at least one customer has <strong>2+ different dates</strong> (tracked using email or ID).</p>
+                            <p>If most rows have no date, or each customer only appears once, there’s no “history” to compare — so the section won’t show.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="historical progress blur diagram filters too restrictive positive negative">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Why does the Movement Flow diagram blur instead of disappearing when filters are too restrictive?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>If your Movement Type filters become too restrictive (for example, you disable both positive and negative movements), there may be no movements left to show.</p>
+                            <p>Instead of removing the chart completely, we keep it visible but blurred so you can still access the menu and adjust filters back to a valid combination.</p>
                         </div>
                     </div>
 
