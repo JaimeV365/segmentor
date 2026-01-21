@@ -12,6 +12,8 @@ import { generateRisks } from './statements/risks';
 import { generateActions } from './statements/actions';
 import { captureMultipleCharts } from './imageCapture/chartImageCapture';
 import type { DataPoint } from '../../../../types/base';
+import { groupByCustomer, parseDate } from '../HistoricalProgressSection/utils/historicalDataUtils';
+import { calculateQuadrantMovements } from '../HistoricalProgressSection/services/historicalAnalysisService';
 
 /**
  * Conversion type for actionable conversions
@@ -68,6 +70,189 @@ export async function generateActionPlan(
     recommendation: evaluateRecommendation(aggregated.recommendationScore, loyaltyScale)
   };
 
+  // Create getQuadrantForPoint function if we have midpoint (used by opportunities/risks/actions and historical movements)
+  const getQuadrantForPoint = midpoint ? (point: { satisfaction: number; loyalty: number }) => {
+    if (point.satisfaction >= midpoint.sat && point.loyalty >= midpoint.loy) return 'loyalists';
+    if (point.satisfaction >= midpoint.sat && point.loyalty < midpoint.loy) return 'mercenaries';
+    if (point.satisfaction < midpoint.sat && point.loyalty >= midpoint.loy) return 'hostages';
+    return 'defectors';
+  } : undefined;
+
+  // Attach Historical Progress insights if we have enough dated data
+  try {
+    if (originalData && originalData.length > 0 && getQuadrantForPoint) {
+      const datedData = originalData.filter(p => !p.excluded && !!p.date);
+      if (datedData.length > 0) {
+        const dateFormat = datedData.find(p => p.date && (p as any).dateFormat)?.dateFormat as string | undefined;
+
+        // Timelines are already filtered to customers with 2+ distinct dates.
+        const timelines = groupByCustomer(datedData as any);
+        if (timelines.length > 0) {
+          const movementStats = calculateQuadrantMovements(
+            timelines as any,
+            (p: any) => getQuadrantForPoint({ satisfaction: p.satisfaction, loyalty: p.loyalty }) as any
+          );
+
+          // Journey (multi-movement) rollups
+          let multiMove2PlusCustomers = 0;
+          let multiMove3PlusCustomers = 0;
+
+          // Cadence / rapid negative movement
+          const deltasDays: number[] = [];
+          let customersWith2Dates = 0;
+          let rapidNegativeMovesCount = 0;
+
+          const mainQuadrantRank: Record<string, number> = {
+            defectors: 1,
+            hostages: 2,
+            mercenaries: 3,
+            loyalists: 4
+          };
+
+          // First pass: compute moves counts and date-gap distribution
+          const perTimelineParsed: Array<{
+            quadrants: string[];
+            dates: string[];
+            dateObjs: Date[];
+          }> = [];
+
+          timelines.forEach((t: any) => {
+            // Use unique dates from timeline, sorted
+            const uniqueDates: string[] = (t.dates || [])
+              .filter((d: any) => typeof d === 'string' && d.trim().length > 0)
+              .map((d: string) => d.trim())
+              .sort((a: string, b: string) => a.localeCompare(b));
+
+            // Build date->point map (last wins)
+            const pointByDate = new Map<string, any>();
+            (t.dataPoints || []).forEach((p: any) => {
+              if (!p.date) return;
+              pointByDate.set(String(p.date).trim(), p);
+            });
+
+            const quadrantsByDate: string[] = [];
+            const parsedDates: Date[] = [];
+            const parsedDateStrings: string[] = [];
+
+            uniqueDates.forEach((d: string) => {
+              const point = pointByDate.get(d);
+              if (!point) return;
+              const q = getQuadrantForPoint({ satisfaction: point.satisfaction, loyalty: point.loyalty });
+              quadrantsByDate.push(q);
+              const dt = parseDate(d, dateFormat);
+              if (dt) {
+                parsedDates.push(dt);
+                parsedDateStrings.push(d);
+              }
+            });
+
+            // Moves count (compress consecutive duplicates)
+            const compressed: string[] = [];
+            quadrantsByDate.forEach(q => {
+              const last = compressed[compressed.length - 1];
+              if (!last || last !== q) compressed.push(q);
+            });
+            const movesCount = Math.max(0, compressed.length - 1);
+            if (movesCount >= 2) multiMove2PlusCustomers += 1;
+            if (movesCount >= 3) multiMove3PlusCustomers += 1;
+
+            // Cadence gaps
+            if (parsedDates.length >= 2) {
+              customersWith2Dates += 1;
+              for (let i = 0; i < parsedDates.length - 1; i += 1) {
+                const diffMs = parsedDates[i + 1].getTime() - parsedDates[i].getTime();
+                const diffDays = Math.max(0, diffMs / (1000 * 60 * 60 * 24));
+                if (!Number.isNaN(diffDays) && Number.isFinite(diffDays)) {
+                  deltasDays.push(diffDays);
+                }
+              }
+              perTimelineParsed.push({
+                quadrants: quadrantsByDate,
+                dates: parsedDateStrings,
+                dateObjs: parsedDates
+              });
+            } else {
+              perTimelineParsed.push({
+                quadrants: quadrantsByDate,
+                dates: [],
+                dateObjs: []
+              });
+            }
+          });
+
+          // Cadence estimate (median)
+          const gapsCount = deltasDays.length;
+          const hasCadenceConfidence = gapsCount >= 30 && customersWith2Dates >= 15;
+          let typicalGapDays: number | null = null;
+          let cadenceLabel: 'monthly' | 'quarterly' | 'annual' | undefined;
+          if (hasCadenceConfidence) {
+            const sorted = [...deltasDays].sort((a, b) => a - b);
+            const mid = Math.floor(sorted.length / 2);
+            typicalGapDays = sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+
+            if (typicalGapDays >= 25 && typicalGapDays <= 45) cadenceLabel = 'monthly';
+            else if (typicalGapDays >= 70 && typicalGapDays <= 110) cadenceLabel = 'quarterly';
+            else if (typicalGapDays >= 300 && typicalGapDays <= 430) cadenceLabel = 'annual';
+          }
+
+          // Rapid negative movement count (only if cadence is confident)
+          if (hasCadenceConfidence && typicalGapDays !== null) {
+            const rapidThresholdDays = typicalGapDays;
+            perTimelineParsed.forEach(t => {
+              if (t.dateObjs.length < 2) return;
+              // Determine quadrant per parsed date order (same order as parsedDates)
+              // NOTE: quadrants array may include entries for unparseable dates; we align by parsed date strings.
+              const qByIdx: string[] = [];
+              t.dates.forEach((d, idx) => {
+                // Find the original point's quadrant for this date string by re-evaluating from originalData map isn't available here.
+                // We approximate using the already-computed quadrants list if lengths align; otherwise skip.
+                if (idx < t.quadrants.length) qByIdx.push(t.quadrants[idx]);
+              });
+              if (qByIdx.length < 2) return;
+
+              for (let i = 0; i < t.dateObjs.length - 1; i += 1) {
+                const fromQ = qByIdx[i];
+                const toQ = qByIdx[i + 1];
+                if (!fromQ || !toQ || fromQ === toQ) continue;
+                const fromRank = mainQuadrantRank[fromQ] ?? 0;
+                const toRank = mainQuadrantRank[toQ] ?? 0;
+                const isNegative = toRank < fromRank;
+                if (!isNegative) continue;
+                const diffMs = t.dateObjs[i + 1].getTime() - t.dateObjs[i].getTime();
+                const diffDays = Math.max(0, diffMs / (1000 * 60 * 60 * 24));
+                if (diffDays <= rapidThresholdDays) {
+                  rapidNegativeMovesCount += 1;
+                }
+              }
+            });
+          }
+
+          (aggregated as AggregatedReportData).historicalProgress = {
+            trackedCustomers: timelines.length,
+            totalTransitions: movementStats.totalMovements,
+            positiveTransitions: movementStats.positiveMovements,
+            negativeTransitions: movementStats.negativeMovements,
+            noChangeTransitions: movementStats.neutralMovements,
+            betweenQuadrantTransitions: movementStats.positiveMovements + movementStats.negativeMovements,
+            topTransitions: movementStats.movements.slice(0, 5).map(m => ({ from: m.from, to: m.to, count: m.count })),
+            multiMove2PlusCustomers,
+            multiMove3PlusCustomers,
+            cadence: {
+              hasConfidence: hasCadenceConfidence,
+              typicalGapDays,
+              cadenceLabel,
+              gapsCount,
+              customersWith2Dates,
+              rapidNegativeMovesCount
+            }
+          };
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('[ActionPlanGenerator] Failed to compute Historical Progress insights:', e);
+  }
+
   // 3. Generate statements
   const textFindings = generateFindings(evaluators, showNearApostles, isClassicModel);
   const chartFindings = generateChartFindings(evaluators, isClassicModel, aggregated);
@@ -81,6 +266,7 @@ export async function generateActionPlan(
     data: [],
     concentration: [],
     distribution: [],
+    historical: [],
     proximity: [],
     recommendation: []
   };
@@ -90,8 +276,8 @@ export async function generateActionPlan(
     findingsByCategory[f.category].push(f);
   });
   
-  // Build interleaved findings: Data → Concentration → Distribution → Proximity → Recommendation
-  const categoryOrder: Array<keyof typeof findingsByCategory> = ['data', 'concentration', 'distribution', 'proximity', 'recommendation'];
+  // Build interleaved findings: Data → Concentration → Distribution → Historical Progress → Proximity → Recommendation
+  const categoryOrder: Array<keyof typeof findingsByCategory> = ['data', 'concentration', 'distribution', 'historical', 'proximity', 'recommendation'];
   
   // Find main visualization chart and quadrant descriptions
   const mainVisualizationChart = chartFindings.find(cf => cf.id === 'chart-main-visualisation');
@@ -158,14 +344,6 @@ export async function generateActionPlan(
     proximityAvailable: proximityAnalysis?.settings?.isAvailable
   });
 
-  // Create getQuadrantForPoint function if we have midpoint
-  const getQuadrantForPoint = midpoint ? (point: { satisfaction: number; loyalty: number }) => {
-    if (point.satisfaction >= midpoint.sat && point.loyalty >= midpoint.loy) return 'loyalists';
-    if (point.satisfaction >= midpoint.sat && point.loyalty < midpoint.loy) return 'mercenaries';
-    if (point.satisfaction < midpoint.sat && point.loyalty >= midpoint.loy) return 'hostages';
-    return 'defectors';
-  } : undefined;
-  
   const opportunities = generateOpportunities(evaluators, isClassicModel, proximityAnalysis, dataForConversions, getQuadrantForPoint);
   const risks = generateRisks(evaluators, isClassicModel, proximityAnalysis, dataForConversions, getQuadrantForPoint, loyaltyScale);
   

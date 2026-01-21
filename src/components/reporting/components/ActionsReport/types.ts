@@ -22,7 +22,7 @@ export interface ActionPlanReport {
  */
 export interface Finding {
   id: string;
-  category: 'data' | 'concentration' | 'distribution' | 'proximity' | 'recommendation';
+  category: 'data' | 'concentration' | 'distribution' | 'historical' | 'proximity' | 'recommendation';
   statement: string;
   supportingData?: Record<string, any>;
   priority: number; // Lower = higher priority (display order)
@@ -75,7 +75,7 @@ export interface Action {
  */
 export interface ChartImage {
   id: string;
-  chartType: 'main' | 'distribution' | 'concentration' | 'proximity' | 'recommendation';
+  chartType: 'main' | 'distribution' | 'historical' | 'concentration' | 'proximity' | 'recommendation';
   dataUrl: string; // Base64 data URL
   caption: string;
   selector: string; // Original CSS selector used
@@ -130,6 +130,31 @@ export interface AggregatedReportData {
       mode: number;
       distribution: Record<number, number>;
     };
+  };
+  historicalProgress?: HistoricalProgressInsights | null;
+}
+
+export interface HistoricalProgressInsights {
+  trackedCustomers: number;
+  totalTransitions: number; // includes "no change"
+  positiveTransitions: number;
+  negativeTransitions: number;
+  noChangeTransitions: number;
+  betweenQuadrantTransitions: number;
+  topTransitions: Array<{
+    from: string;
+    to: string;
+    count: number;
+  }>;
+  multiMove2PlusCustomers: number;
+  multiMove3PlusCustomers: number;
+  cadence?: {
+    hasConfidence: boolean;
+    typicalGapDays: number | null;
+    cadenceLabel?: 'monthly' | 'quarterly' | 'annual';
+    gapsCount: number;
+    customersWith2Dates: number;
+    rapidNegativeMovesCount: number;
   };
 }
 

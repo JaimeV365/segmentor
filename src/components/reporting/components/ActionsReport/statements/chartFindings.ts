@@ -45,6 +45,26 @@ export function generateChartFindings(evaluators: EvaluatorResults, isClassicMod
     });
   }
 
+  // ===== HISTORICAL PROGRESS (MOVEMENT FLOW) =====
+  // Show if we have historical progress insights (customers with 2+ dated records)
+  const historical = aggregatedData?.historicalProgress;
+  if (historical && historical.trackedCustomers > 0 && historical.totalTransitions > 0) {
+    const historicalCommentary = generateHistoricalProgressMovementFlowCommentary(historical, isClassicModel);
+    chartFindings.push({
+      id: 'chart-historical-movement-flow',
+      category: 'historical',
+      statement: historicalCommentary,
+      isChartItem: true,
+      chartCommentary: historicalCommentary,
+      chartSelector: '[data-section-id="report-historical-progress"] .quadrant-movement-diagram',
+      priority: priority++,
+      supportingData: {
+        trackedCustomers: historical.trackedCustomers,
+        totalTransitions: historical.totalTransitions
+      }
+    });
+  }
+
   // ===== RESPONSE CONCENTRATION CHART =====
   // Show if we have concentration data
   if (evaluators.sampleSize.total > 0) {
@@ -148,6 +168,112 @@ export function generateChartFindings(evaluators: EvaluatorResults, isClassicMod
   }
 
   return chartFindings;
+}
+
+function formatPct(numerator: number, denominator: number): string {
+  if (!denominator || denominator <= 0) return '0%';
+  return `${((numerator / denominator) * 100).toFixed(1)}%`;
+}
+
+function formatTransitionName(from: string, to: string, isClassicModel: boolean): string {
+  return `${getQuadrantDisplayName(from, isClassicModel)} to ${getQuadrantDisplayName(to, isClassicModel)}`;
+}
+
+function generateHistoricalProgressMovementFlowCommentary(hp: any, isClassicModel: boolean): string {
+  const trackedCustomers = hp.trackedCustomers || 0;
+  const totalTransitions = hp.totalTransitions || 0;
+  const positiveTransitions = hp.positiveTransitions || 0;
+  const negativeTransitions = hp.negativeTransitions || 0;
+  const noChangeTransitions = hp.noChangeTransitions || 0;
+  const betweenQuadrantTransitions = hp.betweenQuadrantTransitions || (positiveTransitions + negativeTransitions);
+
+  const multiMove2PlusCustomers = hp.multiMove2PlusCustomers || 0;
+  const multiMove3PlusCustomers = hp.multiMove3PlusCustomers || 0;
+  const multiMove2PlusPct = trackedCustomers > 0 ? (multiMove2PlusCustomers / trackedCustomers) : 0;
+
+  const topTransitions: Array<{ from: string; to: string; count: number }> = hp.topTransitions || [];
+  const topMove = topTransitions[0];
+  const topMovePct = topMove && betweenQuadrantTransitions > 0 ? (topMove.count / betweenQuadrantTransitions) : 0;
+
+  const cadence = hp.cadence;
+  const cadenceHasConfidence = !!cadence?.hasConfidence;
+  const cadenceLabel: string | undefined = cadence?.cadenceLabel;
+  const rapidNegativeMovesCount: number = cadence?.rapidNegativeMovesCount || 0;
+
+  const parts: string[] = [];
+
+  // Core framing (always)
+  parts.push(
+    'The Movement Flow Visualization summarises step-by-step movements between segments from one dated check-in to the next (customers can contribute to multiple movements if they change segment multiple times).'
+  );
+
+  // Movement exists (light opener)
+  if (trackedCustomers >= 10 && totalTransitions >= 20) {
+    parts.push(`We observed measurable customer movement over time across ${trackedCustomers} customers with historical records.`);
+  }
+
+  // Direction mix
+  if (totalTransitions >= 50) {
+    parts.push(
+      `Across consecutive check-ins, ${formatPct(positiveTransitions, totalTransitions)} of transitions were positive, ${formatPct(negativeTransitions, totalTransitions)} negative, and ${formatPct(noChangeTransitions, totalTransitions)} showed no quadrant change.`
+    );
+  }
+
+  // Concentration vs spread
+  if (betweenQuadrantTransitions >= 20 && topMove) {
+    if (topMovePct >= 0.35) {
+      parts.push(
+        `Movement is concentrated: the single largest transition (${formatTransitionName(topMove.from, topMove.to, isClassicModel)}) accounts for ${formatPct(topMove.count, betweenQuadrantTransitions)} of all between-quadrant movements.`
+      );
+    } else {
+      parts.push('Movement is spread across multiple transitions rather than dominated by a single flow.');
+    }
+  }
+
+  // Multi-movement
+  if (trackedCustomers >= 30 && multiMove2PlusCustomers >= 10) {
+    if (multiMove2PlusPct >= 0.15) {
+      parts.push(
+        `A material share of customers (${formatPct(multiMove2PlusCustomers, trackedCustomers)}) changed segments two or more times, suggesting a stability opportunity: some customers have not yet settled into a consistent segment.`
+      );
+    } else {
+      parts.push(
+        `A smaller cohort (${multiMove2PlusCustomers} customers) changed segments multiple times; these customers are worth monitoring as a stability segment.`
+      );
+    }
+
+    if (multiMove2PlusPct >= 0.15) {
+      parts.push(
+        'Repeated segment changes may indicate boundary sensitivity—customers whose experience is close to the threshold and therefore more likely to switch classification as satisfaction or loyalty fluctuates.'
+      );
+    }
+  } else if (trackedCustomers >= 10 && multiMove2PlusCustomers === 0) {
+    parts.push('Most customers remained stable or moved at most once between segments during the period.');
+  }
+
+  // Rapid negative movement (cadence-aware)
+  if (cadenceHasConfidence && rapidNegativeMovesCount >= 10) {
+    const cadencePhrase = cadenceLabel ? ` (the typical time between check-ins appears approximately ${cadenceLabel})` : '';
+    parts.push(
+      `A notable share of negative movements occurred within one typical time between check-ins (cadence)${cadencePhrase}, which may indicate discrete bad experiences or complaints causing rapid deterioration.`
+    );
+  }
+
+  // Midpoint governance note (optional)
+  if (trackedCustomers >= 30 && multiMove2PlusPct >= 0.20) {
+    parts.push(
+      'If your operational definition of “good” differs from the mathematical midpoint, adjusting the midpoint can align segmentation to business standards and make borderline classifications more consistent.'
+    );
+  }
+
+  // Optional mention of 3+ movers as a stronger stability signal
+  if (trackedCustomers >= 30 && (multiMove3PlusCustomers >= 5 || (multiMove3PlusCustomers / trackedCustomers) >= 0.10)) {
+    parts.push(
+      `Stability risk: a subset of customers changed segments three or more times (${formatPct(multiMove3PlusCustomers, trackedCustomers)}), which may indicate inconsistent delivery, inconsistent expectations, or a threshold-sensitive experience that requires operational tightening.`
+    );
+  }
+
+  return parts.join(' ');
 }
 
 /**

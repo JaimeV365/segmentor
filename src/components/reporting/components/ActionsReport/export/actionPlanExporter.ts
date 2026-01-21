@@ -152,6 +152,7 @@ function getSectionTitle(category: string): string {
     'data': 'Data Overview',
     'concentration': 'Response Concentration',
     'distribution': 'Customer Distribution',
+    'historical': 'Historical Progress',
     'proximity': 'Proximity Analysis',
     'recommendation': 'Recommendation Score'
   };
