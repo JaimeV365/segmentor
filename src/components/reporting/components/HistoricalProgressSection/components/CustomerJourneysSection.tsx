@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import type { QuadrantType } from '../../../../visualization/context/QuadrantAssignmentContext';
 import type { DataPoint } from '@/types/base';
@@ -31,6 +31,7 @@ interface JourneyRow {
   startDate: string;
   endDate: string;
   pathLabel: string;
+  pathQuadrants: QuadrantType[];
   steps: JourneyStep[];
 }
 
@@ -112,6 +113,7 @@ const toJourneyRow = (
     startDate: dates[0],
     endDate: dates[dates.length - 1],
     pathLabel,
+    pathQuadrants: compressedQuadrants,
     steps
   };
 };
@@ -132,6 +134,7 @@ export const CustomerJourneysSection: React.FC<{
       .map(t => toJourneyRow(t, getQuadrantForPoint, isClassicModel))
       .filter((r): r is JourneyRow => !!r);
 
+    const maxMovesAll = all.reduce((max, r) => Math.max(max, r.movesCount), 0);
     const filtered = all.filter(r => r.movesCount >= minMoves);
 
     const compare = (a: JourneyRow, b: JourneyRow) => {
@@ -155,8 +158,29 @@ export const CustomerJourneysSection: React.FC<{
     };
 
     filtered.sort(compare);
-    return { allCount: all.length, filtered };
+    return { allCount: all.length, maxMovesAll, filtered };
   }, [timelines, getQuadrantForPoint, isClassicModel, minMoves, sortKey, sortDir]);
+
+  const minMoveOptions = useMemo(() => {
+    if (rows.maxMovesAll < 1) return [];
+    return Array.from({ length: rows.maxMovesAll }, (_, idx) => idx + 1);
+  }, [rows.maxMovesAll]);
+
+  useEffect(() => {
+    // Keep minMoves valid if available options change.
+    if (rows.maxMovesAll < 1) {
+      if (minMoves !== 1) setMinMoves(1);
+      return;
+    }
+    if (minMoves > rows.maxMovesAll) {
+      setMinMoves(rows.maxMovesAll);
+      return;
+    }
+    // If default (2) is impossible, fall back to 1.
+    if (minMoves === 2 && rows.maxMovesAll === 1) {
+      setMinMoves(1);
+    }
+  }, [rows.maxMovesAll, minMoves]);
 
   const toggleSort = (key: SortKey) => {
     if (key === sortKey) {
@@ -176,6 +200,14 @@ export const CustomerJourneysSection: React.FC<{
     });
   };
 
+  const QuadrantPill: React.FC<{ quadrant: QuadrantType }> = ({ quadrant }) => {
+    return (
+      <span className={`q-pill q-pill--${quadrant}`}>
+        {getQuadrantDisplayName(quadrant, isClassicModel)}
+      </span>
+    );
+  };
+
   return (
     <div className="customer-journeys-section">
       <div className="customer-journeys-header" onClick={() => setIsExpanded(v => !v)}>
@@ -188,33 +220,23 @@ export const CustomerJourneysSection: React.FC<{
             {rows.filtered.length} shown
             {rows.allCount > 0 ? ` / ${rows.allCount} total` : ''}
           </span>
-          <button
-            type="button"
-            className="customer-journeys-toggle"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsExpanded(v => !v);
-            }}
-          >
-            {isExpanded ? 'Hide' : 'Show'}
-          </button>
         </div>
       </div>
 
       {isExpanded && (
         <div className="customer-journeys-body">
-          <div className="customer-journeys-controls">
-            <label className="customer-journeys-control">
-              <span>Minimum movements</span>
-              <select value={minMoves} onChange={(e) => setMinMoves(parseInt(e.target.value, 10))}>
-                <option value={1}>1+</option>
-                <option value={2}>2+</option>
-                <option value={3}>3+</option>
-                <option value={4}>4+</option>
-                <option value={5}>5+</option>
-              </select>
-            </label>
-          </div>
+          {minMoveOptions.length > 0 && (
+            <div className="customer-journeys-controls">
+              <label className="customer-journeys-control">
+                <span>Minimum movements</span>
+                <select value={minMoves} onChange={(e) => setMinMoves(parseInt(e.target.value, 10))}>
+                  {minMoveOptions.map(n => (
+                    <option key={n} value={n}>{n}+</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          )}
 
           {rows.filtered.length === 0 ? (
             <div className="customer-journeys-empty">
@@ -264,11 +286,26 @@ export const CustomerJourneysSection: React.FC<{
                             </div>
                           </td>
                           <td>{r.datesCount}</td>
-                          <td>{r.movesCount}</td>
+                          <td>
+                            <span className={`moves-badge moves-badge--${Math.min(5, Math.max(1, r.movesCount))}`}>
+                              {r.movesCount}
+                            </span>
+                          </td>
                           <td>{r.distinctQuadrantsCount}</td>
                           <td>{r.startDate}</td>
                           <td>{r.endDate}</td>
-                          <td className="path">{r.pathLabel}</td>
+                          <td className="path">
+                            <div className="path-pills">
+                              {r.pathQuadrants.map((q, idx) => (
+                                <React.Fragment key={`${r.key}:q:${idx}`}>
+                                  <QuadrantPill quadrant={q} />
+                                  {idx < r.pathQuadrants.length - 1 && (
+                                    <span className="path-sep">→</span>
+                                  )}
+                                </React.Fragment>
+                              ))}
+                            </div>
+                          </td>
                         </tr>
                         {isRowExpanded && (
                           <tr className="details">
@@ -287,7 +324,7 @@ export const CustomerJourneysSection: React.FC<{
                                     {r.steps.map((s) => (
                                       <tr key={`${r.key}:${s.date}`}>
                                         <td>{s.date}</td>
-                                        <td>{getQuadrantDisplayName(s.quadrant, isClassicModel)}</td>
+                                        <td><QuadrantPill quadrant={s.quadrant} /></td>
                                         <td>{s.satisfaction}</td>
                                         <td>{s.loyalty}</td>
                                       </tr>

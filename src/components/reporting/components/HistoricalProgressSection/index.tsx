@@ -299,7 +299,7 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
         });
         const movementCount = Math.max(0, compressed.length - 1);
         const distinctQuadrantsCount = new Set(quadrantsByDate.filter((q): q is QuadrantType => !!q)).size;
-        const pathLabel = compressed.map(getQuadrantLabel).join(' → ');
+        const pathLabel = compressed.map(getQuadrantLabel).join(' -> ');
 
         cells.push(
           row.sortedDates.length,
@@ -319,7 +319,8 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
       const min = String(now.getMinutes()).padStart(2, '0');
       const filename = `segmentor-app_Historical_Progress_data_${dd}-${mm}-${yyyy}-${hh}-${min}.csv`;
 
-      const csv = lines.join('\r\n');
+      // Prepend UTF-8 BOM so Excel opens arrows/Unicode correctly
+      const csv = `\uFEFF${lines.join('\r\n')}`;
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
