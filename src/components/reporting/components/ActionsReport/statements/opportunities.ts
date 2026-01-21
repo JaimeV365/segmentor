@@ -36,6 +36,7 @@ export function generateOpportunities(
   getQuadrantForPoint?: (point: { satisfaction: number; loyalty: number }) => string
 ): Opportunity[] {
   const opportunities: Opportunity[] = [];
+  const apostlesTerm = isClassicModel ? 'Apostles' : 'Advocates';
 
   // ===== PROXIMITY OPPORTUNITIES =====
 
@@ -168,7 +169,7 @@ export function generateOpportunities(
       
       opportunities.push({
         id: 'opportunity-apostles',
-        statement: `You have ${apostlesOpp.count} customers who are close to becoming Apostles - your strongest brand advocates. With the right engagement, these customers could become powerful advocates for your brand.`,
+        statement: `You have ${apostlesOpp.count} customers who are close to becoming ${apostlesTerm} - your strongest brand advocates. With the right engagement, these customers could become powerful advocates for your brand.`,
         source: 'proximity',
         impact: 'high',
         supportingData: {

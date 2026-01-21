@@ -37,7 +37,7 @@ export interface Finding {
 export interface Opportunity {
   id: string;
   statement: string;
-  source: 'proximity' | 'distribution' | 'statistics' | 'recommendation';
+  source: 'proximity' | 'distribution' | 'statistics' | 'recommendation' | 'historical';
   impact: 'high' | 'medium' | 'low';
   supportingData?: Record<string, any>;
   chartSelector?: string;
@@ -49,7 +49,7 @@ export interface Opportunity {
 export interface Risk {
   id: string;
   statement: string;
-  source: 'proximity' | 'distribution' | 'statistics' | 'recommendation';
+  source: 'proximity' | 'distribution' | 'statistics' | 'recommendation' | 'historical';
   severity: 'high' | 'medium' | 'low';
   supportingData?: Record<string, any>;
   chartSelector?: string;

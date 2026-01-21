@@ -276,8 +276,9 @@ export async function generateActionPlan(
     findingsByCategory[f.category].push(f);
   });
   
-  // Build interleaved findings: Data → Concentration → Distribution → Historical Progress → Proximity → Recommendation
-  const categoryOrder: Array<keyof typeof findingsByCategory> = ['data', 'concentration', 'distribution', 'historical', 'proximity', 'recommendation'];
+  // Build interleaved findings: Data → Concentration → Distribution → Proximity → Historical Progress → Recommendation
+  // Keep Historical Progress after Proximity Analysis (matches report order elsewhere).
+  const categoryOrder: Array<keyof typeof findingsByCategory> = ['data', 'concentration', 'distribution', 'proximity', 'historical', 'recommendation'];
   
   // Find main visualization chart and quadrant descriptions
   const mainVisualizationChart = chartFindings.find(cf => cf.id === 'chart-main-visualisation');
@@ -349,12 +350,187 @@ export async function generateActionPlan(
   
   const actions = generateActions(evaluators, isClassicModel, actionableConversions, proximityAnalysis, dataForConversions, getQuadrantForPoint);
 
+  // ===== HISTORICAL PROGRESS (Ops & Risks + Actions) =====
+  // Add a few general-purpose, cadence-aware statements derived from Historical Progress insights.
+  const historicalProgress = (aggregated as AggregatedReportData).historicalProgress;
+  if (historicalProgress && historicalProgress.trackedCustomers > 0 && historicalProgress.totalTransitions > 0) {
+    const formatPct = (numerator: number, denominator: number) => {
+      if (denominator <= 0) return '0%';
+      const pct = (numerator / denominator) * 100;
+      return `${pct.toFixed(1)}%`;
+    };
+
+    const transitions = historicalProgress.betweenQuadrantTransitions;
+    const positive = historicalProgress.positiveTransitions;
+    const negative = historicalProgress.negativeTransitions;
+    const multi2 = historicalProgress.multiMove2PlusCustomers;
+    const multi3 = historicalProgress.multiMove3PlusCustomers;
+
+    const chartSelector = '[data-section-id="report-historical-progress"] .movement-diagram-container';
+
+    // Opportunity: positive momentum
+    if (transitions >= 20 && positive >= 10 && positive > negative) {
+      opportunities.push({
+        id: 'opportunity-historical-positive-momentum',
+        source: 'historical',
+        impact: 'medium',
+        statement: `Historical Progress shows net positive momentum: ${formatPct(positive, transitions)} of between‑quadrant moves were positive vs ${formatPct(negative, transitions)} negative. This suggests your experience improvements are translating into real customer movement (not just static distribution).`,
+        supportingData: {
+          trackedCustomers: historicalProgress.trackedCustomers,
+          betweenQuadrantTransitions: transitions,
+          positiveTransitions: positive,
+          negativeTransitions: negative
+        },
+        chartSelector
+      });
+    }
+
+    // Risk: negative pressure
+    if (transitions >= 20 && negative >= 10 && negative > positive) {
+      risks.push({
+        id: 'risk-historical-negative-pressure',
+        source: 'historical',
+        severity: 'high',
+        statement: `Historical Progress shows sustained negative movement pressure: ${formatPct(negative, transitions)} of between‑quadrant moves were negative vs ${formatPct(positive, transitions)} positive. Prioritise root‑cause fixes in the moments of truth driving these drops before they compound.`,
+        supportingData: {
+          trackedCustomers: historicalProgress.trackedCustomers,
+          betweenQuadrantTransitions: transitions,
+          positiveTransitions: positive,
+          negativeTransitions: negative
+        },
+        chartSelector
+      });
+    }
+
+    // Risk: volatility / boundary sensitivity (multi-movement)
+    if (historicalProgress.trackedCustomers >= 30 && multi2 >= 5) {
+      risks.push({
+        id: 'risk-historical-volatility',
+        source: 'historical',
+        severity: multi3 >= 5 ? 'high' : 'medium',
+        statement: `A notable share of customers moved multiple times across their history (${multi2} with 2+ moves${multi3 > 0 ? `; ${multi3} with 3+` : ''}). This pattern often indicates “boundary sensitivity” (small changes around the midpoint) and/or inconsistent experiences, so distribution snapshots may hide underlying churn risk.`,
+        supportingData: {
+          trackedCustomers: historicalProgress.trackedCustomers,
+          multiMove2PlusCustomers: multi2,
+          multiMove3PlusCustomers: multi3
+        },
+        chartSelector
+      });
+    }
+
+    // Risk + Action: cadence-aware rapid negative moves (only with confidence)
+    if (historicalProgress.cadence?.hasConfidence && historicalProgress.cadence.rapidNegativeMovesCount > 0) {
+      const typicalGap = historicalProgress.cadence.typicalGapDays;
+      risks.push({
+        id: 'risk-historical-rapid-negative',
+        source: 'historical',
+        severity: historicalProgress.cadence.rapidNegativeMovesCount >= 10 ? 'high' : 'medium',
+        statement: `Some negative moves happened within the typical time between check‑ins (${typicalGap !== null ? `${Math.round(typicalGap)} days` : 'your typical interval'}), suggesting fast deterioration once issues appear. Tighten early‑warning signals and close the loop on detractor feedback quickly.`,
+        supportingData: {
+          typicalGapDays: typicalGap,
+          rapidNegativeMovesCount: historicalProgress.cadence.rapidNegativeMovesCount
+        },
+        chartSelector
+      });
+
+      actions.push({
+        id: 'action-historical-early-warning',
+        statement: `Introduce an early‑warning loop for fast negative movement: monitor leading indicators between check‑ins (e.g., complaints, service incidents, product failures), trigger targeted outreach within the typical time between check‑ins (cadence), and verify recovery at the next measurement.`,
+        quadrant: undefined,
+        priority: 8,
+        actionability: 'medium',
+        expectedImpact: 'high',
+        roi: 6,
+        supportingData: {
+          typicalGapDays: typicalGap,
+          rapidNegativeMovesCount: historicalProgress.cadence.rapidNegativeMovesCount
+        }
+      });
+    }
+
+    // Action: stabilise multi-movers
+    if (historicalProgress.trackedCustomers >= 30 && multi2 >= 10) {
+      actions.push({
+        id: 'action-historical-stabilise-multi-movers',
+        statement: `Stabilise “multi‑movers”: review the journeys of customers who moved 2+ times to identify recurring triggers (moments of truth) and remove variability. Aim for fewer back‑and‑forth movements rather than only shifting the snapshot distribution.`,
+        quadrant: undefined,
+        priority: 9,
+        actionability: 'hard',
+        expectedImpact: 'high',
+        roi: 3,
+        supportingData: {
+          trackedCustomers: historicalProgress.trackedCustomers,
+          multiMove2PlusCustomers: multi2
+        }
+      });
+    }
+  }
+
+  // Ensure terminology matches the model toggle across all report statements (Classic vs Modern).
+  const applyModelTerminology = (text: string): string => {
+    const direction = isClassicModel ? 'toClassic' : 'toModern';
+    const replacements: Array<[RegExp, string]> =
+      direction === 'toModern'
+        ? [
+            [/\bNear-Apostles\b/g, 'Near-Advocates'],
+            [/\bNear Apostles\b/g, 'Near Advocates'],
+            [/\bNear-Apostle\b/g, 'Near-Advocate'],
+            [/\bNear Apostle\b/g, 'Near Advocate'],
+            [/\bApostles\b/g, 'Advocates'],
+            [/\bApostle\b/g, 'Advocate'],
+            [/\bapostles\b/g, 'advocates'],
+            [/\bapostle\b/g, 'advocate'],
+            [/\bNear-Terrorists\b/g, 'Near-Trolls'],
+            [/\bNear Terrorists\b/g, 'Near Trolls'],
+            [/\bNear-Terrorist\b/g, 'Near-Troll'],
+            [/\bNear Terrorist\b/g, 'Near Troll'],
+            [/\bTerrorists\b/g, 'Trolls'],
+            [/\bTerrorist\b/g, 'Troll'],
+            [/\bterrorists\b/g, 'trolls'],
+            [/\bterrorist\b/g, 'troll']
+          ]
+        : [
+            [/\bNear-Advocates\b/g, 'Near-Apostles'],
+            [/\bNear Advocates\b/g, 'Near Apostles'],
+            [/\bNear-Advocate\b/g, 'Near-Apostle'],
+            [/\bNear Advocate\b/g, 'Near Apostle'],
+            [/\bAdvocates\b/g, 'Apostles'],
+            [/\bAdvocate\b/g, 'Apostle'],
+            [/\badvocates\b/g, 'apostles'],
+            [/\badvocate\b/g, 'apostle'],
+            [/\bNear-Trolls\b/g, 'Near-Terrorists'],
+            [/\bNear Trolls\b/g, 'Near Terrorists'],
+            [/\bNear-Troll\b/g, 'Near-Terrorist'],
+            [/\bNear Troll\b/g, 'Near Terrorist'],
+            [/\bTrolls\b/g, 'Terrorists'],
+            [/\bTroll\b/g, 'Terrorist'],
+            [/\btrolls\b/g, 'terrorists'],
+            [/\btroll\b/g, 'terrorist']
+          ];
+
+    return replacements.reduce((acc, [pattern, replace]) => acc.replace(pattern, replace), text);
+  };
+
+  const normaliseStatements = <T extends { statement: string }>(items: T[]): T[] =>
+    items.map(item => ({ ...item, statement: applyModelTerminology(item.statement) }));
+
+  const normalisedFindings = findings.map(f => ({
+    ...f,
+    statement: applyModelTerminology(f.statement),
+    ...(f.chartCommentary ? { chartCommentary: applyModelTerminology(f.chartCommentary) } : {})
+  }));
+
+  // Apply to all non-editable statements (findings are handled below; opps/risks/actions here).
+  const normalisedOpportunities = normaliseStatements(opportunities);
+  const normalisedRisks = normaliseStatements(risks);
+  const normalisedActions = normaliseStatements(actions);
+
   // Detect and handle duplicate customer lists
   const { detectDuplicateCustomerLists } = require('./utils/detectDuplicateCustomerLists');
   const allStatements = [
-    ...risks.map(r => ({ id: r.id, supportingData: r.supportingData })),
-    ...opportunities.map(o => ({ id: o.id, supportingData: o.supportingData })),
-    ...actions.map(a => ({ id: a.id, supportingData: a.supportingData }))
+    ...normalisedRisks.map(r => ({ id: r.id, supportingData: r.supportingData })),
+    ...normalisedOpportunities.map(o => ({ id: o.id, supportingData: o.supportingData })),
+    ...normalisedActions.map(a => ({ id: a.id, supportingData: a.supportingData }))
   ];
   const duplicates = detectDuplicateCustomerLists(allStatements);
   
@@ -456,10 +632,10 @@ export async function generateActionPlan(
 
   return {
     date: new Date().toISOString(),
-    findings,
-    opportunities,
-    risks,
-    actions,
+    findings: normalisedFindings,
+    opportunities: normalisedOpportunities,
+    risks: normalisedRisks,
+    actions: normalisedActions,
     supportingImages,
     metadata
   };

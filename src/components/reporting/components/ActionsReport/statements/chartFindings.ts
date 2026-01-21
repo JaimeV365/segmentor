@@ -56,7 +56,8 @@ export function generateChartFindings(evaluators: EvaluatorResults, isClassicMod
       statement: historicalCommentary,
       isChartItem: true,
       chartCommentary: historicalCommentary,
-      chartSelector: '[data-section-id="report-historical-progress"] .quadrant-movement-diagram',
+      // Capture only the diagram (exclude title + info ribbon)
+      chartSelector: '[data-section-id="report-historical-progress"] .movement-diagram-container',
       priority: priority++,
       supportingData: {
         trackedCustomers: historical.trackedCustomers,
