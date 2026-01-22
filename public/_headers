@@ -15,21 +15,3 @@
 
 /*
   Content-Security-Policy: connect-src 'self' https://*.qualtrics.com https://fonts.googleapis.com https://fonts.gstatic.com https://segmentor.jaime-f57.workers.dev https://ipapi.co; frame-src https://*.qualtrics.com; img-src 'self' https://siteintercept.qualtrics.com https: data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.qualtrics.com; style-src 'self' 'unsafe-inline' https://*.qualtrics.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:;
-
-# Cache control for JavaScript files - prevent caching to ensure latest code is served
-/static/js/*
-  Cache-Control: no-cache, no-store, must-revalidate
-  Pragma: no-cache
-  Expires: 0
-
-# Cache control for CSS files
-/static/css/*
-  Cache-Control: no-cache, no-store, must-revalidate
-  Pragma: no-cache
-  Expires: 0
-
-# Cache control for HTML files
-/*.html
-  Cache-Control: no-cache, no-store, must-revalidate
-  Pragma: no-cache
-  Expires: 0
