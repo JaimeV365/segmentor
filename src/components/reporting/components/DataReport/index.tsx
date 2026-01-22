@@ -323,22 +323,7 @@ export const DataReport: React.FC<DataReportProps> = ({
     }
   }, [showRecommendationScore]);
    
-  // Show "No Data" message if no report, empty report, or no original data
-  // Check originalData first to avoid flickering when report is being generated
-  if ((originalData && originalData.length === 0) || !report || report.totalEntries === 0) {
-    return (
-      <div className="report-card" data-section-id="report-data">
-        <div className="report-title-wrapper">
-          <h3 className="report-title">Data Report</h3>
-        </div>
-        <div className="report-content">
-          <p style={{ color: '#666', fontSize: '1rem', textAlign: 'center', padding: '2rem' }}>
-            No data available. Please upload or enter data to generate a report.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  if (!report) return null;
 
   const handleQuadrantMove = (fromIndex: number, toIndex: number) => {
     // This would handle reordering of quadrants in a premium version
