@@ -106,6 +106,15 @@ export interface CreateSaveDataParams {
         showImageWatermarks: boolean;
         showPageWatermarks: boolean;
       };
+
+      // Saved/generated Action Plan snapshot (so Save includes the final Actions Report)
+      savedActionPlanSnapshot?: any;
+    };
+
+    // Historical Progress preferences (diagram/journeys UI settings)
+    historicalProgress?: {
+      diagram?: any;
+      journeys?: any;
     };
   };
   

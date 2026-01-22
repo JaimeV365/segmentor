@@ -1,7 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import { DataPoint, ScaleFormat } from '@/types/base';
-import { hasHistoricalData, groupByCustomer } from './utils/historicalDataUtils';
+import { hasHistoricalData, groupByCustomer, parseDate } from './utils/historicalDataUtils';
 import { useQuadrantAssignment } from '../../../visualization/context/QuadrantAssignmentContext';
+import type { QuadrantType } from '../../../visualization/context/QuadrantAssignmentContext';
+import { useFilterContextSafe } from '../../../visualization/context/FilterContext';
+import { useNotification } from '../../../data-entry/hooks/useNotification';
+import FilterPanel from '../../../visualization/filters/FilterPanel';
 import { 
   calculateTrendData, 
   calculateQuadrantMovements, 
@@ -11,6 +15,7 @@ import { generateForecast } from './services/forecastService';
 import { TrendChart } from './components/TrendChart';
 import { QuadrantMovementFlow } from './components/QuadrantMovementFlow';
 import { ForecastVisualization } from './components/ForecastVisualization';
+import { Filter, X, Link2, Link2Off } from 'lucide-react';
 import './HistoricalProgressSection.css';
 
 interface HistoricalProgressSectionProps {
@@ -18,27 +23,330 @@ interface HistoricalProgressSectionProps {
   satisfactionScale: ScaleFormat;
   loyaltyScale: ScaleFormat;
   isPremium?: boolean;
+  isClassicModel?: boolean;
 }
 
 export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps> = ({
   data,
   satisfactionScale,
   loyaltyScale,
-  isPremium = false
+  isPremium = false,
+  isClassicModel = false
 }) => {
   // Get quadrant assignment function from context
   const { getQuadrantForPoint } = useQuadrantAssignment();
+  const filterContext = useFilterContextSafe();
+  const { showNotification } = useNotification();
+  const [showFilterPanel, setShowFilterPanel] = useState(false);
+  const [filterResetTrigger, setFilterResetTrigger] = useState(0);
+  const [filteredDataFromPanel, setFilteredDataFromPanel] = useState<DataPoint[] | null>(null);
+  const [hasLocalChanges, setHasLocalChanges] = useState(false);
+  const [isManualReconnecting, setIsManualReconnecting] = useState(false);
+  const [showReconnectModal, setShowReconnectModal] = useState(false);
+  const filterButtonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const REPORT_ID = useMemo(() => 'historicalProgressSection', []);
+  
+  // Initialize filter state
+  useLayoutEffect(() => {
+    if (filterContext && !filterContext.reportFilterStates[REPORT_ID]) {
+      filterContext.syncReportToMaster(REPORT_ID);
+    }
+  }, [filterContext, REPORT_ID]);
+  
+  useEffect(() => {
+    if (filterContext && !filterContext.reportFilterStates[REPORT_ID]) {
+      filterContext.syncReportToMaster(REPORT_ID);
+    }
+  }, [filterContext, REPORT_ID]);
+  
+  // Check if filters are connected to main chart
+  const isConnected = useMemo(() => {
+    if (!filterContext) {
+      return true;
+    }
+    const reportState = filterContext.reportFilterStates[REPORT_ID];
+    if (!reportState) {
+      return true;
+    }
+    return filterContext.compareFilterStates(reportState, filterContext.filterState);
+  }, [filterContext, REPORT_ID, filterContext?.reportFilterStates?.[REPORT_ID], filterContext?.filterState]);
+  
+  // Count active filters
+  const filterCount = useMemo(() => {
+    if (!filterContext) return 0;
+    const stateToUse = isConnected 
+      ? filterContext.filterState 
+      : (filterContext.getReportFilterState(REPORT_ID) || filterContext.filterState);
+    const hasDateFilter = stateToUse.dateRange?.preset && stateToUse.dateRange.preset !== 'all';
+    const attributeFilterCount = stateToUse.attributes?.filter(attr => attr.values && attr.values.size > 0).length || 0;
+    return (hasDateFilter ? 1 : 0) + attributeFilterCount;
+  }, [filterContext, isConnected, REPORT_ID]);
+  
+  // Get effective filtered data
+  const effectiveData = useMemo(() => {
+    if (!filterContext || !data) {
+      return data;
+    }
+    if (!isConnected && filteredDataFromPanel) {
+      return filteredDataFromPanel;
+    }
+    return filterContext.getReportFilteredData(REPORT_ID, data);
+  }, [data, filterContext, REPORT_ID, filteredDataFromPanel, isConnected]);
+  
+  // Handle filter changes
+  const handleFilterChange = useCallback((filteredData: DataPoint[], filters: any[], filterState?: any) => {
+    setFilteredDataFromPanel(filteredData);
+    setHasLocalChanges(true);
+  }, []);
+  
+  // Handle filter reset
+  const handleFilterReset = useCallback(() => {
+    setFilterResetTrigger(prev => prev + 1);
+    setFilteredDataFromPanel(null);
+    setHasLocalChanges(false);
+  }, []);
+  
+  // Handle connection toggle
+  const handleConnectionToggle = useCallback(() => {
+    if (!filterContext) return;
+    
+    if (isConnected) {
+      // Disconnect: sync current main state to report, then disconnect
+      filterContext.syncReportToMaster(REPORT_ID);
+      setIsManualReconnecting(true);
+      // The disconnect happens automatically when user changes filters
+    } else {
+      // Connect: sync report to main
+      filterContext.syncReportToMaster(REPORT_ID);
+      setFilteredDataFromPanel(null);
+      setHasLocalChanges(false);
+      setIsManualReconnecting(false);
+    }
+  }, [filterContext, REPORT_ID, isConnected]);
+  
+  // Clear local changes when connected
+  useEffect(() => {
+    if (isConnected && filteredDataFromPanel !== null) {
+      setFilteredDataFromPanel(null);
+      setHasLocalChanges(false);
+    }
+  }, [isConnected, filteredDataFromPanel]);
+  
+  // Close filter panel when clicking outside
+  useEffect(() => {
+    if (!showFilterPanel) return;
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      const targetElement = event.target as HTMLElement;
+      const isPanelClick = targetElement.closest('.unified-controls-panel');
+      const isControlButtonClick = filterButtonRef.current?.contains(targetElement);
+      const isModalClick = targetElement.closest('.filter-connection-modal-overlay') || 
+                          targetElement.closest('.filter-connection-modal');
+      
+      // Close panel when clicking outside (but not on panel, button, or modal)
+      if (!isPanelClick && !isControlButtonClick && !isModalClick && panelRef.current) {
+        setShowFilterPanel(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showFilterPanel]);
   
   // Extract date format from first data point with date (if available)
   const dateFormat = useMemo(() => {
-    const firstPointWithDate = data.find(p => p.date && p.dateFormat);
+    const firstPointWithDate = effectiveData.find(p => p.date && p.dateFormat);
     return firstPointWithDate?.dateFormat;
-  }, [data]);
+  }, [effectiveData]);
   
   // Group data by customer (always calculate, even if we won't show)
+  // Use effectiveData (filtered) for calculations
   const timelines = useMemo(() => {
-    return groupByCustomer(data);
-  }, [data]);
+    return groupByCustomer(effectiveData);
+  }, [effectiveData]);
+
+  const exportHistoricalProgressCsv = useCallback(() => {
+    try {
+      if (!timelines || timelines.length === 0) {
+        showNotification({
+          title: 'Nothing to export',
+          message: 'No customers with 2+ dated records are available in the current filter selection.',
+          type: 'warning'
+        });
+        return;
+      }
+
+      const escapeCsv = (value: unknown) => {
+        const str = value === null || value === undefined ? '' : String(value);
+        const needsQuotes = /[",\n\r]/.test(str);
+        const escaped = str.replace(/"/g, '""');
+        return needsQuotes ? `"${escaped}"` : escaped;
+      };
+
+      const sortDates = (a: string, b: string) => {
+        const da = parseDate(a, dateFormat);
+        const db = parseDate(b, dateFormat);
+        if (da && db) return da.getTime() - db.getTime();
+        if (da && !db) return -1;
+        if (!da && db) return 1;
+        return a.localeCompare(b);
+      };
+
+      const getQuadrantLabel = (quadrant: QuadrantType): string => {
+        if (isClassicModel) {
+          const names: Record<QuadrantType, string> = {
+            apostles: 'Apostles',
+            near_apostles: 'Near-Apostles',
+            loyalists: 'Loyalists',
+            mercenaries: 'Mercenaries',
+            hostages: 'Hostages',
+            neutral: 'Neutral',
+            defectors: 'Defectors',
+            terrorists: 'Terrorists'
+          };
+          return names[quadrant] || quadrant;
+        }
+        const names: Record<QuadrantType, string> = {
+          apostles: 'Advocates',
+          near_apostles: 'Near-Advocates',
+          loyalists: 'Loyalists',
+          mercenaries: 'Mercenaries',
+          hostages: 'Hostages',
+          neutral: 'Neutral',
+          defectors: 'Defectors',
+          terrorists: 'Trolls'
+        };
+        return names[quadrant] || quadrant;
+      };
+
+      const perCustomer = timelines.map(timeline => {
+        // Use last point for name/group (best guess of "current")
+        const lastPoint = timeline.dataPoints[timeline.dataPoints.length - 1];
+        const displayEmail =
+          timeline.identifierType === 'email'
+            ? (timeline.dataPoints.find(p => p.email)?.email?.trim() || timeline.identifier)
+            : '';
+        const displayId = timeline.identifierType === 'id' ? timeline.identifier : (lastPoint?.id || '');
+
+        // Map dates -> point (last wins)
+        const pointByDate = new Map<string, DataPoint>();
+        timeline.dataPoints.forEach(p => {
+          if (!p.date) return;
+          pointByDate.set(p.date.trim(), p);
+        });
+
+        const sortedDates = Array.from(pointByDate.keys()).sort(sortDates);
+        return {
+          timeline,
+          displayEmail,
+          displayId,
+          name: lastPoint?.name || '',
+          group: lastPoint?.group || '',
+          sortedDates,
+          pointByDate
+        };
+      });
+
+      const maxDates = perCustomer.reduce((max, row) => Math.max(max, row.sortedDates.length), 0);
+
+      const headers: string[] = ['Identifier Type', 'Email', 'ID', 'Name', 'Group'];
+      for (let i = 1; i <= maxDates; i += 1) {
+        headers.push(`Date ${i}`, `Quadrant ${i}`, `Satisfaction ${i}`, `Loyalty ${i}`);
+      }
+      headers.push('Total Dates', 'Movement Count', 'Distinct Quadrants', 'Quadrant Path');
+
+      const lines: string[] = [];
+      lines.push(headers.map(escapeCsv).join(','));
+
+      perCustomer.forEach(row => {
+        const cells: Array<string | number> = [
+          row.timeline.identifierType,
+          row.displayEmail,
+          row.displayId,
+          row.name,
+          row.group
+        ];
+
+        const quadrantsByDate: Array<QuadrantType | null> = [];
+
+        for (let i = 0; i < maxDates; i += 1) {
+          const date = row.sortedDates[i];
+          if (!date) {
+            cells.push('', '', '', '');
+            quadrantsByDate.push(null);
+            continue;
+          }
+          const point = row.pointByDate.get(date);
+          const quadrant = point ? getQuadrantForPoint(point) : null;
+          quadrantsByDate.push(quadrant);
+          cells.push(
+            date,
+            quadrant ? getQuadrantLabel(quadrant) : '',
+            point ? point.satisfaction : '',
+            point ? point.loyalty : ''
+          );
+        }
+
+        // Journey summary (compress consecutive duplicates, ignore nulls)
+        const compressed: QuadrantType[] = [];
+        quadrantsByDate.forEach(q => {
+          if (!q) return;
+          const last = compressed[compressed.length - 1];
+          if (!last || last !== q) compressed.push(q);
+        });
+        const movementCount = Math.max(0, compressed.length - 1);
+        const distinctQuadrantsCount = new Set(quadrantsByDate.filter((q): q is QuadrantType => !!q)).size;
+        const pathLabel = compressed.map(getQuadrantLabel).join(' -> ');
+
+        cells.push(
+          row.sortedDates.length,
+          movementCount,
+          distinctQuadrantsCount,
+          pathLabel
+        );
+
+        lines.push(cells.map(escapeCsv).join(','));
+      });
+
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, '0');
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const yyyy = now.getFullYear();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      const filename = `segmentor-app_Historical_Progress_data_${dd}-${mm}-${yyyy}-${hh}-${min}.csv`;
+
+      // Prepend UTF-8 BOM so Excel opens arrows/Unicode correctly
+      const csv = `\uFEFF${lines.join('\r\n')}`;
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+
+      showNotification({
+        title: 'Export started',
+        message: `Downloading ${filename}`,
+        type: 'success'
+      });
+    } catch (error) {
+      console.error('[HistoricalProgress] CSV export failed:', error);
+      showNotification({
+        title: 'Export failed',
+        message: 'Unable to generate the Historical Progress CSV export.',
+        type: 'error'
+      });
+    }
+  }, [dateFormat, getQuadrantForPoint, isClassicModel, showNotification, timelines]);
   
   // Calculate trend data
   const trendData = useMemo(() => {
@@ -62,13 +370,59 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
   
   // Check if we have historical data to show (after all hooks)
   if (!hasHistoricalData(data)) {
+    console.log('[HistoricalProgress] No historical data, not rendering. Data length:', data.length);
     return null; // Don't render if no historical data
   }
+  
+  console.log('[HistoricalProgress] Rendering section. Data length:', data.length, 'Timelines:', timelines.length);
   
   return (
     <div className="report-card" data-section-id="report-historical-progress">
       <div className="report-title-wrapper">
-        <h3 className="report-title">Historical Progress</h3>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <h3 className="report-title">Historical Progress</h3>
+          <div className="historical-progress-header-controls">
+            <button
+              type="button"
+              className="historical-progress-filter-button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                exportHistoricalProgressCsv();
+              }}
+              title="Export Historical Progress CSV"
+              aria-label="Export Historical Progress CSV"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-download-icon lucide-download"
+              >
+                <path d="M12 15V3" />
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <path d="m7 10 5 5 5-5" />
+              </svg>
+            </button>
+            <button
+              ref={filterButtonRef}
+              className={`historical-progress-filter-button ${showFilterPanel ? 'active' : ''} ${filterCount > 0 ? 'has-filters' : ''}`}
+              onClick={() => setShowFilterPanel(prev => !prev)}
+              title="Filter data for this section"
+            >
+              <Filter size={18} />
+              {filterCount > 0 && (
+                <span className="filter-badge small">{filterCount}</span>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
       
       <div className="report-content">
@@ -143,7 +497,13 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
           {movementStats.totalMovements > 0 && (
             <div className="historical-progress-movements">
               <h4 className="report-subtitle">Quadrant Movements</h4>
-              <QuadrantMovementFlow movementStats={movementStats} />
+              <QuadrantMovementFlow 
+                movementStats={movementStats}
+                timelines={timelines}
+                data={data}
+                getQuadrantForPoint={getQuadrantForPoint}
+                isClassicModel={isClassicModel}
+              />
             </div>
           )}
           
@@ -160,6 +520,102 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
           )}
         </div>
       </div>
+      
+      {/* Filter Panel */}
+      {showFilterPanel && (
+        <div className="unified-controls-panel proximity-controls-panel" ref={panelRef}>
+          <div className="unified-controls-header">
+            <div className="unified-controls-tabs">
+              <div className="unified-tab active">
+                <Filter size={16} />
+                Filters
+                <span 
+                  className="connection-status-icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isConnected) {
+                      setShowReconnectModal(true);
+                    }
+                  }}
+                  title={isConnected ? 'Connected to main filters' : 'Click to reconnect to main filters'}
+                  style={{ cursor: !isConnected ? 'pointer' : 'default' }}
+                >
+                  {isConnected ? <Link2 size={14} /> : <Link2Off size={14} />}
+                </span>
+                {filterCount > 0 && (
+                  <span className="unified-filter-badge">{filterCount}</span>
+                )}
+              </div>
+            </div>
+            <button className="unified-close-button" onClick={() => setShowFilterPanel(false)}>
+              <X size={20} />
+            </button>
+          </div>
+          
+          <div className="unified-controls-content">
+            <div className="unified-tab-content">
+              <div className="unified-tab-body">
+                {filterContext && (
+                  <FilterPanel
+                    data={data || []}
+                    onFilterChange={handleFilterChange}
+                    onClose={() => {}}
+                    isOpen={true}
+                    contentOnly={true}
+                    resetTrigger={filterResetTrigger}
+                    onShowNotification={showNotification}
+                    reportId={REPORT_ID}
+                    forceLocalState={true}
+                  />
+                )}
+              </div>
+              <div className="unified-tab-footer">
+                <button 
+                  className="unified-reset-button" 
+                  onClick={handleFilterReset}
+                >
+                  Reset Filters
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Reconnect Modal */}
+      {showReconnectModal && (
+        <div className="filter-connection-modal-overlay">
+          <div className="filter-connection-modal">
+            <div className="modal-header">
+              <h3>Connect to Main Filters?</h3>
+            </div>
+            <div className="modal-content">
+              <p>This will discard local Historical Progress filters and sync with the main chart filters.</p>
+            </div>
+            <div className="modal-actions">
+              <button 
+                className="modal-btn cancel-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowReconnectModal(false);
+                }}
+              >
+                Cancel
+              </button>
+              <button 
+                className="modal-btn confirm-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowReconnectModal(false);
+                  handleConnectionToggle();
+                }}
+              >
+                Connect
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

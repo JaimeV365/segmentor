@@ -170,16 +170,42 @@ export const useSaveLoad = (params: UseSaveLoadParams) => {
         if (savedPdfExportOptions) {
           pdfExportOptions = JSON.parse(savedPdfExportOptions);
         }
+
+        // Collect saved/generated Action Plan snapshot (so Save includes the final Actions Report)
+        const savedActionPlanSnapshotRaw = localStorage.getItem('savedActionsReportSnapshot');
+        let savedActionPlanSnapshot: any = undefined;
+        if (savedActionPlanSnapshotRaw) {
+          try {
+            savedActionPlanSnapshot = JSON.parse(savedActionPlanSnapshotRaw);
+          } catch (e) {
+            console.warn('Failed to parse savedActionsReportSnapshot from localStorage:', e);
+          }
+        }
         
-        if (Object.keys(editableTexts).length > 0 || expandedSections || pdfExportOptions) {
+        if (Object.keys(editableTexts).length > 0 || expandedSections || pdfExportOptions || savedActionPlanSnapshot) {
           actionReportsSettings = {
             editableTexts: Object.keys(editableTexts).length > 0 ? editableTexts : undefined,
             expandedSections: expandedSections,
-            pdfExportOptions: pdfExportOptions
+            pdfExportOptions: pdfExportOptions,
+            savedActionPlanSnapshot: savedActionPlanSnapshot
           };
         }
       } catch (e) {
         console.warn('Failed to collect Action Reports settings from localStorage:', e);
+      }
+
+      // Collect Historical Progress UI preferences from localStorage
+      let historicalProgressSettings: any = undefined;
+      try {
+        const diagramRaw = localStorage.getItem('historicalProgressDiagramSettings');
+        const journeysRaw = localStorage.getItem('historicalProgressJourneysSettings');
+        const diagram = diagramRaw ? JSON.parse(diagramRaw) : undefined;
+        const journeys = journeysRaw ? JSON.parse(journeysRaw) : undefined;
+        if (diagram || journeys) {
+          historicalProgressSettings = { diagram, journeys };
+        }
+      } catch (e) {
+        console.warn('Failed to collect Historical Progress settings from localStorage:', e);
       }
       
       // Collect report filter states from FilterContext
@@ -241,12 +267,13 @@ export const useSaveLoad = (params: UseSaveLoadParams) => {
         },
         
         // Report Settings and Customizations
-        reportSettings: (responseConcentrationSettings || recommendationScoreSettings || reportCustomizations || proximityDisplaySettings || actionReportsSettings) ? {
+        reportSettings: (responseConcentrationSettings || recommendationScoreSettings || reportCustomizations || proximityDisplaySettings || actionReportsSettings || historicalProgressSettings) ? {
           responseConcentration: responseConcentrationSettings,
           recommendationScore: recommendationScoreSettings,
           customizations: reportCustomizations,
           proximityDisplay: proximityDisplaySettings,
-          actionReports: actionReportsSettings
+          actionReports: actionReportsSettings,
+          historicalProgress: historicalProgressSettings
         } : undefined,
         
         // Individual Report Filter States

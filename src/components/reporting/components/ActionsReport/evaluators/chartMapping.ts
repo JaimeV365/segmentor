@@ -53,9 +53,12 @@ export function getChartSelectorForStatement(statementId: string): string | unde
 /**
  * Gets chart type from selector
  */
-export function getChartTypeFromSelector(selector: string): 'main' | 'distribution' | 'concentration' | 'proximity' | 'recommendation' {
+export function getChartTypeFromSelector(selector: string): 'main' | 'distribution' | 'historical' | 'concentration' | 'proximity' | 'recommendation' {
   if (selector.includes('chart-container') || selector === '.chart-container') {
     return 'main';
+  }
+  if (selector.includes('historical') || selector.includes('report-historical-progress')) {
+    return 'historical';
   }
   if (selector.includes('distribution')) {
     return 'distribution';

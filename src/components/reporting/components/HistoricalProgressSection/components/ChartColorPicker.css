@@ -1,0 +1,143 @@
+.chart-settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.chart-color-picker {
+  margin-bottom: 20px;
+}
+
+.color-picker-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.color-preview {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: 2px solid #e5e7eb;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.color-palette {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.color-swatch {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 2px solid #e5e7eb;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  background: none;
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+  border-color: #3a863e;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.color-swatch.active {
+  border-color: #3a863e;
+  border-width: 3px;
+  box-shadow: 0 0 0 2px rgba(58, 134, 62, 0.2);
+}
+
+.color-hex-section {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.hex-toggle-button {
+  width: 100%;
+  padding: 8px 12px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  color: #374151;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hex-toggle-button:hover {
+  background: #e5e7eb;
+  border-color: #d1d5db;
+}
+
+.hex-input-group {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.hex-input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: monospace;
+  color: #374151;
+}
+
+.hex-input:focus {
+  outline: none;
+  border-color: #3a863e;
+  box-shadow: 0 0 0 2px rgba(58, 134, 62, 0.1);
+}
+
+.hex-submit-button,
+.hex-cancel-button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #e5e7eb;
+}
+
+.hex-submit-button {
+  background: #3a863e;
+  color: white;
+  border-color: #3a863e;
+}
+
+.hex-submit-button:hover:not(:disabled) {
+  background: #34753a;
+  border-color: #34753a;
+}
+
+.hex-submit-button:disabled {
+  background: #d1d5db;
+  border-color: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.hex-cancel-button {
+  background: white;
+  color: #374151;
+}
+
+.hex-cancel-button:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}

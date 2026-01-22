@@ -182,6 +182,16 @@ export interface ApostlesSaveData {
           showImageWatermarks: boolean;
           showPageWatermarks: boolean;
         };
+
+        // Saved/generated Action Plan snapshot (so saved files can restore the final Actions Report)
+        // Shape: { hash: string, report: ActionsReport } (kept as `any` to avoid cross-module type coupling).
+        savedActionPlanSnapshot?: any;
+      };
+
+      // Historical Progress preferences (diagram/journeys UI settings)
+      historicalProgress?: {
+        diagram?: any;
+        journeys?: any;
       };
     };
     

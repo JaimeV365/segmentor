@@ -87,10 +87,13 @@ const DataEntryModule: React.FC<DataEntryModuleProps> = ({
     
     // No external data - try loading from storage
     const savedState = storageManager.loadState();
-    if (savedState?.data?.length) {
+    if (savedState?.data && Array.isArray(savedState.data) && savedState.data.length > 0) {
       setData(savedState.data);
       // We're intentionally NOT loading upload history from storage
       // to start with a clean history on each page load
+    } else {
+      // Ensure data is empty array if no saved state
+      setData([]);
     }
   }, [externalData]);
 
@@ -426,7 +429,7 @@ if (editingData) {
       />
       
       {/* Demo Button - Always visible below tabs when no data */}
-      {(!externalData || externalData.length === 0) && data.length === 0 && onDemoDataLoad && (
+      {data.length === 0 && onDemoDataLoad && (
         <DemoButton 
           onDemoDataLoad={onDemoDataLoad}
           disabled={false}

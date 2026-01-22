@@ -48,6 +48,9 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
   // Check if Response Concentration section is expanded
   const [isResponseConcentrationExpanded, setIsResponseConcentrationExpanded] = useState(false);
   
+  // Check if Historical Progress section exists
+  const [hasHistoricalProgress, setHasHistoricalProgress] = useState(false);
+  
   useEffect(() => {
     // Check if Recommendation Score section exists in DOM
     const checkRecommendationScore = () => {
@@ -72,20 +75,124 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
       }
     };
     
+    // Check if Historical Progress section exists in DOM
+    const checkHistoricalProgress = () => {
+      const element = document.querySelector('[data-section-id="report-historical-progress"]');
+      // Just check if element exists - don't check visibility as it might be off-screen
+      const exists = !!element;
+      const previousState = hasHistoricalProgress;
+      
+      console.log('[SectionNavigation] Checking Historical Progress:', {
+        exists,
+        previousState,
+        elementFound: !!element,
+        elementDetails: element ? {
+          className: element.className,
+          id: element.id,
+          parentElement: element.parentElement?.className
+        } : null,
+        allSections: Array.from(document.querySelectorAll('[data-section-id]')).map(el => ({
+          id: el.getAttribute('data-section-id'),
+          className: el.className
+        }))
+      });
+      
+      if (exists !== previousState) {
+        console.log('[SectionNavigation] Historical Progress state changed:', previousState, '->', exists);
+      }
+      
+      setHasHistoricalProgress(exists);
+      // If element found, log for debugging
+      if (exists) {
+        console.log('[SectionNavigation] Historical Progress section detected in drawer');
+      }
+      return exists;
+    };
+    
     checkRecommendationScore();
     checkResponseConcentrationExpanded();
+    checkHistoricalProgress();
     
     // Check periodically in case sections are added/removed or expanded/collapsed dynamically
+    // Use shorter interval for more responsive detection
     const interval = setInterval(() => {
       checkRecommendationScore();
       checkResponseConcentrationExpanded();
-    }, 500);
+      checkHistoricalProgress();
+    }, 300);
     
-    return () => clearInterval(interval);
+    // Check multiple times with increasing delays to catch late-rendering sections (especially demo data)
+    const timeouts = [
+      setTimeout(() => checkHistoricalProgress(), 500),
+      setTimeout(() => checkHistoricalProgress(), 1000),
+      setTimeout(() => checkHistoricalProgress(), 2000),
+      setTimeout(() => checkHistoricalProgress(), 3000),
+      setTimeout(() => checkHistoricalProgress(), 5000)
+    ];
+    
+    // Use MutationObserver to watch for when the section appears in DOM (especially for demo data)
+    const observer = new MutationObserver((mutations) => {
+      let shouldCheck = false;
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              const element = node as Element;
+              // Check if the added node is the section or contains it
+              const hasSectionId = element.hasAttribute?.('data-section-id');
+              const sectionIdValue = element.getAttribute?.('data-section-id');
+              const containsSection = element.querySelector?.('[data-section-id="report-historical-progress"]');
+              
+              if (hasSectionId && sectionIdValue === 'report-historical-progress') {
+                console.log('[SectionNavigation] MutationObserver: Found section directly added:', {
+                  tagName: element.tagName,
+                  className: element.className
+                });
+                shouldCheck = true;
+              } else if (containsSection) {
+                console.log('[SectionNavigation] MutationObserver: Found section in added subtree');
+                shouldCheck = true;
+              }
+            }
+          });
+        }
+      });
+      if (shouldCheck) {
+        console.log('[SectionNavigation] MutationObserver: Triggering check');
+        checkHistoricalProgress();
+      }
+    });
+    
+    // Observe the reporting section container for changes
+    const reportingSection = document.querySelector('.reporting-section');
+    if (reportingSection) {
+      observer.observe(reportingSection, {
+        childList: true,
+        subtree: true
+      });
+    }
+    
+    // Also observe the entire document body as fallback
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+    
+    return () => {
+      clearInterval(interval);
+      timeouts.forEach(timeout => clearTimeout(timeout));
+      observer.disconnect();
+    };
   }, []);
   
-  // Memoize navigation items based on dataLength, hasRecommendationScore, and isResponseConcentrationExpanded
+  // Memoize navigation items based on dataLength, hasRecommendationScore, isResponseConcentrationExpanded, and hasHistoricalProgress
   const navigationItems: NavigationItem[] = useMemo(() => {
+    console.log('[SectionNavigation] Building navigation items with:', {
+      hasHistoricalProgress,
+      hasRecommendationScore,
+      isResponseConcentrationExpanded,
+      dataLength
+    });
     const reportSubItems: NavigationSubItem[] = [
       {
         id: 'report-data',
@@ -128,22 +235,30 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
         label: 'Proximity Analysis',
         icon: <MapPin size={16} />,
         selector: '[data-section-id="report-proximity"]'
-      },
-      {
+      }
+    );
+    
+    // Add Historical Progress only if it exists (has historical data)
+    if (hasHistoricalProgress) {
+      console.log('[SectionNavigation] Adding Historical Progress to navigation items');
+      reportSubItems.push({
         id: 'report-historical-progress',
         label: 'Historical Progress',
         icon: <History size={16} />,
         selector: '[data-section-id="report-historical-progress"]'
-      },
-      {
-        id: 'report-actions',
-        label: 'Actions Report',
-        icon: <Lightbulb size={16} />,
-        selector: '[data-section-id="report-actions"]'
-      }
-    );
+      });
+    } else {
+      console.log('[SectionNavigation] NOT adding Historical Progress - hasHistoricalProgress is false');
+    }
     
-    return [
+    reportSubItems.push({
+      id: 'report-actions',
+      label: 'Actions Report',
+      icon: <Lightbulb size={16} />,
+      selector: '[data-section-id="report-actions"]'
+    });
+    
+    const items = [
       {
         id: 'data-entry',
         label: 'Data Entry',
@@ -174,7 +289,10 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
         subItems: reportSubItems
       }
     ];
-  }, [dataLength, hasRecommendationScore, isResponseConcentrationExpanded]);
+    
+    console.log('[SectionNavigation] Final navigation items:', items.map(i => ({ id: i.id, subItemsCount: i.subItems?.length })));
+    return items;
+  }, [dataLength, hasRecommendationScore, isResponseConcentrationExpanded, hasHistoricalProgress]);
 
   // Optional: Scroll tracking with Intersection Observer
   useEffect(() => {

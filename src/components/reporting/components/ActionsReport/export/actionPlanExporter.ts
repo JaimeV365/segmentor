@@ -152,6 +152,7 @@ function getSectionTitle(category: string): string {
     'data': 'Data Overview',
     'concentration': 'Response Concentration',
     'distribution': 'Customer Distribution',
+    'historical': 'Historical Progress',
     'proximity': 'Proximity Analysis',
     'recommendation': 'Recommendation Score'
   };
@@ -575,6 +576,20 @@ async function addWatermarkToChartImage(
         paddingYPercent = 0.15 + 0.20; // 35% from bottom (moved 20% up)
         console.log('Response Concentration (VERTICAL) - position: 5% right, 20% up', { selector, chartType, paddingXPercent, paddingYPercent, rotation });
       }
+    } else if (
+      normalizedChartType === 'historical' ||
+      normalizedSelector.includes('report-historical-progress') ||
+      normalizedSelector.includes('historical-progress') ||
+      normalizedSelector.includes('movement-diagram')
+    ) {
+      // Historical Progress (Movement Flow)
+      // Requested: move watermark ~"50 ticks" to the left.
+      // paddingXPercent is distance from RIGHT edge, so increasing it moves the logo left.
+      logoSize = Math.min(chartImg.width, chartImg.height) * 0.12;
+      maxLogoSize = 150;
+      // Nudge it back to the left (~10 units): increase the distance from the right edge.
+      paddingXPercent = Math.min(0.9, Math.max(0, 0.08 + 0.20)); // 28% from right
+      paddingYPercent = 0.15; // keep default vertical placement
     } else if (normalizedChartType === 'distribution' || normalizedSelector.includes('distribution')) {
       // Customer Distribution
       if (isFlat) {
@@ -1224,6 +1239,15 @@ export async function exportActionPlanToPDF(
                                          finding.id === 'chart-response-concentration' ||
                                          finding.chartSelector?.includes('response-concentration') ||
                                          finding.chartSelector?.includes('concentration');
+
+          // Check if this is Historical Progress (Movement Flow) chart
+          const isHistoricalProgress = chartImage.chartType === 'historical' ||
+                                       finding.category === 'historical' ||
+                                       finding.id?.includes('historical') ||
+                                       finding.chartSelector?.includes('report-historical-progress') ||
+                                       finding.chartSelector?.includes('historical-progress') ||
+                                       chartImage.selector?.includes('report-historical-progress') ||
+                                       chartImage.selector?.includes('historical-progress');
           
           // Check if this is a Recommendation Score chart
           // Check both finding properties and chartImage properties for better detection
@@ -1242,7 +1266,15 @@ export async function exportActionPlanToPDF(
                                        chartImage.selector?.includes('recommendation-score-section');
           
           // Calculate dimensions to fit page
-          const availableHeight = pageHeight - margin - footerHeight - yPosition - 15; // Leave 15mm buffer
+          // For Historical Progress, prefer giving it a fresh page so it can be rendered large and readable.
+          if (isHistoricalProgress) {
+            // If we're not near the top of a page, start a new page to maximise space.
+            if (yPosition > margin + 15) {
+              pdf.addPage();
+              yPosition = margin + 10;
+            }
+          }
+          let availableHeight = pageHeight - margin - footerHeight - yPosition - 15; // Leave 15mm buffer
           
           // Convert pixels to mm
           // Images are captured at scale: 2 (2x resolution), so we need to divide by 2
@@ -1288,6 +1320,23 @@ export async function exportActionPlanToPDF(
             imgHeight *= widthScale;
             
             // If height exceeds max after scaling, scale down proportionally
+            if (imgHeight > maxHeight) {
+              const heightScale = maxHeight / imgHeight;
+              imgWidth *= heightScale;
+              imgHeight *= heightScale;
+            }
+          } else if (isHistoricalProgress) {
+            // Historical Progress (Movement Flow): use normal chart sizing (large enough to be readable)
+            // Make it noticeably larger for readability
+            // Increase ~20% vs content width by allowing it into the margins (near full A4 width).
+            const maxWidth = Math.min(pageWidth - 10, contentWidth * 1.2);
+            const maxHeight = Math.min(260, availableHeight);
+
+            // Always scale to maxWidth so it doesn't end up tiny
+            const widthScale = maxWidth / imgWidth;
+            imgWidth = maxWidth;
+            imgHeight *= widthScale;
+
             if (imgHeight > maxHeight) {
               const heightScale = maxHeight / imgHeight;
               imgWidth *= heightScale;

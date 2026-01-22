@@ -1,10 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Dot } from 'recharts';
 import { TrendDataPoint } from '../services/historicalAnalysisService';
 import { CustomerTimeline } from '../utils/historicalDataUtils';
 import { ScaleFormat, DataPoint } from '@/types/base';
 import { ProximityPointInfoBox } from '../../DistributionSection/ProximityPointInfoBox';
 import { parseDate } from '../utils/historicalDataUtils';
+import { InfoRibbon } from '../../InfoRibbon/InfoRibbon';
+import { Menu as MenuIcon, X } from 'lucide-react';
+import { ChartColorPicker } from './ChartColorPicker';
 
 interface TrendChartProps {
   data: TrendDataPoint[];
@@ -32,6 +35,41 @@ export const TrendChart: React.FC<TrendChartProps> = ({
   dateFormat
 }) => {
   const [clickedPoint, setClickedPoint] = useState<ClickedPoint | null>(null);
+  const [showControlsPanel, setShowControlsPanel] = useState(false);
+  const [chartColors, setChartColors] = useState<{
+    satisfactionColor?: string;
+    loyaltyColor?: string;
+    averageSatisfactionColor?: string;
+    averageLoyaltyColor?: string;
+  }>({
+    satisfactionColor: '#3a863e',
+    loyaltyColor: '#4682B4',
+    averageSatisfactionColor: '#3a863e',
+    averageLoyaltyColor: '#4682B4'
+  });
+  const settingsButtonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  
+  // Close panel when clicking outside
+  useEffect(() => {
+    if (!showControlsPanel) return;
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      const targetElement = event.target as HTMLElement;
+      const isPanelClick = targetElement.closest('.unified-controls-panel');
+      const isControlButtonClick = settingsButtonRef.current?.contains(targetElement);
+      
+      // Close panel when clicking outside (but not on panel or button)
+      if (!isPanelClick && !isControlButtonClick && panelRef.current) {
+        setShowControlsPanel(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showControlsPanel]);
 
   // Prepare individual customer lines data
   const customerLinesData = useMemo(() => {
@@ -90,9 +128,16 @@ export const TrendChart: React.FC<TrendChartProps> = ({
     // Limit to 20 customers for performance
     const limitedTimelines = timelines.slice(0, 20);
     
-    return customerLinesData.map(chartPoint => {
+    console.log('[TrendChart] Preparing chartDataWithCustomers:', {
+      customerLinesDataLength: customerLinesData.length,
+      customerLinesDataDates: customerLinesData.map(d => ({ date: d.date, count: d.count })),
+      timelinesLength: timelines.length
+    });
+    
+    return customerLinesData.map((chartPoint, idx) => {
       const dataPoint: any = {
         date: chartPoint.date,
+        dateIndex: idx, // Add index for easier matching
         averageSatisfaction: chartPoint.averageSatisfaction,
         averageLoyalty: chartPoint.averageLoyalty,
         count: chartPoint.count
@@ -130,43 +175,99 @@ export const TrendChart: React.FC<TrendChartProps> = ({
   const [yMin, yMax] = getYAxisDomain(scale);
 
   // Handle point click
-  const handlePointClick = (data: any, index: number, metricType: 'satisfaction' | 'loyalty') => {
+  const handlePointClick = (data: any, index: number, metricType: 'satisfaction' | 'loyalty', event?: React.MouseEvent) => {
+    console.log('[TrendChart] Point clicked:', { data, index, metricType, customerLinesDataLength: customerLinesData.length });
     const pointData = customerLinesData[index];
-    if (!pointData) return;
+    if (!pointData) {
+      console.log('[TrendChart] No pointData found for index:', index);
+      return;
+    }
 
-    // Get all customers at this date
+    // Get all customers at this date - use normalized date comparison
     const customersAtDate: DataPoint[] = [];
+    const normalizedTargetDate = pointData.date.trim();
+    
+    console.log('[TrendChart] Looking for customers on date:', normalizedTargetDate);
     timelines.forEach(timeline => {
-      const point = timeline.dataPoints.find(p => p.date && p.date.trim() === pointData.date);
-      if (point) {
-        customersAtDate.push(point);
-      }
+      timeline.dataPoints.forEach(point => {
+        if (point.date && point.date.trim() === normalizedTargetDate) {
+          customersAtDate.push(point);
+        }
+      });
     });
 
+    console.log('[TrendChart] Found customers:', customersAtDate.length);
+
     if (customersAtDate.length > 0) {
-      // Calculate position for modal (approximate based on chart)
-      const chartElement = document.querySelector('.trend-chart-container');
-      const rect = chartElement?.getBoundingClientRect();
+      // Use event position if available, otherwise center of chart
+      let position = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+      if (event) {
+        position = { x: event.clientX, y: event.clientY };
+      } else {
+        const chartElement = document.querySelector('.trend-chart-container');
+        const rect = chartElement?.getBoundingClientRect();
+        if (rect) {
+          position = {
+            x: rect.left + rect.width / 2,
+            y: rect.top + rect.height / 2
+          };
+        }
+      }
       
       setClickedPoint({
         date: pointData.date,
         points: customersAtDate,
         metric: metricType,
         value: metricType === 'satisfaction' ? pointData.averageSatisfaction : pointData.averageLoyalty,
-        position: {
-          x: rect ? rect.left + rect.width / 2 : window.innerWidth / 2,
-          y: rect ? rect.top + rect.height / 2 : window.innerHeight / 2
-        }
+        position
       });
     }
   };
 
   // Custom dot component that shows size based on customer count
   const CustomDot = (props: any) => {
-    const { cx, cy, payload } = props;
-    const pointData = customerLinesData.find(d => d.date === payload.date);
+    const { cx, cy, payload, index: dotIndex } = props;
+    console.log('[TrendChart] CustomDot render:', { 
+      payload, 
+      dotIndex, 
+      payloadDate: payload?.date,
+      payloadDateIndex: payload?.dateIndex,
+      cx, 
+      cy 
+    });
+    
+    // Try multiple ways to find the data point
+    let pointData = null;
+    let dataIndex = -1;
+    
+    // Method 1: Use dateIndex if available
+    if (payload?.dateIndex !== undefined) {
+      dataIndex = payload.dateIndex;
+      pointData = customerLinesData[dataIndex];
+    }
+    // Method 2: Use dotIndex (Recharts provides this)
+    else if (dotIndex !== undefined && dotIndex >= 0 && dotIndex < customerLinesData.length) {
+      dataIndex = dotIndex;
+      pointData = customerLinesData[dataIndex];
+    }
+    // Method 3: Match by date string
+    else if (payload?.date) {
+      const payloadDate = payload.date.trim();
+      dataIndex = customerLinesData.findIndex(d => {
+        const dataDate = d.date ? d.date.trim() : '';
+        return dataDate === payloadDate;
+      });
+      if (dataIndex >= 0) {
+        pointData = customerLinesData[dataIndex];
+      }
+    }
+    
     const customerCount = pointData?.count || 1;
-    const radius = Math.min(4 + customerCount * 0.5, 8); // Scale from 4 to 8 based on count
+    // Make size more noticeable: base 4, add 1 per customer, max 12
+    const radius = Math.min(4 + customerCount * 1, 12);
+    
+    // Determine metric type from the line's dataKey or from props
+    const metricType = props.metricType || (props.dataKey?.includes('satisfaction') ? 'satisfaction' : 'loyalty');
     
     return (
       <circle
@@ -176,21 +277,82 @@ export const TrendChart: React.FC<TrendChartProps> = ({
         fill={props.fill}
         stroke={props.stroke}
         strokeWidth={2}
-        style={{ cursor: 'pointer' }}
+        style={{ cursor: 'pointer', pointerEvents: 'all' }}
         onClick={(e) => {
           e.stopPropagation();
-          const metricType = props.dataKey === 'satisfaction' ? 'satisfaction' : 'loyalty';
-          const index = customerLinesData.findIndex(d => d.date === payload.date);
-          handlePointClick(payload, index, metricType);
+          e.preventDefault();
+          console.log('[TrendChart] CustomDot onClick:', { 
+            payload, 
+            dotIndex,
+            dataIndex,
+            payloadDate: payload?.date,
+            payloadDateIndex: payload?.dateIndex,
+            customerLinesDataLength: customerLinesData.length,
+            found: dataIndex >= 0
+          });
+          
+          if (dataIndex >= 0 && dataIndex < customerLinesData.length) {
+            handlePointClick(payload, dataIndex, metricType, e);
+          } else {
+            console.error('[TrendChart] CustomDot: Could not find matching data point', {
+              dataIndex,
+              payload,
+              dotIndex,
+              availableDates: customerLinesData.map((d, idx) => ({ idx, date: d.date }))
+            });
+          }
         }}
       />
     );
   };
 
+  const infoText = metric === 'both' 
+    ? 'This chart shows how average satisfaction and loyalty change over time. Each point is the average of all customers who have data on that date. For example, if 5 customers have data on Jan 1st, the point shows the average of those 5 customers. Click any point to see which customers contributed to that average.'
+    : `This chart shows how average ${metric} changes over time. Each point is the average of all customers who have data on that date. For example, if 5 customers have data on Jan 1st, the point shows the average of those 5 customers. Click any point to see which customers contributed to that average.`;
+
   return (
     <>
       <div className="trend-chart-container">
-        <h4 className="trend-chart-title">{title}</h4>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <h4 className="trend-chart-title" style={{ margin: 0 }}>{title}</h4>
+          <button
+            ref={settingsButtonRef}
+            className={`trend-chart-settings-button ${showControlsPanel ? 'active' : ''}`}
+            onClick={() => setShowControlsPanel(prev => !prev)}
+            title="Chart settings"
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '6px',
+              background: showControlsPanel ? '#3a863e' : '#ffffff',
+              border: '1px solid #e5e7eb',
+              cursor: 'pointer',
+              color: showControlsPanel ? '#ffffff' : '#3a863e',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+            }}
+            onMouseEnter={(e) => {
+              if (!showControlsPanel) {
+                e.currentTarget.style.backgroundColor = '#f3f4f6';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.15)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!showControlsPanel) {
+                e.currentTarget.style.backgroundColor = '#ffffff';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+              }
+            }}
+          >
+            <MenuIcon size={22} />
+          </button>
+        </div>
+        <InfoRibbon text={infoText} />
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartDataWithCustomers} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -237,6 +399,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                     connectNulls={true}
                     hide={true}
                     isAnimationActive={false}
+                    legendType="none"
                   />
                 );
               }
@@ -252,6 +415,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                     connectNulls={true}
                     hide={true}
                     isAnimationActive={false}
+                    legendType="none"
                   />
                 );
               }
@@ -263,22 +427,122 @@ export const TrendChart: React.FC<TrendChartProps> = ({
               <Line 
                 type="monotone" 
                 dataKey="averageSatisfaction" 
-                stroke="#3a863e" 
+                stroke={chartColors.averageSatisfactionColor || '#3a863e'} 
                 strokeWidth={3}
-                dot={<CustomDot fill="#3a863e" stroke="#3a863e" dataKey="satisfaction" />}
+                dot={(props: any) => <CustomDot {...props} fill={chartColors.averageSatisfactionColor || '#3a863e'} stroke={chartColors.averageSatisfactionColor || '#3a863e'} dataKey="averageSatisfaction" metricType="satisfaction" />}
                 name="Satisfaction (Average)"
                 isAnimationActive={false}
+                activeDot={(props: any) => {
+                  const { payload, index: dotIndex } = props;
+                  console.log('[TrendChart] activeDot render for satisfaction:', { payload, dotIndex });
+                  
+                  // Try multiple ways to find the index
+                  let dataIndex = -1;
+                  if (payload?.dateIndex !== undefined) {
+                    dataIndex = payload.dateIndex;
+                  } else if (dotIndex !== undefined && dotIndex >= 0) {
+                    dataIndex = dotIndex;
+                  } else if (payload?.date) {
+                    const payloadDate = payload.date.trim();
+                    dataIndex = customerLinesData.findIndex(d => {
+                      const dataDate = d.date ? d.date.trim() : '';
+                      return dataDate === payloadDate;
+                    });
+                  }
+                  
+                  const satisfactionColor = chartColors.averageSatisfactionColor || '#3a863e';
+                  
+                  return (
+                    <circle
+                      {...props}
+                      r={8}
+                      fill={satisfactionColor}
+                      stroke={satisfactionColor}
+                      style={{ cursor: 'pointer', pointerEvents: 'all' }}
+                      onClick={(e: any) => {
+                        console.log('[TrendChart] activeDot clicked for satisfaction:', { 
+                          payload, 
+                          dotIndex, 
+                          dataIndex,
+                          found: dataIndex >= 0
+                        });
+                        e?.stopPropagation();
+                        e?.preventDefault();
+                        if (dataIndex >= 0 && dataIndex < customerLinesData.length) {
+                          handlePointClick(payload, dataIndex, 'satisfaction', e);
+                        } else {
+                          console.error('[TrendChart] activeDot satisfaction: Could not find matching date', {
+                            dataIndex,
+                            payload,
+                            dotIndex,
+                            availableDates: customerLinesData.map((d, idx) => ({ idx, date: d.date }))
+                          });
+                        }
+                      }}
+                    />
+                  );
+                }}
               />
             )}
             {(metric === 'loyalty' || metric === 'both') && (
               <Line 
                 type="monotone" 
                 dataKey="averageLoyalty" 
-                stroke="#4682B4" 
+                stroke={chartColors.averageLoyaltyColor || '#4682B4'} 
                 strokeWidth={3}
-                dot={<CustomDot fill="#4682B4" stroke="#4682B4" dataKey="loyalty" />}
+                dot={(props: any) => <CustomDot {...props} fill={chartColors.averageLoyaltyColor || '#4682B4'} stroke={chartColors.averageLoyaltyColor || '#4682B4'} dataKey="averageLoyalty" metricType="loyalty" />}
                 name="Loyalty (Average)"
                 isAnimationActive={false}
+                activeDot={(props: any) => {
+                  const { payload, index: dotIndex } = props;
+                  console.log('[TrendChart] activeDot render for loyalty:', { payload, dotIndex });
+                  
+                  // Try multiple ways to find the index
+                  let dataIndex = -1;
+                  if (payload?.dateIndex !== undefined) {
+                    dataIndex = payload.dateIndex;
+                  } else if (dotIndex !== undefined && dotIndex >= 0) {
+                    dataIndex = dotIndex;
+                  } else if (payload?.date) {
+                    const payloadDate = payload.date.trim();
+                    dataIndex = customerLinesData.findIndex(d => {
+                      const dataDate = d.date ? d.date.trim() : '';
+                      return dataDate === payloadDate;
+                    });
+                  }
+                  
+                  const loyaltyColor = chartColors.averageLoyaltyColor || '#4682B4';
+                  
+                  return (
+                    <circle
+                      {...props}
+                      r={8}
+                      fill={loyaltyColor}
+                      stroke={loyaltyColor}
+                      style={{ cursor: 'pointer', pointerEvents: 'all' }}
+                      onClick={(e: any) => {
+                        console.log('[TrendChart] activeDot clicked for loyalty:', { 
+                          payload, 
+                          dotIndex, 
+                          dataIndex,
+                          found: dataIndex >= 0
+                        });
+                        e?.stopPropagation();
+                        e?.preventDefault();
+                        if (dataIndex >= 0 && dataIndex < customerLinesData.length) {
+                          handlePointClick(payload, dataIndex, 'loyalty', e);
+                        } else {
+                          console.error('[TrendChart] activeDot loyalty: Could not find matching date', {
+                            dataIndex,
+                            payload,
+                            dotIndex,
+                            availableDates: customerLinesData.map((d, idx) => ({ idx, date: d.date }))
+                          });
+                        }
+                      }}
+                    />
+                  );
+                }}
               />
             )}
           </LineChart>
@@ -295,10 +559,66 @@ export const TrendChart: React.FC<TrendChartProps> = ({
         <ProximityPointInfoBox
           points={clickedPoint.points}
           position={clickedPoint.position}
-          quadrant=""
+          quadrant="loyalists"
           onClose={() => setClickedPoint(null)}
           context="distribution"
+          customTitle={`Customers on ${clickedPoint.date} (${clickedPoint.metric}: ${clickedPoint.value.toFixed(2)})`}
         />
+      )}
+      
+      {/* Unified Controls Panel */}
+      {showControlsPanel && (
+        <div className="unified-controls-panel trend-chart-controls-panel" ref={panelRef}>
+          <div className="unified-controls-header">
+            <div className="unified-controls-tabs">
+              <div className="unified-tab active">
+                <MenuIcon size={16} />
+                Colors
+              </div>
+            </div>
+            <button className="unified-close-button" onClick={() => setShowControlsPanel(false)}>
+              <X size={20} />
+            </button>
+          </div>
+          
+          <div className="unified-controls-content">
+            <div className="unified-tab-content">
+              <div className="unified-tab-body">
+                <div className="chart-settings-content">
+                  {(metric === 'satisfaction' || metric === 'both') && (
+                    <ChartColorPicker
+                      label="Satisfaction Color"
+                      currentColor={chartColors.averageSatisfactionColor || '#3a863e'}
+                      onColorChange={(color) => setChartColors(prev => ({ ...prev, averageSatisfactionColor: color }))}
+                    />
+                  )}
+                  {(metric === 'loyalty' || metric === 'both') && (
+                    <ChartColorPicker
+                      label="Loyalty Color"
+                      currentColor={chartColors.averageLoyaltyColor || '#4682B4'}
+                      onColorChange={(color) => setChartColors(prev => ({ ...prev, averageLoyaltyColor: color }))}
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="unified-tab-footer">
+                <button 
+                  className="unified-reset-button" 
+                  onClick={() => {
+                    setChartColors({
+                      satisfactionColor: '#3a863e',
+                      loyaltyColor: '#4682B4',
+                      averageSatisfactionColor: '#3a863e',
+                      averageLoyaltyColor: '#4682B4'
+                    });
+                  }}
+                >
+                  Reset to Default
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

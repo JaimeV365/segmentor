@@ -12,7 +12,10 @@ export interface CustomerTimeline {
  * Requires at least one customer with 2+ data points (different dates)
  */
 export const hasHistoricalData = (data: DataPoint[]): boolean => {
-  if (!data || data.length === 0) return false;
+  if (!data || data.length === 0) {
+    console.log('[hasHistoricalData] No data provided');
+    return false;
+  }
   
   // Group data points by customer identifier (email or id)
   const customerMap = new Map<string, DataPoint[]>();
@@ -28,6 +31,8 @@ export const hasHistoricalData = (data: DataPoint[]): boolean => {
     customerMap.get(identifier)!.push(point);
   });
   
+  console.log('[hasHistoricalData] Customer map size:', customerMap.size, 'Total data points:', data.length);
+  
   // Check if any customer has 2+ data points with different dates
   const customerEntries = Array.from(customerMap.values());
   for (const points of customerEntries) {
@@ -38,10 +43,16 @@ export const hasHistoricalData = (data: DataPoint[]): boolean => {
     );
     
     if (dates.size >= 2) {
+      console.log('[hasHistoricalData] Found customer with multiple dates:', {
+        identifier: points[0].email || points[0].id,
+        dates: Array.from(dates),
+        dateCount: dates.size
+      });
       return true;
     }
   }
   
+  console.log('[hasHistoricalData] No customers with multiple dates found');
   return false;
 };
 
