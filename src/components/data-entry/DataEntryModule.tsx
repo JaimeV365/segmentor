@@ -429,7 +429,8 @@ if (editingData) {
       />
       
       {/* Demo Button - Always visible below tabs when no data */}
-      {data.length === 0 && onDemoDataLoad && (
+      {/* Use externalData to check, as internal data state might load from localStorage */}
+      {(!externalData || externalData.length === 0) && data.length === 0 && onDemoDataLoad && (
         <DemoButton 
           onDemoDataLoad={onDemoDataLoad}
           disabled={false}
