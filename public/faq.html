@@ -121,6 +121,14 @@
             "@type": "Answer",
             "text": "Each circle shows the count of customers moving from the source quadrant to the destination quadrant between two consecutive dated check-ins. Click a circle to see the customers behind that movement."
           }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I monitor how customers change over time?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! If your data includes a Date column and you have the same customers (identified by email or ID) appearing at different times, the tool automatically shows a Historical Progress section. This lets you see how average satisfaction and loyalty trends over time, track individual customer movements between segments, identify customers who move multiple times (multi-movement journeys), and understand which transitions are most common. Tip: Include a Date column in your CSV and use consistent customer identifiers (email or ID) to enable historical tracking."
+          }
         }
       ]
     }
@@ -942,6 +950,24 @@ Satisfaction,Loyalty
 Customer ID,Satisfaction,Loyalty,Customer Name
 CUST001,8,9,John Smith
 CUST002,6,4,Jane Doe</pre>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="monitor historical progress track customers over time same customer different times multiple dates">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I monitor how customers change over time?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Yes!</strong> If your data includes a <strong>Date</strong> column and you have the same customers (identified by email or ID) appearing at different times, the tool automatically shows a <strong>Historical Progress</strong> section.</p>
+                            <p>This lets you:</p>
+                            <ul>
+                                <li>See how average satisfaction and loyalty trends over time</li>
+                                <li>Track individual customer movements between segments</li>
+                                <li>Identify customers who move multiple times (multi-movement journeys)</li>
+                                <li>Understand which transitions are most common</li>
+                            </ul>
+                            <p><strong>Tip:</strong> Include a Date column in your CSV and use consistent customer identifiers (email or ID) to enable historical tracking.</p>
                         </div>
                     </div>
 
