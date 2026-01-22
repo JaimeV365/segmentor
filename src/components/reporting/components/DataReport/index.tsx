@@ -323,7 +323,7 @@ export const DataReport: React.FC<DataReportProps> = ({
     }
   }, [showRecommendationScore]);
    
-  if (!report) {
+  if (!report || report.totalEntries === 0) {
     return (
       <div className="report-card" data-section-id="report-data">
         <div className="report-title-wrapper">
