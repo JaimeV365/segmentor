@@ -323,7 +323,9 @@ export const DataReport: React.FC<DataReportProps> = ({
     }
   }, [showRecommendationScore]);
    
-  if (!report || report.totalEntries === 0) {
+  // Show "No Data" message if no report, empty report, or no original data
+  // Check originalData first to avoid flickering when report is being generated
+  if ((originalData && originalData.length === 0) || !report || report.totalEntries === 0) {
     return (
       <div className="report-card" data-section-id="report-data">
         <div className="report-title-wrapper">
