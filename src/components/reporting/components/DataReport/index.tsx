@@ -323,7 +323,20 @@ export const DataReport: React.FC<DataReportProps> = ({
     }
   }, [showRecommendationScore]);
    
-  if (!report) return null;
+  if (!report) {
+    return (
+      <div className="report-card" data-section-id="report-data">
+        <div className="report-title-wrapper">
+          <h3 className="report-title">Data Report</h3>
+        </div>
+        <div className="report-content">
+          <p style={{ color: '#666', fontSize: '1rem', textAlign: 'center', padding: '2rem' }}>
+            No data available. Please upload or enter data to generate a report.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const handleQuadrantMove = (fromIndex: number, toIndex: number) => {
     // This would handle reordering of quadrants in a premium version
