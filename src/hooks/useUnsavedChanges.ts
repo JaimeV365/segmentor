@@ -92,9 +92,19 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [lastSavedTime, setLastSavedTime] = useState<Date | null>(null);
   const lastSavedStateRef = useRef<string | null>(null);
+  const initialStateRef = useRef<string | null>(null); // Track initial state when data is first loaded
   const isInitialMount = useRef(true);
   const [editableTextChangeTrigger, setEditableTextChangeTrigger] = useState(0);
   const [reportSettingsChangeTrigger, setReportSettingsChangeTrigger] = useState(0);
+  const [filterStateChangeTrigger, setFilterStateChangeTrigger] = useState(0);
+  
+  // Track serialized filter states to detect changes
+  const prevFilterStateSerializedRef = useRef<string>('');
+  const prevReportFilterStatesSerializedRef = useRef<string>('');
+  const prevManualAssignmentsSerializedRef = useRef<string>('');
+  
+  // Track if a .seg file was just loaded (to reset baseline after state updates)
+  const segFileLoadedRef = useRef(false);
 
   // Helper function to get all report settings from localStorage
   const getReportSettingsHash = useCallback(() => {
@@ -304,6 +314,39 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
     }
   }, []);
 
+  // Monitor filter state changes by serializing and comparing
+  useEffect(() => {
+    const currentFilterStateSerialized = serializeFilterState(options.filterState);
+    const currentReportFilterStatesSerialized = serializeReportFilterStates(options.reportFilterStates);
+    const currentManualAssignmentsSerialized = serializeManualAssignments(options.manualAssignments);
+    
+    // Initialize refs on first run (when they're empty strings)
+    const isFirstRun = 
+      prevFilterStateSerializedRef.current === '' &&
+      prevReportFilterStatesSerializedRef.current === '' &&
+      prevManualAssignmentsSerializedRef.current === '';
+    
+    if (isFirstRun) {
+      // Initialize refs without triggering change
+      prevFilterStateSerializedRef.current = currentFilterStateSerialized;
+      prevReportFilterStatesSerializedRef.current = currentReportFilterStatesSerialized;
+      prevManualAssignmentsSerializedRef.current = currentManualAssignmentsSerialized;
+      return;
+    }
+    
+    // Check if any filter state changed
+    if (
+      currentFilterStateSerialized !== prevFilterStateSerializedRef.current ||
+      currentReportFilterStatesSerialized !== prevReportFilterStatesSerializedRef.current ||
+      currentManualAssignmentsSerialized !== prevManualAssignmentsSerializedRef.current
+    ) {
+      prevFilterStateSerializedRef.current = currentFilterStateSerialized;
+      prevReportFilterStatesSerializedRef.current = currentReportFilterStatesSerialized;
+      prevManualAssignmentsSerializedRef.current = currentManualAssignmentsSerialized;
+      setFilterStateChangeTrigger(prev => prev + 1);
+    }
+  }, [options.filterState, options.reportFilterStates, options.manualAssignments]);
+
   // Listen for localStorage changes (editable text edits and report settings)
   useEffect(() => {
     const reportSettingsKeys = [
@@ -381,6 +424,9 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
     };
   }, []);
 
+  // Track when data length changes significantly (new data loaded)
+  const prevDataLengthRef = useRef<number>(options.data?.length || 0);
+  
   // Check for unsaved changes
   useEffect(() => {
     // If there's no data at all, never mark as unsaved (user is just on the loader page)
@@ -396,37 +442,145 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
       } else {
         setHasUnsavedChanges(false);
       }
+      // Reset initial state when data is cleared
+      initialStateRef.current = null;
+      prevDataLengthRef.current = 0;
       return;
     }
 
-    // Skip check on initial mount - don't mark as unsaved on first load
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      // On initial mount, if there's a saved state, compare it
-      // If no saved state exists, don't mark as unsaved (user hasn't made changes yet)
-      if (lastSavedStateRef.current === null) {
-        setHasUnsavedChanges(false);
+    // If data length changed significantly (new data loaded), reset initial state
+    const currentDataLength = options.data.length;
+    const dataLengthChanged = prevDataLengthRef.current !== currentDataLength;
+    
+    // Reset initial state when:
+    // 1. Data goes from 0 to something (data loaded)
+    // 2. Data length changes significantly (new dataset loaded)
+    if (dataLengthChanged) {
+      if (prevDataLengthRef.current === 0 && currentDataLength > 0) {
+        // Data was just loaded - reset initial state
+        const currentHash = getStateHash();
+        initialStateRef.current = currentHash;
+        prevDataLengthRef.current = currentDataLength;
+        // Reset filter state refs to current state
+        prevFilterStateSerializedRef.current = serializeFilterState(options.filterState);
+        prevReportFilterStatesSerializedRef.current = serializeReportFilterStates(options.reportFilterStates);
+        prevManualAssignmentsSerializedRef.current = serializeManualAssignments(options.manualAssignments);
+        // If there's a saved state, compare against that, otherwise no unsaved changes yet
+        if (lastSavedStateRef.current !== null) {
+          setHasUnsavedChanges(currentHash !== lastSavedStateRef.current);
+        } else {
+          setHasUnsavedChanges(false);
+        }
+        return;
+      } else if (prevDataLengthRef.current > 0 && Math.abs(currentDataLength - prevDataLengthRef.current) > prevDataLengthRef.current * 0.1) {
+        // Significant data change (more than 10% difference) - likely new dataset
+        const currentHash = getStateHash();
+        initialStateRef.current = currentHash;
+        prevDataLengthRef.current = currentDataLength;
+        // Reset filter state refs
+        prevFilterStateSerializedRef.current = serializeFilterState(options.filterState);
+        prevReportFilterStatesSerializedRef.current = serializeReportFilterStates(options.reportFilterStates);
+        prevManualAssignmentsSerializedRef.current = serializeManualAssignments(options.manualAssignments);
+        if (lastSavedStateRef.current !== null) {
+          setHasUnsavedChanges(currentHash !== lastSavedStateRef.current);
+        } else {
+          setHasUnsavedChanges(false);
+        }
         return;
       }
+    }
+    prevDataLengthRef.current = currentDataLength;
+
+    // Track initial state when data is first loaded
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      const currentHash = getStateHash();
+      // Store initial state as baseline for comparison
+      initialStateRef.current = currentHash;
+      
+      // On initial mount, if there's a saved state, use that as the baseline instead
+      // Otherwise, use the current state as baseline
+      if (lastSavedStateRef.current !== null) {
+        // Compare against saved state
+        setHasUnsavedChanges(currentHash !== lastSavedStateRef.current);
+      } else {
+        // No saved state - use current state as baseline, so no unsaved changes yet
+        setHasUnsavedChanges(false);
+      }
+      return;
     }
 
     const currentHash = getStateHash();
     
-    // Only mark as unsaved if we have a saved state to compare against
-    // and the current state differs from the saved state
-    if (lastSavedStateRef.current === null) {
-      // No saved state yet - user hasn't saved, but also hasn't made changes from a loaded state
+    // If a .seg file was just loaded, reset the baseline to the loaded state
+    if (segFileLoadedRef.current) {
+      segFileLoadedRef.current = false;
+      // Set both saved state and initial state to current state (the loaded .seg file state)
+      lastSavedStateRef.current = currentHash;
+      initialStateRef.current = currentHash;
+      // Reset filter state refs to current state
+      prevFilterStateSerializedRef.current = serializeFilterState(options.filterState);
+      prevReportFilterStatesSerializedRef.current = serializeReportFilterStates(options.reportFilterStates);
+      prevManualAssignmentsSerializedRef.current = serializeManualAssignments(options.manualAssignments);
+      // Store in localStorage
+      try {
+        localStorage.setItem(STORAGE_KEY, currentHash);
+        localStorage.setItem(STORAGE_TIMESTAMP_KEY, new Date().toISOString());
+      } catch (error) {
+        console.warn('Failed to save state to localStorage:', error);
+      }
+      // No unsaved changes immediately after loading
+      setHasUnsavedChanges(false);
+      return;
+    }
+    
+    // Determine which baseline to compare against:
+    // 1. If there's a saved state, compare against that (user has saved before)
+    // 2. Otherwise, compare against initial state (user loaded data but hasn't saved yet)
+    const baselineState = lastSavedStateRef.current !== null 
+      ? lastSavedStateRef.current 
+      : initialStateRef.current;
+    
+    if (baselineState === null) {
+      // No baseline yet - shouldn't happen after initial mount, but be safe
       setHasUnsavedChanges(false);
     } else {
-      // Compare current state with saved state
-      setHasUnsavedChanges(currentHash !== lastSavedStateRef.current);
+      // Compare current state with baseline state
+      setHasUnsavedChanges(currentHash !== baselineState);
     }
-  }, [getStateHash, getEditableTextHash, options.data?.length, options.data, editableTextChangeTrigger, reportSettingsChangeTrigger]);
+  }, [getStateHash, getEditableTextHash, options.data?.length, options.data, editableTextChangeTrigger, reportSettingsChangeTrigger, filterStateChangeTrigger]);
+
+  // Reset baseline state (used when .seg file is loaded)
+  const resetBaseline = useCallback(() => {
+    const currentHash = getStateHash();
+    // Set both saved state and initial state to current state
+    // This makes the loaded .seg file state the baseline for comparison
+    lastSavedStateRef.current = currentHash;
+    initialStateRef.current = currentHash;
+    const now = new Date();
+    setLastSavedTime(now);
+    setHasUnsavedChanges(false);
+    
+    // Reset filter state refs to current state
+    prevFilterStateSerializedRef.current = serializeFilterState(options.filterState);
+    prevReportFilterStatesSerializedRef.current = serializeReportFilterStates(options.reportFilterStates);
+    prevManualAssignmentsSerializedRef.current = serializeManualAssignments(options.manualAssignments);
+    
+    // Store in localStorage
+    try {
+      localStorage.setItem(STORAGE_KEY, currentHash);
+      localStorage.setItem(STORAGE_TIMESTAMP_KEY, now.toISOString());
+    } catch (error) {
+      console.warn('Failed to save state to localStorage:', error);
+    }
+  }, [getStateHash, options.filterState, options.reportFilterStates, options.manualAssignments]);
 
   // Mark as saved
   const markAsSaved = useCallback(() => {
     const currentHash = getStateHash();
     lastSavedStateRef.current = currentHash;
+    // Also update initial state to match saved state
+    initialStateRef.current = currentHash;
     const now = new Date();
     setLastSavedTime(now);
     setHasUnsavedChanges(false);
@@ -456,11 +610,25 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
     return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
   }, [lastSavedTime]);
 
+  // Listen for .seg file load events to reset baseline
+  useEffect(() => {
+    const handleSegFileLoaded = () => {
+      // Mark that a .seg file was loaded - we'll reset baseline in the next check cycle
+      segFileLoadedRef.current = true;
+    };
+    
+    document.addEventListener('segFileLoaded', handleSegFileLoaded);
+    return () => {
+      document.removeEventListener('segFileLoaded', handleSegFileLoaded);
+    };
+  }, []);
+
   return {
     hasUnsavedChanges,
     lastSavedTime,
     lastSavedText: getLastSavedText(),
-    markAsSaved
+    markAsSaved,
+    resetBaseline
   };
 };
 
