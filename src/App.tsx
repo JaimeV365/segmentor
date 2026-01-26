@@ -19,7 +19,7 @@ import { DemoTour } from './components/ui/DemoTour';
 import { UnifiedLoadingPopup } from './components/ui/UnifiedLoadingPopup';
 import { UnsavedChangesModal } from './components/ui/UnsavedChangesModal/UnsavedChangesModal';
 import { BrandPlusIndicator } from './components/ui/BrandPlusIndicator/BrandPlusIndicator';
-import { useUnsavedChanges } from './hooks/useUnsavedChanges';
+import { UnsavedChangesTracker } from './components/ui/UnsavedChangesTracker/UnsavedChangesTracker';
 import { Footer } from './components/ui/Footer/Footer';
 import { TranslationBanner } from './components/ui/TranslationBanner/TranslationBanner';
 import { storageManager } from './components/data-entry/utils/storageManager';
@@ -350,52 +350,8 @@ useEffect(() => {
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
   const saveButtonRef = useRef<{ triggerSave: () => Promise<void> } | null>(null);
 
-  // Track unsaved changes for exit confirmation
-  const { hasUnsavedChanges } = useUnsavedChanges({
-    data,
-    satisfactionScale: scales.satisfactionScale,
-    loyaltyScale: scales.loyaltyScale,
-    showGrid,
-    showScaleNumbers: true,
-    showLegends: true,
-    showNearApostles,
-    showSpecialZones,
-    isAdjustableMidpoint,
-    labelMode: 1,
-    labelPositioning: 'below-dots',
-    areasDisplayMode: showNearApostles ? 3 : 2,
-    frequencyFilterEnabled,
-    frequencyThreshold,
-    isPremium,
-    effects: activeEffects,
-    midpoint: midpoint || undefined,
-    apostlesZoneSize,
-    terroristsZoneSize,
-    isClassicModel
-  });
-
-  // Browser beforeunload warning (Option 4)
-  // IMPORTANT: The browser's native beforeunload dialog CANNOT be styled - this is a browser security feature.
-  // However, we DO have our own styled UnsavedChangesModal component that we can show for navigation attempts.
-  // The beforeunload is ONLY a fallback for when users try to close the tab/window - we can't intercept that.
-  // For navigation within the app (links, etc.), we should intercept and show our styled modal instead.
-  useEffect(() => {
-    // Only show browser warning if:
-    // 1. There are actual unsaved changes AND
-    // 2. There's actual data loaded (no warning if just on the loader page with no data)
-    if (!hasUnsavedChanges || !data || data.length === 0) return;
-
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      // This shows the browser's native dialog (cannot be styled)
-      // It only appears when user tries to close tab/window
-      e.preventDefault();
-      e.returnValue = ''; // Required for Chrome - shows browser's native dialog
-      return ''; // Required for some browsers
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [hasUnsavedChanges, data]);
+  // Track unsaved changes state (updated by UnsavedChangesTracker component)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   // Load progress handler
   const handleLoadProgress = async (file: File) => {
@@ -894,6 +850,29 @@ const handleTerroristsZoneSizeChange = (size: number) => {
                   apostlesZoneSize={apostlesZoneSize}
                   terroristsZoneSize={terroristsZoneSize}
                 >
+                <UnsavedChangesTracker
+                  data={data}
+                  satisfactionScale={scales.satisfactionScale}
+                  loyaltyScale={scales.loyaltyScale}
+                  showGrid={showGrid}
+                  showScaleNumbers={true}
+                  showLegends={true}
+                  showNearApostles={showNearApostles}
+                  showSpecialZones={showSpecialZones}
+                  isAdjustableMidpoint={isAdjustableMidpoint}
+                  labelMode={1}
+                  labelPositioning="below-dots"
+                  areasDisplayMode={showNearApostles ? 3 : 2}
+                  frequencyFilterEnabled={frequencyFilterEnabled}
+                  frequencyThreshold={frequencyThreshold}
+                  isPremium={isPremium}
+                  effects={activeEffects}
+                  midpoint={midpoint || undefined}
+                  apostlesZoneSize={apostlesZoneSize}
+                  terroristsZoneSize={terroristsZoneSize}
+                  isClassicModel={isClassicModel}
+                  onHasUnsavedChangesChange={setHasUnsavedChanges}
+                />
                 <div className="section visualization-section" ref={visualizationRef} data-section-id="main-chart">
                   <h1 className="customer-segmentation-title">Customer Segmentation</h1>
                   <div className="visualization-content visualization-container">

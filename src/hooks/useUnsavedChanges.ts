@@ -16,6 +16,8 @@ interface UseUnsavedChangesOptions {
   frequencyFilterEnabled: boolean;
   frequencyThreshold: number;
   filterState?: any;
+  reportFilterStates?: Record<string, any>;
+  manualAssignments?: Map<string, any> | null;
   isPremium?: boolean;
   effects?: Set<string>;
   midpoint?: { sat: number; loy: number };
@@ -27,12 +29,172 @@ interface UseUnsavedChangesOptions {
 const STORAGE_KEY = 'apostles-model-last-saved-state';
 const STORAGE_TIMESTAMP_KEY = 'apostles-model-last-saved-time';
 
+// Helper function to serialize filterState (handles Sets and Dates)
+const serializeFilterState = (filterState: any): string => {
+  if (!filterState) return '';
+  try {
+    return JSON.stringify({
+      dateRange: {
+        startDate: filterState.dateRange?.startDate instanceof Date 
+          ? filterState.dateRange.startDate.toISOString() 
+          : (typeof filterState.dateRange?.startDate === 'string' 
+              ? filterState.dateRange.startDate 
+              : null),
+        endDate: filterState.dateRange?.endDate instanceof Date 
+          ? filterState.dateRange.endDate.toISOString() 
+          : (typeof filterState.dateRange?.endDate === 'string' 
+              ? filterState.dateRange.endDate 
+              : null),
+        preset: filterState.dateRange?.preset || 'all'
+      },
+      attributes: (filterState.attributes || []).map((attr: any) => ({
+        field: attr.field,
+        values: attr.values instanceof Set ? Array.from(attr.values).sort() : (Array.isArray(attr.values) ? attr.values.sort() : [])
+      })).sort((a: any, b: any) => a.field.localeCompare(b.field)),
+      isActive: filterState.isActive || false,
+      frequencyFilterEnabled: filterState.frequencyFilterEnabled,
+      frequencyThreshold: filterState.frequencyThreshold
+    });
+  } catch (error) {
+    console.warn('Failed to serialize filterState:', error);
+    return '';
+  }
+};
+
+// Helper function to serialize reportFilterStates
+const serializeReportFilterStates = (reportFilterStates: Record<string, any> | undefined): string => {
+  if (!reportFilterStates || Object.keys(reportFilterStates).length === 0) return '';
+  try {
+    const serialized: Record<string, any> = {};
+    Object.entries(reportFilterStates).sort().forEach(([reportId, state]) => {
+      serialized[reportId] = serializeFilterState(state);
+    });
+    return JSON.stringify(serialized);
+  } catch (error) {
+    console.warn('Failed to serialize reportFilterStates:', error);
+    return '';
+  }
+};
+
+// Helper function to serialize manual assignments
+const serializeManualAssignments = (manualAssignments: Map<string, any> | null | undefined): string => {
+  if (!manualAssignments || manualAssignments.size === 0) return '';
+  try {
+    const entries = Array.from(manualAssignments.entries()).sort(([a], [b]) => a.localeCompare(b));
+    return JSON.stringify(entries);
+  } catch (error) {
+    console.warn('Failed to serialize manualAssignments:', error);
+    return '';
+  }
+};
+
 export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [lastSavedTime, setLastSavedTime] = useState<Date | null>(null);
   const lastSavedStateRef = useRef<string | null>(null);
   const isInitialMount = useRef(true);
   const [editableTextChangeTrigger, setEditableTextChangeTrigger] = useState(0);
+  const [reportSettingsChangeTrigger, setReportSettingsChangeTrigger] = useState(0);
+
+  // Helper function to get all report settings from localStorage
+  const getReportSettingsHash = useCallback(() => {
+    try {
+      const settings: Record<string, any> = {};
+      
+      // Report visibility
+      const showRecommendationScore = localStorage.getItem('showRecommendationScore');
+      const responseConcentrationExpanded = localStorage.getItem('responseConcentrationExpanded');
+      if (showRecommendationScore !== null) settings.showRecommendationScore = showRecommendationScore === 'true';
+      if (responseConcentrationExpanded !== null) settings.responseConcentrationExpanded = responseConcentrationExpanded === 'true';
+      
+      // Recommendation Score settings
+      const recommendationScoreSettings = localStorage.getItem('recommendationScoreSettings');
+      if (recommendationScoreSettings) {
+        try {
+          settings.recommendationScore = JSON.parse(recommendationScoreSettings);
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+      
+      // Response Concentration settings
+      const responseConcentrationSettings = localStorage.getItem('responseConcentrationSettings');
+      if (responseConcentrationSettings) {
+        try {
+          settings.responseConcentration = JSON.parse(responseConcentrationSettings);
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+      
+      // Report customizations
+      const reportCustomization = localStorage.getItem('report-customization');
+      if (reportCustomization) {
+        try {
+          settings.customizations = JSON.parse(reportCustomization);
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+      
+      // Proximity Display settings
+      const proximityDisplaySettings = localStorage.getItem('proximityDisplaySettings');
+      if (proximityDisplaySettings) {
+        try {
+          settings.proximityDisplay = JSON.parse(proximityDisplaySettings);
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+      
+      // Action Reports settings
+      const actionReportsExpandedSections = localStorage.getItem('actionReportsExpandedSections');
+      const actionReportsPdfExportOptions = localStorage.getItem('actionReportsPdfExportOptions');
+      if (actionReportsExpandedSections || actionReportsPdfExportOptions) {
+        settings.actionReports = {};
+        if (actionReportsExpandedSections) {
+          try {
+            settings.actionReports.expandedSections = JSON.parse(actionReportsExpandedSections);
+          } catch (e) {
+            // Ignore parse errors
+          }
+        }
+        if (actionReportsPdfExportOptions) {
+          try {
+            settings.actionReports.pdfExportOptions = JSON.parse(actionReportsPdfExportOptions);
+          } catch (e) {
+            // Ignore parse errors
+          }
+        }
+      }
+      
+      // Historical Progress settings
+      const historicalProgressDiagramSettings = localStorage.getItem('historicalProgressDiagramSettings');
+      const historicalProgressJourneysSettings = localStorage.getItem('historicalProgressJourneysSettings');
+      if (historicalProgressDiagramSettings || historicalProgressJourneysSettings) {
+        settings.historicalProgress = {};
+        if (historicalProgressDiagramSettings) {
+          try {
+            settings.historicalProgress.diagram = JSON.parse(historicalProgressDiagramSettings);
+          } catch (e) {
+            // Ignore parse errors
+          }
+        }
+        if (historicalProgressJourneysSettings) {
+          try {
+            settings.historicalProgress.journeys = JSON.parse(historicalProgressJourneysSettings);
+          } catch (e) {
+            // Ignore parse errors
+          }
+        }
+      }
+      
+      return JSON.stringify(settings);
+    } catch (error) {
+      console.warn('Failed to get report settings hash:', error);
+      return '';
+    }
+  }, []);
 
   // Get hash of all editable text content from localStorage
   const getEditableTextHash = useCallback(() => {
@@ -90,7 +252,11 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
       isClassicModel: options.isClassicModel,
       isPremium: options.isPremium,
       effects: Array.from(options.effects || []).sort(),
+      filterState: serializeFilterState(options.filterState), // Include main filter state
+      reportFilterStates: serializeReportFilterStates(options.reportFilterStates), // Include all report filter states
+      manualAssignments: serializeManualAssignments(options.manualAssignments), // Include manual quadrant assignments
       editableTextHash: getEditableTextHash(), // Include editable text content
+      reportSettingsHash: getReportSettingsHash(), // Include all report settings
     });
   }, [
     options.data?.length,
@@ -113,7 +279,11 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
     options.isClassicModel,
     options.isPremium,
     options.effects,
+    options.filterState,
+    options.reportFilterStates,
+    options.manualAssignments,
     getEditableTextHash,
+    getReportSettingsHash,
   ]);
 
   // Load last saved state from localStorage on mount
@@ -134,24 +304,34 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
     }
   }, []);
 
-  // Listen for localStorage changes (editable text edits)
+  // Listen for localStorage changes (editable text edits and report settings)
   useEffect(() => {
+    const reportSettingsKeys = [
+      'showRecommendationScore',
+      'responseConcentrationExpanded',
+      'recommendationScoreSettings',
+      'responseConcentrationSettings',
+      'report-customization',
+      'proximityDisplaySettings',
+      'actionReportsExpandedSections',
+      'actionReportsPdfExportOptions',
+      'historicalProgressDiagramSettings',
+      'historicalProgressJourneysSettings'
+    ];
+    
     const handleStorageChange = (e: StorageEvent) => {
-      // Only react to editable-text-* changes
+      // React to editable-text-* changes
       if (e.key && e.key.startsWith('editable-text-')) {
-        // Trigger a re-check by updating the trigger state
         setEditableTextChangeTrigger(prev => prev + 1);
+      }
+      // React to report settings changes
+      if (e.key && reportSettingsKeys.includes(e.key)) {
+        setReportSettingsChangeTrigger(prev => prev + 1);
       }
     };
 
     // Listen to storage events (fires when localStorage changes in other tabs/windows)
     window.addEventListener('storage', handleStorageChange);
-    
-    // Also create a custom event listener for same-tab localStorage changes
-    // (storage event only fires for changes in OTHER tabs)
-    const handleCustomStorageChange = () => {
-      setEditableTextChangeTrigger(prev => prev + 1);
-    };
     
     // Use a MutationObserver-like approach: poll for changes
     // Since we can't directly listen to same-tab localStorage changes,
@@ -163,7 +343,10 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
       intervalId = setInterval(() => {
         // Only check if page is visible
         if (!document.hidden) {
+          // Check for editable text changes
           setEditableTextChangeTrigger(prev => prev + 1);
+          // Check for report settings changes
+          setReportSettingsChangeTrigger(prev => prev + 1);
         }
       }, 3000); // Check every 3 seconds when visible
     };
@@ -238,7 +421,7 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
       // Compare current state with saved state
       setHasUnsavedChanges(currentHash !== lastSavedStateRef.current);
     }
-  }, [getStateHash, getEditableTextHash, options.data?.length, options.data, editableTextChangeTrigger]);
+  }, [getStateHash, getEditableTextHash, options.data?.length, options.data, editableTextChangeTrigger, reportSettingsChangeTrigger]);
 
   // Mark as saved
   const markAsSaved = useCallback(() => {
