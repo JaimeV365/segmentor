@@ -476,7 +476,7 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
                         </div>
                     </div>
 
-                    <div class="faq-item" data-keywords="generate reports, action plan, data report">
+                    <div class="faq-item" data-keywords="generate reports, action plan, data report, ROI, roi score, strategic priorities">
                         <button class="faq-question">
                             <span>What types of reports can I generate?</span>
                             <span class="faq-icon">+</span>
@@ -491,7 +491,7 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
                         </div>
                     </div>
 
-                    <div class="faq-item" data-keywords="proximity analysis, recommendation score, response concentration">
+                    <div class="faq-item" data-keywords="proximity analysis, recommendation score, response concentration, ROI, return on investment, roi score, action prioritization, impact score, actionability, strategic priorities">
                         <button class="faq-question">
                             <span>What advanced analysis features are included?</span>
                             <span class="faq-icon">+</span>
@@ -504,6 +504,21 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
                                 <li><strong>Response Concentration:</strong> Shows where most responses cluster</li>
                                 <li><strong>Strategic Priorities:</strong> Highlights high-impact opportunities</li>
                             </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="ROI, return on investment, roi score, how is roi calculated, impact score, actionability, action prioritization, strategic priorities">
+                        <button class="faq-question">
+                            <span>How is the ROI Score calculated in the Action Plan?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>The ROI Score is a simple prioritization metric calculated as <strong>Impact × Actionability</strong> on a 1-9 scale.</p>
+                            <ul>
+                                <li><strong>Impact</strong> is rated as: High (3), Medium (2), or Low (1)</li>
+                                <li><strong>Actionability</strong> is rated as: Easy (3), Medium (2), or Hard (1)</li>
+                            </ul>
+                            <p>Higher scores indicate actions that are both high-impact and easier to implement, helping you prioritize where to focus your efforts first.</p>
                         </div>
                     </div>
                 </div>
@@ -669,7 +684,7 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
                         </div>
                     </div>
 
-                    <div class="faq-item" data-keywords="different from NPS, NPS vs apostles model, net promoter score">
+                    <div class="faq-item" data-keywords="different from NPS, NPS vs apostles model, net promoter score, recommendation score, NPS">
                         <button class="faq-question">
                             <span>How is this different from NPS?</span>
                             <span class="faq-icon">+</span>
@@ -1173,49 +1188,61 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
 
     <!-- JavaScript for FAQ functionality -->
     <script>
-        // FAQ Data for search functionality
-        const faqData = [
-            // Getting Started
-            { question: "How do I get started with segmentor.app?", category: "getting-started", keywords: "how to get started, first time, new user, begin, start using" },
-            { question: "What data do I need to upload?", category: "getting-started", keywords: "data format, CSV format, what data, customer data, upload data" },
-            { question: "What format should my CSV be?", category: "getting-started", keywords: "CSV format, file format, upload format, data structure" },
-            { question: "Can I try it without my own data?", category: "getting-started", keywords: "sample data, try without data, demo data, test data" },
+        // Synonym/alias mapping for common search terms
+        // This helps users find content even if they use different terminology
+        const searchSynonyms = {
+            'nps': ['recommendation score', 'net promoter score'],
+            'roi': ['return on investment', 'roi score', 'impact score', 'actionability', 'strategic priorities'],
+            'return on investment': ['roi', 'roi score', 'impact score', 'actionability'],
+            'net promoter score': ['nps', 'recommendation score']
+        };
+
+        // Expand search query with synonyms
+        function expandQuery(query) {
+            const lowerQuery = query.toLowerCase();
+            const expanded = [query];
             
-            // Using the Tool
-            { question: "What do the quadrants mean?", category: "using-tool", keywords: "quadrants meaning, what do quadrants mean, apostles model quadrants" },
-            { question: "How do I interpret Apostles vs Terrorists?", category: "using-tool", keywords: "apostles vs terrorists, interpret results, understand segments" },
-            { question: "How do I identify Near-Apostles?", category: "using-tool", keywords: "near apostles, identify near apostles, almost apostles" },
-            { question: "Can I filter or exclude certain customers?", category: "using-tool", keywords: "filter customers, exclude customers, hide customers" },
-            { question: "Can I adjust the quadrant boundaries?", category: "using-tool", keywords: "adjust midpoint, move quadrants, reposition centre" },
-            { question: "Can I manually reassign customers to different quadrants?", category: "using-tool", keywords: "manual reassignment, change quadrant, override classification" },
-            { question: "What chart display options are available?", category: "using-tool", keywords: "chart controls, visualisation settings, display options" },
-            { question: "Can I edit or delete customer entries?", category: "using-tool", keywords: "edit data, modify entries, update customer" },
-            { question: "How do I see details about a specific customer?", category: "using-tool", keywords: "click points, view details, customer information" },
+            // Check if query matches any synonym key
+            for (const [key, synonyms] of Object.entries(searchSynonyms)) {
+                if (lowerQuery.includes(key) || key.includes(lowerQuery)) {
+                    expanded.push(...synonyms);
+                }
+                // Also check reverse: if query matches a synonym value
+                synonyms.forEach(synonym => {
+                    if (lowerQuery.includes(synonym) || synonym.includes(lowerQuery)) {
+                        expanded.push(key, ...synonyms);
+                    }
+                });
+            }
             
-            // Saving & Exporting
-            { question: "Can I save my work?", category: "saving-exporting", keywords: "save work, save project, save analysis" },
-            { question: "How do I load a previous project?", category: "saving-exporting", keywords: "load project, open project, continue work" },
-            { question: "What export formats are available?", category: "saving-exporting", keywords: "export reports, download reports, share results, PNG, PDF, CSV, Excel" },
-            { question: "What types of reports can I generate?", category: "saving-exporting", keywords: "generate reports, action plan, data report" },
-            { question: "What advanced analysis features are included?", category: "saving-exporting", keywords: "proximity analysis, recommendation score, response concentration" },
+            // Remove duplicates and return
+            return [...new Set(expanded)];
+        }
+
+        // Build search index from DOM on page load
+        // This ensures we always have a single source of truth (the HTML)
+        function buildSearchIndex() {
+            const index = [];
+            const items = document.querySelectorAll('.faq-item');
             
-            // Advanced Features
-            { question: "What is Brand+ and what does it include?", category: "advanced-features", keywords: "premium, brand plus, custom branding, logo" },
-            { question: "Does the tool work with different satisfaction scales?", category: "advanced-features", keywords: "scale detection, automatic normalisation, different scales" },
-            { question: "How does the tool handle overlapping data points?", category: "advanced-features", keywords: "frequency clustering, overlapping points, multiple responses" },
+            items.forEach(item => {
+                const questionElement = item.querySelector('.faq-question span');
+                const answerElement = item.querySelector('.faq-answer');
+                const section = item.closest('.faq-section');
+                
+                if (questionElement && section) {
+                    index.push({
+                        element: item,
+                        question: questionElement.textContent.trim(),
+                        keywords: item.dataset.keywords || '',
+                        answer: answerElement ? answerElement.textContent.trim() : '',
+                        category: section.dataset.category || 'unknown'
+                    });
+                }
+            });
             
-            // Privacy & Security
-            { question: "Is my data safe?", category: "privacy-security", keywords: "data safe, data security, privacy protection" },
-            { question: "Do you use cookies?", category: "privacy-security", keywords: "cookies, tracking, analytics" },
-            { question: "Where is my data stored?", category: "privacy-security", keywords: "where data stored, data location, data storage" },
-            { question: "Can I trust Segmentor with sensitive customer data?", category: "privacy-security", keywords: "trust sensitive data, GDPR, enterprise security" },
-            
-            // Understanding the Model
-            { question: "What is the Apostles Model?", category: "understanding-model", keywords: "what is apostles model, apostles model explanation" },
-            { question: "How is this different from NPS?", category: "understanding-model", keywords: "different from NPS, NPS vs apostles model, net promoter score" },
-            { question: "What makes someone an Advocate?", category: "understanding-model", keywords: "what makes apostle, apostle characteristics, high satisfaction high loyalty" },
-            { question: "Why does Segmentor.app use different terminology than the original model?", category: "understanding-model", keywords: "terminology, modern language, apostles vs advocates" }
-        ];
+            return index;
+        }
 
         // DOM Elements
         const searchInput = document.getElementById('faq-search');
@@ -1228,9 +1255,12 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
         // Current filter state
         let currentCategory = 'all';
         let currentSearch = '';
+        let searchIndex = []; // Will be populated on page load
 
         // Initialize FAQ functionality
         document.addEventListener('DOMContentLoaded', function() {
+            // Build search index from DOM
+            searchIndex = buildSearchIndex();
             initializeFAQ();
         });
 
@@ -1259,8 +1289,8 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
         }
 
         function handleSearch(e) {
-            const query = e.target.value.toLowerCase().trim();
-            currentSearch = query;
+            const query = e.target.value.trim();
+            currentSearch = query.toLowerCase();
             
             if (query.length === 0) {
                 clearSearch();
@@ -1270,11 +1300,22 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
             // Show clear button
             searchClear.style.display = 'block';
             
-            // Search through FAQ data
-            const results = faqData.filter(item => {
-                const questionMatch = item.question.toLowerCase().includes(query);
-                const keywordMatch = item.keywords.toLowerCase().includes(query);
-                return questionMatch || keywordMatch;
+            // Expand query with synonyms
+            const expandedQueries = expandQuery(query);
+            
+            // Search through index built from DOM
+            const results = searchIndex.filter(item => {
+                const questionText = item.question.toLowerCase();
+                const keywordsText = item.keywords.toLowerCase();
+                const answerText = item.answer.toLowerCase();
+                
+                // Check if any expanded query matches
+                return expandedQueries.some(expandedQuery => {
+                    const lowerExpanded = expandedQuery.toLowerCase();
+                    return questionText.includes(lowerExpanded) ||
+                           keywordsText.includes(lowerExpanded) ||
+                           answerText.includes(lowerExpanded);
+                });
             });
             
             displaySearchResults(results, query);
@@ -1294,7 +1335,7 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
                 searchResults.innerHTML = '<div class="search-result-item">No results found</div>';
             } else {
                 searchResults.innerHTML = results.map(result => `
-                    <div class="search-result-item" onclick="scrollToFAQ('${result.question}')">
+                    <div class="search-result-item" onclick="scrollToFAQElement(this)" data-item-index="${searchIndex.indexOf(result)}">
                         <div class="search-result-question">${highlightText(result.question, query)}</div>
                         <div class="search-result-category">${getCategoryName(result.category)}</div>
                     </div>
@@ -1306,7 +1347,9 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
 
         function highlightText(text, query) {
             if (!query) return text;
-            const regex = new RegExp(`(${query})`, 'gi');
+            // Escape special regex characters in query
+            const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${escapedQuery})`, 'gi');
             return text.replace(regex, '<strong>$1</strong>');
         }
 
@@ -1322,6 +1365,20 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
             return names[category] || category;
         }
 
+        // Updated scroll function to work with element references
+        function scrollToFAQElement(resultElement) {
+            const index = parseInt(resultElement.dataset.itemIndex);
+            if (index >= 0 && index < searchIndex.length) {
+                const item = searchIndex[index];
+                if (item && item.element) {
+                    item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    toggleFAQItem(item.element);
+                    searchResults.style.display = 'none';
+                }
+            }
+        }
+
+        // Keep old function for backwards compatibility (in case called elsewhere)
         function scrollToFAQ(question) {
             const faqItem = Array.from(faqItems).find(item => 
                 item.querySelector('.faq-question span').textContent === question
@@ -1361,10 +1418,23 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
                     const sectionItems = section.querySelectorAll('.faq-item');
                     let hasMatchingItems = false;
                     
+                    // Expand query with synonyms for filtering too
+                    const expandedQueries = expandQuery(currentSearch);
+                    
                     sectionItems.forEach(item => {
-                        const question = item.querySelector('.faq-question span').textContent.toLowerCase();
+                        const questionElement = item.querySelector('.faq-question span');
+                        const answerElement = item.querySelector('.faq-answer');
+                        const question = questionElement ? questionElement.textContent.toLowerCase() : '';
                         const keywords = item.dataset.keywords ? item.dataset.keywords.toLowerCase() : '';
-                        const matches = question.includes(currentSearch) || keywords.includes(currentSearch);
+                        const answer = answerElement ? answerElement.textContent.toLowerCase() : '';
+                        
+                        // Check if any expanded query matches question, keywords, or answer
+                        const matches = expandedQueries.some(expandedQuery => {
+                            const lowerExpanded = expandedQuery.toLowerCase();
+                            return question.includes(lowerExpanded) ||
+                                   keywords.includes(lowerExpanded) ||
+                                   answer.includes(lowerExpanded);
+                        });
                         
                         item.classList.toggle('hidden', !matches);
                         if (matches) hasMatchingItems = true;
