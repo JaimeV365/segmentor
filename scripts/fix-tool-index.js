@@ -46,6 +46,15 @@ function fixToolIndex() {
   // Inject navigation into the generated HTML
   injectNavigation(toolIndexPath);
   
+  // Ensure Cloudflare Web Analytics beacon is present (e.g. when content came from build/index.html)
+  let finalContent = fs.readFileSync(toolIndexPath, 'utf8');
+  const cfBeacon = '<!-- Cloudflare Web Analytics --><script defer src=\'https://static.cloudflareinsights.com/beacon.min.js\' data-cf-beacon=\'{"token": "7d77bf377e604da0a3435a5817a2e33a"}\'></script><!-- End Cloudflare Web Analytics -->';
+  if (!finalContent.includes('cloudflareinsights.com')) {
+    finalContent = finalContent.replace('</body>', cfBeacon + '\n  </body>');
+    fs.writeFileSync(toolIndexPath, finalContent, 'utf8');
+    console.log('   Cloudflare Web Analytics beacon injected');
+  }
+  
   console.log('✅ Copied/generated React app index.html to build/tool/index.html');
   console.log('   Removed any redirect file that was there');
   console.log('   Navigation injected');
@@ -90,6 +99,7 @@ function generateReactIndex(assetManifestPath) {
     <div id="root"></div>
     ${jsFiles.map(js => `<script src="/tool/${js}"></script>`).join('\n    ')}
     <script src="/logo-replacement.js"></script>
+    <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "7d77bf377e604da0a3435a5817a2e33a"}'></script><!-- End Cloudflare Web Analytics -->
   </body>
 </html>`;
 }
