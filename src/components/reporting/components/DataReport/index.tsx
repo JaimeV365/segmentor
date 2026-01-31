@@ -304,24 +304,22 @@ export const DataReport: React.FC<DataReportProps> = ({
     };
   }, [showSettingsPanel]);
 
-  // Scroll to recommendation score section when it becomes visible
+  // Scroll to recommendation score section only when the user manually ticks the box (not on data load)
   useEffect(() => {
-    if (showRecommendationScore && recommendationScoreSectionRef.current) {
-      // Use requestAnimationFrame to ensure DOM has updated
+    if (showRecommendationScore && autoOpenRecommendationScorePanel && recommendationScoreSectionRef.current) {
       requestAnimationFrame(() => {
         setTimeout(() => {
           recommendationScoreSectionRef.current?.scrollIntoView({
             behavior: 'smooth',
             block: 'start'
           });
-          // Reset auto-open flag after scrolling
           setTimeout(() => {
             setAutoOpenRecommendationScorePanel(false);
           }, 100);
         }, 150);
       });
     }
-  }, [showRecommendationScore]);
+  }, [showRecommendationScore, autoOpenRecommendationScorePanel]);
    
   if (!report) return null;
 

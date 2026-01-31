@@ -130,36 +130,39 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
       setTimeout(() => checkHistoricalProgress(), 5000)
     ];
     
-    // Use MutationObserver to watch for when the section appears in DOM (especially for demo data)
+    // Use MutationObserver to watch for when sections appear in DOM (Historical Progress, Recommendation Score)
     const observer = new MutationObserver((mutations) => {
-      let shouldCheck = false;
+      let shouldCheckHistorical = false;
+      let shouldCheckRecommendation = false;
       mutations.forEach((mutation) => {
         if (mutation.type === 'childList') {
           mutation.addedNodes.forEach((node) => {
             if (node.nodeType === Node.ELEMENT_NODE) {
               const element = node as Element;
-              // Check if the added node is the section or contains it
               const hasSectionId = element.hasAttribute?.('data-section-id');
               const sectionIdValue = element.getAttribute?.('data-section-id');
-              const containsSection = element.querySelector?.('[data-section-id="report-historical-progress"]');
-              
+              const containsHistorical = element.querySelector?.('[data-section-id="report-historical-progress"]');
+              const containsRecommendation = element.querySelector?.('[data-section-id="report-recommendation-score"]');
+
               if (hasSectionId && sectionIdValue === 'report-historical-progress') {
-                console.log('[SectionNavigation] MutationObserver: Found section directly added:', {
-                  tagName: element.tagName,
-                  className: element.className
-                });
-                shouldCheck = true;
-              } else if (containsSection) {
-                console.log('[SectionNavigation] MutationObserver: Found section in added subtree');
-                shouldCheck = true;
+                shouldCheckHistorical = true;
+              } else if (containsHistorical) {
+                shouldCheckHistorical = true;
+              }
+              if (hasSectionId && sectionIdValue === 'report-recommendation-score') {
+                shouldCheckRecommendation = true;
+              } else if (containsRecommendation) {
+                shouldCheckRecommendation = true;
               }
             }
           });
         }
       });
-      if (shouldCheck) {
-        console.log('[SectionNavigation] MutationObserver: Triggering check');
+      if (shouldCheckHistorical) {
         checkHistoricalProgress();
+      }
+      if (shouldCheckRecommendation) {
+        checkRecommendationScore();
       }
     });
     
