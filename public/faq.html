@@ -2399,9 +2399,11 @@ CUST002,6,4,Jane Doe</pre>
             if (window.location.hash === '#who-is-teresa-monroe') {
                 const el = document.getElementById('who-is-teresa-monroe');
                 if (el) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     const questionEl = el.querySelector('.faq-question');
                     if (questionEl) toggleFAQ(questionEl);
+                    // Scroll to the title row so "Who is Teresa Monroe?" is visible; offset up so it stays below any sticky header
+                    (questionEl || el).scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    setTimeout(function() { window.scrollBy(0, -100); }, 350);
                 }
             }
         });
