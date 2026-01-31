@@ -680,6 +680,10 @@ const handleTerroristsZoneSizeChange = (size: number) => {
           loyaltyScale: headerScales.loyalty,
           isLocked: true
         });
+        // Default "Show Recommendation Score" from loyalty scale (CSV/demo/manual). .seg load overwrites this in onSettingsLoad.
+        const showRec = headerScales.loyalty === '0-10';
+        localStorage.setItem('showRecommendationScore', String(showRec));
+        document.dispatchEvent(new CustomEvent('segFileLoaded'));
       } else {
         // Only use auto-detection on first data entry with no scales
         const maxSatisfaction = Math.max(...processedData.map(d => d.satisfaction));
@@ -691,6 +695,9 @@ const handleTerroristsZoneSizeChange = (size: number) => {
           isLocked: true
         };
         setScales(newScales);
+        // Auto-detect never produces 0-10, so default Recommendation Score off
+        localStorage.setItem('showRecommendationScore', 'false');
+        document.dispatchEvent(new CustomEvent('segFileLoaded'));
       }
     }
     setData(processedData);
@@ -706,6 +713,8 @@ const handleTerroristsZoneSizeChange = (size: number) => {
         loyaltyScale: '1-5',
         isLocked: false
       });
+      localStorage.setItem('showRecommendationScore', 'false');
+      document.dispatchEvent(new CustomEvent('segFileLoaded'));
     }
     // Clear filters when data is deleted
     console.log('🗑️ Data deleted, clearing filters...');
@@ -732,6 +741,8 @@ const handleTerroristsZoneSizeChange = (size: number) => {
         loyaltyScale: '1-5',
         isLocked: false
       });
+      localStorage.setItem('showRecommendationScore', 'false');
+      document.dispatchEvent(new CustomEvent('segFileLoaded'));
       
       // Clear storage so DemoButton shows when data is empty
       storageManager.clearState();
