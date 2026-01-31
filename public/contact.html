@@ -900,6 +900,13 @@
                     handleQueryTypeClick(blockValue);
                 });
             });
+
+            // If URL has ?block=TM or ?block=Web, show the survey with that block (e.g. from FAQ "Request an introductory call")
+            const params = new URLSearchParams(window.location.search);
+            const block = params.get('block');
+            if (block === 'TM' || block === 'Web') {
+                handleQueryTypeClick(block);
+            }
         });
     </script>
 </body>

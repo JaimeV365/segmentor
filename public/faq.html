@@ -1368,7 +1368,7 @@ CUST002,6,4,Jane Doe</pre>
                         Getting Support
                     </h2>
                     
-                    <div class="faq-item" data-keywords="teresa monroe who is consulting partner">
+                    <div class="faq-item" id="who-is-teresa-monroe" data-keywords="teresa monroe who is consulting partner">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             <h3>Who is Teresa Monroe?</h3>
                             <span class="faq-toggle">+</span>
@@ -1402,8 +1402,8 @@ CUST002,6,4,Jane Doe</pre>
                             </ul>
                             
                             <div style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
-                                <a href="#" style="color: #3a863e; text-decoration: none; font-weight: 600;">Visit Teresa Monroe's website →</a>
-                                <a href="#" style="color: #3a863e; text-decoration: none; font-weight: 600;">Request an introductory call →</a>
+                                <a href="https://www.teresamonroe.com/en" target="_blank" rel="noopener noreferrer" style="color: #3a863e; text-decoration: none; font-weight: 600;">Visit Teresa Monroe's website →</a>
+                                <a href="/contact.html?block=TM" style="color: #3a863e; text-decoration: none; font-weight: 600;">Request an introductory call →</a>
                             </div>
                         </div>
                     </div>
@@ -2393,6 +2393,18 @@ CUST002,6,4,Jane Doe</pre>
             const searchResults = document.getElementById('search-results');
             searchResults.style.display = 'none';
         }
+
+        // When landing with #who-is-teresa-monroe, scroll to that question and expand it
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.location.hash === '#who-is-teresa-monroe') {
+                const el = document.getElementById('who-is-teresa-monroe');
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    const questionEl = el.querySelector('.faq-question');
+                    if (questionEl) toggleFAQ(questionEl);
+                }
+            }
+        });
     </script>
 </body>
 </html>
