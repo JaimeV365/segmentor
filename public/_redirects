@@ -7,17 +7,17 @@
 # Root path redirects to tool
 / /tool/ 301
 
-# CRITICAL: Serve static HTML files - these MUST be served directly
-/about.html 200
-/faq.html 200
-/contact.html 200
-/privacy.html 200
-/terms.html 200
+# CRITICAL: Serve static HTML files with 200 (override Pages default .html → extension-less redirect)
+/about.html /about.html 200
+/faq.html /faq.html 200
+/contact.html /contact.html 200
+/privacy.html /privacy.html 200
+/terms.html /terms.html 200
 /brand-plus.html /tm 301
 /brand-plus /tm 301
-/tm.html 200
-/login.html 200
-/brand-plus-auth.html 200
-/404.html 200
-/pricing.html 200
+/tm.html /tm.html 200
+/login.html /login.html 200
+/brand-plus-auth.html /brand-plus-auth.html 200
+/404.html /404.html 200
+/pricing.html /pricing.html 200
 
