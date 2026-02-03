@@ -217,13 +217,18 @@
 
       <footer class="guide-footer">
         <p><strong>Need more help?</strong></p>
-        <ul class="guide-footer-links">
-          <li>Specific questions? <a href="/faq.html">FAQ</a></li>
-          <li>Stuck? <a href="/contact.html">Contact us</a></li>
-          <li>Expert guidance? <a href="/contact.html">CX Programme with Teresa Monroe</a></li>
-        </ul>
-        <p><strong>Quick links:</strong> <a href="/tool/?trial=true">Demo mode</a> (guided tour) · <a href="/faq.html">Apostles Model</a> · <a href="/faq.html">Privacy &amp; security</a> · <a href="/tool/">Start using segmentor.app</a></p>
-        <p class="guide-footer-note">For detailed information on advanced features and troubleshooting, see the <a href="/faq.html">FAQ</a>.</p>
+        <div class="guide-footer-grid">
+          <a href="/faq.html" class="guide-footer-card">Specific questions? <span>FAQ</span></a>
+          <a href="/contact.html" class="guide-footer-card">Stuck? <span>Contact us</span></a>
+          <a href="/contact.html" class="guide-footer-card">Expert guidance? <span>CX Programme with Teresa Monroe</span></a>
+        </div>
+        <p><strong>Quick links</strong></p>
+        <div class="guide-footer-grid">
+          <a href="/tool/?trial=true" class="guide-footer-card">Demo mode (guided tour)</a>
+          <a href="/faq.html#apostles-model" class="guide-footer-card">Apostles Model</a>
+          <a href="/faq.html" class="guide-footer-card">Privacy &amp; security</a>
+          <a href="/tool/" class="guide-footer-card">Start using segmentor.app</a>
+        </div>
       </footer>
     </article>
   </div>
@@ -252,6 +257,15 @@
 </footer>
 
 <style>
+/* Nav logo: match other pages – segmentor in Montserrat, .APP in Jaro */
+@font-face {
+  font-family: 'Jaro';
+  src: url('/fonts/Jaro-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Guide page: two-column layout and sticky elements */
 .guide-page {
   padding: 24px 16px 48px;
@@ -397,20 +411,34 @@
   color: var(--text-secondary, #6b7280);
 }
 
-.guide-footer-links {
-  list-style: none;
-  padding-left: 0;
-  margin: 8px 0 12px 0;
+.guide-footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 8px 0 20px 0;
 }
 
-.guide-footer-links li {
-  margin-bottom: 4px;
+.guide-footer-card {
+  display: block;
+  padding: 10px 14px;
+  background: var(--background-light, #f9fafb);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #e5e7eb);
+  color: var(--text-primary, #333);
+  text-decoration: none;
+  font-size: 0.9375rem;
+  transition: border-color 0.2s, background 0.2s;
 }
 
-.guide-footer-note {
-  margin-top: 12px;
-  font-size: 0.875rem;
-  color: var(--text-secondary, #6b7280);
+.guide-footer-card:hover {
+  border-color: var(--primary-green, #3a863e);
+  background: #fff;
+  text-decoration: none;
+}
+
+.guide-footer-card span {
+  font-weight: 600;
+  color: var(--primary-green, #3a863e);
 }
 
 .guide-section {
@@ -544,11 +572,35 @@
   align-items: center;
 }
 
-.nav-logo .logo-text {
-  font-family: 'Jaro', sans-serif;
+.nav-logo {
   font-size: 1.5rem;
-  color: #2c3e50;
+}
+
+.logo-text {
   text-decoration: none;
+  display: flex;
+  align-items: baseline;
+  color: #333;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.logo-segmentor {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  color: #333;
+}
+
+.logo-m {
+  color: #3a863e;
+}
+
+.logo-app {
+  font-family: 'Jaro', sans-serif;
+  color: #3a863e;
+  text-transform: uppercase;
+  font-size: 0.6em;
+  vertical-align: middle;
+  margin-left: 2px;
 }
 
 .nav-links {
