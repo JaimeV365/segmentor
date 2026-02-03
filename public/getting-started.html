@@ -82,11 +82,11 @@
 
     <!-- Right: Article content -->
     <article class="guide-content">
-      <header class="guide-header">
-        <h1 class="guide-title">Getting started with segmentor.app</h1>
+      <section class="hero-section">
+        <h1 class="main-page-title">Getting started with segmentor.app</h1>
         <p class="guide-intro">This guide walks you through everything you need to start segmenting your customers. No account required—your data stays on your device.</p>
         <p class="guide-intro-meta"><strong>In this guide:</strong> Upload your data → Understand your segments → Chart controls → Filters → Analyse results → Export and save. <strong>Time to complete:</strong> 10–15 minutes.</p>
-      </header>
+      </section>
 
       <section id="upload" class="guide-section">
         <h2>1. Upload your data</h2>
@@ -334,17 +334,17 @@
   min-width: 0;
 }
 
-.guide-header {
+/* Hero: match FAQ/Contact – green bar and line from shared.css .main-page-title */
+.hero-section {
+  text-align: center;
+  padding: 24px 0;
+  background: linear-gradient(135deg, var(--background-light, #f9fafb) 0%, var(--background-white, #fff) 100%);
+  border-radius: 12px;
   margin-bottom: 32px;
 }
 
-.guide-title {
-  font-family: var(--font-brand, 'Montserrat', sans-serif);
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #2c3e50;
-  margin-bottom: 12px;
-  line-height: 1.2;
+.hero-section .main-page-title {
+  text-align: left !important;
 }
 
 .guide-intro {
