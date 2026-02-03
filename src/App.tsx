@@ -949,9 +949,9 @@ const handleTerroristsZoneSizeChange = (size: number) => {
                   {/* Support Section - Always at bottom */}
                   <div className="drawer-section">
                     <a
-                      href="/contact.html"
+                      href="/getting-started.html"
                       className="drawer-item"
-                      title="Get help and support"
+                      title="Get help and support – getting started guide"
                     >
                       <span className="drawer-item-icon">
                         <MessageCircleQuestion size={18} />
