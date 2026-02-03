@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="preload" href="/fonts/Montserrat-Bold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+<link rel="preload" href="/fonts/Jaro-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+
+    <!-- SEO -->
+    <title>Getting started with segmentor.app – Upload, segments, filters, reports, export</title>
+    <meta name="description" content="Step-by-step guide: upload your data, understand segments (Loyalists, Hostages, Mercenaries, Defectors), use filters and controls, analyse results, export and save. 10–15 min. Privacy-first.">
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://segmentor.app/getting-started.html" />
+
+    <!-- Branding -->
+    <link rel="stylesheet" href="/assets/css/shared.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@400;600;700&family=Jaro&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/favicon.ico">
+    <script src="/logo-replacement.js"></script>
+
+    <!-- HowTo Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "How to use segmentor.app",
+      "description": "Step-by-step guide to uploading data, understanding segments, chart controls, filters, analysing results, and exporting with segmentor.app.",
+      "step": [
+        { "@type": "HowToStep", "name": "Upload your data", "text": "Upload a CSV file, enter data manually, or load a .seg project." },
+        { "@type": "HowToStep", "name": "Understanding your segments", "text": "Learn the four quadrants: Loyalists, Hostages, Mercenaries, Defectors, and the midpoint." },
+        { "@type": "HowToStep", "name": "Chart controls", "text": "Terminology, zone display, labels, grid and axes, clicking data points, manual reassignment." },
+        { "@type": "HowToStep", "name": "Using filters", "text": "Filter by date, attributes, scores; combine or disconnect filters." },
+        { "@type": "HowToStep", "name": "Analyzing your results", "text": "Data Report, Action Plan, proximity analysis, response concentration, historical progress." },
+        { "@type": "HowToStep", "name": "Exporting and saving", "text": "Save .seg project, export PDF/Excel/CSV/PNG, customise branding (premium)." }
+      ]
+    }
+    </script>
+    <!-- Cloudflare Web Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "7d77bf377e604da0a3435a5817a2e33a"}'></script>
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="7ca02d83-acd6-4fe7-b273-2b1efd01c7bb"></script>
+</head>
+<body>
+
+<nav class="main-navigation">
+  <div class="nav-container">
+    <div class="nav-logo">
+      <a href="/" class="logo-text">
+        <span class="logo-segmentor">seg<span class="logo-m">m</span>entor</span><span class="logo-app">.APP</span>
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="/about.html" class="nav-link">About</a>
+      <a href="/faq.html" class="nav-link">FAQ</a>
+      <a href="/contact.html" class="nav-link">Contact</a>
+      <a href="/tool/" class="nav-link nav-link-primary">Start</a>
+    </div>
+  </div>
+</nav>
+
+<main class="guide-page">
+  <div class="guide-layout">
+    <!-- Left: Sticky Table of Contents -->
+    <aside class="guide-toc" aria-label="On this page">
+      <h2 class="guide-toc-title">On this page</h2>
+      <nav class="guide-toc-nav">
+        <a href="#upload" class="guide-toc-link">1. Upload your data</a>
+        <a href="#segments" class="guide-toc-link">2. Understanding your segments</a>
+        <a href="#controls" class="guide-toc-link">3. Chart controls</a>
+        <a href="#filters" class="guide-toc-link">4. Using filters</a>
+        <a href="#analyzing" class="guide-toc-link">5. Analysing your results</a>
+        <a href="#exporting" class="guide-toc-link">6. Exporting and saving</a>
+      </nav>
+    </aside>
+
+    <!-- Right: Article content -->
+    <article class="guide-content">
+      <header class="guide-header">
+        <h1 class="guide-title">Getting started with segmentor.app</h1>
+        <p class="guide-intro">This guide walks you through everything you need to start segmenting your customers. No account required—your data stays on your device.</p>
+        <p class="guide-intro-meta"><strong>In this guide:</strong> Upload your data → Understand your segments → Chart controls → Filters → Analyse results → Export and save. <strong>Time to complete:</strong> 10–15 minutes.</p>
+      </header>
+
+      <section id="upload" class="guide-section">
+        <h2>1. Upload your data</h2>
+        <p>The main upload screen offers three ways to get data into segmentor.app:</p>
+
+        <h3>Option A: Upload a CSV file</h3>
+        <p>Use the <strong>Upload CSV</strong> option and select your file. <strong>Headers matter:</strong> the first row of your CSV should contain column names (e.g. Satisfaction, Loyalty, Name, Email, Date). The tool uses these to detect and map columns automatically. Your CSV should include:</p>
+        <ul>
+          <li><strong>Satisfaction score</strong> (required): 1–3, 1–5, or 1–7 scale</li>
+          <li><strong>Loyalty score</strong> (required): 1–5, 1–7, 1–10, or 0–10 scale</li>
+          <li><strong>Customer name/ID</strong> (optional): for identifying individuals</li>
+          <li><strong>Email</strong> (optional): for tracking customers over time</li>
+          <li><strong>Date</strong> (optional): for historical progress</li>
+          <li><strong>Other attributes</strong> (optional): country, region, product, etc.</li>
+        </ul>
+        <p>Expected column headers (first row) and an example row (from the demo file):</p>
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead>
+              <tr><th>ID</th><th>Name/Email</th><th>Satisfaction-5</th><th>Loyalty-10</th><th>Date(dd/mm/yyyy)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>ID0093</td><td>Emma Johnson</td><td>1</td><td>0</td><td>01/01/2024</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>In the tool, use the <strong>Download template</strong> button to get a CSV with the right structure, or <a href="/tool/apostles_model_template.csv" download>download the template here</a>. <strong>Tip:</strong> The tool normalizes different scales, so you can mix 1–5 and 1–10 in the same dataset. If the column mapping screen appears, map your columns to Satisfaction and Loyalty as prompted.</p>
+
+        <h3>Option B: Enter data manually</h3>
+        <p>Choose <strong>Manual Entry</strong> and fill in the form for each customer. Satisfaction and loyalty scales are mandatory; all other fields (name, email, date, etc.) are optional. If both email and ID are left blank, the row is accepted but treated as anonymous. Best for small datasets or quick tests.</p>
+
+        <h3>Option C: Load project</h3>
+        <p>Choose <strong>Load Project</strong> to open a previously saved <code>.seg</code> file. Your data, midpoint, filters, and settings are restored exactly as you left them. How to save a <code>.seg</code> file is explained in <a href="#exporting">Exporting and saving</a> (section 6 below).</p>
+
+        <p><strong>New to the tool?</strong> You can also try <a href="/tool/?trial=true">demo mode</a> or use sample data from the tool to explore before uploading your own. Once your data is in, your customers appear automatically in the four quadrants. Next, make sense of those segments.</p>
+      </section>
+
+      <section id="segments" class="guide-section">
+        <h2>2. Understanding your segments</h2>
+        <p>Your customers are divided into <strong>four segments</strong> based on satisfaction and loyalty. The main chart shows all four quadrants. For more detail on the model, see the <a href="/faq.html#apostles-model">FAQ: What is the Apostles Model?</a></p>
+
+        <h3>Loyalists (top right)</h3>
+        <p><strong>High satisfaction + high loyalty.</strong> Your best customers—they like you and stay. The extreme top-right corner is the <strong>Advocates</strong> sub-zone: superfans who promote you. <em>What to do:</em> Maintain their experience, ask for referrals, feature them in case studies. <a href="/faq.html#loyalists">More in FAQ</a></p>
+
+        <h3>Hostages (top left)</h3>
+        <p><strong>Low satisfaction + high loyalty.</strong> Unhappy but locked in (switching costs, contracts, lack of alternatives). They'll leave when a better option appears—and may tell others why. <em>What to do:</em> Urgent intervention. Find out why they're dissatisfied and fix it. <a href="/faq.html#hostages">More in FAQ</a></p>
+
+        <h3>Mercenaries (bottom right)</h3>
+        <p><strong>High satisfaction + low loyalty.</strong> Happy with you but not emotionally attached; they'll switch for a better deal. <em>What to do:</em> Build loyalty through rewards, community, or switching barriers. <a href="/faq.html#mercenaries">More in FAQ</a></p>
+
+        <h3>Defectors (bottom left)</h3>
+        <p><strong>Low satisfaction + low loyalty.</strong> High churn risk. The extreme bottom-left is the <strong>Trolls</strong> sub-zone: they may damage your brand through negative word-of-mouth. <em>What to do:</em> Win back if possible, or let them go gracefully. <a href="/faq.html#defectors">More in FAQ</a></p>
+
+        <h3>The midpoint</h3>
+        <p>The <strong>midpoint</strong> (where the four quadrants meet) determines how customers are classified. You can drag it to reposition quadrant boundaries. If your data clusters in certain areas, moving the midpoint can create more meaningful segments. Manual reassignments for boundary cases are cleared if you move the midpoint and the point is no longer on the line.</p>
+      </section>
+
+      <section id="controls" class="guide-section">
+        <h2>3. Chart controls</h2>
+        <p>Use the chart controls to customise how the quadrants and data are displayed.</p>
+
+        <h3>Terminology</h3>
+        <p>Switch between <strong>Classic</strong> (Apostles, Terrorists) and <strong>Modern</strong> (Advocates, Trolls) labels. The segmentation logic is the same—only the names change.</p>
+
+        <h3>Zone display</h3>
+        <p>Show or hide <strong>Near-Advocates</strong> zones, the <strong>Advocates</strong> sub-zone, and the <strong>Trolls</strong> sub-zone. Use these to focus on the extreme corners of the chart.</p>
+
+        <h3>Labels</h3>
+        <p>Set <strong>label options</strong>: all labels (quadrants + zones), quadrants only, or no labels.</p>
+
+        <h3>Grid and axes</h3>
+        <p>Toggle <strong>grid lines</strong>, <strong>scale numbers</strong>, and <strong>axis legends</strong> on or off.</p>
+
+        <h3>Clicking data points</h3>
+        <p>Click any point on the chart to see customer name/ID, satisfaction and loyalty scores, quadrant assignment, and other attributes. For overlapping points, the tool shows frequency; click again to see all customers at that position.</p>
+
+        <h3>Manual reassignment (boundary cases)</h3>
+        <p>If a customer sits exactly on a quadrant boundary, you can manually reassign them to an adjacent quadrant. Use this when business context suggests they belong in a specific segment. Reassignments are cleared if you move the midpoint and the point is no longer on the boundary.</p>
+      </section>
+
+      <section id="filters" class="guide-section">
+        <h2>4. Using filters</h2>
+        <p>Filters let you focus on a subset of your data. By default, when you add filters to the main chart, they apply to all reports too. You can disconnect them by modifying filters locally (per report) if you want a report to use different filter criteria.</p>
+
+        <h3>What you can filter by</h3>
+        <p>Filter by <strong>date</strong> (e.g. last 7/30/90 days, custom range, or specific date), by <strong>attributes</strong> (country, region, language, or any column from your CSV), and by <strong>scores</strong> (satisfaction or loyalty range).</p>
+
+        <h3>Connecting and disconnecting filters</h3>
+        <p>You can <strong>combine multiple filters</strong>—for example, "UK customers from Q1 2024 with satisfaction below 5." Each filter you add narrows the data further. To remove a filter, clear it or disconnect it; the chart and reports then include the rows that were excluded by that filter. Clear all filters to return to the full dataset.</p>
+      </section>
+
+      <section id="analyzing" class="guide-section">
+        <h2>5. Analysing your results</h2>
+        <p>Open the <strong>Reports</strong> section from the left menu. Segmentor offers two main report types plus supporting views.</p>
+
+        <h3>Data Report</h3>
+        <p>Shows overall statistics (averages, distributions), quadrant breakdown (counts and percentages), response concentration (where customers cluster), and—if your data has dates and repeated customers—historical progress. Use it to understand the composition of your customer base. Click <strong>Generate Data Report</strong> in the Reporting section.</p>
+
+        <h3>Action Plan</h3>
+        <p>Provides strategic recommendations per segment, proximity analysis (at-risk customers near boundaries), conversion opportunities, and ROI-prioritized actions. Use it to decide what to do next. Click <strong>Generate Action Plan</strong> in the Reporting section. You'll need to accept a short disclaimer before viewing (it contains strategic recommendations, not just data).</p>
+
+        <h3>Proximity analysis</h3>
+        <p>Identifies customers near quadrant boundaries who could move between segments with small changes. These are high-leverage opportunities—e.g. a Mercenary close to the Loyalist boundary may need only a small loyalty boost to become a long-term customer.</p>
+
+        <h3>Response concentration</h3>
+        <p>Shows where most responses actually cluster (the mode), not just the average. Averages can be pulled by outliers; concentration shows where customers really sit.</p>
+
+        <h3>Historical progress (if available)</h3>
+        <p>Requires a <strong>Date</strong> column and the same customers (by email or ID) at multiple dates. You'll see how averages change over time, individual movements between segments, multi-movement journeys, and which transitions are most common. Use it to track improvement efforts and spot trends.</p>
+      </section>
+
+      <section id="exporting" class="guide-section">
+        <h2>6. Exporting and saving your work</h2>
+        <p>You can save your project and export reports in several formats.</p>
+
+        <h3>Save your project (.seg file)</h3>
+        <p>Use the <strong>Save</strong> button in the left menu to export a <code>.seg</code> file. It stores your data, midpoint position, zone settings, manual reassignments, filters, and other settings. Save to your computer; reload later with <strong>Load</strong> and select the file. The file is saved directly to your device—never uploaded to our servers.</p>
+
+        <h3>Export reports</h3>
+        <p>From each report section you can export <strong>PDF</strong> (Data Report, Action Plan, or combined), <strong>Excel/CSV</strong> (raw data with segment assignments, historical progress, proximity lists), and <strong>PNG</strong> (chart and visualizations). Use the export option in the report you're viewing; files download to your computer.</p>
+
+        <h3>Customising exports (premium)</h3>
+        <p>Free reports include segmentor.app branding. Premium users can remove branding and add their own logo, colours, and branded reports for client presentations. In the tool: <strong>Controls → Watermark → Watermark Controls</strong> to upload a logo and adjust size, position, and transparency.</p>
+
+        <h3>Sharing with colleagues</h3>
+        <p>Share <strong>.seg project files</strong> so others can load and continue the analysis; share <strong>PDF reports</strong> for viewing without the tool; or share <strong>exported CSV data</strong> for use in other tools. All processing is local—you control what you share.</p>
+      </section>
+
+      <footer class="guide-footer">
+        <p><strong>Need more help?</strong></p>
+        <ul class="guide-footer-links">
+          <li>Specific questions? <a href="/faq.html">FAQ</a></li>
+          <li>Stuck? <a href="/contact.html">Contact us</a></li>
+          <li>Expert guidance? <a href="/contact.html">CX Programme with Teresa Monroe</a></li>
+        </ul>
+        <p><strong>Quick links:</strong> <a href="/tool/?trial=true">Demo mode</a> (guided tour) · <a href="/faq.html">Apostles Model</a> · <a href="/faq.html">Privacy &amp; security</a> · <a href="/tool/">Start using segmentor.app</a></p>
+        <p class="guide-footer-note">For detailed information on advanced features and troubleshooting, see the <a href="/faq.html">FAQ</a>.</p>
+      </footer>
+    </article>
+  </div>
+</main>
+
+<!-- Sticky Contact button (bottom-right) -->
+<a href="/contact.html" class="guide-contact-fab" title="Contact us" aria-label="Contact us – get help or send a message">
+  <svg class="guide-contact-fab-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+    <polyline points="22,6 12,13 2,6"/>
+  </svg>
+  <span class="guide-contact-fab-text">Contact us</span>
+</a>
+
+<footer class="site-footer">
+  <div class="app-content">
+    <div class="footer-content">
+      <p>&copy; 2025 segmentor.app. All rights reserved.</p>
+      <nav class="footer-nav">
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms of Service</a>
+        <a href="/tm">TM Staff</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<style>
+/* Guide page: two-column layout and sticky elements */
+.guide-page {
+  padding: 24px 16px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.guide-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .guide-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .guide-toc {
+    position: static;
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+    padding-bottom: 16px;
+  }
+}
+
+.guide-toc {
+  position: sticky;
+  top: 100px;
+  padding: 16px 0;
+}
+
+.guide-toc-title {
+  font-family: var(--font-brand, 'Montserrat', sans-serif);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.guide-toc-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.guide-toc-link {
+  font-size: 0.9375rem;
+  color: var(--text-primary, #333);
+  text-decoration: none;
+  padding: 4px 0;
+  border-left: 3px solid transparent;
+  padding-left: 12px;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.guide-toc-link:hover,
+.guide-toc-link:focus {
+  color: var(--primary-green, #3a863e);
+  border-left-color: var(--primary-green, #3a863e);
+}
+
+.guide-content {
+  min-width: 0;
+}
+
+.guide-header {
+  margin-bottom: 32px;
+}
+
+.guide-title {
+  font-family: var(--font-brand, 'Montserrat', sans-serif);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+
+.guide-intro {
+  font-size: 1.0625rem;
+  color: var(--text-secondary, #6b7280);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.guide-intro-meta {
+  font-size: 0.9375rem;
+  color: var(--text-secondary, #6b7280);
+  margin: 8px 0 0 0;
+}
+
+.guide-section h3 {
+  font-family: var(--font-brand, 'Montserrat', sans-serif);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 20px 0 8px 0;
+}
+
+.guide-pre {
+  background: var(--background-light, #f9fafb);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 6px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  margin: 12px 0;
+}
+
+.guide-pre code {
+  background: none;
+  padding: 0;
+}
+
+.guide-table-wrap {
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.guide-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.guide-table th,
+.guide-table td {
+  border: 1px solid var(--border-color, #e5e7eb);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.guide-table th {
+  background: var(--background-light, #f9fafb);
+  font-weight: 600;
+  color: var(--text-primary, #333);
+}
+
+.guide-table td {
+  color: var(--text-secondary, #6b7280);
+}
+
+.guide-footer-links {
+  list-style: none;
+  padding-left: 0;
+  margin: 8px 0 12px 0;
+}
+
+.guide-footer-links li {
+  margin-bottom: 4px;
+}
+
+.guide-footer-note {
+  margin-top: 12px;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+.guide-section {
+  margin-bottom: 40px;
+  scroll-margin-top: 100px;
+}
+
+.guide-section h2 {
+  font-family: var(--font-brand, 'Montserrat', sans-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+
+.guide-section p,
+.guide-section ul {
+  margin-bottom: 12px;
+  line-height: 1.6;
+  color: var(--text-primary, #333);
+}
+
+.guide-section ul {
+  padding-left: 1.5rem;
+}
+
+.guide-section li {
+  margin-bottom: 6px;
+}
+
+.guide-section code {
+  font-size: 0.9em;
+  padding: 2px 6px;
+  background: var(--background-light, #f9fafb);
+  border-radius: 4px;
+}
+
+.guide-section a {
+  color: var(--primary-green, #3a863e);
+  text-decoration: underline;
+}
+
+.guide-section a:hover {
+  text-decoration: none;
+}
+
+.guide-footer {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  font-size: 0.9375rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+.guide-footer a {
+  color: var(--primary-green, #3a863e);
+  text-decoration: underline;
+}
+
+.guide-footer a:hover {
+  text-decoration: none;
+}
+
+/* Sticky Contact FAB */
+.guide-contact-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--primary-green, #3a863e);
+  color: #fff;
+  text-decoration: none;
+  font-family: var(--font-primary, 'Lato', sans-serif);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border-radius: 28px;
+  box-shadow: 0 4px 12px rgba(58, 134, 62, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 1000;
+}
+
+.guide-contact-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(58, 134, 62, 0.4);
+}
+
+.guide-contact-fab:focus {
+  outline: 2px solid var(--primary-green, #3a863e);
+  outline-offset: 2px;
+}
+
+.guide-contact-fab-icon {
+  flex-shrink: 0;
+}
+
+.guide-contact-fab-text {
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .guide-contact-fab-text {
+    display: none;
+  }
+  .guide-contact-fab {
+    padding: 14px;
+    border-radius: 50%;
+  }
+}
+
+/* Ensure nav uses shared styles - override if needed */
+.main-navigation {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-logo .logo-text {
+  font-family: 'Jaro', sans-serif;
+  font-size: 1.5rem;
+  color: #2c3e50;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.nav-link {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.9375rem;
+  color: #4b5563;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: #3a863e;
+}
+
+.nav-link-primary {
+  color: #fff;
+  background: #3a863e;
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.nav-link-primary:hover {
+  background: #2d6b30;
+  color: #fff;
+}
+
+.app-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+</style>
+
+</body>
+</html>
