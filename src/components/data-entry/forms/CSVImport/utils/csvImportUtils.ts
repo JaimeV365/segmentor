@@ -348,26 +348,39 @@ export const validateDataRows = (
         const email = emailValue !== undefined ? String(emailValue).trim() : '';
         const name = nameValue !== undefined ? String(nameValue).trim() : '';
         
-        // Validate satisfaction
+        // Helper function for decimal precision check
+        const hasValidDecimalPrecision = (value: number): boolean => {
+          const multiplied = value * 10;
+          return Math.abs(multiplied - Math.round(multiplied)) < 0.0001;
+        };
+        
+        // Validate satisfaction (decimals allowed, max 1 decimal place)
         if (row[satisfactionHeader] === undefined || row[satisfactionHeader] === '') {
           throw new Error(`Satisfaction value is empty`);
         } else if (isNaN(satisfaction)) {
           throw new Error(`Invalid satisfaction value "${row[satisfactionHeader]}" (not a number)`);
-        } else if (satisfaction < 1 || satisfaction > Number(satisfactionScale.split('-')[1])) {
-          throw new Error(`Invalid satisfaction value ${satisfaction} (should be between 1 and ${satisfactionScale.split('-')[1]})`);
+        } else {
+          const [minSat, maxSat] = satisfactionScale.split('-').map(Number);
+          if (satisfaction < minSat || satisfaction > maxSat) {
+            throw new Error(`Invalid satisfaction value ${satisfaction} (should be between ${minSat} and ${maxSat})`);
+          } else if (!Number.isInteger(satisfaction) && !hasValidDecimalPrecision(satisfaction)) {
+            throw new Error(`Satisfaction value ${satisfaction} has too many decimal places (maximum 1 allowed)`);
+          }
         }
         
-        // Validate loyalty
+        // Validate loyalty (integers only)
         if (row[loyaltyHeader] === undefined || row[loyaltyHeader] === '') {
           throw new Error(`Loyalty value is empty`);
         } else if (isNaN(loyalty)) {
           throw new Error(`Invalid loyalty value "${row[loyaltyHeader]}" (not a number)`);
         } else {
-  const [minLoy, maxLoy] = loyaltyScale.split('-').map(Number);
-  if (loyalty < minLoy || loyalty > maxLoy) {
-    throw new Error(`Invalid loyalty value ${loyalty} (should be between ${minLoy} and ${maxLoy})`);
-  }
-}
+          const [minLoy, maxLoy] = loyaltyScale.split('-').map(Number);
+          if (loyalty < minLoy || loyalty > maxLoy) {
+            throw new Error(`Invalid loyalty value ${loyalty} (should be between ${minLoy} and ${maxLoy})`);
+          } else if (!Number.isInteger(loyalty)) {
+            throw new Error(`Loyalty value ${loyalty} must be a whole number (no decimals allowed)`);
+          }
+        }
         
         // Validate email if present
         if (email && !validateEmail(email).isValid) {

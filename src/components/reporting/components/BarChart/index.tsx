@@ -225,7 +225,39 @@ useEffect(() => {
       }
     });
     
-    // Transform to BarChartData format matching the original data structure
+    // For satisfaction, handle decimals; for loyalty, use integers only
+    if (field === 'satisfaction') {
+      // Check if there are any decimal values
+      const distributionKeys = Object.keys(distribution).map(Number);
+      const hasDecimals = distributionKeys.some(key => !Number.isInteger(key));
+      
+      if (hasDecimals) {
+        // Create bars for all values that exist (integers + decimals)
+        const valuesToShow = new Set<number>();
+        
+        // Always include all integers in the scale range
+        for (let i = minValue; i <= maxValue; i++) {
+          valuesToShow.add(i);
+        }
+        
+        // Add any decimal values that have data
+        distributionKeys.forEach(key => {
+          if (key >= minValue && key <= maxValue) {
+            valuesToShow.add(key);
+          }
+        });
+        
+        // Sort and create bars
+        const sortedValues = Array.from(valuesToShow).sort((a, b) => a - b);
+        
+        return sortedValues.map(value => ({
+          value: value,
+          count: distribution[value] || 0
+        }));
+      }
+    }
+    
+    // Default: integer bars only (for loyalty or satisfaction without decimals)
     const barCount = maxValue - minValue + 1;
     return Array.from({ length: barCount }, (_, i) => {
       const value = minValue + i;
