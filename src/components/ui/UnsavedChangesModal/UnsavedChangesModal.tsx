@@ -8,8 +8,7 @@ interface UnsavedChangesModalProps {
   onCancel: () => void;
   // Reload-specific props (optional)
   isReloadModal?: boolean;
-  onReloadKeepData?: () => void;
-  onReloadFresh?: () => void;
+  onReload?: () => void;
 }
 
 export const UnsavedChangesModal: React.FC<UnsavedChangesModalProps> = ({
@@ -18,38 +17,31 @@ export const UnsavedChangesModal: React.FC<UnsavedChangesModalProps> = ({
   onLeaveWithoutSaving,
   onCancel,
   isReloadModal = false,
-  onReloadKeepData,
-  onReloadFresh
+  onReload
 }) => {
   if (!isOpen) return null;
 
-  // Reload modal has different options
+  // Reload modal - simple two options
   if (isReloadModal) {
     return (
       <div className="unsaved-changes-overlay" onClick={onCancel}>
         <div className="unsaved-changes-modal" onClick={(e) => e.stopPropagation()}>
           <div className="unsaved-changes-header">
-            <h3 className="unsaved-changes-title">🔄 Reload Page</h3>
+            <h3 className="unsaved-changes-title">⚠️ Unsaved Changes</h3>
           </div>
           
           <div className="unsaved-changes-content">
             <p className="unsaved-changes-message">
-              How would you like to reload the page?
+              Your unsaved changes will be lost if you reload.
             </p>
           </div>
 
           <div className="unsaved-changes-actions">
             <button
-              className="unsaved-changes-button unsaved-changes-button--primary"
-              onClick={onReloadKeepData}
-            >
-              Reload (Keep Data)
-            </button>
-            <button
               className="unsaved-changes-button unsaved-changes-button--danger"
-              onClick={onReloadFresh}
+              onClick={onReload}
             >
-              Reload Fresh (Clear Data)
+              Reload
             </button>
             <button
               className="unsaved-changes-button unsaved-changes-button--secondary"

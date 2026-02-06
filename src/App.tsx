@@ -1026,11 +1026,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
           onSaveAndLeave={() => {}} // Not used for reload modal
           onLeaveWithoutSaving={() => {}} // Not used for reload modal
           onCancel={() => setShowReloadModal(false)}
-          onReloadKeepData={() => {
-            setShowReloadModal(false);
-            window.location.reload();
-          }}
-          onReloadFresh={() => {
+          onReload={() => {
             setShowReloadModal(false);
             // Clear all app data from localStorage
             storageManager.clearState();
