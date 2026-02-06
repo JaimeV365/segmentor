@@ -350,6 +350,9 @@ useEffect(() => {
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
   const saveButtonRef = useRef<{ triggerSave: () => Promise<void> } | null>(null);
 
+  // Reload confirmation modal state
+  const [showReloadModal, setShowReloadModal] = useState(false);
+
   // Track unsaved changes state (updated by UnsavedChangesTracker component)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
@@ -883,6 +886,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
                   terroristsZoneSize={terroristsZoneSize}
                   isClassicModel={isClassicModel}
                   onHasUnsavedChangesChange={setHasUnsavedChanges}
+                  onReloadRequested={() => setShowReloadModal(true)}
                 />
                 <div className="section visualization-section" ref={visualizationRef} data-section-id="main-chart">
                   <h1 className="customer-segmentation-title">Customer Segmentation</h1>
@@ -1012,6 +1016,28 @@ const handleTerroristsZoneSizeChange = (size: number) => {
           onCancel={() => {
             setShowExitModal(false);
             setPendingNavigation(null);
+          }}
+        />
+        
+        {/* Reload Confirmation Modal */}
+        <UnsavedChangesModal
+          isOpen={showReloadModal}
+          isReloadModal={true}
+          onSaveAndLeave={() => {}} // Not used for reload modal
+          onLeaveWithoutSaving={() => {}} // Not used for reload modal
+          onCancel={() => setShowReloadModal(false)}
+          onReloadKeepData={() => {
+            setShowReloadModal(false);
+            window.location.reload();
+          }}
+          onReloadFresh={() => {
+            setShowReloadModal(false);
+            // Clear all app data from localStorage
+            storageManager.clearState();
+            // Clear the unsaved changes tracking state
+            localStorage.removeItem('apostles-model-last-saved-state');
+            localStorage.removeItem('apostles-model-last-saved-time');
+            window.location.reload();
           }}
         />
         

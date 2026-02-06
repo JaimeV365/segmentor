@@ -25,6 +25,7 @@ interface UnsavedChangesTrackerProps {
   terroristsZoneSize: number;
   isClassicModel: boolean;
   onHasUnsavedChangesChange: (hasUnsavedChanges: boolean) => void;
+  onReloadRequested?: () => void; // Callback when Ctrl+R is pressed with unsaved changes
 }
 
 /**
@@ -52,7 +53,8 @@ export const UnsavedChangesTracker: React.FC<UnsavedChangesTrackerProps> = ({
   apostlesZoneSize,
   terroristsZoneSize,
   isClassicModel,
-  onHasUnsavedChangesChange
+  onHasUnsavedChangesChange,
+  onReloadRequested
 }) => {
   const filterContext = useFilterContextSafe();
   const quadrantContext = useQuadrantAssignmentSafe();
@@ -100,7 +102,7 @@ export const UnsavedChangesTracker: React.FC<UnsavedChangesTrackerProps> = ({
     }
   }, [hasUnsavedChanges, onHasUnsavedChangesChange]);
   
-  // Set up beforeunload handler
+  // Set up beforeunload handler for tab close/navigate away
   useEffect(() => {
     // Only show browser warning if:
     // 1. There are actual unsaved changes AND
@@ -118,6 +120,27 @@ export const UnsavedChangesTracker: React.FC<UnsavedChangesTrackerProps> = ({
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [hasUnsavedChanges, data]);
+
+  // Intercept Ctrl+R / Cmd+R / F5 to show custom reload modal
+  useEffect(() => {
+    if (!hasUnsavedChanges || !data || data.length === 0 || !onReloadRequested) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for Ctrl+R (Windows/Linux) or Cmd+R (Mac) or F5
+      const isReloadShortcut = 
+        (e.key === 'r' && (e.ctrlKey || e.metaKey)) ||
+        e.key === 'F5';
+
+      if (isReloadShortcut) {
+        e.preventDefault();
+        e.stopPropagation();
+        onReloadRequested();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown, true); // Use capture phase
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
+  }, [hasUnsavedChanges, data, onReloadRequested]);
   
   // This component doesn't render anything
   return null;
