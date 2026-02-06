@@ -1033,6 +1033,8 @@ const handleTerroristsZoneSizeChange = (size: number) => {
             // Clear the unsaved changes tracking state
             localStorage.removeItem('apostles-model-last-saved-state');
             localStorage.removeItem('apostles-model-last-saved-time');
+            // Set flag to skip the browser's beforeunload dialog (prevents duplicate)
+            sessionStorage.setItem('skipBeforeUnload', 'true');
             window.location.reload();
           }}
         />

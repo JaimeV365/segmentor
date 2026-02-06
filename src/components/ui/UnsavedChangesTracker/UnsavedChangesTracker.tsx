@@ -110,6 +110,13 @@ export const UnsavedChangesTracker: React.FC<UnsavedChangesTrackerProps> = ({
     if (!hasUnsavedChanges || !data || data.length === 0) return;
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // Skip if this is a programmatic reload from our custom modal
+      // (prevents duplicate dialogs)
+      if (sessionStorage.getItem('skipBeforeUnload')) {
+        sessionStorage.removeItem('skipBeforeUnload');
+        return;
+      }
+      
       // This shows the browser's native dialog (cannot be styled)
       // It only appears when user tries to close tab/window
       e.preventDefault();
