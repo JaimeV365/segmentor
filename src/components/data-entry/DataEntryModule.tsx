@@ -77,6 +77,9 @@ const DataEntryModule: React.FC<DataEntryModuleProps> = ({
     };
   }, [startEditing]);
 
+  // Track if we've already synced localStorage data to prevent duplicate syncs
+  const hasLoadedFromStorage = useRef(false);
+
   useEffect(() => {
     // Only load from storage if externalData is empty (initial load)
     if (externalData?.length) {
@@ -85,17 +88,26 @@ const DataEntryModule: React.FC<DataEntryModuleProps> = ({
       return;
     }
     
-    // No external data - try loading from storage
-    const savedState = storageManager.loadState();
-    if (savedState?.data && Array.isArray(savedState.data) && savedState.data.length > 0) {
-      setData(savedState.data);
-      // We're intentionally NOT loading upload history from storage
-      // to start with a clean history on each page load
-    } else {
-      // Ensure data is empty array if no saved state
-      setData([]);
+    // No external data - try loading from storage (only once)
+    if (!hasLoadedFromStorage.current) {
+      const savedState = storageManager.loadState();
+      if (savedState?.data && Array.isArray(savedState.data) && savedState.data.length > 0) {
+        hasLoadedFromStorage.current = true;
+        setData(savedState.data);
+        // IMPORTANT: Sync localStorage data back to App.tsx so both states are consistent
+        // This prevents the import mode dialog from showing incorrectly
+        onDataChange(savedState.data, savedState.scales ? {
+          satisfaction: savedState.scales.satisfactionScale,
+          loyalty: savedState.scales.loyaltyScale
+        } : undefined);
+        // We're intentionally NOT loading upload history from storage
+        // to start with a clean history on each page load
+      } else {
+        // Ensure data is empty array if no saved state
+        setData([]);
+      }
     }
-  }, [externalData]);
+  }, [externalData, onDataChange]);
 
   const determineGroup = (satisfaction: number, loyalty: number): string => {
     return 'Undefined';

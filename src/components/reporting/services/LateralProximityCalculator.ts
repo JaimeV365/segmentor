@@ -229,6 +229,7 @@ export class LateralProximityCalculator {
 
   /**
    * Check if customer is within potential search area for lateral proximity
+   * Uses range checking instead of exact matching to support decimal values
    */
   private isWithinPotentialSearchArea(customer: DataPoint, fromQuadrant: string, toQuadrant: string): boolean {
     const { satPositions, loyPositions } = this.getPotentialSearchArea(fromQuadrant, toQuadrant);
@@ -237,12 +238,17 @@ export class LateralProximityCalculator {
       return false;
     }
 
-    // Check if customer is in the search area
-    const isInSatRange = satPositions.includes(customer.satisfaction);
-    const isInLoyRange = loyPositions.includes(customer.loyalty);
+    // Check if customer is in the search area using range checking (supports decimals)
+    const satMin = Math.min(...satPositions);
+    const satMax = Math.max(...satPositions);
+    const loyMin = Math.min(...loyPositions);
+    const loyMax = Math.max(...loyPositions);
+    
+    const isInSatRange = customer.satisfaction >= satMin && customer.satisfaction <= satMax;
+    const isInLoyRange = customer.loyalty >= loyMin && customer.loyalty <= loyMax;
 
     if (!isInSatRange || !isInLoyRange) {
-      console.log(`   📏 Lateral search area check: ${customer.id} at (${customer.satisfaction},${customer.loyalty}) - sat: ${isInSatRange} (${customer.satisfaction} in [${satPositions.join(',')}]), loy: ${isInLoyRange} (${customer.loyalty} in [${loyPositions.join(',')}])`);
+      console.log(`   📏 Lateral search area check: ${customer.id} at (${customer.satisfaction},${customer.loyalty}) - sat: ${isInSatRange} (${customer.satisfaction} in [${satMin}-${satMax}]), loy: ${isInLoyRange} (${customer.loyalty} in [${loyMin}-${loyMax}])`);
     }
 
     return isInSatRange && isInLoyRange;

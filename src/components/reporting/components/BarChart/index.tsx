@@ -599,11 +599,43 @@ useEffect(() => {
     .nice()
     .range([0, 100]);
 
-  const scaleMarkers = yScale.ticks(5)
-    .map(value => ({
+  // Generate integer-only ticks for the Y-axis (counts must be whole numbers)
+  const scaleMarkers = (() => {
+    const ticks = yScale.ticks(5);
+    // Filter to only include integers
+    const integerTicks = ticks.filter(t => Number.isInteger(t));
+    
+    // If we ended up with no ticks or just 0, create sensible integer ticks
+    if (integerTicks.length <= 1) {
+      const niceMax = Math.ceil(maxCount);
+      if (niceMax <= 5) {
+        // For small counts, show 0 to niceMax
+        return Array.from({ length: niceMax + 1 }, (_, i) => ({
+          value: i,
+          position: yScale(i)
+        }));
+      } else {
+        // For larger counts, show evenly spaced integers
+        const step = Math.ceil(niceMax / 5);
+        const tickValues = [];
+        for (let i = 0; i <= niceMax; i += step) {
+          tickValues.push(i);
+        }
+        if (tickValues[tickValues.length - 1] !== niceMax) {
+          tickValues.push(niceMax);
+        }
+        return tickValues.map(value => ({
+          value,
+          position: yScale(value)
+        }));
+      }
+    }
+    
+    return integerTicks.map(value => ({
       value,
       position: yScale(value)
     }));
+  })();
 
   const areAllBarsSelected = () => {
     return selectedBars.size === displayData.length;
