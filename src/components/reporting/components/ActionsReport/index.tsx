@@ -748,12 +748,12 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                     const recommendationSection = document.querySelector('#recommendation-score-section, [data-section-id="report-recommendation-score"]');
                     if (!recommendationSection) return false;
                     
-                    // Hide simulator finding if no image captured AND simulator element doesn't exist
+                    // Hide simulator finding unless we have an actual captured image for it
+                    // The simulator is optional - only show if user has used it AND we captured an image
                     if (finding.id === 'chart-recommendation-simulator') {
                       const hasImage = actionPlan.supportingImages?.some(img => img.selector === finding.chartSelector);
-                      const simulatorElement = document.querySelector('.recommendation-score-simulator');
-                      // Only show if we have an image OR the simulator element exists
-                      return hasImage || !!simulatorElement;
+                      // Only show if we have an image - no image means don't show this finding
+                      return !!hasImage;
                     }
                     return true;
                   }
