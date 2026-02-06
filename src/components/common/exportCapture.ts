@@ -1,5 +1,6 @@
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { composeWatermarkOnCanvas } from './exportWatermarkComposer';
 
 export type ExportFormat = 'png' | 'pdf';
 
@@ -8,8 +9,9 @@ export async function exportCapture(options: {
   format: ExportFormat;
   padding?: number;
   background?: string;
+  effects?: Set<string>;
 }) {
-  const { targetSelector, format, padding = 92, background = '#ffffff' } = options;
+  const { targetSelector, format, padding = 92, background = '#ffffff', effects } = options;
   console.log('🔍 exportCapture called with selector:', targetSelector);
   const el = document.querySelector(targetSelector) as HTMLElement | null;
   if (!el) {
@@ -181,11 +183,13 @@ export async function exportCapture(options: {
     }
   });
   
-  // Watermark: No dimension modifications needed during export.
-  // Watermark.tsx sets proper container dimensions:
-  // - Vertical mode: square container (logoSize x logoSize) with rotated image inside
-  // - Flat mode: rectangular container (logoSize x logoSize*0.3)
-  // html2canvas captures rotated elements correctly, preserving aspect ratio.
+  // Hide watermark in clone - html2canvas has issues with CSS transforms (rotation + objectFit)
+  // We'll draw the watermark manually on the canvas afterward using composeWatermarkOnCanvas
+  const watermarkLayers = clone.querySelectorAll('.watermark-layer') as NodeListOf<HTMLElement>;
+  watermarkLayers.forEach(layer => {
+    layer.style.display = 'none';
+  });
+  console.log('🔍 Export: Hidden', watermarkLayers.length, 'watermark layers for manual composition');
   
   wrapper.appendChild(clone);
   document.body.appendChild(wrapper);
@@ -194,6 +198,22 @@ export async function exportCapture(options: {
     console.log('🖼️ Starting html2canvas capture...');
     const canvas = await html2canvas(wrapper, { scale: 2, backgroundColor: background, useCORS: true });
     console.log('✅ Canvas created:', canvas.width, 'x', canvas.height);
+    
+    // Compose watermark manually onto the canvas (avoids html2canvas transform issues)
+    if (effects) {
+      console.log('🎨 Composing watermark onto canvas...');
+      await composeWatermarkOnCanvas(canvas, {
+        effects,
+        chartContainerWidth: rect.width,
+        chartContainerHeight: rect.height
+      }, {
+        top: padTop,
+        right: padRight,
+        bottom: padBottom,
+        left: padLeft
+      });
+      console.log('✅ Watermark composed');
+    }
     if (format === 'png') {
       console.log('📦 Converting canvas to blob...');
       return new Promise<void>((resolve) => {

@@ -294,7 +294,8 @@ const FilteredChart: React.FC<FilteredChartProps> = React.memo(({
               targetSelector: '.chart-container', 
               format: detail.format, 
               padding: 92, 
-              background: '#ffffff'
+              background: '#ffffff',
+              effects: activeEffects
             });
             console.log('✅ Export completed');
           } catch (error) {

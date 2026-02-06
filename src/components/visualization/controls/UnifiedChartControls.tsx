@@ -309,7 +309,8 @@ export const UnifiedChartControls: React.FC<UnifiedChartControlsProps> = ({
                     targetSelector: '.chart-container',
                     format: exportFormat,
                     padding: 92,
-                    background: '#ffffff'
+                    background: '#ffffff',
+                    effects
                   });
                   console.log('✅ exportCapture completed');
                 }
