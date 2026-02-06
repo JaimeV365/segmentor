@@ -43,8 +43,8 @@ function parseWatermarkSettings(settings: WatermarkSettings) {
   const isFlat = effects.has('LOGO_FLAT');
   const rotationDegrees = isFlat ? 0 : -90;
 
-  // Get size (default: smaller for vertical, larger for flat)
-  let logoSize = isFlat ? 110 : 40;
+  // Get size (default 90, matching Watermark.tsx)
+  let logoSize = 90;
   const sizeModifier = Array.from(effects).find(e => e.startsWith('LOGO_SIZE:'));
   if (sizeModifier) {
     const sizeValue = parseInt(sizeModifier.replace('LOGO_SIZE:', ''), 10);
@@ -115,25 +115,35 @@ function loadImageWithCors(url: string): Promise<HTMLImageElement> {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     
+    // Convert relative URLs to absolute URLs for proper loading
+    let absoluteUrl = url;
+    if (url.startsWith('/')) {
+      absoluteUrl = window.location.origin + url;
+    }
+    console.log('🖼️ Loading watermark image:', absoluteUrl);
+    
     img.onload = () => {
+      console.log('✅ Watermark image loaded:', img.naturalWidth, 'x', img.naturalHeight);
       if (img.naturalWidth > 0 && img.naturalHeight > 0) {
         resolve(img);
       } else {
-        reject(new Error('Image failed to load'));
+        reject(new Error('Image loaded but has no dimensions'));
       }
     };
     
-    img.onerror = () => {
+    img.onerror = (err) => {
+      console.warn('❌ Failed to load watermark image:', absoluteUrl, err);
       // Try fallback to local asset if remote fails
-      const fallbackUrl = '/segmentor-logo.png';
-      if (url !== fallbackUrl) {
+      const fallbackUrl = window.location.origin + '/segmentor-logo.png';
+      if (absoluteUrl !== fallbackUrl) {
+        console.log('🔄 Trying fallback:', fallbackUrl);
         loadImageWithCors(fallbackUrl).then(resolve).catch(reject);
       } else {
         reject(new Error(`Failed to load image: ${url}`));
       }
     };
     
-    img.src = url;
+    img.src = absoluteUrl;
   });
 }
 
@@ -143,14 +153,30 @@ function loadImageWithCors(url: string): Promise<HTMLImageElement> {
  * @param canvas - The export canvas to draw on
  * @param settings - Watermark settings parsed from effects
  * @param padding - Padding applied to the export (for position calculation)
+ * @param domPosition - Position captured from the actual DOM watermark element
  */
 export async function composeWatermarkOnCanvas(
   canvas: HTMLCanvasElement,
   settings: WatermarkSettings,
-  padding: { top: number; right: number; bottom: number; left: number }
+  padding: { top: number; right: number; bottom: number; left: number },
+  domPosition: { x: number; y: number; width: number; height: number; opacity: number }
 ): Promise<void> {
+  console.log('🎨 composeWatermarkOnCanvas called with:', {
+    canvasSize: `${canvas.width}x${canvas.height}`,
+    chartContainerSize: `${settings.chartContainerWidth}x${settings.chartContainerHeight}`,
+    padding,
+    domPosition,
+    effectsCount: settings.effects.size,
+    effects: Array.from(settings.effects)
+  });
+  
   const parsed = parseWatermarkSettings(settings);
-  if (!parsed) return; // Watermark is hidden
+  if (!parsed) {
+    console.log('⚠️ Watermark is hidden, skipping composition');
+    return; // Watermark is hidden
+  }
+  
+  console.log('📐 Parsed watermark settings:', parsed);
 
   try {
     // Load the logo image with CORS
@@ -186,34 +212,70 @@ export async function composeWatermarkOnCanvas(
       // The image will maintain its natural aspect ratio and won't be stretched
     }
 
-    // Calculate position on canvas accounting for padding
-    // logoX/logoY are relative to chart-container, need to add padding offset
-    // DOM uses left: 10 + logoX, top: 10 + logoY, so account for that offset
-    const x = padding.left + (10 + parsed.logoX) * 2; // Scale for 2x export + DOM offset
-    const y = padding.top + (10 + parsed.logoY) * 2; // Scale for 2x export + DOM offset
+    // Use the actual DOM position captured before hiding the watermark
+    // Scale by 2 for the 2x export resolution
+    const x = (padding.left + domPosition.x) * 2;
+    const y = (padding.top + domPosition.y) * 2;
+    
+    // Log actual values (not Object)
+    console.log(`📍 Watermark position on canvas: x=${x}, y=${y} (from DOM: x=${domPosition.x}, y=${domPosition.y}, padding: left=${padding.left}, top=${padding.top})`);
+    console.log(`📐 Canvas size: ${canvas.width}x${canvas.height}, display size: ${displayWidth}x${displayHeight}`);
+    
+    // For rotated watermarks, the visual footprint after rotation is different
+    // After -90deg rotation: visual width = displayHeight, visual height = displayWidth
+    const visualWidth = parsed.isFlat ? displayWidth : displayHeight;
+    const visualHeight = parsed.isFlat ? displayHeight : displayWidth;
+    
+    // Clamp position to ensure watermark is visible
+    // Leave some margin from the edge
+    const margin = 20;
+    const maxX = canvas.width - visualWidth - margin;
+    const maxY = canvas.height - visualHeight - margin;
+    const clampedX = Math.max(margin, Math.min(maxX, x));
+    const clampedY = Math.max(margin, Math.min(maxY, y));
+    
+    if (clampedX !== x || clampedY !== y) {
+      console.warn(`⚠️ Watermark position clamped: (${x},${y}) -> (${clampedX},${clampedY})`);
+    }
 
-    // Draw with rotation centered on the image
+    // Draw watermark on canvas
     ctx.save();
-    ctx.globalAlpha = parsed.logoOpacity;
+    ctx.globalAlpha = domPosition.opacity;
     
-    // Move to rotation center (center of the image)
-    const centerX = x + displayWidth / 2;
-    const centerY = y + displayHeight / 2;
-    ctx.translate(centerX, centerY);
-    ctx.rotate((parsed.rotationDegrees * Math.PI) / 180);
+    // For debugging, also draw a visible border around where watermark should be
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(clampedX, clampedY, domPosition.width * 2, domPosition.height * 2);
+    console.log(`🔴 Debug: Drew red border at (${clampedX}, ${clampedY}) size ${domPosition.width * 2}x${domPosition.height * 2}`);
     
-    // Draw image centered at origin (since we translated to center)
-    ctx.drawImage(
-      img,
-      -displayWidth / 2,
-      -displayHeight / 2,
-      displayWidth,
-      displayHeight
-    );
+    if (parsed.isFlat) {
+      // Flat mode: draw without rotation
+      ctx.drawImage(img, clampedX, clampedY, displayWidth, displayHeight);
+      console.log(`✅ Watermark drawn FLAT at (${clampedX}, ${clampedY}), size ${displayWidth}x${displayHeight}`);
+    } else {
+      // Vertical mode: draw with -90deg rotation
+      // The container in DOM is square (logoSize x logoSize), with the image rotated inside
+      // We need to match this behavior
+      const containerSize = domPosition.width * 2; // DOM container size, scaled for 2x
+      const centerX = clampedX + containerSize / 2;
+      const centerY = clampedY + containerSize / 2;
+      
+      ctx.translate(centerX, centerY);
+      ctx.rotate(-Math.PI / 2); // -90 degrees
+      
+      // Draw image centered at origin, maintaining aspect ratio
+      // The image should fit within the container while preserving aspect ratio
+      const scale = containerSize / Math.max(img.naturalWidth, img.naturalHeight);
+      const scaledW = img.naturalWidth * scale;
+      const scaledH = img.naturalHeight * scale;
+      
+      ctx.drawImage(img, -scaledW / 2, -scaledH / 2, scaledW, scaledH);
+      console.log(`✅ Watermark drawn VERTICAL at center (${centerX}, ${centerY}), container=${containerSize}, scaledSize=${scaledW}x${scaledH}`);
+    }
     
     ctx.restore();
   } catch (error) {
-    console.warn('Failed to compose watermark:', error);
+    console.error('❌ Failed to compose watermark:', error);
     // Gracefully fail - export continues without watermark
   }
 }

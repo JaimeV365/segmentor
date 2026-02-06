@@ -11,6 +11,36 @@ import { EditableText } from './EditableText';
 import '../../../visualization/controls/UnifiedChartControls.css';
 import './ActionsReport.css';
 
+// Helper function to map chart selectors to human-readable section names
+function getSectionNameFromSelector(selector: string): string {
+  if (selector.includes('chart-container') || selector === '.chart-container') {
+    return 'Main Visualisation';
+  }
+  if (selector.includes('report-distribution') || selector.includes('quadrant-grid')) {
+    return 'Distribution';
+  }
+  if (selector.includes('report-historical-progress') || selector.includes('movement-diagram')) {
+    return 'Historical Progress';
+  }
+  if (selector.includes('report-response-concentration') || selector.includes('concentration')) {
+    return 'Response Concentration';
+  }
+  if (selector.includes('report-proximity') || selector.includes('proximity')) {
+    if (selector.includes('actionable-conversions')) {
+      return 'Actionable Conversions';
+    }
+    return 'Proximity Analysis';
+  }
+  if (selector.includes('recommendation-score') || selector.includes('recommendation')) {
+    if (selector.includes('simulator')) {
+      return 'Recommendation Score Simulator';
+    }
+    return 'Recommendation Score';
+  }
+  // Fallback: return the selector itself (cleaned up)
+  return selector.replace(/[\[\].#]/g, '').replace(/-/g, ' ');
+}
+
 interface ActionsReportProps {
   report: ActionsReportType | null;
   onCustomize: (reportType: 'actions') => void;
@@ -383,7 +413,9 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
         }
       } else {
         console.warn('⚠️ Chart capture returned null for selector:', selector);
-        alert('Could not capture chart. Please ensure the section is expanded and visible.');
+        // Map selector to human-readable section name
+        const sectionName = getSectionNameFromSelector(selector);
+        alert(`Could not capture the ${sectionName} chart. Please ensure the section is expanded and visible.`);
       }
     } catch (error) {
       console.error('❌ Failed to capture chart:', error);
@@ -714,7 +746,16 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                   // Hide Recommendation Score findings if section is hidden
                   if (finding.category === 'recommendation') {
                     const recommendationSection = document.querySelector('#recommendation-score-section, [data-section-id="report-recommendation-score"]');
-                    return !!recommendationSection;
+                    if (!recommendationSection) return false;
+                    
+                    // Hide simulator finding unless we have an actual captured image for it
+                    // The simulator is optional - only show if user has used it AND we captured an image
+                    if (finding.id === 'chart-recommendation-simulator') {
+                      const hasImage = actionPlan.supportingImages?.some(img => img.selector === finding.chartSelector);
+                      // Only show if we have an image - no image means don't show this finding
+                      return !!hasImage;
+                    }
+                    return true;
                   }
                   // Show all other findings
                   return true;

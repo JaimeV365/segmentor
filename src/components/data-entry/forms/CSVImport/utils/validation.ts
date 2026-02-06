@@ -46,26 +46,51 @@ export const validateDate = (date: string): { isValid: boolean; message?: string
   };
 };
 
+// Helper function to check decimal precision (max 1 decimal place allowed)
+export const hasValidDecimalPrecision = (value: number): boolean => {
+  // Multiply by 10 and check if it's effectively an integer
+  const multiplied = value * 10;
+  return Math.abs(multiplied - Math.round(multiplied)) < 0.0001;
+};
+
 export const validateScales = (
   satisfaction: number,
   loyalty: number,
   satisfactionScale: ScaleFormat,
   loyaltyScale: ScaleFormat
 ): { isValid: boolean; message?: string } => {
-  const maxSat = parseInt(satisfactionScale.split('-')[1]);
-  const maxLoy = parseInt(loyaltyScale.split('-')[1]);
+  const [minSat, maxSat] = satisfactionScale.split('-').map(Number);
+  const [minLoy, maxLoy] = loyaltyScale.split('-').map(Number);
 
-  if (satisfaction < 1 || satisfaction > maxSat) {
+  // Satisfaction validation (decimals allowed, max 1 decimal place)
+  if (satisfaction < minSat || satisfaction > maxSat) {
     return {
       isValid: false,
-      message: `Satisfaction must be between 1 and ${maxSat}`
+      message: `Satisfaction must be between ${minSat} and ${maxSat}`
+    };
+  }
+  
+  // Check decimal precision for satisfaction
+  if (!Number.isInteger(satisfaction) && !hasValidDecimalPrecision(satisfaction)) {
+    return {
+      isValid: false,
+      message: `Satisfaction value has too many decimal places (maximum 1 allowed)`
     };
   }
 
-  if (loyalty < 1 || loyalty > maxLoy) {
+  // Loyalty validation (integers only)
+  if (loyalty < minLoy || loyalty > maxLoy) {
     return {
       isValid: false,
-      message: `Loyalty must be between 1 and ${maxLoy}`
+      message: `Loyalty must be between ${minLoy} and ${maxLoy}`
+    };
+  }
+  
+  // Loyalty must be an integer
+  if (!Number.isInteger(loyalty)) {
+    return {
+      isValid: false,
+      message: `Loyalty must be a whole number (no decimals allowed)`
     };
   }
 
@@ -145,26 +170,33 @@ export const validateDataRows = (
         // Collection of all validation errors for this row
         const rowErrors: string[] = [];
 
-        // Validate satisfaction
+        // Validate satisfaction (decimals allowed, max 1 decimal place)
         if (row[satisfactionHeader] === undefined || row[satisfactionHeader] === '') {
           rowErrors.push(`Satisfaction value is empty`);
         } else if (isNaN(satisfaction)) {
           rowErrors.push(`Invalid satisfaction value "${row[satisfactionHeader]}" (not a number)`);
-        } else if (satisfaction < 1 || satisfaction > Number(satisfactionScale.split('-')[1])) {
-          rowErrors.push(`Invalid satisfaction value ${satisfaction} (should be between 1 and ${satisfactionScale.split('-')[1]})`);
+        } else {
+          const [minSat, maxSat] = satisfactionScale.split('-').map(Number);
+          if (satisfaction < minSat || satisfaction > maxSat) {
+            rowErrors.push(`Invalid satisfaction value ${satisfaction} (should be between ${minSat} and ${maxSat})`);
+          } else if (!Number.isInteger(satisfaction) && !hasValidDecimalPrecision(satisfaction)) {
+            rowErrors.push(`Satisfaction value ${satisfaction} has too many decimal places (maximum 1 allowed)`);
+          }
         }
         
-        // Validate loyalty
+        // Validate loyalty (integers only)
         if (row[loyaltyHeader] === undefined || row[loyaltyHeader] === '') {
           rowErrors.push(`Loyalty value is empty`);
         } else if (isNaN(loyalty)) {
           rowErrors.push(`Invalid loyalty value "${row[loyaltyHeader]}" (not a number)`);
         } else {
-  const [minLoy, maxLoy] = loyaltyScale.split('-').map(Number);
-  if (loyalty < minLoy || loyalty > maxLoy) {
-    rowErrors.push(`Invalid loyalty value ${loyalty} (should be between ${minLoy} and ${maxLoy})`);
-  }
-}
+          const [minLoy, maxLoy] = loyaltyScale.split('-').map(Number);
+          if (loyalty < minLoy || loyalty > maxLoy) {
+            rowErrors.push(`Invalid loyalty value ${loyalty} (should be between ${minLoy} and ${maxLoy})`);
+          } else if (!Number.isInteger(loyalty)) {
+            rowErrors.push(`Loyalty value ${loyalty} must be a whole number (no decimals allowed)`);
+          }
+        }
         
         // Validate email if present
         if (email) {

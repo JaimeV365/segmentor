@@ -32,8 +32,8 @@ export const QuadrantDetails: React.FC<QuadrantDetailsProps> = ({
     defectors: 'Defectors Analysis'
   };
 
-  // Transform distribution data to BarChart format
-  const transformData = (distribution: Record<number, number>, scale: string): BarChartData[] => {
+  // Transform distribution data for loyalty (integers only)
+  const transformLoyaltyData = (distribution: Record<number, number>, scale: string): BarChartData[] => {
     const [min, max] = scale.split('-').map(Number);
     const barCount = max - min + 1;
     return Array.from({ length: barCount }, (_, i) => {
@@ -43,6 +43,52 @@ export const QuadrantDetails: React.FC<QuadrantDetailsProps> = ({
         count: distribution[value] || 0
       };
     });
+  };
+
+  // Transform distribution data for satisfaction (supports decimals)
+  const transformSatisfactionData = (distribution: Record<number, number>, scale: string): BarChartData[] => {
+    const [min, max] = scale.split('-').map(Number);
+    
+    // Get all unique values from the distribution (including decimals)
+    const distributionKeys = Object.keys(distribution).map(Number);
+    
+    // Check if there are any decimal values
+    const hasDecimals = distributionKeys.some(key => !Number.isInteger(key));
+    
+    if (!hasDecimals) {
+      // No decimals - use integer bars only
+      const barCount = max - min + 1;
+      return Array.from({ length: barCount }, (_, i) => {
+        const value = min + i;
+        return {
+          value: value,
+          count: distribution[value] || 0
+        };
+      });
+    }
+    
+    // Has decimals - create bars for all values that exist in the distribution
+    const valuesToShow = new Set<number>();
+    
+    // Always include all integers in the scale range
+    for (let i = min; i <= max; i++) {
+      valuesToShow.add(i);
+    }
+    
+    // Add any decimal values that have data
+    distributionKeys.forEach(key => {
+      if (key >= min && key <= max) {
+        valuesToShow.add(key);
+      }
+    });
+    
+    // Sort and create bars
+    const sortedValues = Array.from(valuesToShow).sort((a, b) => a - b);
+    
+    return sortedValues.map(value => ({
+      value: value,
+      count: distribution[value] || 0
+    }));
   };
 
   // Helper function to safely find the most common score
@@ -68,7 +114,7 @@ export const QuadrantDetails: React.FC<QuadrantDetailsProps> = ({
 
         {/* Distribution Grid */}
         <div className="grid grid-cols-2 gap-6">
-          {/* Satisfaction Distribution */}
+          {/* Satisfaction Distribution (supports decimals) */}
           <div className="space-y-4">
             <div className="flex justify-between items-baseline">
               <h4 className="font-medium">Satisfaction</h4>
@@ -77,7 +123,7 @@ export const QuadrantDetails: React.FC<QuadrantDetailsProps> = ({
               </span>
             </div>
             <BarChart
-              data={transformData(stats.satisfaction.distribution, satisfactionScale)}
+              data={transformSatisfactionData(stats.satisfaction.distribution, satisfactionScale)}
               showGrid={false}
               showLabels={true}
               interactive={isPremium}
@@ -85,7 +131,7 @@ export const QuadrantDetails: React.FC<QuadrantDetailsProps> = ({
             />
           </div>
 
-          {/* Loyalty Distribution */}
+          {/* Loyalty Distribution (integers only) */}
           <div className="space-y-4">
             <div className="flex justify-between items-baseline">
               <h4 className="font-medium">Loyalty</h4>
@@ -94,7 +140,7 @@ export const QuadrantDetails: React.FC<QuadrantDetailsProps> = ({
               </span>
             </div>
             <BarChart
-              data={transformData(stats.loyalty.distribution, loyaltyScale)}
+              data={transformLoyaltyData(stats.loyalty.distribution, loyaltyScale)}
               showGrid={false}
               showLabels={true}
               interactive={isPremium}

@@ -225,7 +225,39 @@ useEffect(() => {
       }
     });
     
-    // Transform to BarChartData format matching the original data structure
+    // For satisfaction, handle decimals; for loyalty, use integers only
+    if (field === 'satisfaction') {
+      // Check if there are any decimal values
+      const distributionKeys = Object.keys(distribution).map(Number);
+      const hasDecimals = distributionKeys.some(key => !Number.isInteger(key));
+      
+      if (hasDecimals) {
+        // Create bars for all values that exist (integers + decimals)
+        const valuesToShow = new Set<number>();
+        
+        // Always include all integers in the scale range
+        for (let i = minValue; i <= maxValue; i++) {
+          valuesToShow.add(i);
+        }
+        
+        // Add any decimal values that have data
+        distributionKeys.forEach(key => {
+          if (key >= minValue && key <= maxValue) {
+            valuesToShow.add(key);
+          }
+        });
+        
+        // Sort and create bars
+        const sortedValues = Array.from(valuesToShow).sort((a, b) => a - b);
+        
+        return sortedValues.map(value => ({
+          value: value,
+          count: distribution[value] || 0
+        }));
+      }
+    }
+    
+    // Default: integer bars only (for loyalty or satisfaction without decimals)
     const barCount = maxValue - minValue + 1;
     return Array.from({ length: barCount }, (_, i) => {
       const value = minValue + i;
@@ -567,11 +599,43 @@ useEffect(() => {
     .nice()
     .range([0, 100]);
 
-  const scaleMarkers = yScale.ticks(5)
-    .map(value => ({
+  // Generate integer-only ticks for the Y-axis (counts must be whole numbers)
+  const scaleMarkers = (() => {
+    const ticks = yScale.ticks(5);
+    // Filter to only include integers
+    const integerTicks = ticks.filter(t => Number.isInteger(t));
+    
+    // If we ended up with no ticks or just 0, create sensible integer ticks
+    if (integerTicks.length <= 1) {
+      const niceMax = Math.ceil(maxCount);
+      if (niceMax <= 5) {
+        // For small counts, show 0 to niceMax
+        return Array.from({ length: niceMax + 1 }, (_, i) => ({
+          value: i,
+          position: yScale(i)
+        }));
+      } else {
+        // For larger counts, show evenly spaced integers
+        const step = Math.ceil(niceMax / 5);
+        const tickValues = [];
+        for (let i = 0; i <= niceMax; i += step) {
+          tickValues.push(i);
+        }
+        if (tickValues[tickValues.length - 1] !== niceMax) {
+          tickValues.push(niceMax);
+        }
+        return tickValues.map(value => ({
+          value,
+          position: yScale(value)
+        }));
+      }
+    }
+    
+    return integerTicks.map(value => ({
       value,
       position: yScale(value)
     }));
+  })();
 
   const areAllBarsSelected = () => {
     return selectedBars.size === displayData.length;

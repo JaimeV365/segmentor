@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo, useRef,
 import { DataPoint, ScaleFormat } from '../../../types/base';
 import type { QuadrantOption } from '../components/DataPoints/DataPointInfoBox';
 import { useChartConfig } from './ChartConfigContext';
-import { DataProcessingService, BoundaryDetectionService } from '../services';
+import { DataProcessingService, BoundaryDetectionService, getPointKey } from '../services';
 import { calculateSpecialZoneBoundaries } from '../utils/zoneCalculator';
 
 // Define quadrant types
@@ -181,20 +181,24 @@ export const DataProcessingProvider: React.FC<DataProcessingProviderProps> = ({
   }, [manualAssignments, satisfactionScale, loyaltyScale, midpoint, apostlesZoneSize, terroristsZoneSize, showNearApostles, showSpecialZones]);
 
   // Update manual assignment
-  const updateManualAssignment = (pointId: string, quadrant: QuadrantType) => {
+  // Note: pointKey should be a compound key (id_sat_loy) from getPointKey()
+  // This ensures assignments are position-specific for historical data support
+  const updateManualAssignment = (pointKey: string, quadrant: QuadrantType) => {
     setManualAssignments(prev => {
       const updated = new Map(prev);
-      updated.set(pointId, quadrant);
+      updated.set(pointKey, quadrant);
+      console.log(`📌 Set manual assignment for ${pointKey}: ${quadrant}`);
       return updated;
     });
   };
 
   // Clear a manual assignment
-  const clearManualAssignment = (pointId: string) => {
+  // Note: pointKey should be a compound key (id_sat_loy) from getPointKey()
+  const clearManualAssignment = (pointKey: string) => {
     setManualAssignments(prev => {
       const updated = new Map(prev);
-      updated.delete(pointId);
-      console.log(`🧹 Cleared manual assignment for point ${pointId}`);
+      updated.delete(pointKey);
+      console.log(`🧹 Cleared manual assignment for point ${pointKey}`);
       return updated;
     });
   };

@@ -46,7 +46,8 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
   const [satisfactionFilters, setSatisfactionFilters] = useState<ReportFilter[]>([]);
   const [loyaltyFilters, setLoyaltyFilters] = useState<ReportFilter[]>([]);
 
-  const transformData = (distribution: Record<number, number>, scale: string): BarChartData[] => {
+  // Transform data for loyalty (integers only)
+  const transformLoyaltyData = (distribution: Record<number, number>, scale: string): BarChartData[] => {
     const [min, max] = scale.split('-').map(Number);
     const barCount = max - min + 1;
     return Array.from({ length: barCount }, (_, i) => {
@@ -56,6 +57,53 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
         count: distribution[value] || 0
       };
     });
+  };
+
+  // Transform data for satisfaction (supports decimals)
+  const transformSatisfactionData = (distribution: Record<number, number>, scale: string): BarChartData[] => {
+    const [min, max] = scale.split('-').map(Number);
+    
+    // Get all unique values from the distribution (including decimals)
+    const distributionKeys = Object.keys(distribution).map(Number);
+    
+    // Check if there are any decimal values
+    const hasDecimals = distributionKeys.some(key => !Number.isInteger(key));
+    
+    if (!hasDecimals) {
+      // No decimals - use integer bars only
+      const barCount = max - min + 1;
+      return Array.from({ length: barCount }, (_, i) => {
+        const value = min + i;
+        return {
+          value: value,
+          count: distribution[value] || 0
+        };
+      });
+    }
+    
+    // Has decimals - create bars for all values that exist in the distribution
+    // First, create a set of all values we want to show (integers + any decimals with data)
+    const valuesToShow = new Set<number>();
+    
+    // Always include all integers in the scale range
+    for (let i = min; i <= max; i++) {
+      valuesToShow.add(i);
+    }
+    
+    // Add any decimal values that have data
+    distributionKeys.forEach(key => {
+      if (key >= min && key <= max) {
+        valuesToShow.add(key);
+      }
+    });
+    
+    // Sort and create bars
+    const sortedValues = Array.from(valuesToShow).sort((a, b) => a - b);
+    
+    return sortedValues.map(value => ({
+      value: value,
+      count: distribution[value] || 0
+    }));
   };
 
   return (
@@ -142,7 +190,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
       <div className="report-stats-comparison mt-8">
         <div className="report-stats-column">
           <BarChart 
-            data={transformData(
+            data={transformSatisfactionData(
               statistics.satisfaction.distribution,
               scales.satisfaction
             )}
@@ -174,7 +222,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
 
         <div className="report-stats-column">
           <BarChart 
-            data={transformData(
+            data={transformLoyaltyData(
               statistics.loyalty.distribution,
               scales.loyalty
             )}

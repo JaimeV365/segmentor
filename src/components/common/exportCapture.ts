@@ -181,50 +181,115 @@ export async function exportCapture(options: {
     }
   });
   
-  // Fix watermark dimensions in the clone for export only (vertical mode needs wider container)
-  // This doesn't affect the visualization, only the export
+  // Fix watermark in clone for html2canvas compatibility
+  // The issue: html2canvas struggles with CSS transform: rotate() + objectFit: contain
+  // Solution: Replace the rotated img with a pre-rotated canvas element
   const watermarkLayers = clone.querySelectorAll('.watermark-layer') as NodeListOf<HTMLElement>;
-  watermarkLayers.forEach(layer => {
-    const currentTransform = layer.style.transform || getComputedStyle(layer).transform;
-    const isVertical = currentTransform.includes('rotate(-90deg)') || currentTransform.includes('-90deg');
+  const originalWatermarkLayers = el.querySelectorAll('.watermark-layer') as NodeListOf<HTMLElement>;
+  
+  for (let index = 0; index < watermarkLayers.length; index++) {
+    const layer = watermarkLayers[index];
+    const img = layer.querySelector('img') as HTMLImageElement;
+    const originalLayer = originalWatermarkLayers[index];
+    const originalImg = originalLayer?.querySelector('img') as HTMLImageElement;
     
-    if (isVertical) {
-      // Apply the same dimensions we discovered work for vertical mode
-      const currentWidth = parseFloat(layer.style.width || '90') || 90;
-      const logoSize = currentWidth; // Original square container size
-      const verticalScale = 0.4; // Reduced to 0.4 (40% of original)
-      const containerWidth = logoSize * 2.8 * verticalScale;
-      const containerHeight = logoSize * 0.4 * verticalScale;
+    if (img && originalImg) {
+      // Check the original's inline style for rotation
+      const inlineTransform = originalImg.style.transform || '';
+      const isRotated = inlineTransform.includes('rotate(-90deg)');
       
-      // Update dimensions
-      layer.style.width = `${containerWidth}px`;
-      layer.style.height = `${containerHeight}px`;
-      layer.style.transformOrigin = 'center center';
+      // Get container and image dimensions
+      const containerW = parseFloat(layer.style.width) || 90;
+      const containerH = parseFloat(layer.style.height) || 90;
+      const opacity = parseFloat(window.getComputedStyle(originalLayer).opacity) || 0.6;
       
-      // Adjust position to keep visual center in the same place after changing container dimensions
-      // Original: square container (logoSize x logoSize) at position (currentLeft, currentTop)
-      //   Center is at: (currentLeft + logoSize/2, currentTop + logoSize/2)
-      // New: rectangular container (containerWidth x containerHeight)
-      //   We want center at same place: (currentLeft + logoSize/2, currentTop + logoSize/2)
-      //   So new position should be: (centerX - containerWidth/2, centerY - containerHeight/2)
+      console.log(`🔍 Export: Watermark ${index} - transform="${inlineTransform}", isRotated=${isRotated}, container=${containerW}x${containerH}`);
       
-      const currentLeft = parseFloat(layer.style.left || '0') || 0;
-      const currentTop = parseFloat(layer.style.top || '0') || 0;
-      
-      // Calculate original center position
-      const originalCenterX = currentLeft + logoSize / 2;
-      const originalCenterY = currentTop + logoSize / 2;
-      
-      // Position new container so its center matches original center
-      const adjustedLeft = originalCenterX - containerWidth / 2;
-      const adjustedTop = originalCenterY - containerHeight / 2;
-      
-      // Additional offset to move logo to the right in exports
-      const rightOffset = 40; // Pixels to move right
-      layer.style.left = `${adjustedLeft + rightOffset}px`;
-      layer.style.top = `${adjustedTop}px`;
+      if (originalImg.complete && originalImg.naturalWidth > 0) {
+        // Create a canvas to draw the image with correct aspect ratio
+        // This ensures html2canvas captures it correctly without objectFit issues
+        const canvas = document.createElement('canvas');
+        const imgAspect = originalImg.naturalWidth / originalImg.naturalHeight;
+        
+        if (isRotated) {
+          // Vertical mode: -90deg rotation
+          // After rotation: visual dimensions are swapped
+          canvas.width = containerH;  // Visual width after rotation
+          canvas.height = containerW; // Visual height after rotation
+          
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            // Calculate image size to fit while preserving aspect ratio
+            let drawW, drawH;
+            if (imgAspect > containerH / containerW) {
+              drawW = containerH;
+              drawH = containerH / imgAspect;
+            } else {
+              drawH = containerW;
+              drawW = containerW * imgAspect;
+            }
+            
+            // Center and rotate
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.drawImage(originalImg, -drawW / 2, -drawH / 2, drawW, drawH);
+            
+            // Replace img with canvas
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.display = 'block';
+            img.replaceWith(canvas);
+            
+            // Update container to match visual dimensions
+            layer.style.width = `${containerH}px`;
+            layer.style.height = `${containerW}px`;
+            layer.style.opacity = String(opacity);
+            
+            console.log(`🔧 Export: Replaced rotated img with canvas ${canvas.width}x${canvas.height}`);
+          }
+        } else {
+          // Flat mode: no rotation, just ensure correct aspect ratio
+          canvas.width = containerW;
+          canvas.height = containerH;
+          
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            // Calculate image size to fit container while preserving aspect ratio (objectFit: contain)
+            let drawW, drawH;
+            const containerAspect = containerW / containerH;
+            
+            if (imgAspect > containerAspect) {
+              // Image is wider than container - fit to width
+              drawW = containerW;
+              drawH = containerW / imgAspect;
+            } else {
+              // Image is taller than container - fit to height
+              drawH = containerH;
+              drawW = containerH * imgAspect;
+            }
+            
+            // Center the image in the container
+            const offsetX = (containerW - drawW) / 2;
+            const offsetY = (containerH - drawH) / 2;
+            
+            ctx.drawImage(originalImg, offsetX, offsetY, drawW, drawH);
+            
+            // Replace img with canvas
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.display = 'block';
+            img.replaceWith(canvas);
+            layer.style.opacity = String(opacity);
+            
+            console.log(`🔧 Export: Replaced flat img with canvas ${canvas.width}x${canvas.height}, drawSize=${drawW.toFixed(1)}x${drawH.toFixed(1)}`);
+          }
+        }
+      } else {
+        console.log(`⚠️ Export: Image not loaded, skipping canvas replacement`);
+      }
     }
-  });
+  }
+  console.log('🔍 Export: Processed', watermarkLayers.length, 'watermark layers');
   
   wrapper.appendChild(clone);
   document.body.appendChild(wrapper);
@@ -233,6 +298,8 @@ export async function exportCapture(options: {
     console.log('🖼️ Starting html2canvas capture...');
     const canvas = await html2canvas(wrapper, { scale: 2, backgroundColor: background, useCORS: true });
     console.log('✅ Canvas created:', canvas.width, 'x', canvas.height);
+    
+    // Watermark is now rendered by html2canvas (with rotation fix applied to clone)
     if (format === 'png') {
       console.log('📦 Converting canvas to blob...');
       return new Promise<void>((resolve) => {

@@ -126,8 +126,21 @@ export function validateHeaders(headers: string[]): {
     };
 }
 
+// Helper function to check decimal precision (max 1 decimal place allowed)
+export function hasValidDecimalPrecision(value: number): boolean {
+  // Multiply by 10 and check if it's effectively an integer
+  const multiplied = value * 10;
+  return Math.abs(multiplied - Math.round(multiplied)) < 0.0001;
+}
+
 // Function to validate data against scale ranges
-export function validateDataValue(value: number, scale: ScaleFormat): {
+// For satisfaction: decimals allowed (max 1 decimal place)
+// For loyalty: integers only
+export function validateDataValue(
+  value: number, 
+  scale: ScaleFormat, 
+  type: 'satisfaction' | 'loyalty' = 'satisfaction'
+): {
   valid: boolean;
   error?: string;
 } {
@@ -147,6 +160,24 @@ export function validateDataValue(value: number, scale: ScaleFormat): {
     };
   }
   
+  // Loyalty must be an integer
+  if (type === 'loyalty' && !Number.isInteger(value)) {
+    return {
+      valid: false,
+      error: `Loyalty value ${value} must be a whole number (no decimals allowed)`
+    };
+  }
+  
+  // Satisfaction allows decimals but max 1 decimal place
+  if (type === 'satisfaction' && !Number.isInteger(value)) {
+    if (!hasValidDecimalPrecision(value)) {
+      return {
+        valid: false,
+        error: `Satisfaction value ${value} has too many decimal places (maximum 1 allowed)`
+      };
+    }
+  }
+  
   return { valid: true };
 }
 
@@ -164,16 +195,16 @@ export function validateRow(
 } {
   const errors: string[] = [];
   
-  // Get and validate satisfaction value
+  // Get and validate satisfaction value (decimals allowed, max 1 decimal place)
   const satValue = Number(row[satisfactionHeader]);
-  const satValidation = validateDataValue(satValue, satisfactionScale);
+  const satValidation = validateDataValue(satValue, satisfactionScale, 'satisfaction');
   if (!satValidation.valid) {
     errors.push(`Satisfaction: ${satValidation.error}`);
   }
   
-  // Get and validate loyalty value
+  // Get and validate loyalty value (integers only)
   const loyValue = Number(row[loyaltyHeader]);
-  const loyValidation = validateDataValue(loyValue, loyaltyScale);
+  const loyValidation = validateDataValue(loyValue, loyaltyScale, 'loyalty');
   if (!loyValidation.valid) {
     errors.push(`Loyalty: ${loyValidation.error}`);
   }

@@ -837,12 +837,17 @@ console.log('🚨 Grouped customers available:', {
     console.log(`   📏 Potential ranges: sat=[${potentialSatRange.join(',')}], loy=[${potentialLoyRange.join(',')}]`);
     console.log(`   📏 Search area: sat=[${satPositions.join(',')}], loy=[${loyPositions.join(',')}]`);
     
-    // Step 3: Check if customer is in the search area
-    const isInSatRange = satPositions.includes(customer.satisfaction);
-    const isInLoyRange = loyPositions.includes(customer.loyalty);
+    // Step 3: Check if customer is in the search area using range checking (supports decimals)
+    const satMin = satPositions.length > 0 ? Math.min(...satPositions) : 0;
+    const satMax = satPositions.length > 0 ? Math.max(...satPositions) : 0;
+    const loyMin = loyPositions.length > 0 ? Math.min(...loyPositions) : 0;
+    const loyMax = loyPositions.length > 0 ? Math.max(...loyPositions) : 0;
+    
+    const isInSatRange = satPositions.length > 0 && customer.satisfaction >= satMin && customer.satisfaction <= satMax;
+    const isInLoyRange = loyPositions.length > 0 && customer.loyalty >= loyMin && customer.loyalty <= loyMax;
     
     if (!isInSatRange || !isInLoyRange) {
-      console.log(`   📏 Search area check: ${customer.id} at (${customer.satisfaction},${customer.loyalty}) - sat: ${isInSatRange} (${customer.satisfaction} in [${satPositions.join(',')}]), loy: ${isInLoyRange} (${customer.loyalty} in [${loyPositions.join(',')}])`);
+      console.log(`   📏 Search area check: ${customer.id} at (${customer.satisfaction},${customer.loyalty}) - sat: ${isInSatRange} (${customer.satisfaction} in [${satMin}-${satMax}]), loy: ${isInLoyRange} (${customer.loyalty} in [${loyMin}-${loyMax}])`);
     }
     
     return isInSatRange && isInLoyRange;

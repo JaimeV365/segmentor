@@ -16,6 +16,7 @@ import '../../../visualization/controls/UnifiedChartControls.css';
 import './styles.css';
 import './TierToggle.css';
 import { useQuadrantAssignment, QuadrantType } from '../../../visualization/context/QuadrantAssignmentContext';
+import { getPointKey } from '../../../visualization/services';
 
 interface Combination {
   satisfaction: number;
@@ -721,7 +722,7 @@ const candidatePoints = effectiveData.filter(p =>
   p.satisfaction === satisfaction && p.loyalty === loyalty && !p.excluded
 );
 
-const realPoint = candidatePoints.find(p => manualAssignments.has(p.id)) || candidatePoints[0];
+const realPoint = candidatePoints.find(p => manualAssignments.has(getPointKey(p))) || candidatePoints[0];
       
       let quadrant;
       if (realPoint) {
