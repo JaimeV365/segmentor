@@ -196,7 +196,10 @@ export async function exportCapture(options: {
       height: parseFloat(originalWatermark.style.height) || parseFloat(wmStyle.height) || 90,
       opacity: parseFloat(wmStyle.opacity) || 0.6
     };
-    console.log('📍 Export: Captured watermark position from DOM:', watermarkPosition);
+    // Log as string to avoid browser collapsing Object
+    console.log(`📍 Export: Captured watermark position from DOM: x=${watermarkPosition.x}, y=${watermarkPosition.y}, w=${watermarkPosition.width}, h=${watermarkPosition.height}, opacity=${watermarkPosition.opacity}`);
+  } else {
+    console.warn('⚠️ Export: No watermark element found in original DOM');
   }
   
   // Hide watermark in clone - html2canvas has issues with CSS transforms (rotation + objectFit)

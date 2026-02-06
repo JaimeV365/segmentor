@@ -217,15 +217,34 @@ export async function composeWatermarkOnCanvas(
     const x = (padding.left + domPosition.x) * 2;
     const y = (padding.top + domPosition.y) * 2;
     
-    console.log('📍 Watermark position on canvas:', { x, y, domX: domPosition.x, domY: domPosition.y });
+    // Log actual values (not Object)
+    console.log(`📍 Watermark position on canvas: x=${x}, y=${y} (from DOM: x=${domPosition.x}, y=${domPosition.y}, padding: left=${padding.left}, top=${padding.top})`);
+    console.log(`📐 Canvas size: ${canvas.width}x${canvas.height}, display size: ${displayWidth}x${displayHeight}`);
+    
+    // For rotated watermarks, the visual footprint after rotation is different
+    // After -90deg rotation: visual width = displayHeight, visual height = displayWidth
+    const visualWidth = parsed.isFlat ? displayWidth : displayHeight;
+    const visualHeight = parsed.isFlat ? displayHeight : displayWidth;
+    
+    // Clamp position to ensure watermark is visible
+    // Leave some margin from the edge
+    const margin = 20;
+    const maxX = canvas.width - visualWidth - margin;
+    const maxY = canvas.height - visualHeight - margin;
+    const clampedX = Math.max(margin, Math.min(maxX, x));
+    const clampedY = Math.max(margin, Math.min(maxY, y));
+    
+    if (clampedX !== x || clampedY !== y) {
+      console.warn(`⚠️ Watermark position clamped: (${x},${y}) -> (${clampedX},${clampedY})`);
+    }
 
     // Draw with rotation centered on the image
     ctx.save();
     ctx.globalAlpha = domPosition.opacity;
     
-    // Move to rotation center (center of the image)
-    const centerX = x + displayWidth / 2;
-    const centerY = y + displayHeight / 2;
+    // Move to rotation center (center of the image) - use clamped position
+    const centerX = clampedX + displayWidth / 2;
+    const centerY = clampedY + displayHeight / 2;
     ctx.translate(centerX, centerY);
     ctx.rotate((parsed.rotationDegrees * Math.PI) / 180);
     
@@ -239,7 +258,7 @@ export async function composeWatermarkOnCanvas(
     );
     
     ctx.restore();
-    console.log('✅ Watermark drawn successfully at', { x, y, displayWidth, displayHeight, rotation: parsed.rotationDegrees });
+    console.log(`✅ Watermark drawn at centerX=${centerX}, centerY=${centerY}, rotation=${parsed.rotationDegrees}deg, visualSize=${visualWidth}x${visualHeight}`);
   } catch (error) {
     console.error('❌ Failed to compose watermark:', error);
     // Gracefully fail - export continues without watermark
