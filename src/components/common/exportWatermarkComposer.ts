@@ -153,16 +153,19 @@ function loadImageWithCors(url: string): Promise<HTMLImageElement> {
  * @param canvas - The export canvas to draw on
  * @param settings - Watermark settings parsed from effects
  * @param padding - Padding applied to the export (for position calculation)
+ * @param domPosition - Position captured from the actual DOM watermark element
  */
 export async function composeWatermarkOnCanvas(
   canvas: HTMLCanvasElement,
   settings: WatermarkSettings,
-  padding: { top: number; right: number; bottom: number; left: number }
+  padding: { top: number; right: number; bottom: number; left: number },
+  domPosition: { x: number; y: number; width: number; height: number; opacity: number }
 ): Promise<void> {
   console.log('🎨 composeWatermarkOnCanvas called with:', {
     canvasSize: `${canvas.width}x${canvas.height}`,
     chartContainerSize: `${settings.chartContainerWidth}x${settings.chartContainerHeight}`,
     padding,
+    domPosition,
     effectsCount: settings.effects.size,
     effects: Array.from(settings.effects)
   });
@@ -209,15 +212,16 @@ export async function composeWatermarkOnCanvas(
       // The image will maintain its natural aspect ratio and won't be stretched
     }
 
-    // Calculate position on canvas accounting for padding
-    // logoX/logoY are relative to chart-container, need to add padding offset
-    // DOM uses left: 10 + logoX, top: 10 + logoY, so account for that offset
-    const x = padding.left + (10 + parsed.logoX) * 2; // Scale for 2x export + DOM offset
-    const y = padding.top + (10 + parsed.logoY) * 2; // Scale for 2x export + DOM offset
+    // Use the actual DOM position captured before hiding the watermark
+    // Scale by 2 for the 2x export resolution
+    const x = (padding.left + domPosition.x) * 2;
+    const y = (padding.top + domPosition.y) * 2;
+    
+    console.log('📍 Watermark position on canvas:', { x, y, domX: domPosition.x, domY: domPosition.y });
 
     // Draw with rotation centered on the image
     ctx.save();
-    ctx.globalAlpha = parsed.logoOpacity;
+    ctx.globalAlpha = domPosition.opacity;
     
     // Move to rotation center (center of the image)
     const centerX = x + displayWidth / 2;

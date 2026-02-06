@@ -183,6 +183,22 @@ export async function exportCapture(options: {
     }
   });
   
+  // Capture watermark position from the ORIGINAL DOM before hiding in clone
+  // This avoids having to replicate the complex position calculation logic
+  let watermarkPosition: { x: number; y: number; width: number; height: number; opacity: number } | null = null;
+  const originalWatermark = el.querySelector('.watermark-layer') as HTMLElement;
+  if (originalWatermark) {
+    const wmStyle = window.getComputedStyle(originalWatermark);
+    watermarkPosition = {
+      x: parseFloat(originalWatermark.style.left) || parseFloat(wmStyle.left) || 0,
+      y: parseFloat(originalWatermark.style.top) || parseFloat(wmStyle.top) || 0,
+      width: parseFloat(originalWatermark.style.width) || parseFloat(wmStyle.width) || 90,
+      height: parseFloat(originalWatermark.style.height) || parseFloat(wmStyle.height) || 90,
+      opacity: parseFloat(wmStyle.opacity) || 0.6
+    };
+    console.log('📍 Export: Captured watermark position from DOM:', watermarkPosition);
+  }
+  
   // Hide watermark in clone - html2canvas has issues with CSS transforms (rotation + objectFit)
   // We'll draw the watermark manually on the canvas afterward using composeWatermarkOnCanvas
   const watermarkLayers = clone.querySelectorAll('.watermark-layer') as NodeListOf<HTMLElement>;
@@ -200,7 +216,7 @@ export async function exportCapture(options: {
     console.log('✅ Canvas created:', canvas.width, 'x', canvas.height);
     
     // Compose watermark manually onto the canvas (avoids html2canvas transform issues)
-    if (effects) {
+    if (effects && watermarkPosition) {
       console.log('🎨 Composing watermark onto canvas...');
       await composeWatermarkOnCanvas(canvas, {
         effects,
@@ -211,8 +227,10 @@ export async function exportCapture(options: {
         right: padRight,
         bottom: padBottom,
         left: padLeft
-      });
+      }, watermarkPosition);
       console.log('✅ Watermark composed');
+    } else if (effects) {
+      console.log('⚠️ Skipping watermark - no position captured from DOM');
     }
     if (format === 'png') {
       console.log('📦 Converting canvas to blob...');
