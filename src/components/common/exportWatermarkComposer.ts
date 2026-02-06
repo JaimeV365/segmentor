@@ -43,8 +43,8 @@ function parseWatermarkSettings(settings: WatermarkSettings) {
   const isFlat = effects.has('LOGO_FLAT');
   const rotationDegrees = isFlat ? 0 : -90;
 
-  // Get size (default: smaller for vertical, larger for flat)
-  let logoSize = isFlat ? 110 : 40;
+  // Get size (default 90, matching Watermark.tsx)
+  let logoSize = 90;
   const sizeModifier = Array.from(effects).find(e => e.startsWith('LOGO_SIZE:'));
   if (sizeModifier) {
     const sizeValue = parseInt(sizeModifier.replace('LOGO_SIZE:', ''), 10);
@@ -115,25 +115,35 @@ function loadImageWithCors(url: string): Promise<HTMLImageElement> {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     
+    // Convert relative URLs to absolute URLs for proper loading
+    let absoluteUrl = url;
+    if (url.startsWith('/')) {
+      absoluteUrl = window.location.origin + url;
+    }
+    console.log('🖼️ Loading watermark image:', absoluteUrl);
+    
     img.onload = () => {
+      console.log('✅ Watermark image loaded:', img.naturalWidth, 'x', img.naturalHeight);
       if (img.naturalWidth > 0 && img.naturalHeight > 0) {
         resolve(img);
       } else {
-        reject(new Error('Image failed to load'));
+        reject(new Error('Image loaded but has no dimensions'));
       }
     };
     
-    img.onerror = () => {
+    img.onerror = (err) => {
+      console.warn('❌ Failed to load watermark image:', absoluteUrl, err);
       // Try fallback to local asset if remote fails
-      const fallbackUrl = '/segmentor-logo.png';
-      if (url !== fallbackUrl) {
+      const fallbackUrl = window.location.origin + '/segmentor-logo.png';
+      if (absoluteUrl !== fallbackUrl) {
+        console.log('🔄 Trying fallback:', fallbackUrl);
         loadImageWithCors(fallbackUrl).then(resolve).catch(reject);
       } else {
         reject(new Error(`Failed to load image: ${url}`));
       }
     };
     
-    img.src = url;
+    img.src = absoluteUrl;
   });
 }
 
@@ -149,8 +159,21 @@ export async function composeWatermarkOnCanvas(
   settings: WatermarkSettings,
   padding: { top: number; right: number; bottom: number; left: number }
 ): Promise<void> {
+  console.log('🎨 composeWatermarkOnCanvas called with:', {
+    canvasSize: `${canvas.width}x${canvas.height}`,
+    chartContainerSize: `${settings.chartContainerWidth}x${settings.chartContainerHeight}`,
+    padding,
+    effectsCount: settings.effects.size,
+    effects: Array.from(settings.effects)
+  });
+  
   const parsed = parseWatermarkSettings(settings);
-  if (!parsed) return; // Watermark is hidden
+  if (!parsed) {
+    console.log('⚠️ Watermark is hidden, skipping composition');
+    return; // Watermark is hidden
+  }
+  
+  console.log('📐 Parsed watermark settings:', parsed);
 
   try {
     // Load the logo image with CORS
@@ -212,8 +235,9 @@ export async function composeWatermarkOnCanvas(
     );
     
     ctx.restore();
+    console.log('✅ Watermark drawn successfully at', { x, y, displayWidth, displayHeight, rotation: parsed.rotationDegrees });
   } catch (error) {
-    console.warn('Failed to compose watermark:', error);
+    console.error('❌ Failed to compose watermark:', error);
     // Gracefully fail - export continues without watermark
   }
 }
