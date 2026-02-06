@@ -182,34 +182,78 @@ export async function exportCapture(options: {
   });
   
   // Fix watermark in clone for html2canvas compatibility
-  // The issue: html2canvas struggles with rotated images inside containers with objectFit
-  // Solution: Pre-rotate the image by swapping width/height and removing the CSS transform
+  // The issue: html2canvas struggles with CSS transform: rotate() + objectFit: contain
+  // Solution: Replace the rotated img with a pre-rotated canvas element
   const watermarkLayers = clone.querySelectorAll('.watermark-layer') as NodeListOf<HTMLElement>;
-  watermarkLayers.forEach(layer => {
+  const originalWatermarkLayers = el.querySelectorAll('.watermark-layer') as NodeListOf<HTMLElement>;
+  
+  for (let index = 0; index < watermarkLayers.length; index++) {
+    const layer = watermarkLayers[index];
     const img = layer.querySelector('img') as HTMLImageElement;
-    if (img) {
-      const computedStyle = window.getComputedStyle(img);
-      const transform = computedStyle.transform || img.style.transform || '';
-      const isRotated = transform.includes('rotate') || transform.includes('matrix');
+    const originalLayer = originalWatermarkLayers[index];
+    const originalImg = originalLayer?.querySelector('img') as HTMLImageElement;
+    
+    if (img && originalImg) {
+      // Check the original's inline style for rotation
+      const inlineTransform = originalImg.style.transform || '';
+      const isRotated = inlineTransform.includes('rotate(-90deg)');
       
-      if (isRotated) {
-        // Get current container dimensions
-        const containerW = parseFloat(layer.style.width) || 90;
-        const containerH = parseFloat(layer.style.height) || 90;
+      // Get container and image dimensions
+      const containerW = parseFloat(layer.style.width) || 90;
+      const containerH = parseFloat(layer.style.height) || 90;
+      const opacity = parseFloat(window.getComputedStyle(originalLayer).opacity) || 0.6;
+      
+      console.log(`🔍 Export: Watermark ${index} - transform="${inlineTransform}", isRotated=${isRotated}, container=${containerW}x${containerH}`);
+      
+      if (isRotated && originalImg.complete && originalImg.naturalWidth > 0) {
+        // Create a canvas with the pre-rotated image
+        const canvas = document.createElement('canvas');
+        // After -90deg rotation: width becomes height, height becomes width
+        canvas.width = containerH;  // Visual width after rotation = original height
+        canvas.height = containerW; // Visual height after rotation = original width
         
-        // Remove rotation from image, swap container dimensions for vertical mode
-        img.style.transform = 'none';
-        img.style.width = '100%';
-        img.style.height = '100%';
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          // Calculate image size to fit in container while preserving aspect ratio
+          const imgAspect = originalImg.naturalWidth / originalImg.naturalHeight;
+          // For -90deg rotation, we're fitting into a tall narrow space
+          // containerH (now canvas width) x containerW (now canvas height)
+          let drawW, drawH;
+          if (imgAspect > containerH / containerW) {
+            // Image is wider than container - fit to width
+            drawW = containerH;
+            drawH = containerH / imgAspect;
+          } else {
+            // Image is taller than container - fit to height
+            drawH = containerW;
+            drawW = containerW * imgAspect;
+          }
+          
+          // Center and rotate
+          ctx.translate(canvas.width / 2, canvas.height / 2);
+          ctx.rotate(-Math.PI / 2);
+          ctx.drawImage(originalImg, -drawW / 2, -drawH / 2, drawW, drawH);
+          
+          // Replace img with canvas
+          canvas.style.width = '100%';
+          canvas.style.height = '100%';
+          canvas.style.display = 'block';
+          img.replaceWith(canvas);
+          
+          // Update container to match visual dimensions
+          layer.style.width = `${containerH}px`;
+          layer.style.height = `${containerW}px`;
+          layer.style.opacity = String(opacity);
+          
+          console.log(`🔧 Export: Replaced rotated img with pre-rotated canvas ${canvas.width}x${canvas.height}`);
+        }
+      } else {
+        // Flat mode or image not loaded - just ensure proper sizing
         img.style.objectFit = 'contain';
-        
-        // For vertical watermark, the container is square but image rotates inside
-        // To show correctly without rotation, we need to adjust
-        // Just remove rotation and let objectFit handle it
-        console.log(`🔧 Export: Fixed watermark rotation - container ${containerW}x${containerH}`);
+        console.log(`🔧 Export: Flat watermark, objectFit=contain`);
       }
     }
-  });
+  }
   console.log('🔍 Export: Processed', watermarkLayers.length, 'watermark layers');
   
   wrapper.appendChild(clone);
