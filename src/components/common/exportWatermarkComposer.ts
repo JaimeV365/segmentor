@@ -238,27 +238,42 @@ export async function composeWatermarkOnCanvas(
       console.warn(`⚠️ Watermark position clamped: (${x},${y}) -> (${clampedX},${clampedY})`);
     }
 
-    // Draw with rotation centered on the image
+    // Draw watermark on canvas
     ctx.save();
     ctx.globalAlpha = domPosition.opacity;
     
-    // Move to rotation center (center of the image) - use clamped position
-    const centerX = clampedX + displayWidth / 2;
-    const centerY = clampedY + displayHeight / 2;
-    ctx.translate(centerX, centerY);
-    ctx.rotate((parsed.rotationDegrees * Math.PI) / 180);
+    // For debugging, also draw a visible border around where watermark should be
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(clampedX, clampedY, domPosition.width * 2, domPosition.height * 2);
+    console.log(`🔴 Debug: Drew red border at (${clampedX}, ${clampedY}) size ${domPosition.width * 2}x${domPosition.height * 2}`);
     
-    // Draw image centered at origin (since we translated to center)
-    ctx.drawImage(
-      img,
-      -displayWidth / 2,
-      -displayHeight / 2,
-      displayWidth,
-      displayHeight
-    );
+    if (parsed.isFlat) {
+      // Flat mode: draw without rotation
+      ctx.drawImage(img, clampedX, clampedY, displayWidth, displayHeight);
+      console.log(`✅ Watermark drawn FLAT at (${clampedX}, ${clampedY}), size ${displayWidth}x${displayHeight}`);
+    } else {
+      // Vertical mode: draw with -90deg rotation
+      // The container in DOM is square (logoSize x logoSize), with the image rotated inside
+      // We need to match this behavior
+      const containerSize = domPosition.width * 2; // DOM container size, scaled for 2x
+      const centerX = clampedX + containerSize / 2;
+      const centerY = clampedY + containerSize / 2;
+      
+      ctx.translate(centerX, centerY);
+      ctx.rotate(-Math.PI / 2); // -90 degrees
+      
+      // Draw image centered at origin, maintaining aspect ratio
+      // The image should fit within the container while preserving aspect ratio
+      const scale = containerSize / Math.max(img.naturalWidth, img.naturalHeight);
+      const scaledW = img.naturalWidth * scale;
+      const scaledH = img.naturalHeight * scale;
+      
+      ctx.drawImage(img, -scaledW / 2, -scaledH / 2, scaledW, scaledH);
+      console.log(`✅ Watermark drawn VERTICAL at center (${centerX}, ${centerY}), container=${containerSize}, scaledSize=${scaledW}x${scaledH}`);
+    }
     
     ctx.restore();
-    console.log(`✅ Watermark drawn at centerX=${centerX}, centerY=${centerY}, rotation=${parsed.rotationDegrees}deg, visualSize=${visualWidth}x${visualHeight}`);
   } catch (error) {
     console.error('❌ Failed to compose watermark:', error);
     // Gracefully fail - export continues without watermark
