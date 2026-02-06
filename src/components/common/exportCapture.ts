@@ -205,52 +205,87 @@ export async function exportCapture(options: {
       
       console.log(`🔍 Export: Watermark ${index} - transform="${inlineTransform}", isRotated=${isRotated}, container=${containerW}x${containerH}`);
       
-      if (isRotated && originalImg.complete && originalImg.naturalWidth > 0) {
-        // Create a canvas with the pre-rotated image
+      if (originalImg.complete && originalImg.naturalWidth > 0) {
+        // Create a canvas to draw the image with correct aspect ratio
+        // This ensures html2canvas captures it correctly without objectFit issues
         const canvas = document.createElement('canvas');
-        // After -90deg rotation: width becomes height, height becomes width
-        canvas.width = containerH;  // Visual width after rotation = original height
-        canvas.height = containerW; // Visual height after rotation = original width
+        const imgAspect = originalImg.naturalWidth / originalImg.naturalHeight;
         
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          // Calculate image size to fit in container while preserving aspect ratio
-          const imgAspect = originalImg.naturalWidth / originalImg.naturalHeight;
-          // For -90deg rotation, we're fitting into a tall narrow space
-          // containerH (now canvas width) x containerW (now canvas height)
-          let drawW, drawH;
-          if (imgAspect > containerH / containerW) {
-            // Image is wider than container - fit to width
-            drawW = containerH;
-            drawH = containerH / imgAspect;
-          } else {
-            // Image is taller than container - fit to height
-            drawH = containerW;
-            drawW = containerW * imgAspect;
+        if (isRotated) {
+          // Vertical mode: -90deg rotation
+          // After rotation: visual dimensions are swapped
+          canvas.width = containerH;  // Visual width after rotation
+          canvas.height = containerW; // Visual height after rotation
+          
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            // Calculate image size to fit while preserving aspect ratio
+            let drawW, drawH;
+            if (imgAspect > containerH / containerW) {
+              drawW = containerH;
+              drawH = containerH / imgAspect;
+            } else {
+              drawH = containerW;
+              drawW = containerW * imgAspect;
+            }
+            
+            // Center and rotate
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.drawImage(originalImg, -drawW / 2, -drawH / 2, drawW, drawH);
+            
+            // Replace img with canvas
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.display = 'block';
+            img.replaceWith(canvas);
+            
+            // Update container to match visual dimensions
+            layer.style.width = `${containerH}px`;
+            layer.style.height = `${containerW}px`;
+            layer.style.opacity = String(opacity);
+            
+            console.log(`🔧 Export: Replaced rotated img with canvas ${canvas.width}x${canvas.height}`);
           }
+        } else {
+          // Flat mode: no rotation, just ensure correct aspect ratio
+          canvas.width = containerW;
+          canvas.height = containerH;
           
-          // Center and rotate
-          ctx.translate(canvas.width / 2, canvas.height / 2);
-          ctx.rotate(-Math.PI / 2);
-          ctx.drawImage(originalImg, -drawW / 2, -drawH / 2, drawW, drawH);
-          
-          // Replace img with canvas
-          canvas.style.width = '100%';
-          canvas.style.height = '100%';
-          canvas.style.display = 'block';
-          img.replaceWith(canvas);
-          
-          // Update container to match visual dimensions
-          layer.style.width = `${containerH}px`;
-          layer.style.height = `${containerW}px`;
-          layer.style.opacity = String(opacity);
-          
-          console.log(`🔧 Export: Replaced rotated img with pre-rotated canvas ${canvas.width}x${canvas.height}`);
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            // Calculate image size to fit container while preserving aspect ratio (objectFit: contain)
+            let drawW, drawH;
+            const containerAspect = containerW / containerH;
+            
+            if (imgAspect > containerAspect) {
+              // Image is wider than container - fit to width
+              drawW = containerW;
+              drawH = containerW / imgAspect;
+            } else {
+              // Image is taller than container - fit to height
+              drawH = containerH;
+              drawW = containerH * imgAspect;
+            }
+            
+            // Center the image in the container
+            const offsetX = (containerW - drawW) / 2;
+            const offsetY = (containerH - drawH) / 2;
+            
+            ctx.drawImage(originalImg, offsetX, offsetY, drawW, drawH);
+            
+            // Replace img with canvas
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.display = 'block';
+            img.replaceWith(canvas);
+            layer.style.opacity = String(opacity);
+            
+            console.log(`🔧 Export: Replaced flat img with canvas ${canvas.width}x${canvas.height}, drawSize=${drawW.toFixed(1)}x${drawH.toFixed(1)}`);
+          }
         }
       } else {
-        // Flat mode or image not loaded - just ensure proper sizing
-        img.style.objectFit = 'contain';
-        console.log(`🔧 Export: Flat watermark, objectFit=contain`);
+        console.log(`⚠️ Export: Image not loaded, skipping canvas replacement`);
       }
     }
   }
