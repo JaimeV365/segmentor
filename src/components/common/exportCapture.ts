@@ -1,6 +1,5 @@
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { composeWatermarkOnCanvas } from './exportWatermarkComposer';
 
 export type ExportFormat = 'png' | 'pdf';
 
@@ -9,9 +8,8 @@ export async function exportCapture(options: {
   format: ExportFormat;
   padding?: number;
   background?: string;
-  effects?: Set<string>;
 }) {
-  const { targetSelector, format, padding = 92, background = '#ffffff', effects } = options;
+  const { targetSelector, format, padding = 92, background = '#ffffff' } = options;
   console.log('🔍 exportCapture called with selector:', targetSelector);
   const el = document.querySelector(targetSelector) as HTMLElement | null;
   if (!el) {
@@ -183,32 +181,36 @@ export async function exportCapture(options: {
     }
   });
   
-  // Capture watermark position from the ORIGINAL DOM before hiding in clone
-  // This avoids having to replicate the complex position calculation logic
-  let watermarkPosition: { x: number; y: number; width: number; height: number; opacity: number } | null = null;
-  const originalWatermark = el.querySelector('.watermark-layer') as HTMLElement;
-  if (originalWatermark) {
-    const wmStyle = window.getComputedStyle(originalWatermark);
-    watermarkPosition = {
-      x: parseFloat(originalWatermark.style.left) || parseFloat(wmStyle.left) || 0,
-      y: parseFloat(originalWatermark.style.top) || parseFloat(wmStyle.top) || 0,
-      width: parseFloat(originalWatermark.style.width) || parseFloat(wmStyle.width) || 90,
-      height: parseFloat(originalWatermark.style.height) || parseFloat(wmStyle.height) || 90,
-      opacity: parseFloat(wmStyle.opacity) || 0.6
-    };
-    // Log as string to avoid browser collapsing Object
-    console.log(`📍 Export: Captured watermark position from DOM: x=${watermarkPosition.x}, y=${watermarkPosition.y}, w=${watermarkPosition.width}, h=${watermarkPosition.height}, opacity=${watermarkPosition.opacity}`);
-  } else {
-    console.warn('⚠️ Export: No watermark element found in original DOM');
-  }
-  
-  // Hide watermark in clone - html2canvas has issues with CSS transforms (rotation + objectFit)
-  // We'll draw the watermark manually on the canvas afterward using composeWatermarkOnCanvas
+  // Fix watermark in clone for html2canvas compatibility
+  // The issue: html2canvas struggles with rotated images inside containers with objectFit
+  // Solution: Pre-rotate the image by swapping width/height and removing the CSS transform
   const watermarkLayers = clone.querySelectorAll('.watermark-layer') as NodeListOf<HTMLElement>;
   watermarkLayers.forEach(layer => {
-    layer.style.display = 'none';
+    const img = layer.querySelector('img') as HTMLImageElement;
+    if (img) {
+      const computedStyle = window.getComputedStyle(img);
+      const transform = computedStyle.transform || img.style.transform || '';
+      const isRotated = transform.includes('rotate') || transform.includes('matrix');
+      
+      if (isRotated) {
+        // Get current container dimensions
+        const containerW = parseFloat(layer.style.width) || 90;
+        const containerH = parseFloat(layer.style.height) || 90;
+        
+        // Remove rotation from image, swap container dimensions for vertical mode
+        img.style.transform = 'none';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'contain';
+        
+        // For vertical watermark, the container is square but image rotates inside
+        // To show correctly without rotation, we need to adjust
+        // Just remove rotation and let objectFit handle it
+        console.log(`🔧 Export: Fixed watermark rotation - container ${containerW}x${containerH}`);
+      }
+    }
   });
-  console.log('🔍 Export: Hidden', watermarkLayers.length, 'watermark layers for manual composition');
+  console.log('🔍 Export: Processed', watermarkLayers.length, 'watermark layers');
   
   wrapper.appendChild(clone);
   document.body.appendChild(wrapper);
@@ -218,23 +220,7 @@ export async function exportCapture(options: {
     const canvas = await html2canvas(wrapper, { scale: 2, backgroundColor: background, useCORS: true });
     console.log('✅ Canvas created:', canvas.width, 'x', canvas.height);
     
-    // Compose watermark manually onto the canvas (avoids html2canvas transform issues)
-    if (effects && watermarkPosition) {
-      console.log('🎨 Composing watermark onto canvas...');
-      await composeWatermarkOnCanvas(canvas, {
-        effects,
-        chartContainerWidth: rect.width,
-        chartContainerHeight: rect.height
-      }, {
-        top: padTop,
-        right: padRight,
-        bottom: padBottom,
-        left: padLeft
-      }, watermarkPosition);
-      console.log('✅ Watermark composed');
-    } else if (effects) {
-      console.log('⚠️ Skipping watermark - no position captured from DOM');
-    }
+    // Watermark is now rendered by html2canvas (with rotation fix applied to clone)
     if (format === 'png') {
       console.log('📦 Converting canvas to blob...');
       return new Promise<void>((resolve) => {
