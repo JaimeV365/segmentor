@@ -181,50 +181,11 @@ export async function exportCapture(options: {
     }
   });
   
-  // Fix watermark dimensions in the clone for export only (vertical mode needs wider container)
-  // This doesn't affect the visualization, only the export
-  const watermarkLayers = clone.querySelectorAll('.watermark-layer') as NodeListOf<HTMLElement>;
-  watermarkLayers.forEach(layer => {
-    const currentTransform = layer.style.transform || getComputedStyle(layer).transform;
-    const isVertical = currentTransform.includes('rotate(-90deg)') || currentTransform.includes('-90deg');
-    
-    if (isVertical) {
-      // Apply the same dimensions we discovered work for vertical mode
-      const currentWidth = parseFloat(layer.style.width || '90') || 90;
-      const logoSize = currentWidth; // Original square container size
-      const verticalScale = 0.4; // Reduced to 0.4 (40% of original)
-      const containerWidth = logoSize * 2.8 * verticalScale;
-      const containerHeight = logoSize * 0.4 * verticalScale;
-      
-      // Update dimensions
-      layer.style.width = `${containerWidth}px`;
-      layer.style.height = `${containerHeight}px`;
-      layer.style.transformOrigin = 'center center';
-      
-      // Adjust position to keep visual center in the same place after changing container dimensions
-      // Original: square container (logoSize x logoSize) at position (currentLeft, currentTop)
-      //   Center is at: (currentLeft + logoSize/2, currentTop + logoSize/2)
-      // New: rectangular container (containerWidth x containerHeight)
-      //   We want center at same place: (currentLeft + logoSize/2, currentTop + logoSize/2)
-      //   So new position should be: (centerX - containerWidth/2, centerY - containerHeight/2)
-      
-      const currentLeft = parseFloat(layer.style.left || '0') || 0;
-      const currentTop = parseFloat(layer.style.top || '0') || 0;
-      
-      // Calculate original center position
-      const originalCenterX = currentLeft + logoSize / 2;
-      const originalCenterY = currentTop + logoSize / 2;
-      
-      // Position new container so its center matches original center
-      const adjustedLeft = originalCenterX - containerWidth / 2;
-      const adjustedTop = originalCenterY - containerHeight / 2;
-      
-      // Additional offset to move logo to the right in exports
-      const rightOffset = 40; // Pixels to move right
-      layer.style.left = `${adjustedLeft + rightOffset}px`;
-      layer.style.top = `${adjustedTop}px`;
-    }
-  });
+  // Watermark: No dimension modifications needed during export.
+  // Watermark.tsx sets proper container dimensions:
+  // - Vertical mode: square container (logoSize x logoSize) with rotated image inside
+  // - Flat mode: rectangular container (logoSize x logoSize*0.3)
+  // html2canvas captures rotated elements correctly, preserving aspect ratio.
   
   wrapper.appendChild(clone);
   document.body.appendChild(wrapper);
