@@ -1,5 +1,6 @@
 import { ApostlesSaveData } from '../types/save-export';
 import { saveExportService } from './SaveExportService';
+import { getPointKey } from '../components/visualization/services';
 
 // This service handles comprehensive save/load operations
 // It needs to be called from components that have access to all the context data
@@ -169,6 +170,8 @@ class ComprehensiveSaveLoadServiceImpl implements SaveLoadService {
 
     // Build rows with all data flattened
     const rows = params.data.map(point => {
+      // Use compound key for checking reassignment (matches manualAssignments keys)
+      const pointKey = getPointKey(point);
       const row: any = {
         id: point.id,
         name: point.name,
@@ -176,7 +179,7 @@ class ComprehensiveSaveLoadServiceImpl implements SaveLoadService {
         loyalty: point.loyalty,
         group: point.group || 'Default',
         excluded: point.excluded || false,
-        reassigned: reassignedPointIds.has(point.id)
+        reassigned: reassignedPointIds.has(pointKey)
       };
 
       // Add optional fields

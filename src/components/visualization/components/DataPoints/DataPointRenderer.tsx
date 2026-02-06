@@ -4,6 +4,7 @@ import { calculatePointPosition } from '../../utils/positionCalculator';
 import { useQuadrantAssignment, QuadrantType } from '../../context/QuadrantAssignmentContext';
 import { useInfoBox } from '../InfoBoxLayer';
 import { useReassignmentLoading } from '../../context/ReassignmentLoadingContext';
+import { getPointKey } from '../../services';
 
 
 interface DataPointRendererProps {
@@ -285,8 +286,9 @@ export const DataPointRenderer: React.FC<DataPointRendererProps> = React.memo(({
                         else if (newGroup.group === 'Neutral') quadrantType = 'neutral';
                         
                         // Update ALL customers at this position, not just the clicked one
+                        // Use compound key (id + coordinates) to support historical data
                         samePoints.forEach(customer => {
-                          updateManualAssignment(customer.id, quadrantType);
+                          updateManualAssignment(getPointKey(customer), quadrantType);
                         });
                         
                         // Hide loading popup after calculations are complete

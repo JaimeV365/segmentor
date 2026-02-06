@@ -21,6 +21,22 @@ export interface QuadrantOption {
   color: string;
 }
 
+/**
+ * Generate a unique key for a data point that combines ID and position.
+ * This ensures manual assignments are position-specific, not just ID-specific.
+ * Important for historical data where the same customer ID can appear at different positions.
+ */
+export function getPointKey(point: DataPoint): string {
+  return `${point.id}_${point.satisfaction}_${point.loyalty}`;
+}
+
+/**
+ * Find a data point that matches a compound key (id_satisfaction_loyalty)
+ */
+export function findPointByKey(data: DataPoint[], pointKey: string): DataPoint | undefined {
+  return data.find(p => getPointKey(p) === pointKey);
+}
+
 export class DataProcessingService {
   /**
    * Get the natural quadrant for a data point based on its coordinates
@@ -119,7 +135,8 @@ export class DataProcessingService {
     
     // Count points in each quadrant
     data.forEach(point => {
-      const quadrant = manualAssignments.get(point.id) || 
+      const pointKey = getPointKey(point);
+      const quadrant = manualAssignments.get(pointKey) || 
                       this.getNaturalQuadrantForPoint(point, config);
       distribution[quadrant]++;
     });
@@ -178,7 +195,8 @@ export class DataProcessingService {
     manualAssignments: Map<string, QuadrantType>,
     config: DataProcessingConfig
   ): { baseQuadrant: QuadrantType; specificZone: QuadrantType | null } {
-    const assignedQuadrant = manualAssignments.get(point.id);
+    const pointKey = getPointKey(point);
+    const assignedQuadrant = manualAssignments.get(pointKey);
     const naturalQuadrant = this.getNaturalQuadrantForPoint(point, config);
     const quadrant = assignedQuadrant || naturalQuadrant;
     
@@ -293,9 +311,11 @@ export class DataProcessingService {
     config: DataProcessingConfig
   ): QuadrantType {
     // Check for manual assignment first (this overrides everything)
-    const manualAssignment = manualAssignments.get(point.id);
+    // Use compound key (id + coordinates) to support historical data with same ID at different positions
+    const pointKey = getPointKey(point);
+    const manualAssignment = manualAssignments.get(pointKey);
     if (manualAssignment) {
-      console.log(`🔍 Point ${point.id} has manual assignment: ${manualAssignment}`);
+      console.log(`🔍 Point ${point.id} at (${point.satisfaction},${point.loyalty}) has manual assignment: ${manualAssignment}`);
       return manualAssignment;
     }
     
@@ -328,13 +348,13 @@ export class DataProcessingService {
     const updatedAssignments = new Map(manualAssignments);
     let reassignedCount = 0;
 
-    // Check each manually assigned point
-    for (const [pointId, manualQuadrant] of Array.from(manualAssignments)) {
-      // Find the point in the data
-      const point = data.find(p => p.id === pointId);
+    // Check each manually assigned point (keys are now compound: id_sat_loy)
+    for (const [pointKey, manualQuadrant] of Array.from(manualAssignments)) {
+      // Find the point in the data using the compound key
+      const point = findPointByKey(data, pointKey);
       if (!point) {
-        console.log(`⚠️ Point ${pointId} not found in data, removing manual assignment`);
-        updatedAssignments.delete(pointId);
+        console.log(`⚠️ Point ${pointKey} not found in data, removing manual assignment`);
+        updatedAssignments.delete(pointKey);
         continue;
       }
 
@@ -345,11 +365,11 @@ export class DataProcessingService {
       const shouldReassign = shouldAutoReassignPoint(point, manualQuadrant, naturalQuadrant);
       
       if (shouldReassign) {
-        console.log(`🔄 Auto-reassigning point ${pointId} (${point.satisfaction},${point.loyalty}): ${manualQuadrant} → ${naturalQuadrant}`);
-        updatedAssignments.delete(pointId);
+        console.log(`🔄 Auto-reassigning point ${pointKey} (${point.satisfaction},${point.loyalty}): ${manualQuadrant} → ${naturalQuadrant}`);
+        updatedAssignments.delete(pointKey);
         reassignedCount++;
       } else {
-        console.log(`✅ Keeping manual assignment for point ${pointId} (${point.satisfaction},${point.loyalty}): ${manualQuadrant} (natural: ${naturalQuadrant})`);
+        console.log(`✅ Keeping manual assignment for point ${pointKey} (${point.satisfaction},${point.loyalty}): ${manualQuadrant} (natural: ${naturalQuadrant})`);
       }
     }
 
