@@ -277,9 +277,9 @@ export async function generateActionPlan(
     findingsByCategory[f.category].push(f);
   });
   
-  // Build interleaved findings: Data → Concentration → Distribution → Proximity → Historical Progress → Recommendation
-  // Keep Historical Progress after Proximity Analysis (matches report order elsewhere).
-  const categoryOrder: Array<keyof typeof findingsByCategory> = ['data', 'concentration', 'distribution', 'proximity', 'historical', 'recommendation'];
+  // Build interleaved findings: Data → Recommendation → Concentration → Distribution → Proximity → Historical Progress
+  // Recommendation comes right after Data (since it's part of the Data Report section in the UI)
+  const categoryOrder: Array<keyof typeof findingsByCategory> = ['data', 'recommendation', 'concentration', 'distribution', 'proximity', 'historical'];
   
   // Find main visualization chart and quadrant descriptions
   const mainVisualizationChart = chartFindings.find(cf => cf.id === 'chart-main-visualisation');
