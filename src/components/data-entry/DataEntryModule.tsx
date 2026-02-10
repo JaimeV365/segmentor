@@ -287,18 +287,11 @@ if (editingData) {
           }
         });
         
-        // Add any other fields that might be present - preserve original case for special fields
-        const preserveCaseFields = ['id', 'ID', 'ces', 'CES', 'nps', 'NPS', 'CSAT', 'csat'];
-        
+        // Add any other fields that might be present - preserve original case from CSV header
         Object.keys(row).forEach(key => {
           // Skip fields we've already handled
           if (!['id', 'name', 'satisfaction', 'loyalty', 'date', 'email', ...optionalFields].includes(key.toLowerCase())) {
-            // Check if this is a special field where we should preserve case
-            if (preserveCaseFields.includes(key)) {
-              dataPoint[key] = row[key]; // Keep original case
-            } else {
-              dataPoint[key] = row[key]; // Keep as-is for all fields
-            }
+            dataPoint[key] = row[key]; // Keep original case from user's CSV header
           }
         });
         

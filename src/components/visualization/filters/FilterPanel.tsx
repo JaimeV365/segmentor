@@ -2463,7 +2463,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       'loyalty': 'Loyalty',
       'segment': 'Segment',
       'ces': 'CES',
-      'nps': 'NPS',
       'csat': 'CSAT',
       'email': 'Email',
       'date': 'Date',

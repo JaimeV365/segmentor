@@ -40,8 +40,11 @@ export const isSatisfactionHeader = (header: string): boolean => {
   if (header.match(/^Satisfaction[:|-]/i) || header === 'Satisfaction' || 
       header.match(/^Sat[:|-]/i) || header === 'Sat' || 
       header.match(/^CSAT[:|-]/i) || header === 'CSAT' ||
+      header.match(/^CES[:|-]/i) || header === 'CES' ||
+      header.match(/^Effort[:|-]/i) || header === 'Effort' ||
       header.match(/^Sat\d/i) || // Handle "Sat1-5", "Sat5", "Sat7", etc. (no separator)
-      header.match(/^CSAT\d/i)) { // Handle "CSAT1-5", etc. (no separator)
+      header.match(/^CSAT\d/i) || // Handle "CSAT1-5", etc. (no separator)
+      header.match(/^CES\d/i)) { // Handle "CES1-7", etc. (no separator)
     return true;
   }
   
@@ -49,7 +52,9 @@ export const isSatisfactionHeader = (header: string): boolean => {
   const normalized = normalizeHeader(header);
   return normalized.startsWith('satisfaction') || 
          normalized.startsWith('sat') || 
-         normalized.startsWith('csat');
+         normalized.startsWith('csat') ||
+         normalized.startsWith('ces') ||
+         normalized.startsWith('effort');
 };
 
 /**
@@ -57,9 +62,10 @@ export const isSatisfactionHeader = (header: string): boolean => {
  */
 export const isLoyaltyHeader = (header: string): boolean => {
   // First check the most common pattern directly on the original header
-  if (header.match(/^Loyalty[:|-]/i) || header === 'Loyalty' || header === 'NPS' || 
+  if (header.match(/^Loyalty[:|-]/i) || header === 'Loyalty' ||
       header.match(/^Loy[:|-]/i) || header === 'Loy' ||
-      header.match(/^Loy\d/i)) { // Handle "Loy1-10", "Loy10", etc. (no separator)
+      header.match(/^Loy\d/i) || // Handle "Loy1-10", "Loy10", etc. (no separator)
+      header.toLowerCase() === 'nps') { // Case-insensitive match for loyalty-family terms
     return true;
   }
   
@@ -87,8 +93,8 @@ export const extractScaleFromHeader = (header: string): ScaleFormat | null => {
     return hyphenMatch[1] as ScaleFormat;
   }
   
-  // Try to match pattern like "Sat1-5", "Sat1-7", "Loy1-10", "Loy0-10" (no separator - number directly after Sat/Loy)
-  const noSeparatorMatch = header.match(/^(?:Sat|CSAT|Satisfaction|Loy|Loyalty)(\d+[-]\d+)/i);
+  // Try to match pattern like "Sat1-5", "Sat1-7", "Loy1-10", "CES1-7" (no separator - number directly after term)
+  const noSeparatorMatch = header.match(/^(?:Sat|CSAT|Satisfaction|Loy|Loyalty|CES|Effort)(\d+[-]\d+)/i);
   if (noSeparatorMatch && noSeparatorMatch[1]) {
     return noSeparatorMatch[1] as ScaleFormat;
   }
@@ -111,8 +117,8 @@ export const extractScaleFromHeader = (header: string): ScaleFormat | null => {
     return `1-${hyphenNumberMatch[1]}` as ScaleFormat;
   }
   
-  // Try to match just a number with no separator (Sat5, Sat7, Sat3, Loy5, Loy7, Loy10)
-  const noSeparatorNumberMatch = header.match(/^(?:Sat|CSAT|Satisfaction|Loy|Loyalty)(\d+)$/i);
+  // Try to match just a number with no separator (Sat5, Sat7, Sat3, Loy5, Loy7, Loy10, CES5, CES7)
+  const noSeparatorNumberMatch = header.match(/^(?:Sat|CSAT|Satisfaction|Loy|Loyalty|CES|Effort)(\d+)$/i);
   if (noSeparatorNumberMatch && noSeparatorNumberMatch[1]) {
     const maxValue = parseInt(noSeparatorNumberMatch[1]);
     // Special handling for loyalty scale with 10 (could be 0-10 or 1-10)
@@ -123,13 +129,9 @@ export const extractScaleFromHeader = (header: string): ScaleFormat | null => {
     return `1-${maxValue}` as ScaleFormat;
   }
   
-  // Special case for NPS: return null to trigger enhanced detection
-  // This allows the system to detect the scale from actual data values
-  // (e.g., if data contains 0, it's 0-10; if data starts at 1, it could be 1-5, 1-7, 1-10, etc.)
-  if (normalizeHeader(header) === 'nps') {
-    return null; // Trigger enhanced detection instead of defaulting to 0-10
-  }
-  
+  // No scale pattern found in header — return null to trigger enhanced detection
+  // This handles plain headers like "CES", "Sat", "CSAT", "Effort", "Loy", "Loyalty", etc.
+  // Enhanced detection will analyze actual data values to determine the scale
   return null;
 };
 
@@ -160,13 +162,12 @@ export const getDefaultScale = (type: 'satisfaction' | 'loyalty'): ScaleFormat =
  */
 export const detectPossibleScales = (
   header: string, 
-  columnData: number[]
+  columnData: number[],
+  type: 'satisfaction' | 'loyalty' = 'loyalty'
 ): ScaleDetectionResult => {
-  console.log(`🔍 Detecting scales for header: "${header}"`);
-  console.log(`📊 Column data:`, columnData);
+  console.log(`🔍 Detecting scales for header: "${header}" (type: ${type})`);
   
   if (columnData.length === 0) {
-    console.log(`❌ Empty data`);
     return { 
       definitive: null, 
       possibleScales: [], 
@@ -175,99 +176,69 @@ export const detectPossibleScales = (
     };
   }
   
-  const actualMin = Math.min(...columnData.filter(n => !isNaN(n)));
-  const actualMax = Math.max(...columnData.filter(n => !isNaN(n)));
+  const validNumbers = columnData.filter(n => !isNaN(n));
+  const actualMin = Math.min(...validNumbers);
+  const actualMax = Math.max(...validNumbers);
   const dataRange = { min: actualMin, max: actualMax };
   
   // Extract potential max value from header (if present)
   const hyphenNumberMatch = header.match(/[-](\d+)$/);
   const maxFromHeader = hyphenNumberMatch ? parseInt(hyphenNumberMatch[1]) : null;
   
-  // Special handling for plain "NPS" header (no number suffix)
-  const isPlainNPS = normalizeHeader(header) === 'nps' && !hyphenNumberMatch;
+  // Determine if this is a plain header (no scale suffix)
+  const isPlainHeader = !maxFromHeader;
   
-  if (isPlainNPS) {
-    // For plain NPS, determine scale from data
-    console.log(`📈 Analysis: Plain NPS header, data min=${actualMin}, data max=${actualMax}`);
+  console.log(`📈 Analysis: type=${type}, plain=${isPlainHeader}, headerMax=${maxFromHeader}, dataMin=${actualMin}, dataMax=${actualMax}`);
+  
+  // --- PLAIN HEADER: no scale suffix, determine from data values ---
+  if (isPlainHeader) {
     
-    // Case 1: Data contains 0 → definitely 0-10 scale
-    if (actualMin === 0) {
-      console.log(`✅ Detected 0-10 scale due to 0 value in data`);
-      return { 
-        definitive: '0-10' as ScaleFormat, 
-        possibleScales: [], 
-        needsUserInput: false,
-        dataRange
-      };
+    if (type === 'satisfaction') {
+      // Satisfaction valid scales: 1-3, 1-5, 1-7
+      if (actualMax > 7) {
+        // Data exceeds max valid satisfaction scale — error
+        return { definitive: null, possibleScales: [], needsUserInput: false, dataRange };
+      }
+      if (actualMax > 5) {
+        // max is 6 or 7 → definitive: 1-7
+        return { definitive: '1-7' as ScaleFormat, possibleScales: [], needsUserInput: false, dataRange };
+      }
+      if (actualMax > 3) {
+        // max is 4 or 5 → could be 1-5 or 1-7 → ask user
+        return { definitive: null, possibleScales: ['1-5', '1-7'] as ScaleFormat[], needsUserInput: true, dataRange };
+      }
+      // max <= 3 → could be 1-3, 1-5, or 1-7 → ask user
+      return { definitive: null, possibleScales: ['1-3', '1-5', '1-7'] as ScaleFormat[], needsUserInput: true, dataRange };
     }
     
-    // Case 2: Data starts at 1, max is 5 → 1-5 scale
-    if (actualMin === 1 && actualMax === 5) {
-      return {
-        definitive: '1-5' as ScaleFormat,
-        possibleScales: [],
-        needsUserInput: false,
-        dataRange
-      };
-    }
-    
-    // Case 3: Data starts at 1, max is 7 → 1-7 scale
-    if (actualMin === 1 && actualMax === 7) {
-      return {
-        definitive: '1-7' as ScaleFormat,
-        possibleScales: [],
-        needsUserInput: false,
-        dataRange
-      };
-    }
-    
-    // Case 4: Data starts at 1, max is 10 → could be either 1-10 or 0-10
-    if (actualMin === 1 && actualMax === 10) {
-      return {
-        definitive: null,
-        possibleScales: ['1-10', '0-10'] as ScaleFormat[],
-        needsUserInput: true,
-        dataRange
-      };
-    }
-    
-    // Case 5: Data starts at 1, max is less than 10 → infer 1-X scale
-    if (actualMin === 1 && actualMax < 10) {
-      return {
-        definitive: `1-${actualMax}` as ScaleFormat,
-        possibleScales: [],
-        needsUserInput: false,
-        dataRange
-      };
-    }
-    
-    // Default: infer from data range (1-X)
-    if (actualMin === 1) {
-      return {
-        definitive: `1-${actualMax}` as ScaleFormat,
-        possibleScales: [],
-        needsUserInput: false,
-        dataRange
-      };
+    if (type === 'loyalty') {
+      // Loyalty valid scales: 1-5, 1-7, 1-10, 0-10
+      if (actualMax > 10) {
+        // Data exceeds max valid loyalty scale — error
+        return { definitive: null, possibleScales: [], needsUserInput: false, dataRange };
+      }
+      if (actualMin === 0) {
+        // Data contains 0 → definitive: 0-10
+        return { definitive: '0-10' as ScaleFormat, possibleScales: [], needsUserInput: false, dataRange };
+      }
+      if (actualMax > 7) {
+        // max is 8, 9, or 10 (min >= 1) → could be 1-10 or 0-10 → ask user
+        return { definitive: null, possibleScales: ['1-10', '0-10'] as ScaleFormat[], needsUserInput: true, dataRange };
+      }
+      if (actualMax > 5) {
+        // max is 6 or 7 → could be 1-7, 1-10, or 0-10 → ask user
+        return { definitive: null, possibleScales: ['1-7', '1-10', '0-10'] as ScaleFormat[], needsUserInput: true, dataRange };
+      }
+      // max <= 5 → could be 1-5, 1-7, 1-10, or 0-10 → ask user
+      return { definitive: null, possibleScales: ['1-5', '1-7', '1-10', '0-10'] as ScaleFormat[], needsUserInput: true, dataRange };
     }
   }
   
-  // Original logic for headers with number suffix
-  if (!maxFromHeader) {
-    console.log(`❌ No header match`);
-    return { 
-      definitive: null, 
-      possibleScales: [], 
-      needsUserInput: false,
-      dataRange
-    };
-  }
+  // --- HEADER WITH NUMBER SUFFIX: use header max + data analysis ---
+  console.log(`📈 Header has max=${maxFromHeader}, analyzing data`);
   
-  console.log(`📈 Analysis: header max=${maxFromHeader}, data min=${actualMin}, data max=${actualMax}`);
-  
-  // Case 1: Data contains 0 → definitely 0-X scale
+  // Data contains 0 → definitely 0-X scale
   if (actualMin === 0) {
-    console.log(`✅ Detected 0-${maxFromHeader} scale due to 0 value in data`);
     return { 
       definitive: `0-${maxFromHeader}` as ScaleFormat, 
       possibleScales: [], 
@@ -276,8 +247,8 @@ export const detectPossibleScales = (
     };
   }
   
-  // Case 2: Data starts at 1, max matches header → could be either scale
-  if (actualMin === 1 && maxFromHeader === 10) {
+  // Header max is 10 → could be 1-10 or 0-10, ask user
+  if (maxFromHeader === 10) {
     return {
       definitive: null,
       possibleScales: [`1-${maxFromHeader}`, `0-${maxFromHeader}`] as ScaleFormat[],
@@ -286,23 +257,57 @@ export const detectPossibleScales = (
     };
   }
   
-  // Case 3: Data starts above 1 → probably 1-X but ask to be sure for loyalty
-  if (actualMin > 1 && maxFromHeader === 10) {
-    return {
-      definitive: null,
-      possibleScales: [`1-${maxFromHeader}`, `0-${maxFromHeader}`] as ScaleFormat[],
-      needsUserInput: true,
-      dataRange
-    };
-  }
-  
-  // Default case: use traditional 1-X scale
+  // Default: use 1-X scale from header
   return { 
     definitive: `1-${maxFromHeader}` as ScaleFormat, 
     possibleScales: [], 
     needsUserInput: false,
     dataRange
   };
+};
+
+/**
+ * When multiple headers match for the same axis, prefer primary terms over secondary ones.
+ * Primary terms are the model's native concepts (Sat/CSAT/Satisfaction for X-axis, Loy/Loyalty for Y-axis).
+ * Secondary terms are proxies (CES/Effort for satisfaction, loyalty-family search terms like 'nps').
+ * If both primary and secondary exist, primary wins and secondary becomes additional data.
+ * If multiple primaries or multiple secondaries exist, return all (will trigger error).
+ */
+const disambiguateHeaders = (matchedHeaders: string[], type: 'satisfaction' | 'loyalty'): string[] => {
+  if (matchedHeaders.length <= 1) return matchedHeaders;
+  
+  const normalized = (h: string) => normalizeHeader(h);
+  
+  let primary: string[];
+  let secondary: string[];
+  
+  if (type === 'satisfaction') {
+    // Primary: sat, csat, satisfaction — Secondary: ces, effort
+    primary = matchedHeaders.filter(h => {
+      const n = normalized(h);
+      return n.startsWith('sat') || n.startsWith('csat') || n.startsWith('satisfaction');
+    });
+    secondary = matchedHeaders.filter(h => {
+      const n = normalized(h);
+      return n.startsWith('ces') || n.startsWith('effort');
+    });
+  } else {
+    // Primary: loy, loyalty — Secondary: other loyalty-family terms
+    primary = matchedHeaders.filter(h => {
+      const n = normalized(h);
+      return n.startsWith('loy') || n.startsWith('loyalty');
+    });
+    secondary = matchedHeaders.filter(h => {
+      const n = normalized(h);
+      return !n.startsWith('loy') && !n.startsWith('loyalty');
+    });
+  }
+  
+  // If we have primary matches, use only those (secondary becomes additional data)
+  if (primary.length > 0) return primary;
+  
+  // No primaries — use secondary matches
+  return secondary;
 };
 
 /**
@@ -321,9 +326,12 @@ export const processHeaders = (headers: string[]): HeaderProcessingResult => {
   };
   
   // Find satisfaction header
-  const satisfactionHeaders = headers.filter(h => isSatisfactionHeader(h));
+  // When multiple matches found, prefer primary terms (Sat/CSAT) over secondary (CES/Effort)
+  const allSatisfactionHeaders = headers.filter(h => isSatisfactionHeader(h));
+  const satisfactionHeaders = disambiguateHeaders(allSatisfactionHeaders, 'satisfaction');
+  
   if (satisfactionHeaders.length === 0) {
-    result.errors.push('Missing satisfaction column (Expected "Satisfaction", "Sat", or "CSAT")');
+    result.errors.push('Missing satisfaction column (Expected "Satisfaction", "Sat", "CSAT", or "CES")');
     result.isValid = false;
   } else if (satisfactionHeaders.length > 1) {
     result.errors.push('Multiple satisfaction columns found. Please include only one.');
@@ -338,14 +346,17 @@ export const processHeaders = (headers: string[]): HeaderProcessingResult => {
       result.errors.push(`Invalid satisfaction scale: ${scale}. Allowed scales are: 1-3, 1-5, 1-7`);
       result.isValid = false;
     } else {
-      // If no scale found, use default but add a warning
-      result.errors.push(`No scale found in satisfaction header. Using default scale (1-5).`);
-      result.scales.satisfaction = getDefaultScale('satisfaction');
+      // No scale in header (e.g., plain "CES", "Sat", "CSAT") — defer to enhanced detection
+      result.errors.push(`Scale detection deferred for enhanced analysis of "${satisfactionHeaders[0]}" header.`);
+      result.scales.satisfaction = getDefaultScale('satisfaction'); // Temporary default, will be overridden by enhanced detection
     }
   }
   
   // Find loyalty header
-  const loyaltyHeaders = headers.filter(h => isLoyaltyHeader(h));
+  // When multiple matches found, prefer primary terms (Loy/Loyalty) over secondary
+  const allLoyaltyHeaders = headers.filter(h => isLoyaltyHeader(h));
+  const loyaltyHeaders = disambiguateHeaders(allLoyaltyHeaders, 'loyalty');
+  
   if (loyaltyHeaders.length === 0) {
     result.errors.push('Missing loyalty column (Expected "Loyalty" or "Loy")');
     result.isValid = false;
@@ -361,21 +372,10 @@ export const processHeaders = (headers: string[]): HeaderProcessingResult => {
     } else if (scale) {
       result.errors.push(`Invalid loyalty scale: ${scale}. Allowed scales are: 1-5, 1-7, 1-10, 0-10`);
       result.isValid = false;
-    } else if (normalizeHeader(loyaltyHeaders[0]) === 'nps') {
-      // Special case for NPS: scale will be determined by enhanced detection
-      // Don't set a default scale here - let enhanced detection handle it
+    } else {
+      // No scale in header (e.g., plain "Loy", "Loyalty", or loyalty-family term) — defer to enhanced detection
       result.errors.push(`Scale detection deferred for enhanced analysis of "${loyaltyHeaders[0]}" header.`);
       result.scales.loyalty = getDefaultScale('loyalty'); // Temporary default, will be overridden by enhanced detection
-    } else {
-      // If no scale found, use default but add a warning
-      // Don't mark as invalid if this is a Loy-10 header that should trigger enhanced detection
-      if (normalizeHeader(loyaltyHeaders[0]).includes('loy') && loyaltyHeaders[0].includes('10')) {
-        result.errors.push(`Scale detection deferred for enhanced analysis of "${loyaltyHeaders[0]}" header.`);
-        result.scales.loyalty = getDefaultScale('loyalty'); // Temporary default
-      } else {
-        result.errors.push(`No scale found in loyalty header. Using default scale (1-5).`);
-        result.scales.loyalty = getDefaultScale('loyalty');
-      }
     }
   }
   
@@ -441,7 +441,7 @@ export const processHeadersWithDataAnalysis = (
       .map(row => parseFloat(row[basicResult.satisfactionHeader!]))
       .filter(n => !isNaN(n));
     
-    const satDetection = detectPossibleScales(basicResult.satisfactionHeader, satisfactionData);
+    const satDetection = detectPossibleScales(basicResult.satisfactionHeader, satisfactionData, 'satisfaction');
     enhancedResult.scaleDetection!.satisfaction = satDetection;
     
     if (satDetection.needsUserInput) {
@@ -457,7 +457,7 @@ export const processHeadersWithDataAnalysis = (
       .map(row => parseFloat(row[basicResult.loyaltyHeader!]))
       .filter(n => !isNaN(n));
     
-    const loyDetection = detectPossibleScales(basicResult.loyaltyHeader, loyaltyData);
+    const loyDetection = detectPossibleScales(basicResult.loyaltyHeader, loyaltyData, 'loyalty');
     enhancedResult.scaleDetection!.loyalty = loyDetection;
     
     if (loyDetection.needsUserInput) {

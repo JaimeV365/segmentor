@@ -115,7 +115,6 @@ const DetailsModal: React.FC<DetailsModalProps> = ({ isOpen, onClose, data }) =>
                 'satisfaction': 'Satisfaction',
                 'loyalty': 'Loyalty',
                 'ces': 'CES',
-                'nps': 'NPS',
                 'csat': 'CSAT',
                 'email': 'Email',
                 'date': 'Date'
