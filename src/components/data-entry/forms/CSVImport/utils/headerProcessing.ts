@@ -40,21 +40,33 @@ export const isSatisfactionHeader = (header: string): boolean => {
   if (header.match(/^Satisfaction[:|-]/i) || header === 'Satisfaction' || 
       header.match(/^Sat[:|-]/i) || header === 'Sat' || 
       header.match(/^CSAT[:|-]/i) || header === 'CSAT' ||
-      header.match(/^CES[:|-]/i) || header === 'CES' ||
-      header.match(/^Effort[:|-]/i) || header === 'Effort' ||
       header.match(/^Sat\d/i) || // Handle "Sat1-5", "Sat5", "Sat7", etc. (no separator)
-      header.match(/^CSAT\d/i) || // Handle "CSAT1-5", etc. (no separator)
-      header.match(/^CES\d/i)) { // Handle "CES1-7", etc. (no separator)
+      header.match(/^CSAT\d/i)) { // Handle "CSAT1-5", etc. (no separator)
+    return true;
+  }
+  
+  // CES/Effort: only match when followed by a scale indicator (separator or digit)
+  // Plain "CES" or "Effort" without a scale = additional data, not satisfaction axis
+  if (header.match(/^CES[:|-]/i) || header.match(/^CES\d/i) || header.match(/^CES\(/i) ||
+      header.match(/^Effort[:|-]/i) || header.match(/^Effort\d/i) || header.match(/^Effort\(/i)) {
     return true;
   }
   
   // Fall back to the normalized check for other cases
   const normalized = normalizeHeader(header);
-  return normalized.startsWith('satisfaction') || 
-         normalized.startsWith('sat') || 
-         normalized.startsWith('csat') ||
-         normalized.startsWith('ces') ||
-         normalized.startsWith('effort');
+  if (normalized.startsWith('satisfaction') || 
+      normalized.startsWith('sat') || 
+      normalized.startsWith('csat')) {
+    return true;
+  }
+  
+  // CES/Effort normalized: must have more than just the term (i.e., must include scale info)
+  if ((normalized.startsWith('ces') && normalized.length > 3) ||
+      (normalized.startsWith('effort') && normalized.length > 6)) {
+    return true;
+  }
+  
+  return false;
 };
 
 /**

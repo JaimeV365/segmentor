@@ -83,7 +83,21 @@ export function validateHeaders(headers: string[]): {
     };
   
     // Find satisfaction header (includes CES/effort as satisfaction-family metrics)
-    satisfactionHeader = findHeader(['sat', 'csat', 'satisfaction', 'ces', 'effort']);
+    // First try standard terms (match with or without scale)
+    satisfactionHeader = findHeader(['sat', 'csat', 'satisfaction']);
+    
+    // If not found, try CES/effort but ONLY if they have a scale suffix
+    // Plain "CES" or "Effort" without a scale = additional data, not satisfaction axis
+    if (!satisfactionHeader) {
+      satisfactionHeader = headers.find(header => {
+        const normalized = header.toLowerCase();
+        const isCesOrEffort = normalized.startsWith('ces') || normalized.startsWith('effort');
+        if (!isCesOrEffort) return false;
+        // Must have a scale indicator (digit, colon, dash-digit, or parenthesis after the term)
+        const afterTerm = normalized.replace(/^(ces|effort)/, '');
+        return afterTerm.length > 0 && /[\d:(]/.test(afterTerm);
+      }) || null;
+    }
     
     if (satisfactionHeader) {
       const result = extractScaleFromHeader(satisfactionHeader, 'satisfaction');
