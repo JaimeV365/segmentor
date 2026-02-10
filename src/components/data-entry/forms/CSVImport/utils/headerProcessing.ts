@@ -267,6 +267,25 @@ export const detectPossibleScales = (
 };
 
 /**
+ * When multiple headers match for the same axis, prefer the one with a scale suffix.
+ * If one header has a scale and another is plain, return only the one with a scale
+ * (the plain one becomes additional data). If all have scales or all are plain, return all
+ * (which will trigger a "multiple columns" error).
+ */
+const disambiguateHeaders = (matchedHeaders: string[]): string[] => {
+  if (matchedHeaders.length <= 1) return matchedHeaders;
+  
+  const withScale = matchedHeaders.filter(h => extractScaleFromHeader(h) !== null);
+  const withoutScale = matchedHeaders.filter(h => extractScaleFromHeader(h) === null);
+  
+  // If exactly one has a scale, use that one (plain ones become additional data)
+  if (withScale.length === 1) return withScale;
+  
+  // If multiple have scales, or all are plain — return all (will trigger error)
+  return matchedHeaders;
+};
+
+/**
  * Process CSV headers to detect and validate scales
  */
 export const processHeaders = (headers: string[]): HeaderProcessingResult => {
@@ -282,7 +301,10 @@ export const processHeaders = (headers: string[]): HeaderProcessingResult => {
   };
   
   // Find satisfaction header
-  const satisfactionHeaders = headers.filter(h => isSatisfactionHeader(h));
+  // When multiple matches found, prefer the one with a scale suffix (plain ones become additional data)
+  const allSatisfactionHeaders = headers.filter(h => isSatisfactionHeader(h));
+  const satisfactionHeaders = disambiguateHeaders(allSatisfactionHeaders);
+  
   if (satisfactionHeaders.length === 0) {
     result.errors.push('Missing satisfaction column (Expected "Satisfaction", "Sat", "CSAT", or "CES")');
     result.isValid = false;
@@ -306,7 +328,10 @@ export const processHeaders = (headers: string[]): HeaderProcessingResult => {
   }
   
   // Find loyalty header
-  const loyaltyHeaders = headers.filter(h => isLoyaltyHeader(h));
+  // When multiple matches found, prefer the one with a scale suffix (plain ones become additional data)
+  const allLoyaltyHeaders = headers.filter(h => isLoyaltyHeader(h));
+  const loyaltyHeaders = disambiguateHeaders(allLoyaltyHeaders);
+  
   if (loyaltyHeaders.length === 0) {
     result.errors.push('Missing loyalty column (Expected "Loyalty" or "Loy")');
     result.isValid = false;
