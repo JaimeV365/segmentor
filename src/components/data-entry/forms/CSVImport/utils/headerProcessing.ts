@@ -267,22 +267,47 @@ export const detectPossibleScales = (
 };
 
 /**
- * When multiple headers match for the same axis, prefer the one with a scale suffix.
- * If one header has a scale and another is plain, return only the one with a scale
- * (the plain one becomes additional data). If all have scales or all are plain, return all
- * (which will trigger a "multiple columns" error).
+ * When multiple headers match for the same axis, prefer primary terms over secondary ones.
+ * Primary terms are the model's native concepts (Sat/CSAT/Satisfaction for X-axis, Loy/Loyalty for Y-axis).
+ * Secondary terms are proxies (CES/Effort for satisfaction, loyalty-family search terms like 'nps').
+ * If both primary and secondary exist, primary wins and secondary becomes additional data.
+ * If multiple primaries or multiple secondaries exist, return all (will trigger error).
  */
-const disambiguateHeaders = (matchedHeaders: string[]): string[] => {
+const disambiguateHeaders = (matchedHeaders: string[], type: 'satisfaction' | 'loyalty'): string[] => {
   if (matchedHeaders.length <= 1) return matchedHeaders;
   
-  const withScale = matchedHeaders.filter(h => extractScaleFromHeader(h) !== null);
-  const withoutScale = matchedHeaders.filter(h => extractScaleFromHeader(h) === null);
+  const normalized = (h: string) => normalizeHeader(h);
   
-  // If exactly one has a scale, use that one (plain ones become additional data)
-  if (withScale.length === 1) return withScale;
+  let primary: string[];
+  let secondary: string[];
   
-  // If multiple have scales, or all are plain — return all (will trigger error)
-  return matchedHeaders;
+  if (type === 'satisfaction') {
+    // Primary: sat, csat, satisfaction — Secondary: ces, effort
+    primary = matchedHeaders.filter(h => {
+      const n = normalized(h);
+      return n.startsWith('sat') || n.startsWith('csat') || n.startsWith('satisfaction');
+    });
+    secondary = matchedHeaders.filter(h => {
+      const n = normalized(h);
+      return n.startsWith('ces') || n.startsWith('effort');
+    });
+  } else {
+    // Primary: loy, loyalty — Secondary: other loyalty-family terms
+    primary = matchedHeaders.filter(h => {
+      const n = normalized(h);
+      return n.startsWith('loy') || n.startsWith('loyalty');
+    });
+    secondary = matchedHeaders.filter(h => {
+      const n = normalized(h);
+      return !n.startsWith('loy') && !n.startsWith('loyalty');
+    });
+  }
+  
+  // If we have primary matches, use only those (secondary becomes additional data)
+  if (primary.length > 0) return primary;
+  
+  // No primaries — use secondary matches
+  return secondary;
 };
 
 /**
@@ -301,9 +326,9 @@ export const processHeaders = (headers: string[]): HeaderProcessingResult => {
   };
   
   // Find satisfaction header
-  // When multiple matches found, prefer the one with a scale suffix (plain ones become additional data)
+  // When multiple matches found, prefer primary terms (Sat/CSAT) over secondary (CES/Effort)
   const allSatisfactionHeaders = headers.filter(h => isSatisfactionHeader(h));
-  const satisfactionHeaders = disambiguateHeaders(allSatisfactionHeaders);
+  const satisfactionHeaders = disambiguateHeaders(allSatisfactionHeaders, 'satisfaction');
   
   if (satisfactionHeaders.length === 0) {
     result.errors.push('Missing satisfaction column (Expected "Satisfaction", "Sat", "CSAT", or "CES")');
@@ -328,9 +353,9 @@ export const processHeaders = (headers: string[]): HeaderProcessingResult => {
   }
   
   // Find loyalty header
-  // When multiple matches found, prefer the one with a scale suffix (plain ones become additional data)
+  // When multiple matches found, prefer primary terms (Loy/Loyalty) over secondary
   const allLoyaltyHeaders = headers.filter(h => isLoyaltyHeader(h));
-  const loyaltyHeaders = disambiguateHeaders(allLoyaltyHeaders);
+  const loyaltyHeaders = disambiguateHeaders(allLoyaltyHeaders, 'loyalty');
   
   if (loyaltyHeaders.length === 0) {
     result.errors.push('Missing loyalty column (Expected "Loyalty" or "Loy")');
