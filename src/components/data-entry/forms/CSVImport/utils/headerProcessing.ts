@@ -40,8 +40,11 @@ export const isSatisfactionHeader = (header: string): boolean => {
   if (header.match(/^Satisfaction[:|-]/i) || header === 'Satisfaction' || 
       header.match(/^Sat[:|-]/i) || header === 'Sat' || 
       header.match(/^CSAT[:|-]/i) || header === 'CSAT' ||
+      header.match(/^CES[:|-]/i) || header === 'CES' ||
+      header.match(/^Effort[:|-]/i) || header === 'Effort' ||
       header.match(/^Sat\d/i) || // Handle "Sat1-5", "Sat5", "Sat7", etc. (no separator)
-      header.match(/^CSAT\d/i)) { // Handle "CSAT1-5", etc. (no separator)
+      header.match(/^CSAT\d/i) || // Handle "CSAT1-5", etc. (no separator)
+      header.match(/^CES\d/i)) { // Handle "CES1-7", etc. (no separator)
     return true;
   }
   
@@ -49,7 +52,9 @@ export const isSatisfactionHeader = (header: string): boolean => {
   const normalized = normalizeHeader(header);
   return normalized.startsWith('satisfaction') || 
          normalized.startsWith('sat') || 
-         normalized.startsWith('csat');
+         normalized.startsWith('csat') ||
+         normalized.startsWith('ces') ||
+         normalized.startsWith('effort');
 };
 
 /**
@@ -57,9 +62,10 @@ export const isSatisfactionHeader = (header: string): boolean => {
  */
 export const isLoyaltyHeader = (header: string): boolean => {
   // First check the most common pattern directly on the original header
-  if (header.match(/^Loyalty[:|-]/i) || header === 'Loyalty' || header === 'NPS' || 
+  if (header.match(/^Loyalty[:|-]/i) || header === 'Loyalty' ||
       header.match(/^Loy[:|-]/i) || header === 'Loy' ||
-      header.match(/^Loy\d/i)) { // Handle "Loy1-10", "Loy10", etc. (no separator)
+      header.match(/^Loy\d/i) || // Handle "Loy1-10", "Loy10", etc. (no separator)
+      header.toLowerCase() === 'nps') { // Case-insensitive match for loyalty-family terms
     return true;
   }
   
@@ -123,7 +129,7 @@ export const extractScaleFromHeader = (header: string): ScaleFormat | null => {
     return `1-${maxValue}` as ScaleFormat;
   }
   
-  // Special case for NPS: return null to trigger enhanced detection
+  // Special case for plain loyalty-family header: return null to trigger enhanced detection
   // This allows the system to detect the scale from actual data values
   // (e.g., if data contains 0, it's 0-10; if data starts at 1, it could be 1-5, 1-7, 1-10, etc.)
   if (normalizeHeader(header) === 'nps') {
@@ -183,12 +189,12 @@ export const detectPossibleScales = (
   const hyphenNumberMatch = header.match(/[-](\d+)$/);
   const maxFromHeader = hyphenNumberMatch ? parseInt(hyphenNumberMatch[1]) : null;
   
-  // Special handling for plain "NPS" header (no number suffix)
-  const isPlainNPS = normalizeHeader(header) === 'nps' && !hyphenNumberMatch;
+  // Special handling for plain loyalty header with no scale suffix (e.g., just the metric name)
+  const isPlainLoyaltyTerm = normalizeHeader(header) === 'nps' && !hyphenNumberMatch;
   
-  if (isPlainNPS) {
-    // For plain NPS, determine scale from data
-    console.log(`📈 Analysis: Plain NPS header, data min=${actualMin}, data max=${actualMax}`);
+  if (isPlainLoyaltyTerm) {
+    // For plain loyalty header without scale, determine scale from data
+    console.log(`📈 Analysis: Plain loyalty header, data min=${actualMin}, data max=${actualMax}`);
     
     // Case 1: Data contains 0 → definitely 0-10 scale
     if (actualMin === 0) {
@@ -362,7 +368,7 @@ export const processHeaders = (headers: string[]): HeaderProcessingResult => {
       result.errors.push(`Invalid loyalty scale: ${scale}. Allowed scales are: 1-5, 1-7, 1-10, 0-10`);
       result.isValid = false;
     } else if (normalizeHeader(loyaltyHeaders[0]) === 'nps') {
-      // Special case for NPS: scale will be determined by enhanced detection
+      // Special case for plain loyalty-family header: scale will be determined by enhanced detection
       // Don't set a default scale here - let enhanced detection handle it
       result.errors.push(`Scale detection deferred for enhanced analysis of "${loyaltyHeaders[0]}" header.`);
       result.scales.loyalty = getDefaultScale('loyalty'); // Temporary default, will be overridden by enhanced detection

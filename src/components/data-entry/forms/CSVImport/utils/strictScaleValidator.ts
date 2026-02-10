@@ -82,8 +82,8 @@ export function validateHeaders(headers: string[]): {
       }) || null;
     };
   
-    // Find satisfaction header
-    satisfactionHeader = findHeader(['sat', 'csat', 'satisfaction']);
+    // Find satisfaction header (includes CES/effort as satisfaction-family metrics)
+    satisfactionHeader = findHeader(['sat', 'csat', 'satisfaction', 'ces', 'effort']);
     
     if (satisfactionHeader) {
       const result = extractScaleFromHeader(satisfactionHeader, 'satisfaction');
@@ -93,26 +93,26 @@ export function validateHeaders(headers: string[]): {
         errors.push(result.error || `Invalid satisfaction scale in header "${satisfactionHeader}"`);
       }
     } else {
-      errors.push("Missing satisfaction header (e.g., 'Satisfaction:1-5', 'Sat-1-7')");
+      errors.push("Missing satisfaction header (e.g., 'Satisfaction:1-5', 'Sat-1-7', 'CES:1-7')");
     }
   
     // Find loyalty header
     loyaltyHeader = findHeader(['loy', 'loyalty', 'nps']);
     
     if (loyaltyHeader) {
-      // Check for scale in header first (e.g., "NPS:1-5", "NPS-1-7")
+      // Check for scale in header first (e.g., "Loyalty:1-5", "Loy-1-7")
       const result = extractScaleFromHeader(loyaltyHeader, 'loyalty');
       if (result.valid) {
         loyaltyScale = result.scale;
       } else if (loyaltyHeader.toLowerCase() === 'nps') {
-        // Special case for plain "NPS": scale will be determined by enhanced detection
+        // Special case for plain loyalty-family header: scale will be determined by enhanced detection
         // Don't set a default scale - let enhanced detection handle it
         loyaltyScale = null; // Will trigger enhanced detection
       } else {
         errors.push(result.error || `Invalid loyalty scale in header "${loyaltyHeader}"`);
       }
     } else {
-      errors.push("Missing loyalty header (e.g., 'Loyalty:1-5', 'Loy-1-7', 'NPS')");
+      errors.push("Missing loyalty header (e.g., 'Loyalty:1-5', 'Loy-1-7')");
     }
   
     return {
