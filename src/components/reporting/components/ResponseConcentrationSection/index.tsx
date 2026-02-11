@@ -11,6 +11,7 @@ import { getEnhancedCombinations, type CombinationWithTier } from './enhancedCom
 import { useFilterContextSafe } from '../../../visualization/context/FilterContext';
 import { useNotification } from '../../../data-entry/hooks/useNotification';
 import { ReportFilter } from '../../filters/ReportFilterPanel';
+import { useAxisLabels } from '../../../visualization/context/AxisLabelsContext';
 // PremiumFeature removed - Response Concentration is public for all users
 import '../../../visualization/controls/UnifiedChartControls.css';
 import './styles.css';
@@ -69,6 +70,7 @@ export const ResponseConcentrationSection: React.FC<ResponseConcentrationProps> 
   console.log("🔥 Component is rendering with settings:", settings.miniPlot);
   // Connect to QuadrantAssignmentContext for live color updates
   const { getQuadrantForPoint, midpoint, manualAssignments } = useQuadrantAssignment();
+  const { labels } = useAxisLabels();
   console.log("🔥 MANUAL ASSIGNMENTS DEBUG:", Array.from(manualAssignments.entries()));
   console.log("🔥 MANUAL ASSIGNMENTS STRING:", Array.from(manualAssignments.entries()).join(','));
   console.log("🔥 CONTEXT CONNECTED - midpoint:", midpoint, "manualAssignments size:", manualAssignments.size);
@@ -806,7 +808,7 @@ const realPoint = candidatePoints.find(p => manualAssignments.has(getPointKey(p)
             <Info size={16} className="info-icon" />
             <div className="info-text-wrapper">
               <p className="info-text">
-                This section shows response patterns where multiple participants gave identical satisfaction and loyalty ratings.
+                This section shows response patterns where multiple participants gave identical {labels.satisfaction.toLowerCase()} and {labels.loyalty.toLowerCase()} ratings.
                 It helps identify patterns in your responses and highlights the most common rating combinations.
               </p>
               {!showExpandedInfo && (
@@ -827,17 +829,17 @@ const realPoint = candidatePoints.find(p => manualAssignments.has(getPointKey(p)
                     <h4 className="info-detail-title">Response Distribution Map (Left Column)</h4>
                     <ul className="info-detail-list">
                       <li>A scatter plot showing the distribution of response combinations</li>
-                      <li>Each dot represents a unique satisfaction/loyalty combination</li>
+                      <li>Each dot represents a unique {labels.satisfaction.toLowerCase()}/{labels.loyalty.toLowerCase()} combination</li>
                       <li>Color indicates which segment (quadrant) the combination falls into</li>
                       <li>Dot size and opacity indicate frequency (larger = more frequent). Use "Tier-capped display" in settings to limit shown combinations.</li>
                       <li>Shows an average position reference point (red-bordered white dot) when enabled</li>
-                      <li>Grid lines help read exact satisfaction and loyalty values</li>
+                      <li>Grid lines help read exact {labels.satisfaction.toLowerCase()} and {labels.loyalty.toLowerCase()} values</li>
                     </ul>
                   </div>
                   <div className="info-detail-section">
                     <h4 className="info-detail-title">Frequent Responses List (Middle Column)</h4>
                     <ul className="info-detail-list">
-                      <li>Lists the most common satisfaction/loyalty combinations</li>
+                      <li>Lists the most common {labels.satisfaction.toLowerCase()}/{labels.loyalty.toLowerCase()} combinations</li>
                       <li>Shows count and percentage for each combination</li>
                       <li>Color-coded markers match the segment (quadrant) colors</li>
                       <li>Automatically filters to prevent overcrowding based on frequency threshold</li>
@@ -848,7 +850,7 @@ const realPoint = candidatePoints.find(p => manualAssignments.has(getPointKey(p)
                     <h4 className="info-detail-title">Response Intensity Dial (Right Column)</h4>
                     <ul className="info-detail-list">
                       <li>A gauge showing the intensity of the most common response</li>
-                      <li>Displays the specific satisfaction and loyalty values</li>
+                      <li>Displays the specific {labels.satisfaction.toLowerCase()} and {labels.loyalty.toLowerCase()} values</li>
                       <li>Visual indicator of response concentration strength</li>
                     </ul>
                   </div>

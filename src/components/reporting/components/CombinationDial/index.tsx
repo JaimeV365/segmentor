@@ -1,5 +1,6 @@
 import React from 'react';
 import { PieChart, Pie, Cell } from 'recharts';
+import { useAxisLabels } from '../../../visualization/context/AxisLabelsContext';
 import './styles.css';
 
 interface CombinationDialProps {
@@ -33,6 +34,7 @@ const CombinationDial: React.FC<CombinationDialProps> = ({
   maxValue = 100,
   customColors
 }) => {
+  const { labels } = useAxisLabels();
   const calculateMaxValues = () => {
     const satEntries = Object.entries(statistics.satisfaction.distribution);
     const maxSat = satEntries.reduce((max, [value, count]) => 
@@ -137,7 +139,7 @@ const CombinationDial: React.FC<CombinationDialProps> = ({
         <div className="dial-legend">
           <span className="legend-dot satisfaction" style={{ backgroundColor: satisfactionColor }} />
           <div className="dial-score">
-            <div className="dial-label text-sm">Most Common Satisfaction: {maxValues.satisfaction.value}</div>
+            <div className="dial-label text-sm">Most Common {labels.satisfaction}: {maxValues.satisfaction.value}</div>
             <div className="dial-percentage text-sm" style={{ 
               color: getValueColor(maxValues.satisfaction.percentage)
             }}>
@@ -149,7 +151,7 @@ const CombinationDial: React.FC<CombinationDialProps> = ({
         <div className="dial-legend">
           <span className="legend-dot loyalty" style={{ backgroundColor: loyaltyColor }} />
           <div className="dial-score">
-            <div className="dial-label text-sm">Most Common Loyalty: {maxValues.loyalty.value}</div>
+            <div className="dial-label text-sm">Most Common {labels.loyalty}: {maxValues.loyalty.value}</div>
             <div className="dial-percentage text-sm" style={{ 
               color: getValueColor(maxValues.loyalty.percentage)
             }}>

@@ -64,7 +64,7 @@ return '#CC0000';
     <div className="mini-plot">
       {/* Y-Axis */}
       <div className="mini-plot-y-axis">
-      <div className="mini-plot-y-label text-sm text-gray-600">Loyalty</div>
+      <div className="mini-plot-y-label text-sm text-gray-600">{labels.loyalty}</div>
         <div className="mini-plot-y-ticks">
           {[...Array(loyaltyMax - loyaltyMin + 1)].map((_, i) => (
             <div key={i} className="mini-plot-tick text-sm">
@@ -151,7 +151,7 @@ return '#CC0000';
             </div>
           ))}
         </div>
-        <div className="mini-plot-x-label text-sm text-gray-600">Satisfaction</div>
+        <div className="mini-plot-x-label text-sm text-gray-600">{labels.satisfaction}</div>
       </div>
     </div>
   );
