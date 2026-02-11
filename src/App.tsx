@@ -842,6 +842,10 @@ const handleTerroristsZoneSizeChange = (size: number) => {
             </div>
 
             {data.length > 0 && (
+              <AxisLabelsProvider
+                satisfactionHeaderName={axisHeaderNames.satisfaction}
+                loyaltyHeaderName={axisHeaderNames.loyalty}
+              >
               <div className="section data-table-section" data-section-id="data-table">
                 <DataDisplay 
                   data={data}
@@ -854,13 +858,6 @@ const handleTerroristsZoneSizeChange = (size: number) => {
                   isDemoMode={isDemoMode}
                 />
               </div>
-            )}
-
-            {data.length > 0 && (
-              <AxisLabelsProvider
-                satisfactionHeaderName={axisHeaderNames.satisfaction}
-                loyaltyHeaderName={axisHeaderNames.loyalty}
-              >
               <FilterProvider 
                 initialData={data} 
                 data={data} 
