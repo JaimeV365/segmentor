@@ -508,3 +508,130 @@ export const getScaleDescription = (scale: ScaleFormat): string => {
   if (scale.startsWith('1-')) return '(Traditional: 1=lowest)';
   return '';
 };
+
+// ============================================================
+// Data Mapping Card — column analysis for field assignment UX
+// ============================================================
+
+/**
+ * Info about a single numeric column discovered in the CSV.
+ */
+export interface NumericColumnInfo {
+  header: string;
+  dataRange: { min: number; max: number };
+  valueCount: number;   // How many rows had valid numeric values
+  totalCount: number;   // Total row count
+  eligibleForSatisfaction: boolean; // Values fit within valid satisfaction scale ranges
+  eligibleForLoyalty: boolean;      // Values fit within valid loyalty scale ranges
+}
+
+/**
+ * Per-axis analysis result used by the DataMappingCard.
+ */
+export interface AxisMappingAnalysis {
+  status: 'auto-detected' | 'multiple-candidates' | 'no-match';
+  /** The resolved header (only when status === 'auto-detected') */
+  detectedHeader?: string;
+  /** Scale extracted from header suffix, or null if plain header (only when status === 'auto-detected') */
+  detectedScale?: ScaleFormat | null;
+  /** Candidate headers the user must choose between (only when status === 'multiple-candidates') */
+  candidates?: Array<{ header: string; dataRange: { min: number; max: number } }>;
+}
+
+/**
+ * Full mapping analysis returned to the DataMappingCard component.
+ */
+export interface MappingAnalysis {
+  satisfaction: AxisMappingAnalysis;
+  loyalty: AxisMappingAnalysis;
+  /** Every numeric column in the CSV (for dropdown selection when no match found) */
+  numericColumns: NumericColumnInfo[];
+  /** Total number of columns in the CSV */
+  totalColumnCount: number;
+}
+
+/**
+ * Analyzes all CSV columns and determines the mapping state for each axis.
+ * Used to decide whether the DataMappingCard should be shown and what it should display.
+ *
+ * Returns:
+ * - For each axis: auto-detected (1 match), multiple-candidates (2+ matches), or no-match (0 matches)
+ * - A list of all numeric columns with eligibility flags for dropdown selection
+ */
+export const analyzeColumnsForMapping = (
+  headers: string[],
+  dataRows: any[]
+): MappingAnalysis => {
+  // 1. Find all recognized headers for each axis (BEFORE disambiguation)
+  const allSatHeaders = headers.filter(h => isSatisfactionHeader(h));
+  const allLoyHeaders = headers.filter(h => isLoyaltyHeader(h));
+
+  // 2. Run disambiguation (priority-based)
+  const resolvedSatHeaders = disambiguateHeaders(allSatHeaders, 'satisfaction');
+  const resolvedLoyHeaders = disambiguateHeaders(allLoyHeaders, 'loyalty');
+
+  // 3. Analyze all columns for numeric content
+  const numericColumns: NumericColumnInfo[] = [];
+  for (const header of headers) {
+    const values = dataRows
+      .map(row => parseFloat(row[header]))
+      .filter(n => !isNaN(n));
+
+    if (values.length === 0) continue;
+    // Require at least 30% of rows to be numeric to consider the column
+    if (values.length / dataRows.length < 0.3) continue;
+
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+
+    // Satisfaction eligibility: values must fit 1-3, 1-5, or 1-7 (min ≥ 1, max ≤ 7)
+    const eligibleForSatisfaction = min >= 1 && max <= 7;
+    // Loyalty eligibility: values must fit 0-10 or 1-X scales (min ≥ 0, max ≤ 10)
+    const eligibleForLoyalty = min >= 0 && max <= 10;
+
+    numericColumns.push({
+      header,
+      dataRange: { min, max },
+      valueCount: values.length,
+      totalCount: dataRows.length,
+      eligibleForSatisfaction,
+      eligibleForLoyalty
+    });
+  }
+
+  // 4. Build per-axis analysis
+  const buildAxisAnalysis = (
+    resolvedHeaders: string[],
+    type: 'satisfaction' | 'loyalty'
+  ): AxisMappingAnalysis => {
+    if (resolvedHeaders.length === 1) {
+      const header = resolvedHeaders[0];
+      const scale = extractScaleFromHeader(header);
+      return {
+        status: 'auto-detected',
+        detectedHeader: header,
+        detectedScale: scale
+      };
+    }
+    if (resolvedHeaders.length > 1) {
+      // Multiple candidates — user must choose
+      const candidates = resolvedHeaders.map(header => {
+        const col = numericColumns.find(c => c.header === header);
+        return {
+          header,
+          dataRange: col?.dataRange || { min: 0, max: 0 }
+        };
+      });
+      return { status: 'multiple-candidates', candidates };
+    }
+    // No match
+    return { status: 'no-match' };
+  };
+
+  return {
+    satisfaction: buildAxisAnalysis(resolvedSatHeaders, 'satisfaction'),
+    loyalty: buildAxisAnalysis(resolvedLoyHeaders, 'loyalty'),
+    numericColumns,
+    totalColumnCount: headers.length
+  };
+};

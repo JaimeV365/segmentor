@@ -1,0 +1,354 @@
+/* ============================================================
+   DataMappingCard — Phase 2 field assignment "pre-flight check"
+   Mirrors ScaleConfirmationModal styling for visual consistency.
+   ============================================================ */
+
+/* Overlay */
+.data-mapping-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* Card */
+.data-mapping-card {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  z-index: 10000;
+}
+
+/* Header */
+.data-mapping-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f3f4f6;
+  border-radius: 8px 8px 0 0;
+}
+
+.data-mapping-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.data-mapping-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #9ca3af;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.data-mapping-close:hover {
+  color: #6b7280;
+  background-color: #e5e7eb;
+}
+
+/* Content */
+.data-mapping-content {
+  padding: 20px;
+}
+
+.data-mapping-explanation {
+  margin: 0 0 20px 0;
+  color: #4b5563;
+  padding: 12px;
+  background-color: #f9fafb;
+  border-left: 4px solid #3a863e;
+  border-radius: 0 4px 4px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Divider between axes */
+.data-mapping-divider {
+  border-top: 1px dashed #d1d5db;
+  margin: 20px 0;
+}
+
+/* Remaining columns note */
+.data-mapping-remaining {
+  margin: 20px 0 0 0;
+  font-size: 13px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* ──────────────────────────────────────────
+   Axis Row (one per axis)
+   ────────────────────────────────────────── */
+
+.axis-row {
+  margin-bottom: 4px;
+}
+
+.axis-row-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+/* Status line — detected / warning */
+.axis-row-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.axis-row-status--ok {
+  color: #2f6f32;
+}
+
+.axis-row-status--warn {
+  color: #92400e;
+}
+
+/* Icons */
+.axis-row-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.axis-row-icon--check {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.axis-row-icon--warn {
+  background-color: #fef3c7;
+  color: #d97706;
+  font-size: 14px;
+}
+
+/* Auto-detected header name + badge */
+.axis-row-header-name {
+  font-weight: 600;
+}
+
+.axis-row-badge {
+  font-size: 11px;
+  font-weight: 500;
+  color: #6b7280;
+  background-color: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+
+/* ── Multiple candidates (radio buttons) ── */
+.axis-row-candidates {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0 4px 30px;
+}
+
+.axis-row-radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background-color: #fafafa;
+}
+
+.axis-row-radio:hover {
+  border-color: #d1d5db;
+  background-color: #f3f4f6;
+}
+
+.axis-row-radio--selected {
+  border-color: #3a863e;
+  background-color: #f0f9f0;
+}
+
+.axis-row-radio input[type="radio"] {
+  accent-color: #3a863e;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.axis-row-radio-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.axis-row-range {
+  font-size: 12px;
+  font-weight: normal;
+  color: #6b7280;
+  margin-left: 6px;
+}
+
+.axis-row-hint {
+  margin: 4px 0 0 30px;
+  font-size: 12px;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* ── No match (dropdown) ── */
+.axis-row-description {
+  margin: 0 0 8px 30px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.axis-row-dropdown {
+  display: block;
+  width: calc(100% - 30px);
+  margin-left: 30px;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  background-color: #fafafa;
+  color: #374151;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+  appearance: auto;
+}
+
+.axis-row-dropdown:hover {
+  border-color: #d1d5db;
+}
+
+.axis-row-dropdown:focus {
+  outline: none;
+  border-color: #3a863e;
+  box-shadow: 0 0 0 2px rgba(58, 134, 62, 0.15);
+}
+
+.axis-row-no-eligible {
+  margin: 0 0 0 30px;
+  font-size: 13px;
+  color: #dc2626;
+  font-style: italic;
+}
+
+/* ──────────────────────────────────────────
+   Actions (matches ScaleConfirmationModal)
+   ────────────────────────────────────────── */
+
+.data-mapping-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 0 20px 20px 20px;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 16px;
+  margin-top: 0;
+}
+
+.data-mapping-button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+}
+
+.data-mapping-button--cancel {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.data-mapping-button--cancel:hover {
+  background-color: #e5e7eb;
+}
+
+.data-mapping-button--confirm {
+  background-color: #3a863e;
+  color: white;
+}
+
+.data-mapping-button--confirm:hover:not(:disabled) {
+  background-color: #2f6b32;
+}
+
+.data-mapping-button--confirm:disabled {
+  background-color: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* ──────────────────────────────────────────
+   Responsive
+   ────────────────────────────────────────── */
+
+@media screen and (max-width: 640px) {
+  .data-mapping-card {
+    width: 95%;
+    margin: 10px;
+  }
+
+  .axis-row-candidates {
+    margin-left: 0;
+  }
+
+  .axis-row-description {
+    margin-left: 0;
+  }
+
+  .axis-row-dropdown {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .axis-row-hint {
+    margin-left: 0;
+  }
+
+  .axis-row-no-eligible {
+    margin-left: 0;
+  }
+
+  .data-mapping-actions {
+    flex-direction: column;
+  }
+
+  .data-mapping-button {
+    width: 100%;
+  }
+}

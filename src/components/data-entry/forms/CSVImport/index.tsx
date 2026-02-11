@@ -6,7 +6,15 @@ import { FileUploader } from './components/FileUploader';
 import { UploadHistory, UploadHistoryItem } from './components/UploadHistory';
 import { ImportModeModal, ImportMode } from './components/ImportModeModal';
 import { ScaleConfirmationModal } from './components/ScaleConfirmationModal';
-import { applyConfirmedScales, isMetadataRow } from './utils/headerProcessing';
+import { DataMappingCard, DataMappingSelection } from './components/DataMappingCard';
+import { 
+  applyConfirmedScales, 
+  isMetadataRow, 
+  detectPossibleScales,
+  getDefaultScale,
+  MappingAnalysis,
+  EnhancedHeaderProcessingResult
+} from './utils/headerProcessing';
 import ReportArea from './components/ReportArea';
 import { 
   generateDuplicateCSV, 
@@ -74,6 +82,14 @@ export const CSVImport: React.FC<CSVImportProps> = ({
   } | null>(null);
   const [showScaleConfirmationModal, setShowScaleConfirmationModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // ── Data Mapping Card state ──
+  const [showMappingCard, setShowMappingCard] = useState(false);
+  const [mappingAnalysis, setMappingAnalysis] = useState<MappingAnalysis | null>(null);
+  const [pendingMappingData, setPendingMappingData] = useState<{
+    file: File;
+    cleanedData: any[];
+  } | null>(null);
   
   // Use ref to store setProgress so it can be accessed in processParsedData before useCSVParser is called
   const setProgressRef = useRef<((progress: any) => void) | null>(null);
@@ -373,6 +389,23 @@ export const CSVImport: React.FC<CSVImportProps> = ({
     return processParsedData(validatedData, headerScales, fileName, false);
   }, [existingIds, existingData, setDuplicateReport, processParsedData, showImportModeDialog]);
 
+  // ── Data Mapping Card: "mapping needed" handler (must be declared before useCSVParser) ──
+
+  /**
+   * Called by useCSVParser when the mapping analysis determines that
+   * one or both axes could not be auto-detected.
+   */
+  const handleMappingNeeded = useCallback((
+    analysis: MappingAnalysis,
+    file: File,
+    cleanedData: any[]
+  ) => {
+    console.log("Mapping card triggered");
+    setMappingAnalysis(analysis);
+    setPendingMappingData({ file, cleanedData });
+    setShowMappingCard(true);
+  }, []);
+
   const {
     progress,
     parseFile,
@@ -388,7 +421,8 @@ export const CSVImport: React.FC<CSVImportProps> = ({
     scalesLocked,
     existingIds,
     setPendingFileData,
-    showImportModeDialog
+    showImportModeDialog,
+    onMappingNeeded: handleMappingNeeded
   });
   
   // Store setProgress in ref so it can be accessed in processParsedData
@@ -399,7 +433,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
   // Manage loading state - only show for actual data processing
   useEffect(() => {
     // Hide loading popup if any user interaction modal is open
-    if (showImportModeModal || showScaleConfirmationModal) {
+    if (showImportModeModal || showScaleConfirmationModal || showMappingCard) {
       setIsLoading(false);
       return;
     }
@@ -416,7 +450,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
       // No progress means no loading
       setIsLoading(false);
     }
-  }, [progress, showImportModeModal, showScaleConfirmationModal]);
+  }, [progress, showImportModeModal, showScaleConfirmationModal, showMappingCard]);
   
   // Additional safety: hide loading when no progress and no pending data
   useEffect(() => {
@@ -558,6 +592,124 @@ export const CSVImport: React.FC<CSVImportProps> = ({
     setProgressRef.current?.(null);
   }, []);
 
+  // ── Data Mapping Card handlers (continued) ──
+
+  /**
+   * Called when the user confirms their column selections in the DataMappingCard.
+   * Runs scale detection on the selected columns, then either:
+   *   - Shows the ScaleConfirmationModal (if scales are ambiguous)
+   *   - Or proceeds directly to data validation and import
+   */
+  const handleMappingConfirmation = useCallback((selection: DataMappingSelection) => {
+    console.log("Mapping card confirmed:", selection);
+    setShowMappingCard(false);
+
+    if (!pendingMappingData) {
+      console.error("No pending mapping data");
+      return;
+    }
+
+    const { file, cleanedData } = pendingMappingData;
+
+    // Run scale detection on the user-selected columns
+    const satData = cleanedData
+      .map(row => parseFloat(row[selection.satisfactionHeader]))
+      .filter(n => !isNaN(n));
+    const loyData = cleanedData
+      .map(row => parseFloat(row[selection.loyaltyHeader]))
+      .filter(n => !isNaN(n));
+
+    const satDetection = detectPossibleScales(selection.satisfactionHeader, satData, 'satisfaction');
+    const loyDetection = detectPossibleScales(selection.loyaltyHeader, loyData, 'loyalty');
+
+    const needsScaleConfirmation = satDetection.needsUserInput || loyDetection.needsUserInput;
+
+    // Build a header result compatible with the existing pipeline
+    const headerResult: EnhancedHeaderProcessingResult = {
+      satisfactionHeader: selection.satisfactionHeader,
+      loyaltyHeader: selection.loyaltyHeader,
+      scales: {
+        satisfaction: satDetection.definitive || getDefaultScale('satisfaction'),
+        loyalty: loyDetection.definitive || getDefaultScale('loyalty'),
+        satisfactionHeaderName: selection.satisfactionHeader,
+        loyaltyHeaderName: selection.loyaltyHeader,
+      },
+      isValid: true,
+      errors: [],
+      scaleDetection: {
+        satisfaction: satDetection,
+        loyalty: loyDetection,
+      },
+      needsUserConfirmation: needsScaleConfirmation,
+    };
+
+    if (needsScaleConfirmation) {
+      console.log("Post-mapping: scale confirmation needed");
+      setPendingFileData({
+        file,
+        headerScales: headerResult.scales,
+        validatedData: undefined,
+        headerResult
+      });
+      setShowScaleConfirmationModal(true);
+      setPendingMappingData(null);
+      return;
+    }
+
+    // No scale confirmation needed — validate and import directly
+    console.log("Post-mapping: proceeding to validation with scales:", headerResult.scales);
+    try {
+      const validationResult = validateDataRows(
+        cleanedData,
+        selection.satisfactionHeader,
+        selection.loyaltyHeader,
+        headerResult.scales.satisfaction,
+        headerResult.scales.loyalty,
+        existingData
+      );
+
+      const validatedData = validationResult.data;
+      console.log("Post-mapping validation complete, rows:", validatedData.length);
+
+      if (validationResult.rejectedReport.count > 0) {
+        setDateIssuesReport(validationResult.rejectedReport);
+      }
+      if (validationResult.warningReport.count > 0) {
+        setDateWarningsReport(validationResult.warningReport);
+      }
+
+      const success = handleCompleteImport(
+        validatedData,
+        headerResult.scales,
+        file.name,
+        validationResult.rejectedReport.count > 0,
+        validationResult.warningReport.count > 0
+      );
+
+      if (success) {
+        setProgressRef.current?.(null);
+      }
+    } catch (err) {
+      console.error('Post-mapping validation error:', err);
+      setError({
+        title: 'Validation Error',
+        message: err instanceof Error ? err.message : 'Unknown error occurred',
+        fix: 'Please check your data and try again'
+      });
+      setProgressRef.current?.(null);
+    }
+
+    setPendingMappingData(null);
+  }, [pendingMappingData, handleCompleteImport, setError, setDateIssuesReport, setDateWarningsReport, existingData]);
+
+  const handleMappingCancel = useCallback(() => {
+    console.log("Mapping card cancelled");
+    setShowMappingCard(false);
+    setMappingAnalysis(null);
+    setPendingMappingData(null);
+    setProgressRef.current?.(null);
+  }, []);
+
   // Sync dates issues and warnings from the parser
   useEffect(() => {
     if (parserDateIssues) {
@@ -580,6 +732,9 @@ export const CSVImport: React.FC<CSVImportProps> = ({
     console.log("File selected:", file.name);
     clearValidationState();
     setPendingFileData(null); // Reset pending data for new file
+    setShowMappingCard(false);
+    setMappingAnalysis(null);
+    setPendingMappingData(null);
     
     // Handle CSV files
     parseFile(file);
@@ -721,7 +876,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
       <FileUploader 
         onFileSelect={handleFileSelect}
         onTemplateDownload={handleTemplateDownload}
-        processing={!!progress || !!pendingFileData}
+        processing={!!progress || !!pendingFileData || !!pendingMappingData}
       />
       
       <UnifiedLoadingPopup 
@@ -762,6 +917,15 @@ export const CSVImport: React.FC<CSVImportProps> = ({
         scaleDetection={pendingFileData?.headerResult?.scaleDetection || {}}
         basicScales={pendingFileData?.headerScales || { satisfaction: '1-5', loyalty: '1-5' }}
       />
+
+      {mappingAnalysis && (
+        <DataMappingCard
+          isOpen={showMappingCard}
+          mappingAnalysis={mappingAnalysis}
+          onConfirm={handleMappingConfirmation}
+          onCancel={handleMappingCancel}
+        />
+      )}
     </div>
   );
 };

@@ -15,7 +15,14 @@ import {
 } from '../utils';
 
 // Import from utils/headerProcessing directly to avoid conflicts
-import { processHeaders, processHeadersWithDataAnalysis, isMetadataRow, EnhancedHeaderProcessingResult } from '../utils/headerProcessing';
+import { 
+  processHeaders, 
+  processHeadersWithDataAnalysis, 
+  isMetadataRow, 
+  EnhancedHeaderProcessingResult,
+  analyzeColumnsForMapping,
+  MappingAnalysis
+} from '../utils/headerProcessing';
 
 interface UseCSVParserProps {
   onComplete: (
@@ -33,6 +40,7 @@ interface UseCSVParserProps {
   existingIds: string[];
   setPendingFileData: (data: {file: File, headerScales: HeaderScales, validatedData?: any[], headerResult?: any} | null) => void;
   showImportModeDialog: () => void;
+  onMappingNeeded?: (analysis: MappingAnalysis, file: File, cleanedData: any[]) => void;
 }
 
 export const useCSVParser = ({
@@ -44,7 +52,8 @@ export const useCSVParser = ({
   scalesLocked,
   existingIds,
   setPendingFileData,
-  showImportModeDialog
+  showImportModeDialog,
+  onMappingNeeded
 }: UseCSVParserProps) => {
   const [progress, setProgress] = useState<ProgressState | null>(null);
   const [currentFileName, setCurrentFileName] = useState<string>('');
@@ -99,9 +108,26 @@ export const useCSVParser = ({
           // Filter out metadata rows from data (REQUIRED/OPTIONAL)
           const cleanedData = results.data.filter(row => !isMetadataRow(row));
           
-         // Process headers with our enhanced utility
+          // Process headers
           const headers = Object.keys(results.data[0] || {});
           console.log("Processing headers:", headers);
+
+          // ── NEW: Run mapping analysis FIRST to decide the flow path ──
+          const mappingAnalysis = analyzeColumnsForMapping(headers, cleanedData);
+          const needsMapping =
+            mappingAnalysis.satisfaction.status !== 'auto-detected' ||
+            mappingAnalysis.loyalty.status !== 'auto-detected';
+
+          if (needsMapping && onMappingNeeded) {
+            console.log("Mapping card needed — handing off to DataMappingCard");
+            console.log("  Satisfaction status:", mappingAnalysis.satisfaction.status);
+            console.log("  Loyalty status:", mappingAnalysis.loyalty.status);
+            onMappingNeeded(mappingAnalysis, file, cleanedData);
+            setProgress(prev => prev ? { ...prev, stage: 'waiting-for-mapping', progress: 55 } : null);
+            return;
+          }
+
+          // ── Both axes auto-detected → proceed with existing pipeline ──
           const headerResult = processHeadersWithDataAnalysis(headers, cleanedData);
           
           if (!headerResult.isValid) {
@@ -128,25 +154,25 @@ export const useCSVParser = ({
           }
           
           // Check if enhanced scale detection needs user confirmation
-if (headerResult.needsUserConfirmation) {
-  console.log("Scale confirmation needed, storing pending data");
-  setPendingFileData({
-    file,
-    headerScales: headerResult.scales,
-    validatedData: undefined,
-    headerResult
-  });
-  setProgress(prev => prev ? { ...prev, stage: 'waiting-for-scale-confirmation', progress: 60 } : null);
-  return;
-}
+          if (headerResult.needsUserConfirmation) {
+            console.log("Scale confirmation needed, storing pending data");
+            setPendingFileData({
+              file,
+              headerScales: headerResult.scales,
+              validatedData: undefined,
+              headerResult
+            });
+            setProgress(prev => prev ? { ...prev, stage: 'waiting-for-scale-confirmation', progress: 60 } : null);
+            return;
+          }
 
-// Use detected scales and include original header names
-const headerScales: HeaderScales = {
-  ...headerResult.scales,
-  satisfactionHeaderName: headerResult.satisfactionHeader || undefined,
-  loyaltyHeaderName: headerResult.loyaltyHeader || undefined
-};
-console.log("Detected scales:", headerScales);
+          // Use detected scales and include original header names
+          const headerScales: HeaderScales = {
+            ...headerResult.scales,
+            satisfactionHeaderName: headerResult.satisfactionHeader || undefined,
+            loyaltyHeaderName: headerResult.loyaltyHeader || undefined
+          };
+          console.log("Detected scales:", headerScales);
 
           // Process data rows
           try {
@@ -243,7 +269,8 @@ console.log("Detected scales:", headerScales);
   }, [
     onComplete, 
     onError,
-    setPendingFileData
+    setPendingFileData,
+    onMappingNeeded
   ]);
 
   return {

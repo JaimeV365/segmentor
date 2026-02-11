@@ -69,7 +69,7 @@ export interface ParsedDateResult {
 }
 
 export interface ProgressState {
-  stage: 'reading' | 'validating' | 'processing' | 'complete' | 'error' | 'waiting-for-scale-confirmation';
+  stage: 'reading' | 'validating' | 'processing' | 'complete' | 'error' | 'waiting-for-scale-confirmation' | 'waiting-for-mapping';
   progress: number;
   fileName: string;
   fileSize: string;
