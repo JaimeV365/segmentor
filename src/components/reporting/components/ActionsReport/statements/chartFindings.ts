@@ -5,13 +5,15 @@ import type { EvaluatorResults } from '../types';
  * Generates chart findings - charts with expert commentary
  * These are interleaved with text findings in report order
  */
-export function generateChartFindings(evaluators: EvaluatorResults, isClassicModel: boolean = false, aggregatedData?: any): Finding[] {
+export function generateChartFindings(evaluators: EvaluatorResults, isClassicModel: boolean = false, aggregatedData?: any, axisLabels?: { satisfaction: string; loyalty: string }): Finding[] {
   const chartFindings: Finding[] = [];
   let priority = 1000; // Start high so text findings come first, then charts
+  const satLabel = (axisLabels?.satisfaction || 'satisfaction').toLowerCase();
+  const loyLabel = (axisLabels?.loyalty || 'loyalty').toLowerCase();
 
   // ===== MAIN VISUALISATION CHART =====
   // Always show the main chart first with commentary
-  const mainChartCommentary = generateMainChartCommentary(evaluators, isClassicModel);
+  const mainChartCommentary = generateMainChartCommentary(evaluators, isClassicModel, satLabel, loyLabel);
   chartFindings.push({
     id: 'chart-main-visualisation',
     category: 'data',
@@ -49,7 +51,7 @@ export function generateChartFindings(evaluators: EvaluatorResults, isClassicMod
   // Show if we have historical progress insights (customers with 2+ dated records)
   const historical = aggregatedData?.historicalProgress;
   if (historical && historical.trackedCustomers > 0 && historical.totalTransitions > 0) {
-    const historicalCommentary = generateHistoricalProgressMovementFlowCommentary(historical, isClassicModel);
+    const historicalCommentary = generateHistoricalProgressMovementFlowCommentary(historical, isClassicModel, satLabel, loyLabel);
     chartFindings.push({
       id: 'chart-historical-movement-flow',
       category: 'historical',
@@ -69,7 +71,7 @@ export function generateChartFindings(evaluators: EvaluatorResults, isClassicMod
   // ===== RESPONSE CONCENTRATION CHART =====
   // Show if we have concentration data
   if (evaluators.sampleSize.total > 0) {
-    const concentrationCommentary = generateConcentrationChartCommentary(evaluators, aggregatedData);
+    const concentrationCommentary = generateConcentrationChartCommentary(evaluators, aggregatedData, satLabel, loyLabel);
     chartFindings.push({
       id: 'chart-concentration',
       category: 'concentration',
@@ -180,7 +182,7 @@ function formatTransitionName(from: string, to: string, isClassicModel: boolean)
   return `${getQuadrantDisplayName(from, isClassicModel)} to ${getQuadrantDisplayName(to, isClassicModel)}`;
 }
 
-function generateHistoricalProgressMovementFlowCommentary(hp: any, isClassicModel: boolean): string {
+function generateHistoricalProgressMovementFlowCommentary(hp: any, isClassicModel: boolean, satLabel: string = 'satisfaction', loyLabel: string = 'loyalty'): string {
   const trackedCustomers = hp.trackedCustomers || 0;
   const totalTransitions = hp.totalTransitions || 0;
   const positiveTransitions = hp.positiveTransitions || 0;
@@ -245,7 +247,7 @@ function generateHistoricalProgressMovementFlowCommentary(hp: any, isClassicMode
 
     if (multiMove2PlusPct >= 0.15) {
       parts.push(
-        'Repeated segment changes may indicate boundary sensitivity—customers whose experience is close to the threshold and therefore more likely to switch classification as satisfaction or loyalty fluctuates.'
+        `Repeated segment changes may indicate boundary sensitivity—customers whose experience is close to the threshold and therefore more likely to switch classification as ${satLabel} or ${loyLabel} fluctuates.`
       );
     }
   } else if (trackedCustomers >= 10 && multiMove2PlusCustomers === 0) {
@@ -280,19 +282,19 @@ function generateHistoricalProgressMovementFlowCommentary(hp: any, isClassicMode
 /**
  * Generates commentary for the main visualisation chart
  */
-function generateMainChartCommentary(evaluators: EvaluatorResults, isClassicModel: boolean = false): string {
+function generateMainChartCommentary(evaluators: EvaluatorResults, isClassicModel: boolean = false, satLabel: string = 'satisfaction', loyLabel: string = 'loyalty'): string {
   const total = evaluators.sampleSize.total;
   const largest = evaluators.distribution.largest;
   
   if (!largest) {
-    return `This visualisation shows the distribution of your ${total} customers across the satisfaction-loyalty matrix. Each point represents a customer, positioned based on their satisfaction and loyalty scores.`;
+    return `This visualisation shows the distribution of your ${total} customers across the ${satLabel}-${loyLabel} matrix. Each point represents a customer, positioned based on their ${satLabel} and ${loyLabel} scores.`;
   }
 
   const largestName = getQuadrantDisplayName(largest, isClassicModel);
   const largestCount = evaluators.distribution.counts[largest] || 0;
   const largestPercent = evaluators.distribution.percentages[largest] || 0;
 
-  let commentary = `This visualisation shows the distribution of your ${total} customers across the satisfaction-loyalty matrix. `;
+  let commentary = `This visualisation shows the distribution of your ${total} customers across the ${satLabel}-${loyLabel} matrix. `;
   
   if (largestPercent > 40) {
     commentary += `The chart reveals a strong concentration in the ${largestName} quadrant, with ${largestCount} customers (${largestPercent.toFixed(1)}%) falling into this category. `;
@@ -351,10 +353,10 @@ function generateDistributionChartCommentary(evaluators: EvaluatorResults, isCla
 /**
  * Generates commentary for the response concentration chart
  */
-function generateConcentrationChartCommentary(evaluators: EvaluatorResults, aggregatedData?: any): string {
+function generateConcentrationChartCommentary(evaluators: EvaluatorResults, aggregatedData?: any, satLabel: string = 'satisfaction', loyLabel: string = 'loyalty'): string {
   const total = evaluators.sampleSize.total;
   
-  let commentary = `The response concentration analysis reveals how customers cluster around specific satisfaction-loyalty combinations. `;
+  let commentary = `The response concentration analysis reveals how customers cluster around specific ${satLabel}-${loyLabel} combinations. `;
   
   // Get the most repeated position from responseConcentration data
   const mostCommonCombo = aggregatedData?.responseConcentration?.mostCommonCombos?.[0];
@@ -372,7 +374,7 @@ function generateConcentrationChartCommentary(evaluators: EvaluatorResults, aggr
     
     // Add introduction explaining that average may not represent anyone
     if (avgHasDecimals) {
-      commentary += `It's important to note that your average satisfaction (${avgSatisfaction.toFixed(1)}) and loyalty (${avgLoyalty.toFixed(1)}) are calculated values that may not represent any actual customer, since these averages include decimal values. This is why it's valuable to look at where your real customers are actually positioned. `;
+      commentary += `It's important to note that your average ${satLabel} (${avgSatisfaction.toFixed(1)}) and ${loyLabel} (${avgLoyalty.toFixed(1)}) are calculated values that may not represent any actual customer, since these averages include decimal values. This is why it's valuable to look at where your real customers are actually positioned. `;
     }
     
     // Determine if most repeated position is positive or negative relative to average
@@ -387,16 +389,16 @@ function generateConcentrationChartCommentary(evaluators: EvaluatorResults, aggr
     const isFar = distanceFromAvg > 1.5; // Threshold for "far"
     const isClose = distanceFromAvg < 0.5; // Threshold for "close"
     
-    commentary += `The most repeated position is satisfaction ${mostSat} and loyalty ${mostLoy}, with ${mostCount} customers (${mostPercent.toFixed(1)}% of your base). `;
+    commentary += `The most repeated position is ${satLabel} ${mostSat} and ${loyLabel} ${mostLoy}, with ${mostCount} customers (${mostPercent.toFixed(1)}% of your base). `;
     
     if (isPositive) {
-      commentary += `This position is more positive than your average (satisfaction ${avgSatisfaction.toFixed(1)}, loyalty ${avgLoyalty.toFixed(1)}), `;
+      commentary += `This position is more positive than your average (${satLabel} ${avgSatisfaction.toFixed(1)}, ${loyLabel} ${avgLoyalty.toFixed(1)}), `;
     } else if (isNegative) {
-      commentary += `This position is more negative than your average (satisfaction ${avgSatisfaction.toFixed(1)}, loyalty ${avgLoyalty.toFixed(1)}), `;
+      commentary += `This position is more negative than your average (${satLabel} ${avgSatisfaction.toFixed(1)}, ${loyLabel} ${avgLoyalty.toFixed(1)}), `;
     } else if (isMixed) {
-      commentary += `This position shows a mixed pattern compared to your average (satisfaction ${avgSatisfaction.toFixed(1)}, loyalty ${avgLoyalty.toFixed(1)}), `;
+      commentary += `This position shows a mixed pattern compared to your average (${satLabel} ${avgSatisfaction.toFixed(1)}, ${loyLabel} ${avgLoyalty.toFixed(1)}), `;
     } else {
-      commentary += `This position is close to your average (satisfaction ${avgSatisfaction.toFixed(1)}, loyalty ${avgLoyalty.toFixed(1)}), `;
+      commentary += `This position is close to your average (${satLabel} ${avgSatisfaction.toFixed(1)}, ${loyLabel} ${avgLoyalty.toFixed(1)}), `;
     }
     
     if (isFar) {
@@ -409,7 +411,7 @@ function generateConcentrationChartCommentary(evaluators: EvaluatorResults, aggr
   }
   
   if (total < 50) {
-    commentary += `With ${total} customers, the concentration patterns may be less pronounced, but they still reveal important insights about where your customers tend to fall on the satisfaction-loyalty spectrum.`;
+    commentary += `With ${total} customers, the concentration patterns may be less pronounced, but they still reveal important insights about where your customers tend to fall on the ${satLabel}-${loyLabel} spectrum.`;
   } else {
     commentary += `With ${total} customers, clear concentration patterns emerge, showing where the majority of your customer base is positioned. These clusters can help identify common customer experiences and potential areas for targeted interventions.`;
   }

@@ -51,7 +51,8 @@ export async function generateActionPlan(
   contextDistribution?: Record<string, number> | null,
   midpoint?: { sat: number; loy: number },
   originalData?: DataPoint[], // Original data with all fields including email
-  isPremium: boolean = false // For Brand+ users, hide watermark in main chart capture
+  isPremium: boolean = false, // For Brand+ users, hide watermark in main chart capture
+  axisLabels?: { satisfaction: string; loyalty: string }
 ): Promise<ActionPlanReport> {
   // 1. Aggregate all report data
   const aggregated = aggregateReportData(dataReport, proximityAnalysis, recommendationScore, contextDistribution);
@@ -255,8 +256,8 @@ export async function generateActionPlan(
   }
 
   // 3. Generate statements
-  const textFindings = generateFindings(evaluators, showNearApostles, isClassicModel);
-  const chartFindings = generateChartFindings(evaluators, isClassicModel, aggregated);
+  const textFindings = generateFindings(evaluators, showNearApostles, isClassicModel, axisLabels);
+  const chartFindings = generateChartFindings(evaluators, isClassicModel, aggregated, axisLabels);
   
   // Interleave findings: text findings first (by priority), then chart findings (by report order)
   // Charts are inserted after their corresponding text findings based on category

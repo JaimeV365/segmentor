@@ -430,7 +430,7 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
       <div className="report-content">
         <div className="report-section">
           <p className="report-section-description">
-            Track customer satisfaction and loyalty changes over time, analyze quadrant movements, and forecast future trends.
+            Track customer {labels.satisfaction.toLowerCase()} and {labels.loyalty.toLowerCase()} changes over time, analyze quadrant movements, and forecast future trends.
           </p>
           
           <div className="historical-progress-stats">

@@ -21,7 +21,8 @@ export const generateActionsReport = async (
   showNearApostles: boolean = false,
   apostlesZoneSize: number = 1,
   terroristsZoneSize: number = 1,
-  contextDistribution?: Record<string, number> | null
+  contextDistribution?: Record<string, number> | null,
+  axisLabels?: { satisfaction: string; loyalty: string }
 ): Promise<ActionsReport> => {
   // If no data report or scales, return empty
   if (!dataReport || !satisfactionScale || !loyaltyScale) {
@@ -86,7 +87,8 @@ export const generateActionsReport = async (
       contextDistribution,
       midpoint, // Pass the actual user-adjusted midpoint
       data.filter(d => !d.excluded), // Pass the original data with emails
-      isPremium // For Brand+ users, hide watermark in main chart capture
+      isPremium, // For Brand+ users, hide watermark in main chart capture
+      axisLabels
     );
 
     // Convert Action Plan to ActionsReport format (for backward compatibility)

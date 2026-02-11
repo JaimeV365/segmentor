@@ -308,9 +308,10 @@ export const TrendChart: React.FC<TrendChartProps> = ({
     );
   };
 
+  const metricLabel = metric === 'satisfaction' ? labels.satisfaction.toLowerCase() : metric === 'loyalty' ? labels.loyalty.toLowerCase() : metric;
   const infoText = metric === 'both' 
-    ? 'This chart shows how average satisfaction and loyalty change over time. Each point is the average of all customers who have data on that date. For example, if 5 customers have data on Jan 1st, the point shows the average of those 5 customers. Click any point to see which customers contributed to that average.'
-    : `This chart shows how average ${metric} changes over time. Each point is the average of all customers who have data on that date. For example, if 5 customers have data on Jan 1st, the point shows the average of those 5 customers. Click any point to see which customers contributed to that average.`;
+    ? `This chart shows how average ${labels.satisfaction.toLowerCase()} and ${labels.loyalty.toLowerCase()} change over time. Each point is the average of all customers who have data on that date. For example, if 5 customers have data on Jan 1st, the point shows the average of those 5 customers. Click any point to see which customers contributed to that average.`
+    : `This chart shows how average ${metricLabel} changes over time. Each point is the average of all customers who have data on that date. For example, if 5 customers have data on Jan 1st, the point shows the average of those 5 customers. Click any point to see which customers contributed to that average.`;
 
   return (
     <>

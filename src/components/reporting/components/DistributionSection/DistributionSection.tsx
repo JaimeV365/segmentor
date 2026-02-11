@@ -980,8 +980,8 @@ const effectiveDistribution = finalDistribution;
       ? Math.round((loyaltyWeight / totalQuadrantPoints) * 100) 
       : 0;
     
-    const satDesc = `${satPercent}% of responses have high satisfaction`;
-    const loyDesc = `${loyPercent}% of responses have high loyalty`;
+    const satDesc = `${satPercent}% of responses have high ${labels.satisfaction.toLowerCase()}`;
+    const loyDesc = `${loyPercent}% of responses have high ${labels.loyalty.toLowerCase()}`;
     
     return [
       { 

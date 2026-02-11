@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAxisLabels } from '../../../visualization/context/AxisLabelsContext';
 import './MiniPlot.css';
 
 interface MiniPlotProps {
@@ -33,6 +34,7 @@ export const MiniPlot: React.FC<MiniPlotProps> = ({
   showAverageDot = true,
   getPointColor
 }) => {
+  const { labels } = useAxisLabels();
  // Calculate scales
   const [satisfactionMin, satisfactionMax] = satisfactionScale.split('-').map(Number);
   const [loyaltyMin, loyaltyMax] = loyaltyScale.split('-').map(Number);
@@ -134,7 +136,7 @@ return '#CC0000';
                 opacity: pointOpacity,
                 transform: 'translate(-50%, 50%)' // Center the point on coordinates
               }}
-              title={`Satisfaction: ${combo.satisfaction}, Loyalty: ${combo.loyalty} (${combo.count} responses)`}
+              title={`${labels.satisfaction}: ${combo.satisfaction}, ${labels.loyalty}: ${combo.loyalty} (${combo.count} responses)`}
             />
           );
         })}

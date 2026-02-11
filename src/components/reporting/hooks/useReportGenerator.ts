@@ -5,6 +5,7 @@ import { generateDataReport } from '../utils/dataReportGenerator';
 import { generateActionsReport } from '../utils/actionsReportGenerator';
 import { formatDataReportForExport, formatActionsReportForExport, downloadAsFile } from '../utils/exportHelpers';
 import { useQuadrantAssignment } from '../../visualization/context/QuadrantAssignmentContext';
+import { useAxisLabels } from '../../visualization/context/AxisLabelsContext';
 
 interface UseReportGeneratorProps {
   data: DataPoint[];
@@ -23,8 +24,9 @@ export const useReportGenerator = ({
   showNearApostles = false,
   midpoint
 }: UseReportGeneratorProps) => {
-  // Get context distribution and quadrant function to match graph display
+  // Get context distribution, quadrant function, and axis labels to match graph display
   const { distribution: contextDistribution, getQuadrantForPoint } = useQuadrantAssignment();
+  const { labels: axisLabels } = useAxisLabels();
   
   const [dataReport, setDataReport] = useState<DataReport | null>(null);
   const [actionsReport, setActionsReport] = useState<ActionsReport | null>(null);
@@ -118,7 +120,8 @@ export const useReportGenerator = ({
         showNearApostles,
         1, // apostlesZoneSize
         1, // terroristsZoneSize
-        contextDist
+        contextDist,
+        axisLabels
       );
       setActionsReport(actionsReportContent);
       try {
@@ -144,7 +147,8 @@ export const useReportGenerator = ({
         showNearApostles,
         1, // apostlesZoneSize
         1, // terroristsZoneSize
-        contextDist
+        contextDist,
+        axisLabels
       );
       setActionsReport(actionsReportContent);
       try {

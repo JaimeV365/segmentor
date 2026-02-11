@@ -48,9 +48,11 @@ function getProximityDisplayName(relationship: string, isClassicModel: boolean =
 /**
  * Generates Findings statements based on evaluator results
  */
-export function generateFindings(evaluators: EvaluatorResults, showNearApostles: boolean = false, isClassicModel: boolean = false): Finding[] {
+export function generateFindings(evaluators: EvaluatorResults, showNearApostles: boolean = false, isClassicModel: boolean = false, axisLabels?: { satisfaction: string; loyalty: string }): Finding[] {
   const findings: Finding[] = [];
   let priority = 1;
+  const satLabel = (axisLabels?.satisfaction || 'satisfaction').toLowerCase();
+  const loyLabel = (axisLabels?.loyalty || 'loyalty').toLowerCase();
 
   // ===== DATA OVERVIEW FINDINGS =====
   
@@ -523,7 +525,7 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
     findings.push({
       id: 'satisfaction-above-average',
       category: 'data',
-      statement: `Your average satisfaction score of ${evaluators.statistics.satisfaction.average.toFixed(1)} is above ${thresholdText}, indicating that customers are generally satisfied with your products or services.`,
+      statement: `Your average ${satLabel} score of ${evaluators.statistics.satisfaction.average.toFixed(1)} is above ${thresholdText}, indicating that customers are generally satisfied with your products or services.`,
       supportingData: {
         average: evaluators.statistics.satisfaction.average,
         mode: evaluators.statistics.satisfaction.mode
@@ -540,7 +542,7 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
     findings.push({
       id: 'satisfaction-below-average',
       category: 'data',
-      statement: `Your average satisfaction score of ${evaluators.statistics.satisfaction.average.toFixed(1)} is below ${thresholdText}, which suggests there's room for improvement in how customers perceive your products or services.${demandingNote}`,
+      statement: `Your average ${satLabel} score of ${evaluators.statistics.satisfaction.average.toFixed(1)} is below ${thresholdText}, which suggests there's room for improvement in how customers perceive your products or services.${demandingNote}`,
       supportingData: {
         average: evaluators.statistics.satisfaction.average,
         mode: evaluators.statistics.satisfaction.mode
@@ -555,7 +557,7 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
     findings.push({
       id: 'satisfaction-at-average',
       category: 'data',
-      statement: `Your average satisfaction score of ${evaluators.statistics.satisfaction.average.toFixed(1)} is exactly at ${thresholdText}, indicating a balanced position where customers are neither particularly satisfied nor dissatisfied.`,
+      statement: `Your average ${satLabel} score of ${evaluators.statistics.satisfaction.average.toFixed(1)} is exactly at ${thresholdText}, indicating a balanced position where customers are neither particularly satisfied nor dissatisfied.`,
       supportingData: {
         average: evaluators.statistics.satisfaction.average,
         mode: evaluators.statistics.satisfaction.mode
@@ -572,7 +574,7 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
     findings.push({
       id: 'loyalty-above-average',
       category: 'data',
-      statement: `Your average loyalty score of ${evaluators.statistics.loyalty.average.toFixed(1)} is above ${thresholdText}, suggesting that customers are generally loyal to your brand.`,
+      statement: `Your average ${loyLabel} score of ${evaluators.statistics.loyalty.average.toFixed(1)} is above ${thresholdText}, suggesting that customers are generally loyal to your brand.`,
       supportingData: {
         average: evaluators.statistics.loyalty.average,
         mode: evaluators.statistics.loyalty.mode
@@ -589,7 +591,7 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
     findings.push({
       id: 'loyalty-below-average',
       category: 'data',
-      statement: `Your average loyalty score of ${evaluators.statistics.loyalty.average.toFixed(1)} is below ${thresholdText}, indicating that customers may be more likely to switch to competitors.${demandingNote}`,
+      statement: `Your average ${loyLabel} score of ${evaluators.statistics.loyalty.average.toFixed(1)} is below ${thresholdText}, indicating that customers may be more likely to switch to competitors.${demandingNote}`,
       supportingData: {
         average: evaluators.statistics.loyalty.average,
         mode: evaluators.statistics.loyalty.mode
@@ -604,7 +606,7 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
     findings.push({
       id: 'loyalty-at-average',
       category: 'data',
-      statement: `Your average loyalty score of ${evaluators.statistics.loyalty.average.toFixed(1)} is exactly at ${thresholdText}, indicating a balanced position where customers are neither particularly loyal nor disloyal.`,
+      statement: `Your average ${loyLabel} score of ${evaluators.statistics.loyalty.average.toFixed(1)} is exactly at ${thresholdText}, indicating a balanced position where customers are neither particularly loyal nor disloyal.`,
       supportingData: {
         average: evaluators.statistics.loyalty.average,
         mode: evaluators.statistics.loyalty.mode

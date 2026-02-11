@@ -358,7 +358,7 @@ export const DataReport: React.FC<DataReportProps> = ({
       </div>
       {/* Introductory information specific to Data Report */}
       <div className="report-content" style={{ paddingTop: 0 }}>
-        <InfoRibbon text="This Data Report provides an overview of your dataset with key statistics and distributions. Use it to identify overall response trends and the most common satisfaction–loyalty combinations to help you analyse and segment customer data." />
+        <InfoRibbon text={`This Data Report provides an overview of your dataset with key statistics and distributions. Use it to identify overall response trends and the most common ${labels.satisfaction.toLowerCase()}–${labels.loyalty.toLowerCase()} combinations to help you analyse and segment customer data.`} />
       </div>
       <div className="report-content">
         {/* Basic Information section */}
@@ -375,13 +375,13 @@ export const DataReport: React.FC<DataReportProps> = ({
             </HighlightableKPI>
             <HighlightableKPI id="satisfaction-scale" isPremium={isPremium}>
               <div className="report-stat-item">
-                <span className="report-stat-label">Satisfaction Scale:</span>
+                <span className="report-stat-label">{labels.satisfaction} Scale:</span>
                 <span className="report-stat-value">{report.satisfactionScale}</span>
               </div>
             </HighlightableKPI>
             <HighlightableKPI id="loyalty-scale" isPremium={isPremium}>
               <div className="report-stat-item flex justify-between w-full">
-                <span className="report-stat-label">Loyalty Scale:</span>
+                <span className="report-stat-label">{labels.loyalty} Scale:</span>
                 <span className="report-stat-value">{report.loyaltyScale}</span>
               </div>
             </HighlightableKPI>
@@ -468,11 +468,11 @@ export const DataReport: React.FC<DataReportProps> = ({
                       <p className="font-semibold">{report.quadrantStats[selectedQuadrant].percentage.toFixed(1)}%</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Avg. Satisfaction</p>
+                      <p className="text-sm text-gray-600">Avg. {labels.satisfaction}</p>
                       <p className="font-semibold">{report.quadrantStats[selectedQuadrant].satisfaction.average.toFixed(2)}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Avg. Loyalty</p>
+                      <p className="text-sm text-gray-600">Avg. {labels.loyalty}</p>
                       <p className="font-semibold">{report.quadrantStats[selectedQuadrant].loyalty.average.toFixed(2)}</p>
                     </div>
                   </div>
@@ -481,9 +481,9 @@ export const DataReport: React.FC<DataReportProps> = ({
                 <div className="p-3 bg-white rounded border">
                   <h5 className="font-medium text-gray-700">Key Findings</h5>
                   <ul className="mt-2 text-sm space-y-1">
-                    <li>• Most common satisfaction: {Object.entries(report.quadrantStats[selectedQuadrant].satisfaction.distribution)
+                    <li>• Most common {labels.satisfaction.toLowerCase()}: {Object.entries(report.quadrantStats[selectedQuadrant].satisfaction.distribution)
                       .sort((a, b) => b[1] - a[1])[0][0]}</li>
-                    <li>• Most common loyalty: {Object.entries(report.quadrantStats[selectedQuadrant].loyalty.distribution)
+                    <li>• Most common {labels.loyalty.toLowerCase()}: {Object.entries(report.quadrantStats[selectedQuadrant].loyalty.distribution)
                       .sort((a, b) => b[1] - a[1])[0][0]}</li>
                     {isPremium && (
                       <li>• Significance: {report.quadrantStats[selectedQuadrant].count > (report.totalEntries * 0.25) 
