@@ -17,6 +17,33 @@ interface ScaleConfirmationModalProps {
   };
 }
 
+/**
+ * Returns a user-friendly label for the scale section.
+ * If the CSV header is a non-obvious name (e.g. "CES", "Effort"),
+ * show it explicitly so users know which column is being asked about.
+ */
+const getSectionLabel = (
+  detection: ScaleDetectionResult | undefined,
+  axisName: 'Satisfaction' | 'Loyalty'
+): string => {
+  if (!detection?.headerName) return `${axisName} Scale`;
+
+  const name = detection.headerName.replace(/[:|-]\d+.*$/, '').trim(); // strip any scale suffix
+  const normalized = name.toLowerCase();
+
+  // If the header is already a clear synonym of the axis, use the generic label
+  const satisfactionSynonyms = ['satisfaction', 'sat', 'csat'];
+  const loyaltySynonyms = ['loyalty', 'loy'];
+  const synonyms = axisName === 'Satisfaction' ? satisfactionSynonyms : loyaltySynonyms;
+
+  if (synonyms.includes(normalized)) {
+    return `${axisName} Scale`;
+  }
+
+  // Otherwise show the original header name for clarity
+  return `"${name}" column (${axisName} axis)`;
+};
+
 export const ScaleConfirmationModal: React.FC<ScaleConfirmationModalProps> = ({
   isOpen,
   onConfirm,
@@ -68,7 +95,7 @@ export const ScaleConfirmationModal: React.FC<ScaleConfirmationModalProps> = ({
 
           {hasSatisfactionChoice && (
             <div className="scale-choice-section">
-              <h4>Satisfaction Scale</h4>
+              <h4>{getSectionLabel(scaleDetection.satisfaction, 'Satisfaction')}</h4>
               <p>Data range: {scaleDetection.satisfaction!.dataRange.min} - {scaleDetection.satisfaction!.dataRange.max}</p>
               
               <div className="scale-choice-buttons">
@@ -98,7 +125,7 @@ export const ScaleConfirmationModal: React.FC<ScaleConfirmationModalProps> = ({
 
           {hasLoyaltyChoice && (
             <div className="scale-choice-section">
-              <h4>Loyalty Scale</h4>
+              <h4>{getSectionLabel(scaleDetection.loyalty, 'Loyalty')}</h4>
               <p>Data range: {scaleDetection.loyalty!.dataRange.min} - {scaleDetection.loyalty!.dataRange.max}</p>
               
               <div className="scale-choice-buttons">

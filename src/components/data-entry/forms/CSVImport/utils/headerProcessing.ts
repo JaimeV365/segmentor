@@ -14,6 +14,7 @@ export interface ScaleDetectionResult {
   possibleScales: ScaleFormat[];
   needsUserInput: boolean;
   dataRange: { min: number; max: number };
+  headerName?: string; // Original CSV header name (e.g. "CES", "Loy") for display in UI
 }
 
 export interface EnhancedHeaderProcessingResult extends HeaderProcessingResult {
@@ -172,7 +173,8 @@ export const detectPossibleScales = (
       definitive: null, 
       possibleScales: [], 
       needsUserInput: false,
-      dataRange: { min: 0, max: 0 }
+      dataRange: { min: 0, max: 0 },
+      headerName: header
     };
   }
   
@@ -197,40 +199,40 @@ export const detectPossibleScales = (
       // Satisfaction valid scales: 1-3, 1-5, 1-7
       if (actualMax > 7) {
         // Data exceeds max valid satisfaction scale — error
-        return { definitive: null, possibleScales: [], needsUserInput: false, dataRange };
+        return { definitive: null, possibleScales: [], needsUserInput: false, dataRange, headerName: header };
       }
       if (actualMax > 5) {
         // max is 6 or 7 → definitive: 1-7
-        return { definitive: '1-7' as ScaleFormat, possibleScales: [], needsUserInput: false, dataRange };
+        return { definitive: '1-7' as ScaleFormat, possibleScales: [], needsUserInput: false, dataRange, headerName: header };
       }
       if (actualMax > 3) {
         // max is 4 or 5 → could be 1-5 or 1-7 → ask user
-        return { definitive: null, possibleScales: ['1-5', '1-7'] as ScaleFormat[], needsUserInput: true, dataRange };
+        return { definitive: null, possibleScales: ['1-5', '1-7'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
       }
       // max <= 3 → could be 1-3, 1-5, or 1-7 → ask user
-      return { definitive: null, possibleScales: ['1-3', '1-5', '1-7'] as ScaleFormat[], needsUserInput: true, dataRange };
+      return { definitive: null, possibleScales: ['1-3', '1-5', '1-7'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
     }
     
     if (type === 'loyalty') {
       // Loyalty valid scales: 1-5, 1-7, 1-10, 0-10
       if (actualMax > 10) {
         // Data exceeds max valid loyalty scale — error
-        return { definitive: null, possibleScales: [], needsUserInput: false, dataRange };
+        return { definitive: null, possibleScales: [], needsUserInput: false, dataRange, headerName: header };
       }
       if (actualMin === 0) {
         // Data contains 0 → definitive: 0-10
-        return { definitive: '0-10' as ScaleFormat, possibleScales: [], needsUserInput: false, dataRange };
+        return { definitive: '0-10' as ScaleFormat, possibleScales: [], needsUserInput: false, dataRange, headerName: header };
       }
       if (actualMax > 7) {
         // max is 8, 9, or 10 (min >= 1) → could be 1-10 or 0-10 → ask user
-        return { definitive: null, possibleScales: ['1-10', '0-10'] as ScaleFormat[], needsUserInput: true, dataRange };
+        return { definitive: null, possibleScales: ['1-10', '0-10'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
       }
       if (actualMax > 5) {
         // max is 6 or 7 → could be 1-7, 1-10, or 0-10 → ask user
-        return { definitive: null, possibleScales: ['1-7', '1-10', '0-10'] as ScaleFormat[], needsUserInput: true, dataRange };
+        return { definitive: null, possibleScales: ['1-7', '1-10', '0-10'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
       }
       // max <= 5 → could be 1-5, 1-7, 1-10, or 0-10 → ask user
-      return { definitive: null, possibleScales: ['1-5', '1-7', '1-10', '0-10'] as ScaleFormat[], needsUserInput: true, dataRange };
+      return { definitive: null, possibleScales: ['1-5', '1-7', '1-10', '0-10'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
     }
   }
   
@@ -243,7 +245,8 @@ export const detectPossibleScales = (
       definitive: `0-${maxFromHeader}` as ScaleFormat, 
       possibleScales: [], 
       needsUserInput: false,
-      dataRange
+      dataRange,
+      headerName: header
     };
   }
   
@@ -253,7 +256,8 @@ export const detectPossibleScales = (
       definitive: null,
       possibleScales: [`1-${maxFromHeader}`, `0-${maxFromHeader}`] as ScaleFormat[],
       needsUserInput: true,
-      dataRange
+      dataRange,
+      headerName: header
     };
   }
   
@@ -262,7 +266,8 @@ export const detectPossibleScales = (
     definitive: `1-${maxFromHeader}` as ScaleFormat, 
     possibleScales: [], 
     needsUserInput: false,
-    dataRange
+    dataRange,
+    headerName: header
   };
 };
 
