@@ -154,6 +154,8 @@ export const DrawerSaveButton: React.FC<DrawerSaveButtonProps> = ({
           manualAssignments: new Map(), // No manual assignments available
           satisfactionScale, // Use actual scale from props
           loyaltyScale, // Use actual scale from props
+          satisfactionHeaderName, // Preserve dynamic axis labels
+          loyaltyHeaderName, // Preserve dynamic axis labels
           midpoint: { sat: 3, loy: 3 }, // Default midpoint
           apostlesZoneSize: 1, // Default zone size
           terroristsZoneSize: 1, // Default zone size
