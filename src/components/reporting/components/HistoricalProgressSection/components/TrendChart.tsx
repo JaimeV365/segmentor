@@ -590,14 +590,14 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                 <div className="chart-settings-content">
                   {(metric === 'satisfaction' || metric === 'both') && (
                     <ChartColorPicker
-                      label="Satisfaction Color"
+                      label={`${labels.satisfaction} Color`}
                       currentColor={chartColors.averageSatisfactionColor || '#3a863e'}
                       onColorChange={(color) => setChartColors(prev => ({ ...prev, averageSatisfactionColor: color }))}
                     />
                   )}
                   {(metric === 'loyalty' || metric === 'both') && (
                     <ChartColorPicker
-                      label="Loyalty Color"
+                      label={`${labels.loyalty} Color`}
                       currentColor={chartColors.averageLoyaltyColor || '#4682B4'}
                       onColorChange={(color) => setChartColors(prev => ({ ...prev, averageLoyaltyColor: color }))}
                     />

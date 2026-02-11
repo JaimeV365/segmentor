@@ -2,6 +2,7 @@ import React from 'react';
 import InputField from '../../InputField';
 import { ScaleFormat } from '@/types/base';
 import { SatisfactionFieldProps } from '../types';
+import { useAxisLabels } from '../../../../visualization/context/AxisLabelsContext';
 
 const SATISFACTION_SCALES: ScaleFormat[] = ['1-3', '1-5', '1-7'];
 
@@ -14,6 +15,7 @@ export const SatisfactionField: React.FC<SatisfactionFieldProps> = ({
   scalesLocked,
   onScaleUpdate
 }) => {
+  const { labels } = useAxisLabels();
   // Parse scale range for dropdown options
   const currentScale = scale.split('-');
   const min = currentScale[0];
@@ -30,7 +32,7 @@ export const SatisfactionField: React.FC<SatisfactionFieldProps> = ({
       {showScales && (
         <div className="scale-selector">
           <label>
-            Satisfaction Scale <span className="required-field">*</span>
+            {labels.satisfaction} Scale <span className="required-field">*</span>
           </label>
           <select
             value={scale}
@@ -52,7 +54,7 @@ export const SatisfactionField: React.FC<SatisfactionFieldProps> = ({
       )}
       <InputField
         type="number"
-        placeholder={`Satisfaction (${min}-${max})`}
+        placeholder={`${labels.satisfaction} (${min}-${max})`}
         value={formState.satisfaction}
         onChange={(value) => onInputChange('satisfaction', value)}
         error={errors.satisfaction}

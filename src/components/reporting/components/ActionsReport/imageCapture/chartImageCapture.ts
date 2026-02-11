@@ -749,9 +749,8 @@ export async function captureChartAsImage(
         const inlineStyle = labelEl.getAttribute('style') || '';
         const computedStyle = window.getComputedStyle(labelEl);
         
-        // Check if this label contains "Loyalty" text
-        const labelText = labelEl.textContent || '';
-        if (labelText.includes('Loyalty')) {
+        // Apply rotation fix to Y-axis labels (loyalty axis, whatever the label text)
+        {
           // Get current transform from inline style or computed
           let transform = inlineStyle.match(/transform:\s*([^;]+)/)?.[1] || 
                          computedStyle.transform || 

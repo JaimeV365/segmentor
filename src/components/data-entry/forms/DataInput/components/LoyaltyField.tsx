@@ -2,6 +2,7 @@ import React from 'react';
 import InputField from '../../InputField';
 import { ScaleFormat } from '@/types/base';
 import { LoyaltyFieldProps } from '../types';
+import { useAxisLabels } from '../../../../visualization/context/AxisLabelsContext';
 
 const LOYALTY_SCALES: ScaleFormat[] = ['1-5', '1-7', '1-10', '0-10'];
 
@@ -14,6 +15,7 @@ export const LoyaltyField: React.FC<LoyaltyFieldProps> = ({
   scalesLocked,
   onScaleUpdate
 }) => {
+  const { labels } = useAxisLabels();
   // Parse the current scale to get min/max values
   const currentScale = scale.split('-');
   const min = currentScale[0];
@@ -30,7 +32,7 @@ export const LoyaltyField: React.FC<LoyaltyFieldProps> = ({
       {showScales && (
         <div className="scale-selector">
           <label>
-            Loyalty Scale <span className="required-field">*</span>
+            {labels.loyalty} Scale <span className="required-field">*</span>
           </label>
           <select
             value={scale}
@@ -50,7 +52,7 @@ export const LoyaltyField: React.FC<LoyaltyFieldProps> = ({
       )}
       <InputField
         type="number"
-        placeholder={`Loyalty (${min}-${max})`}
+        placeholder={`${labels.loyalty} (${min}-${max})`}
         value={formState.loyalty}
         onChange={(value) => onInputChange('loyalty', value)}
         error={errors.loyalty}

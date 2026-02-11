@@ -4,6 +4,7 @@ import { ResponseSettingsProps, DEFAULT_SETTINGS } from './types';
 import FrequencyThresholdSlider from './FrequencyThresholdSlider';
 import TierToggle from './TierToggle';
 import InfoPopup from './InfoPopup';
+import { useAxisLabels } from '../../../visualization/context/AxisLabelsContext';
 import './styles.css';
 
 const colorPalette = [
@@ -32,6 +33,7 @@ const ResponseSettings: React.FC<ResponseSettingsProps & { activeSection?: 'dist
   availableItemsCount,
   maxCombinationFrequency
 }) => {
+    const { labels } = useAxisLabels();
     const [customHexInput, setCustomHexInput] = useState('');
     const [satHexInput, setSatHexInput] = useState('');
     const [loyHexInput, setLoyHexInput] = useState('');
@@ -306,7 +308,7 @@ const ResponseSettings: React.FC<ResponseSettingsProps & { activeSection?: 'dist
           <div className="color-customizations-container">
             {/* Satisfaction Column */}
             <div>
-              <label>Satisfaction</label>
+              <label>{labels.satisfaction}</label>
               <div className="color-picker">
                 {colorPalette.map((color) => (
                   <div
@@ -347,7 +349,7 @@ const ResponseSettings: React.FC<ResponseSettingsProps & { activeSection?: 'dist
             
             {/* Loyalty Column */}
             <div>
-              <label>Loyalty</label>
+              <label>{labels.loyalty}</label>
               <div className="color-picker">
                 {colorPalette.map((color) => (
                   <div

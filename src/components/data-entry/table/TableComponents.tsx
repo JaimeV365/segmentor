@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowUpDown, ArrowUp, ArrowDown, Search, Edit, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { DataPoint } from '@/types/base';
+import { useAxisLabels } from '../../visualization/context/AxisLabelsContext';
 
 interface TableHeaderProps {
   satisfactionScale: string;
@@ -76,6 +77,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
   handleSort,
   headerHeight
 }) => {
+  const { labels } = useAxisLabels();
   return (
     <div 
       style={{ 
@@ -120,7 +122,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
       <div style={{ flex: 0.7, textAlign: 'center' }}>
         <SortableHeader 
           field="satisfaction" 
-          label={`Sat (${satisfactionScale})`} 
+          label={`${labels.satisfaction.length <= 4 ? labels.satisfaction : labels.satisfaction.substring(0, 3)} (${satisfactionScale})`} 
           currentSortField={sortField} 
           sortDirection={sortDirection} 
           onSort={handleSort} 
@@ -129,7 +131,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
       <div style={{ flex: 0.7, textAlign: 'center' }}>
         <SortableHeader 
           field="loyalty" 
-          label={`Loy (${loyaltyScale})`} 
+          label={`${labels.loyalty.length <= 4 ? labels.loyalty : labels.loyalty.substring(0, 3)} (${loyaltyScale})`} 
           currentSortField={sortField} 
           sortDirection={sortDirection} 
           onSort={handleSort} 
