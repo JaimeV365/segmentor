@@ -80,7 +80,7 @@
           "name": "What data do I need to upload?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "You only need two mandatory columns: Satisfaction Score (How satisfied they are on a 1-3, 1-5, or 1-7 scale) and Loyalty Score (How likely they are to stay on a 1-5, 1-7, 1-10, or 0-10 scale). Optional columns you can add: Customer Name/ID (Unique identifier for each customer), Email (For tracking customers over time), Date (For filtering by time periods), Country, Language, or any other attributes (For filtering and analysis purposes). Try with sample data first to see the format."
+            "text": "You need a CSV file with at least two scored columns: a Satisfaction score (accepted headers: Satisfaction, Sat, CSAT, CES, or Effort) and a Loyalty score (accepted headers: Loyalty or Loy). You can include the scale in the header (e.g. Sat:1-5, Loyalty-1-10) or use a plain name — the tool analyses your data and determines the scale automatically. Optional columns such as ID, Name, Email, Date, Country, Language, or any other attributes appear as additional data in each record's details."
           }
         },
         {
@@ -786,24 +786,19 @@
                         </div>
                     </div>
 
-                    <div class="faq-item" data-keywords="data format CSV format what data customer data upload data">
+                    <div class="faq-item" data-keywords="data format CSV format what data customer data upload data required columns">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             <h3>What data do I need to upload?</h3>
                             <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer">
-                            <p>You only need two mandatory columns:</p>
+                            <p>You need a CSV file with at least two scored columns:</p>
                             <ul>
-                                <li><strong>Satisfaction Score:</strong> How satisfied they are (1-3, 1-5, or 1-7 scale)</li>
-                                <li><strong>Loyalty Score:</strong> How likely they are to stay (1-5, 1-7, 1-10, or 0-10 scale)</li>
+                                <li><strong>Satisfaction score:</strong> How satisfied the customer is. Accepted header names include <code>Satisfaction</code>, <code>Sat</code>, <code>CSAT</code>, <code>CES</code>, or <code>Effort</code>.</li>
+                                <li><strong>Loyalty score:</strong> How likely they are to recommend or repurchase. Accepted header names include <code>Loyalty</code> or <code>Loy</code>.</li>
                             </ul>
-                            <p>Optional columns you can add:</p>
-                            <ul>
-                                <li><strong>Customer Name/ID:</strong> Unique identifier for each customer</li>
-                                <li><strong>Email:</strong> For tracking customers over time</li>
-                                <li><strong>Date:</strong> For filtering by time periods</li>
-                                <li><strong>Country, Language, or any other attributes:</strong> For filtering and analysis purposes</li>
-                            </ul>
+                            <p>You can include the scale in the header (e.g., <code>Sat:1-5</code>, <code>Loyalty-1-10</code>) or just use a plain name — the tool will analyse your data and determine the scale automatically.</p>
+                            <p><strong>Optional columns:</strong> ID, Name, Email, Date, Country, Language, or any other customer attributes. Extra columns appear as additional data in each record's details.</p>
                             <p>Try with sample data first to see the format.</p>
                         </div>
                     </div>
@@ -836,7 +831,7 @@
                         </div>
                     </div>
 
-                    <div class="faq-item" data-keywords="CSV format file format upload format data structure">
+                    <div class="faq-item" data-keywords="CSV format file format upload format data structure header format column names example CSV">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             <h3>What format should my CSV be?</h3>
                             <span class="faq-toggle">+</span>
@@ -845,14 +840,50 @@
                             <p>Your CSV should have:</p>
                             <ul>
                                 <li><strong>Header row:</strong> Column names in the first row</li>
-                                <li><strong>Required columns:</strong> Name/ID, Satisfaction, Loyalty</li>
-                                <li><strong>Data types:</strong> Numbers for satisfaction/loyalty scores</li>
+                                <li><strong>Required columns:</strong> One satisfaction column and one loyalty column</li>
+                                <li><strong>Score values:</strong> Numeric scores for satisfaction and loyalty</li>
                                 <li><strong>Encoding:</strong> UTF-8 (most common)</li>
                             </ul>
-                            <p><strong>Example format:</strong></p>
-                            <pre>Name,Satisfaction,Loyalty,Email,Country
-John Smith,4,5,john@example.com,USA
-Jane Doe,2,3,jane@example.com,Canada</pre>
+                            <p>You can include the scale in the header name, or leave it plain. Common abbreviations like <code>Sat</code>, <code>CSAT</code>, <code>CES</code>, and <code>Loy</code> are all recognised.</p>
+                            <p><strong>Example with scales in headers:</strong></p>
+                            <pre>ID,Name,Sat:1-5,Loyalty:1-10,Email,Country
+1,John Smith,4,8,john@example.com,USA
+2,Jane Doe,2,5,jane@example.com,Canada</pre>
+                            <p><strong>Example with plain headers (scale detected automatically):</strong></p>
+                            <pre>Name,CSAT,Loy,Email
+John Smith,4,8,john@example.com
+Jane Doe,2,5,jane@example.com</pre>
+                            <p>Any columns beyond satisfaction and loyalty (such as Email, Country, or custom fields) appear as additional data in each record's details view.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="column headers recognised headers accepted headers header names abbreviations Sat CSAT CES Loy Loyalty Effort">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>What column headers does Segmentor recognise?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Segmentor looks for one <strong>satisfaction</strong> column and one <strong>loyalty</strong> column. It recognises several common names and abbreviations:</p>
+                            <table style="width:100%; border-collapse:collapse; margin:0.8em 0;">
+                                <thead>
+                                    <tr style="text-align:left; border-bottom:2px solid #ddd;">
+                                        <th style="padding:0.4em 0.6em;">Axis</th>
+                                        <th style="padding:0.4em 0.6em;">Accepted headers</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom:1px solid #eee;">
+                                        <td style="padding:0.4em 0.6em;">Satisfaction</td>
+                                        <td style="padding:0.4em 0.6em;"><code>Satisfaction</code>, <code>Sat</code>, <code>CSAT</code>, <code>CES</code>, <code>Effort</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:0.4em 0.6em;">Loyalty</td>
+                                        <td style="padding:0.4em 0.6em;"><code>Loyalty</code>, <code>Loy</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p>Headers are case-insensitive (<code>sat</code>, <code>SAT</code>, and <code>Sat</code> all work). You can optionally append the scale using a colon or hyphen — for example <code>Sat:1-5</code>, <code>Loyalty-1-10</code>, or <code>CES:1-7</code>.</p>
+                            <p>If both a primary header (e.g., <code>Sat</code>) and a secondary header (e.g., <code>CES</code>) appear in the same file, the primary header is used for the axis and the other column is kept as additional data.</p>
                         </div>
                     </div>
 
@@ -945,33 +976,38 @@ Jane Doe,2,3,jane@example.com,Canada</pre>
                         </div>
                     </div>
 
-                    <div class="faq-item" data-keywords="CSV format data requirements">
+                    <div class="faq-item" data-keywords="CSV format data requirements header names abbreviations accepted headers">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             <h3>What format should my CSV data be in?</h3>
                             <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer">
-                            <p><strong>Your CSV only needs these two mandatory columns:</strong></p>
+                            <p><strong>Your CSV needs at least two columns:</strong> one for satisfaction and one for loyalty. The tool recognises several header names and abbreviations:</p>
                             <ul>
-                                <li><strong>Satisfaction Score:</strong> 1-10 scale (or 1-5, we'll normalize it automatically)</li>
-                                <li><strong>Loyalty Score:</strong> 1-10 scale (or 1-5, we'll normalize it automatically)</li>
+                                <li><strong>Satisfaction:</strong> <code>Satisfaction</code>, <code>Sat</code>, <code>CSAT</code>, <code>CES</code>, or <code>Effort</code></li>
+                                <li><strong>Loyalty:</strong> <code>Loyalty</code> or <code>Loy</code></li>
                             </ul>
+                            <p>You can include the scale in the header (e.g., <code>Sat:1-5</code>, <code>Loyalty-1-10</code>) or use a plain name — the tool will analyse your data values and determine the correct scale.</p>
+                            <p><strong>Accepted scales:</strong> Satisfaction: 1-3, 1-5, or 1-7. Loyalty: 1-5, 1-7, 1-10, or 0-10. Different scales are detected and normalised automatically.</p>
                             <p><strong>Optional columns:</strong></p>
                             <ul>
                                 <li><strong>Customer ID:</strong> If you don't provide this, segmentor.app will assign automatic IDs</li>
-                                <li><strong>Customer Name, Email, etc.:</strong> Any additional details you want to include</li>
+                                <li><strong>Customer Name, Email, Date, Country, etc.:</strong> Any additional details you want to include — they appear in each record's details view</li>
                             </ul>
-                            <p><strong>Accepted scales:</strong> Satisfaction: 1-3, 1-5, or 1-7. Loyalty: 1-5, 1-7, 1-10, or 0-10. We automatically detect and normalise different scales.</p>
                             <p><strong>Examples:</strong></p>
                             <pre>// Minimal format (anonymous feedback)
 Satisfaction,Loyalty
-8,9
-6,4
+4,8
+2,5
 
-// With customer details
-Customer ID,Satisfaction,Loyalty,Customer Name
-CUST001,8,9,John Smith
-CUST002,6,4,Jane Doe</pre>
+// With scales in headers and customer details
+Customer ID,Sat:1-5,Loyalty:1-10,Customer Name
+CUST001,4,8,John Smith
+CUST002,2,5,Jane Doe
+
+// Using abbreviations (scales detected automatically)
+Name,CSAT,Loy,Email
+John Smith,4,8,john@example.com</pre>
                         </div>
                     </div>
 
@@ -1139,23 +1175,23 @@ CUST002,6,4,Jane Doe</pre>
                         </div>
                     </div>
 
-                    <div class="faq-item" data-keywords="scale detection, automatic normalisation, different scales, satisfaction scale">
+                    <div class="faq-item" data-keywords="scale detection, automatic normalisation, different scales, satisfaction scale, loyalty scale, smart detection">
                         <div class="faq-question" onclick="toggleFAQ(this)">
-                            <h3>Does the tool work with different satisfaction scales?</h3>
+                            <h3>Does the tool work with different satisfaction and loyalty scales?</h3>
                             <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer">
-                            <p>Yes. The tool automatically detects and normalises 1-3, 1-5, and 1-7 satisfaction scales. You can mix different scales in the same dataset—the tool will handle the conversion automatically.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item" data-keywords="loyalty scale, different loyalty scales, automatic detection">
-                        <div class="faq-question" onclick="toggleFAQ(this)">
-                            <h3>Does the tool work with different loyalty scales?</h3>
-                            <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Yes. The tool automatically detects and normalises 1-5, 1-7, 1-10, and 0-10 loyalty scales. Your satisfaction and loyalty scales can be different—the tool handles each independently.</p>
+                            <p>Yes. Segmentor supports several common survey scales and normalises them automatically so data from different sources can be compared on the same chart.</p>
+                            <p><strong>Satisfaction scales:</strong> 1-3, 1-5, and 1-7.</p>
+                            <p><strong>Loyalty scales:</strong> 1-5, 1-7, 0-10, and 1-10.</p>
+                            <p><strong>How scale detection works:</strong></p>
+                            <ul>
+                                <li>If the scale is included in the header (e.g., <code>Sat:1-5</code>, <code>Loyalty-1-10</code>), it is used directly.</li>
+                                <li>If only a plain header is provided (e.g., <code>CSAT</code>, <code>Loy</code>), Segmentor analyses the actual values in the column to determine the scale.</li>
+                                <li>When the scale can be determined definitively from the data (for example, a satisfaction column whose maximum value is 6 or 7 must be 1-7), it is applied automatically.</li>
+                                <li>When the data is ambiguous (for example, all values fall between 1 and 3, which could be 1-3, 1-5, or 1-7), you will be shown the possible options and asked to confirm which scale your data uses.</li>
+                            </ul>
+                            <p>Your satisfaction and loyalty scales can be different — the tool handles each independently. You do not need to worry about formatting your headers perfectly — the tool will work it out and ask you only when it genuinely cannot tell.</p>
                         </div>
                     </div>
 
@@ -1167,6 +1203,18 @@ CUST002,6,4,Jane Doe</pre>
                         <div class="faq-answer">
                             <p>Highly accurate for standard scales. The tool converts scale equivalents linearly, preserving the proportional relationships between values. For example, a score of 4 on a 1-5 scale maps proportionally to 7.5 on a 1-10 scale.</p>
                             <p>Custom scales are detected proportionally based on their range. You can test the normalisation with sample data to verify the conversion matches your expectations.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" data-keywords="CES Customer Effort Score effort score CES data effort data satisfaction alternative">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <h3>Can I use Customer Effort Score (CES) data?</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes. If your organisation uses CES instead of — or alongside — a traditional satisfaction survey, you can map it to the <strong>Satisfaction axis</strong> of the Apostles Model.</p>
+                            <p>Simply name the column <code>CES</code> or <code>Effort</code> in your CSV (with or without a scale suffix, e.g., <code>CES:1-7</code>). Segmentor will recognise it as a satisfaction-family metric and apply the same scale detection and normalisation as for any other satisfaction column.</p>
+                            <p>If your file already contains a primary satisfaction header (such as <code>Sat</code> or <code>CSAT</code>), that header takes priority for the Satisfaction axis and the CES column is kept as additional data visible in each record's details.</p>
                         </div>
                     </div>
 
