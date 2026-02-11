@@ -2,6 +2,7 @@
 import React, { useEffect, useRef } from 'react';
 import { DataPoint } from '@/types/base';
 import { useQuadrantAssignment } from '../../context/QuadrantAssignmentContext';
+import { useAxisLabels } from '../../context/AxisLabelsContext';
 import { useNotification } from '../../../data-entry/NotificationSystem';
 
 import './DataPointInfoBox.css';
@@ -24,6 +25,7 @@ export const InfoBox: React.FC<{
   const boxRef = useRef<HTMLDivElement>(null);
 
   const { getDisplayNameForQuadrant, getQuadrantForPoint } = useQuadrantAssignment();
+  const { labels } = useAxisLabels();
   const notification = useNotification();
   
   // Add effect to check and adjust position
@@ -116,7 +118,7 @@ export const InfoBox: React.FC<{
               <div className="data-point-info__metric-value" style={{ color: quadrantInfo.color }}>
                 {point.satisfaction}
               </div>
-              <div className="data-point-info__metric-label">Satisfaction</div>
+              <div className="data-point-info__metric-label">{labels.satisfaction}</div>
             </div>
             
             <div className="data-point-info__metric-divider"></div>
@@ -125,7 +127,7 @@ export const InfoBox: React.FC<{
               <div className="data-point-info__metric-value" style={{ color: quadrantInfo.color }}>
                 {point.loyalty}
               </div>
-              <div className="data-point-info__metric-label">Loyalty</div>
+              <div className="data-point-info__metric-label">{labels.loyalty}</div>
             </div>
           </div>
         </div>

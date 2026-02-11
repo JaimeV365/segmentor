@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 // import { X } from 'lucide-react';
 import { DataPoint } from '@/types/base';
+import { useAxisLabels } from '../../visualization/context/AxisLabelsContext';
 
 interface DetailsModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface DetailsModalProps {
 }
 
 const DetailsModal: React.FC<DetailsModalProps> = ({ isOpen, onClose, data }) => {
+  const { labels } = useAxisLabels();
   if (!isOpen) return null;
   
   // Standard keys we don't need to show duplicates of
@@ -112,8 +114,8 @@ const DetailsModal: React.FC<DetailsModalProps> = ({ isOpen, onClose, data }) =>
               // Special cases for field names
               const specialFieldMap: Record<string, string> = {
                 'id': 'ID',
-                'satisfaction': 'Satisfaction',
-                'loyalty': 'Loyalty',
+                'satisfaction': labels.satisfaction,
+                'loyalty': labels.loyalty,
                 'ces': 'CES',
                 'csat': 'CSAT',
                 'email': 'Email',

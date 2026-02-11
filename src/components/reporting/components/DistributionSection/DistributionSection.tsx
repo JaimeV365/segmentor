@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect, useLayoutEffect, useRef, useCallba
 import { DataPoint, ScaleFormat } from '../../../../types/base';
 import type { QuadrantType } from '../../types';
 import { useQuadrantAssignment } from '../../../visualization/context/QuadrantAssignmentContext';
+import { useAxisLabels } from '../../../visualization/context/AxisLabelsContext';
 import { Card } from '../../../ui/card';
 import { Filter, X, Link2, Link2Off, ChevronDown, ChevronUp } from 'lucide-react';
 import FilterPanel from '../../../visualization/filters/FilterPanel';
@@ -71,6 +72,7 @@ const DistributionSection: React.FC<DistributionSectionProps> = ({
   showNearApostles = false,
   midpoint: externalMidpoint // Accept external midpoint
 }) => {
+  const { labels } = useAxisLabels();
   
   // DEBUG LOG:
   console.log('🎯 DistributionSection initialized:', {
@@ -940,8 +942,8 @@ const effectiveDistribution = finalDistribution;
       return [
         { label: 'Largest Group', value: 'N/A', description: 'No data available' },
         { label: 'Distribution Balance', value: 'N/A', description: 'No data available' },
-        { label: 'Satisfaction Trend', value: 'N/A', description: 'No data available' },
-        { label: 'Loyalty Trend', value: 'N/A', description: 'No data available' }
+        { label: `${labels.satisfaction} Trend`, value: 'N/A', description: 'No data available' },
+        { label: `${labels.loyalty} Trend`, value: 'N/A', description: 'No data available' }
       ];
     }
     
@@ -993,12 +995,12 @@ const effectiveDistribution = finalDistribution;
         description: balanceDesc 
       },
       { 
-        label: 'Satisfaction Trend', 
+        label: `${labels.satisfaction} Trend`, 
         value: satisfactionTrend, 
         description: satDesc 
       },
       { 
-        label: 'Loyalty Trend', 
+        label: `${labels.loyalty} Trend`, 
         value: loyaltyTrend, 
         description: loyDesc 
       }

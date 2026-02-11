@@ -2,6 +2,7 @@ import React from 'react';
 import type { QuadrantStatistics, QuadrantType } from '../../types';
 import BarChart from '../BarChart';
 import type { BarChartData } from '../BarChart';
+import { useAxisLabels } from '../../../visualization/context/AxisLabelsContext';
 
 interface QuadrantDetailsProps {
   quadrant: QuadrantType;
@@ -18,6 +19,7 @@ export const QuadrantDetails: React.FC<QuadrantDetailsProps> = ({
   satisfactionScale,
   loyaltyScale
 }) => {
+  const { labels } = useAxisLabels();
   const quadrantColors = {
     loyalists: 'border-green-200 bg-green-50',
     hostages: 'border-blue-200 bg-blue-50',
@@ -117,7 +119,7 @@ export const QuadrantDetails: React.FC<QuadrantDetailsProps> = ({
           {/* Satisfaction Distribution (supports decimals) */}
           <div className="space-y-4">
             <div className="flex justify-between items-baseline">
-              <h4 className="font-medium">Satisfaction</h4>
+              <h4 className="font-medium">{labels.satisfaction}</h4>
               <span className="text-lg font-semibold">
                 {stats.satisfaction.average.toFixed(2)}
               </span>
@@ -134,7 +136,7 @@ export const QuadrantDetails: React.FC<QuadrantDetailsProps> = ({
           {/* Loyalty Distribution (integers only) */}
           <div className="space-y-4">
             <div className="flex justify-between items-baseline">
-              <h4 className="font-medium">Loyalty</h4>
+              <h4 className="font-medium">{labels.loyalty}</h4>
               <span className="text-lg font-semibold">
                 {stats.loyalty.average.toFixed(2)}
               </span>
@@ -154,13 +156,13 @@ export const QuadrantDetails: React.FC<QuadrantDetailsProps> = ({
           <h4 className="font-medium mb-3">Key Findings</h4>
           <ul className="space-y-2 text-sm">
             <li className="flex justify-between">
-              <span>Most Common Satisfaction Score:</span>
+              <span>Most Common {labels.satisfaction} Score:</span>
               <span className="font-medium">
                 {getMostCommonScore(stats.satisfaction.distribution)}
               </span>
             </li>
             <li className="flex justify-between">
-              <span>Most Common Loyalty Score:</span>
+              <span>Most Common {labels.loyalty} Score:</span>
               <span className="font-medium">
                 {getMostCommonScore(stats.loyalty.distribution)}
               </span>

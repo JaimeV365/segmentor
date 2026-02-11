@@ -13,6 +13,8 @@ export interface ApostlesSaveData {
     headers: {
       satisfaction: string; // e.g., "1-5", "0-10"
       loyalty: string; // e.g., "1-5", "0-10"
+      satisfactionHeaderName?: string; // Original CSV header name for dynamic labels (e.g., "CES", "Sat")
+      loyaltyHeaderName?: string; // Original CSV header name for dynamic labels (e.g., "Loy", "Loyalty")
       email?: string;
       date?: string;
       group?: string;

@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { DataPoint } from '@/types/base';
+import { useAxisLabels } from '../../../visualization/context/AxisLabelsContext';
 import '../../../visualization/components/DataPoints/DataPointInfoBox.css';
 
 export interface QuadrantOption {
@@ -34,6 +35,7 @@ export const ProximityPointInfoBox: React.FC<{
   secondaryProximityType,
   customTitle
 }) => {
+  const { labels } = useAxisLabels();
   const boxRef = useRef<HTMLDivElement>(null);
   const [showAll, setShowAll] = useState(false);
   const [showAllSecondary, setShowAllSecondary] = useState(false);
@@ -316,7 +318,7 @@ useEffect(() => {
                 fontSize: '12px',
                 color: '#6b7280'
               }}>
-                Satisfaction: {point.satisfaction}, Loyalty: {point.loyalty}
+                {labels.satisfaction}: {point.satisfaction}, {labels.loyalty}: {point.loyalty}
               </div>
             </div>
           ))}
@@ -468,7 +470,7 @@ useEffect(() => {
                     fontSize: '12px',
                     color: '#6b7280'
                   }}>
-                    Satisfaction: {point.satisfaction}, Loyalty: {point.loyalty}
+                    {labels.satisfaction}: {point.satisfaction}, {labels.loyalty}: {point.loyalty}
                   </div>
                 </div>
               ))}

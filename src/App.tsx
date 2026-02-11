@@ -5,6 +5,7 @@ import DataDisplay from './components/data-entry/table/DataDisplay';
 import { DataPoint, ScaleFormat, ScaleState } from './types/base';
 import { QuadrantAssignmentProvider } from './components/visualization/context/QuadrantAssignmentContext';
 import { FilterProvider } from './components/visualization/context/FilterContext';
+import { AxisLabelsProvider } from './components/visualization/context/AxisLabelsContext';
 import { useNotification } from './components/data-entry/NotificationSystem';
 // No longer need date filter utils - context handles this automatically
 import FilteredChart from './components/visualization/components/FilteredChart';
@@ -25,11 +26,7 @@ import { TranslationBanner } from './components/ui/TranslationBanner/Translation
 import { storageManager } from './components/data-entry/utils/storageManager';
 import './App.css';
 import './components/visualization/controls/ResponsiveDesign.css';
-
-interface HeaderScales {
-  satisfaction: ScaleFormat;
-  loyalty: ScaleFormat;
-}
+import { HeaderScales } from './components/data-entry/forms/CSVImport/types';
 
 const App: React.FC = () => {
   const [data, setData] = useState<DataPoint[]>([]);
@@ -39,6 +36,11 @@ const App: React.FC = () => {
     loyaltyScale: '1-5',
     isLocked: false
   });
+  // Source metric header names for dynamic axis labels
+  const [axisHeaderNames, setAxisHeaderNames] = useState<{
+    satisfaction?: string;
+    loyalty?: string;
+  }>({});
   
   const dataEntryRef = useRef<HTMLDivElement>(null);
 const visualizationRef = useRef<HTMLDivElement>(null);
@@ -417,10 +419,12 @@ useEffect(() => {
         // Mark as file upload (.seg file) so we exit demo mode
         isFileUploadRef.current = true;
         
-        // Load the data with proper scales from headers
+        // Load the data with proper scales from headers (including source header names for dynamic labels)
         handleDataChange(finalDataPoints, {
           satisfaction: saveData.dataTable.headers.satisfaction as ScaleFormat,
-          loyalty: saveData.dataTable.headers.loyalty as ScaleFormat
+          loyalty: saveData.dataTable.headers.loyalty as ScaleFormat,
+          satisfactionHeaderName: saveData.dataTable.headers.satisfactionHeaderName,
+          loyaltyHeaderName: saveData.dataTable.headers.loyaltyHeaderName
         });
         
         // Load the context settings
@@ -683,6 +687,11 @@ const handleTerroristsZoneSizeChange = (size: number) => {
           loyaltyScale: headerScales.loyalty,
           isLocked: true
         });
+        // Store source header names for dynamic axis labels
+        setAxisHeaderNames({
+          satisfaction: headerScales.satisfactionHeaderName,
+          loyalty: headerScales.loyaltyHeaderName
+        });
         // Default "Show Recommendation Score" from loyalty scale (CSV/demo/manual). .seg load overwrites this in onSettingsLoad.
         const showRec = headerScales.loyalty === '0-10';
         localStorage.setItem('showRecommendationScore', String(showRec));
@@ -716,6 +725,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
         loyaltyScale: '1-5',
         isLocked: false
       });
+      setAxisHeaderNames({}); // Reset axis labels to defaults
       localStorage.setItem('showRecommendationScore', 'false');
       document.dispatchEvent(new CustomEvent('segFileLoaded'));
     }
@@ -744,6 +754,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
         loyaltyScale: '1-5',
         isLocked: false
       });
+      setAxisHeaderNames({}); // Reset axis labels to defaults
       localStorage.setItem('showRecommendationScore', 'false');
       document.dispatchEvent(new CustomEvent('segFileLoaded'));
       
@@ -846,6 +857,10 @@ const handleTerroristsZoneSizeChange = (size: number) => {
             )}
 
             {data.length > 0 && (
+              <AxisLabelsProvider
+                satisfactionHeaderName={axisHeaderNames.satisfaction}
+                loyaltyHeaderName={axisHeaderNames.loyalty}
+              >
               <FilterProvider 
                 initialData={data} 
                 data={data} 
@@ -989,6 +1004,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
                 </LeftDrawer>
                 </QuadrantAssignmentProvider>
               </FilterProvider>
+              </AxisLabelsProvider>
             )}
           </main>
         </div>

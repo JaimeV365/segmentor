@@ -8,6 +8,7 @@ import { exportActionPlanToPDF, exportActionPlanToPPTX, exportActionPlanToXLSX }
 import { UnifiedLoadingPopup } from '../../../ui/UnifiedLoadingPopup';
 import { DisclaimerContent } from './disclaimerContent';
 import { EditableText } from './EditableText';
+import { useAxisLabels } from '../../../visualization/context/AxisLabelsContext';
 import '../../../visualization/controls/UnifiedChartControls.css';
 import './ActionsReport.css';
 
@@ -59,6 +60,7 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
   isPremium = false
 }) => {
   // Hooks must be called before any early returns
+  const { labels } = useAxisLabels();
   const [capturedCharts, setCapturedCharts] = useState<Map<string, ChartImage>>(new Map());
   const [isCapturing, setIsCapturing] = useState(false);
   const [isAccepted, setIsAccepted] = useState(false);
@@ -434,7 +436,8 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
       await exportActionPlanToPDF(actionPlan, {
         fontFamily: pdfFontFamily as 'montserrat' | 'lato' | 'arial' | 'helvetica' | 'times',
         showImageWatermarks: pdfShowImageWatermarks,
-        showPageWatermarks: pdfShowPageWatermarks
+        showPageWatermarks: pdfShowPageWatermarks,
+        axisLabels: labels
       });
       setShowExportPanel(false);
       setShowPDFCustomizeOptions(false);
@@ -1121,8 +1124,8 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                                         <th>Email</th>
                                         <th>Position</th>
                                         {!opportunity.supportingData?.quadrant && <th>Distance</th>}
-                                        {opportunity.supportingData?.quadrant && <th>Satisfaction</th>}
-                                        {opportunity.supportingData?.quadrant && <th>Loyalty</th>}
+                                        {opportunity.supportingData?.quadrant && <th>{labels.satisfaction}</th>}
+                                        {opportunity.supportingData?.quadrant && <th>{labels.loyalty}</th>}
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -1271,8 +1274,8 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                                         <th>Email</th>
                                         <th>Position</th>
                                         {!risk.supportingData?.quadrant && <th>Distance</th>}
-                                        {risk.supportingData?.quadrant && <th>Satisfaction</th>}
-                                        {risk.supportingData?.quadrant && <th>Loyalty</th>}
+                                        {risk.supportingData?.quadrant && <th>{labels.satisfaction}</th>}
+                                        {risk.supportingData?.quadrant && <th>{labels.loyalty}</th>}
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -1488,8 +1491,8 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                                   {!(action.supportingData?.quadrant && !action.supportingData?.conversionType && !action.supportingData?.riskType && !action.supportingData?.opportunityType) && <th>Distance</th>}
                                   {action.supportingData?.conversionType === 'opportunity' && <th>Chances</th>}
                                   {action.supportingData?.riskType === 'crisis' && <th>Risk Score</th>}
-                                  {action.supportingData?.quadrant && !action.supportingData?.conversionType && !action.supportingData?.riskType && !action.supportingData?.opportunityType && <th>Satisfaction</th>}
-                                  {action.supportingData?.quadrant && !action.supportingData?.conversionType && !action.supportingData?.riskType && !action.supportingData?.opportunityType && <th>Loyalty</th>}
+                                  {action.supportingData?.quadrant && !action.supportingData?.conversionType && !action.supportingData?.riskType && !action.supportingData?.opportunityType && <th>{labels.satisfaction}</th>}
+                                  {action.supportingData?.quadrant && !action.supportingData?.conversionType && !action.supportingData?.riskType && !action.supportingData?.opportunityType && <th>{labels.loyalty}</th>}
                                 </tr>
                               </thead>
                               <tbody>
@@ -1594,8 +1597,8 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                                           {!(action.supportingData?.quadrant && !action.supportingData?.conversionType && !action.supportingData?.riskType && !action.supportingData?.opportunityType) && <th>Distance</th>}
                                           {action.supportingData?.conversionType === 'opportunity' && <th>Chances</th>}
                                           {(action.supportingData?.riskType === 'crisis' || action.supportingData?.opportunityType === 'redemption') && <th>Risk Score</th>}
-                                          {action.supportingData?.quadrant && !action.supportingData?.conversionType && !action.supportingData?.riskType && !action.supportingData?.opportunityType && <th>Satisfaction</th>}
-                                          {action.supportingData?.quadrant && !action.supportingData?.conversionType && !action.supportingData?.riskType && !action.supportingData?.opportunityType && <th>Loyalty</th>}
+                                          {action.supportingData?.quadrant && !action.supportingData?.conversionType && !action.supportingData?.riskType && !action.supportingData?.opportunityType && <th>{labels.satisfaction}</th>}
+                                          {action.supportingData?.quadrant && !action.supportingData?.conversionType && !action.supportingData?.riskType && !action.supportingData?.opportunityType && <th>{labels.loyalty}</th>}
                                         </tr>
                                       </thead>
                                       <tbody>
@@ -1784,8 +1787,8 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                                           <th>Position</th>
                                           {!(action.supportingData?.quadrant && !action.supportingData?.conversionType) && <th>Distance</th>}
                                           {action.supportingData?.conversionType === 'opportunity' && <th>Chances</th>}
-                                          {action.supportingData?.quadrant && !action.supportingData?.conversionType && <th>Satisfaction</th>}
-                                          {action.supportingData?.quadrant && !action.supportingData?.conversionType && <th>Loyalty</th>}
+                                          {action.supportingData?.quadrant && !action.supportingData?.conversionType && <th>{labels.satisfaction}</th>}
+                                          {action.supportingData?.quadrant && !action.supportingData?.conversionType && <th>{labels.loyalty}</th>}
                                         </tr>
                                       </thead>
                                       <tbody>

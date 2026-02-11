@@ -4,6 +4,7 @@ import { ForecastResult, ForecastPoint } from '../services/forecastService';
 import { TrendDataPoint } from '../services/historicalAnalysisService';
 import { ScaleFormat } from '@/types/base';
 import { InfoRibbon } from '../../InfoRibbon';
+import { useAxisLabels } from '../../../../visualization/context/AxisLabelsContext';
 
 interface ForecastVisualizationProps {
   forecast: ForecastResult;
@@ -18,6 +19,7 @@ export const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
   satisfactionScale,
   loyaltyScale
 }) => {
+  const { labels } = useAxisLabels();
   // Prepare data for charts - mark forecast points
   const historicalChartData = historicalData.map(point => ({
     date: point.date,
@@ -81,7 +83,7 @@ export const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
 
       <div className="forecast-charts">
         <div className="forecast-chart-item">
-          <h5 className="forecast-chart-title">Satisfaction Forecast</h5>
+          <h5 className="forecast-chart-title">{labels.satisfaction} Forecast</h5>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={combinedData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -109,7 +111,7 @@ export const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
                   const isForecast = props.payload?.isForecast;
                   return [
                     value.toFixed(2), 
-                    isForecast ? 'Satisfaction (Forecast)' : 'Satisfaction (Historical)'
+                    isForecast ? `${labels.satisfaction} (Forecast)` : `${labels.satisfaction} (Historical)`
                   ];
                 }}
               />
@@ -142,7 +144,7 @@ export const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
                     />
                   );
                 }}
-                name="Satisfaction"
+                name={labels.satisfaction}
                 isAnimationActive={false}
               />
             </LineChart>
@@ -165,7 +167,7 @@ export const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
         </div>
 
         <div className="forecast-chart-item">
-          <h5 className="forecast-chart-title">Loyalty Forecast</h5>
+          <h5 className="forecast-chart-title">{labels.loyalty} Forecast</h5>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={combinedData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -193,7 +195,7 @@ export const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
                   const isForecast = props.payload?.isForecast;
                   return [
                     value.toFixed(2), 
-                    isForecast ? 'Loyalty (Forecast)' : 'Loyalty (Historical)'
+                    isForecast ? `${labels.loyalty} (Forecast)` : `${labels.loyalty} (Historical)`
                   ];
                 }}
               />
@@ -226,7 +228,7 @@ export const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
                     />
                   );
                 }}
-                name="Loyalty"
+                name={labels.loyalty}
                 isAnimationActive={false}
               />
             </LineChart>

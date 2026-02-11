@@ -3,6 +3,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import type { QuadrantType } from '../../../../visualization/context/QuadrantAssignmentContext';
 import type { DataPoint } from '@/types/base';
 import type { CustomerTimeline } from '../utils/historicalDataUtils';
+import { useAxisLabels } from '../../../../visualization/context/AxisLabelsContext';
 
 type SortKey =
   | 'customer'
@@ -123,6 +124,7 @@ export const CustomerJourneysSection: React.FC<{
   getQuadrantForPoint: (point: DataPoint) => QuadrantType;
   isClassicModel?: boolean;
 }> = ({ timelines, getQuadrantForPoint, isClassicModel = true }) => {
+  const { labels } = useAxisLabels();
   const JOURNEYS_SETTINGS_KEY = 'historicalProgressJourneysSettings';
   const readJourneysSettings = (): Partial<{
     isExpanded: boolean;
@@ -365,8 +367,8 @@ export const CustomerJourneysSection: React.FC<{
                                     <tr>
                                       <th>Date</th>
                                       <th>Quadrant</th>
-                                      <th>Satisfaction</th>
-                                      <th>Loyalty</th>
+                                      <th>{labels.satisfaction}</th>
+                                      <th>{labels.loyalty}</th>
                                     </tr>
                                   </thead>
                                   <tbody>

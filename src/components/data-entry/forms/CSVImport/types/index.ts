@@ -9,6 +9,10 @@ export interface CSVRow {
 export interface HeaderScales {
   satisfaction: ScaleFormat;
   loyalty: ScaleFormat;
+  /** Original CSV header name for the satisfaction column (e.g. "CES", "Sat", "CSAT") */
+  satisfactionHeaderName?: string;
+  /** Original CSV header name for the loyalty column (e.g. "Loy", "Loyalty") */
+  loyaltyHeaderName?: string;
 }
 
 export interface ValidationErrorData {

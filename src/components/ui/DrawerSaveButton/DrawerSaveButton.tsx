@@ -6,6 +6,7 @@ import { useNotification } from '../../data-entry/NotificationSystem';
 import { useUnsavedChanges } from '../../../hooks/useUnsavedChanges';
 import { useChartConfigSafe } from '../../visualization/context/ChartConfigContext';
 import { useQuadrantAssignmentSafe } from '../../visualization/context/UnifiedQuadrantContext';
+import { useAxisLabels } from '../../visualization/context/AxisLabelsContext';
 import './DrawerSaveButton.css';
 
 interface DrawerSaveButtonProps {
@@ -67,6 +68,7 @@ export const DrawerSaveButton: React.FC<DrawerSaveButtonProps> = ({
   // Get context values for unsaved changes tracking
   const chartConfig = useChartConfigSafe();
   const quadrantContext = useQuadrantAssignmentSafe();
+  const { satisfactionHeaderName, loyaltyHeaderName } = useAxisLabels();
   
   // Track unsaved changes
   const { hasUnsavedChanges, lastSavedText, markAsSaved } = useUnsavedChanges({
@@ -102,6 +104,8 @@ export const DrawerSaveButton: React.FC<DrawerSaveButtonProps> = ({
       data,
       satisfactionScale,
       loyaltyScale,
+      satisfactionHeaderName,
+      loyaltyHeaderName,
       showGrid,
       showScaleNumbers,
       showLegends,

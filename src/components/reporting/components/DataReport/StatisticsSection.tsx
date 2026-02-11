@@ -4,6 +4,7 @@ import { HighlightableKPI } from '../HighlightableKPI';
 import type { BarChartData } from '../BarChart';
 import { DataPoint } from '@/types/base';
 import { ReportFilter } from '../../filters/ReportFilterPanel';
+import { useAxisLabels } from '../../../visualization/context/AxisLabelsContext';
 
 interface StatisticsSectionProps {
   statistics: {
@@ -39,6 +40,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
   isPremium,
   originalData = []
 }) => {
+  const { labels } = useAxisLabels();
   const [satisfactionColors, setSatisfactionColors] = useState<Record<number, string>>({});
   const [loyaltyColors, setLoyaltyColors] = useState<Record<number, string>>({});
   
@@ -111,7 +113,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
       <h4 className="report-section-title">Statistics</h4>
       <div className="report-stats-comparison">
         <div className="report-stats-column">
-          <h5 className="report-column-title">Satisfaction ({scales.satisfaction})</h5>
+          <h5 className="report-column-title">{labels.satisfaction} ({scales.satisfaction})</h5>
           <HighlightableKPI id="satisfaction-average" isPremium={isPremium}>
             <div className="report-stat-item">
               <span className="report-stat-label">Average:</span>
@@ -149,7 +151,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
         </div>
 
         <div className="report-stats-column">
-          <h5 className="report-column-title">Loyalty ({scales.loyalty})</h5>
+          <h5 className="report-column-title">{labels.loyalty} ({scales.loyalty})</h5>
           <HighlightableKPI id="loyalty-average" isPremium={isPremium}>
             <div className="report-stat-item">
               <span className="report-stat-label">Average:</span>
@@ -209,7 +211,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
                 return newColors;
               });
             }}
-            title={`Satisfaction (${scales.satisfaction})`}
+            title={`${labels.satisfaction} (${scales.satisfaction})`}
             showLegend={true}
             chartId="satisfaction"
             // Add these new props for filtering
@@ -241,7 +243,7 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({
                 return newColors;
               });
             }}
-            title={`Loyalty (${scales.loyalty})`}
+            title={`${labels.loyalty} (${scales.loyalty})`}
             showLegend={true}
             chartId="loyalty"
             // Add these new props for filtering

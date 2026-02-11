@@ -384,6 +384,10 @@ export const processHeaders = (headers: string[]): HeaderProcessingResult => {
     }
   }
   
+  // Attach original header names to scales for dynamic label display
+  result.scales.satisfactionHeaderName = result.satisfactionHeader || undefined;
+  result.scales.loyaltyHeaderName = result.loyaltyHeader || undefined;
+  
   return result;
 };
 
@@ -487,7 +491,9 @@ export const applyConfirmedScales = (
     loyaltyHeader: result.loyaltyHeader,
     scales: {
       satisfaction: confirmedScales.satisfaction || result.scales.satisfaction,
-      loyalty: confirmedScales.loyalty || result.scales.loyalty
+      loyalty: confirmedScales.loyalty || result.scales.loyalty,
+      satisfactionHeaderName: result.satisfactionHeader || undefined,
+      loyaltyHeaderName: result.loyaltyHeader || undefined
     },
     isValid: result.isValid,
     errors: result.errors

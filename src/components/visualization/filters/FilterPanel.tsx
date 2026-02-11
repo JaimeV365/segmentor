@@ -5,6 +5,7 @@ import { FrequencySlider } from '../controls/FrequencyControl/FrequencySlider';
 import { Switch } from '../../ui/Switch/Switch';
 import { useFilterContextSafe } from '../context/FilterContext';
 import { useQuadrantAssignmentSafe } from '../context/QuadrantAssignmentContext';
+import { useAxisLabels } from '../context/AxisLabelsContext';
 import { getRelevantDatePresets, getDateRangeDescription, parseDateString } from '../../../utils/dateFilterUtils';
 import { categorizeLoyaltyValue } from '../../../utils/recommendationScore';
 import './FilterPanel.css';
@@ -86,6 +87,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   
   // Access quadrant assignment context to get segment information
   const quadrantContext = useQuadrantAssignmentSafe();
+  
+  const { labels } = useAxisLabels();
   
   // Log quadrant context state on every render to track midpoint changes
   // FORCE this log to appear - use console.warn for visibility
@@ -2459,8 +2462,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     // Special cases for field names that need specific formatting
     const specialFieldMap: Record<string, string> = {
       'id': 'ID',
-      'satisfaction': 'Satisfaction',
-      'loyalty': 'Loyalty',
+      'satisfaction': labels.satisfaction,
+      'loyalty': labels.loyalty,
       'segment': 'Segment',
       'ces': 'CES',
       'csat': 'CSAT',

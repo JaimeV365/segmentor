@@ -8,6 +8,7 @@ import { parseDate } from '../utils/historicalDataUtils';
 import { InfoRibbon } from '../../InfoRibbon/InfoRibbon';
 import { Menu as MenuIcon, X } from 'lucide-react';
 import { ChartColorPicker } from './ChartColorPicker';
+import { useAxisLabels } from '../../../../visualization/context/AxisLabelsContext';
 
 interface TrendChartProps {
   data: TrendDataPoint[];
@@ -34,6 +35,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
   title,
   dateFormat
 }) => {
+  const { labels } = useAxisLabels();
   const [clickedPoint, setClickedPoint] = useState<ClickedPoint | null>(null);
   const [showControlsPanel, setShowControlsPanel] = useState(false);
   const [chartColors, setChartColors] = useState<{
@@ -377,7 +379,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                 fontSize: '12px'
               }}
               formatter={(value: number, name: string) => {
-                return [value.toFixed(2), name === 'satisfaction' ? 'Satisfaction (Avg)' : name === 'loyalty' ? 'Loyalty (Avg)' : name];
+                return [value.toFixed(2), name === 'satisfaction' ? `${labels.satisfaction} (Avg)` : name === 'loyalty' ? `${labels.loyalty} (Avg)` : name];
               }}
               labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
             />
@@ -430,7 +432,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                 stroke={chartColors.averageSatisfactionColor || '#3a863e'} 
                 strokeWidth={3}
                 dot={(props: any) => <CustomDot {...props} fill={chartColors.averageSatisfactionColor || '#3a863e'} stroke={chartColors.averageSatisfactionColor || '#3a863e'} dataKey="averageSatisfaction" metricType="satisfaction" />}
-                name="Satisfaction (Average)"
+                name={`${labels.satisfaction} (Average)`}
                 isAnimationActive={false}
                 activeDot={(props: any) => {
                   const { payload, index: dotIndex } = props;
@@ -491,7 +493,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({
                 stroke={chartColors.averageLoyaltyColor || '#4682B4'} 
                 strokeWidth={3}
                 dot={(props: any) => <CustomDot {...props} fill={chartColors.averageLoyaltyColor || '#4682B4'} stroke={chartColors.averageLoyaltyColor || '#4682B4'} dataKey="averageLoyalty" metricType="loyalty" />}
-                name="Loyalty (Average)"
+                name={`${labels.loyalty} (Average)`}
                 isAnimationActive={false}
                 activeDot={(props: any) => {
                   const { payload, index: dotIndex } = props;

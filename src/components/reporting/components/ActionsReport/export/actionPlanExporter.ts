@@ -730,7 +730,8 @@ function addCustomerTable(
   checkPageBreak: (requiredHeight: number, yPositionRef?: { value: number }) => void,
   isQuadrantBased?: boolean,
   hasDistance?: boolean,
-  hasChances?: boolean
+  hasChances?: boolean,
+  axisLabels?: { satisfaction: string; loyalty: string }
 ): void {
   if (!customers || customers.length === 0) {
     return;
@@ -797,9 +798,11 @@ function addCustomerTable(
     xPos += chancesWidth;
   }
   if (showSatisfactionLoyalty) {
-    pdf.text('Satisfaction', xPos, yPosition + 5);
+    const satisfactionLabel = axisLabels?.satisfaction || 'Satisfaction';
+    const loyaltyLabel = axisLabels?.loyalty || 'Loyalty';
+    pdf.text(satisfactionLabel, xPos, yPosition + 5);
     xPos += satisfactionWidth;
-    pdf.text('Loyalty', xPos, yPosition + 5);
+    pdf.text(loyaltyLabel, xPos, yPosition + 5);
     xPos += loyaltyWidth;
   }
   
@@ -856,9 +859,11 @@ function addCustomerTable(
         xPos += chancesWidth;
       }
       if (showSatisfactionLoyalty) {
-        pdf.text('Satisfaction', xPos, yPosition + 5);
+        const satisfactionLabel = axisLabels?.satisfaction || 'Satisfaction';
+        const loyaltyLabel = axisLabels?.loyalty || 'Loyalty';
+        pdf.text(satisfactionLabel, xPos, yPosition + 5);
         xPos += satisfactionWidth;
-        pdf.text('Loyalty', xPos, yPosition + 5);
+        pdf.text(loyaltyLabel, xPos, yPosition + 5);
         xPos += loyaltyWidth;
       }
       
@@ -1028,6 +1033,7 @@ interface PDFExportOptions {
   showWatermarks?: boolean; // Deprecated: use showImageWatermarks and showPageWatermarks instead
   showImageWatermarks?: boolean;
   showPageWatermarks?: boolean;
+  axisLabels?: { satisfaction: string; loyalty: string };
 }
 
 // Helper function to get the correct font name for body text
@@ -1052,8 +1058,12 @@ export async function exportActionPlanToPDF(
     fontFamily = 'montserrat', 
     showWatermarks, // Legacy support
     showImageWatermarks: providedShowImageWatermarks,
-    showPageWatermarks: providedShowPageWatermarks
+    showPageWatermarks: providedShowPageWatermarks,
+    axisLabels
   } = options || {};
+  
+  // Default axis labels if not provided
+  const labels = axisLabels || { satisfaction: 'Satisfaction', loyalty: 'Loyalty' };
   
   // Handle legacy showWatermarks option and defaults
   const showImageWatermarks = providedShowImageWatermarks !== undefined 
@@ -1496,7 +1506,8 @@ export async function exportActionPlanToPDF(
             checkPageBreak,
             opportunity.supportingData?.quadrant,
             !opportunity.supportingData?.quadrant,
-            false
+            false,
+            labels
           );
           // yPosition is updated by reference in addCustomerTable, so read it back
           yPosition = yPositionRef.value;
@@ -1622,7 +1633,8 @@ export async function exportActionPlanToPDF(
           checkPageBreak,
           action.supportingData?.quadrant && !action.supportingData?.conversionType,
           !action.supportingData?.quadrant || action.supportingData?.conversionType === 'opportunity',
-          action.supportingData?.conversionType === 'opportunity'
+          action.supportingData?.conversionType === 'opportunity',
+          labels
         );
         // yPosition is updated by reference in addCustomerTable, so read it back
         yPosition = yPositionRef.value;

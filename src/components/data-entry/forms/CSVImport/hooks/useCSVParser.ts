@@ -140,8 +140,12 @@ if (headerResult.needsUserConfirmation) {
   return;
 }
 
-// Use detected scales
-const headerScales = headerResult.scales;
+// Use detected scales and include original header names
+const headerScales: HeaderScales = {
+  ...headerResult.scales,
+  satisfactionHeaderName: headerResult.satisfactionHeader || undefined,
+  loyaltyHeaderName: headerResult.loyaltyHeader || undefined
+};
 console.log("Detected scales:", headerScales);
 
           // Process data rows

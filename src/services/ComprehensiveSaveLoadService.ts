@@ -17,6 +17,8 @@ export interface CreateSaveDataParams {
   manualAssignments: Map<string, string>;
   satisfactionScale: string;
   loyaltyScale: string;
+  satisfactionHeaderName?: string; // Original CSV header name for dynamic labels
+  loyaltyHeaderName?: string; // Original CSV header name for dynamic labels
   
   // Chart Configuration
   midpoint: { sat: number; loy: number };
@@ -154,6 +156,14 @@ class ComprehensiveSaveLoadServiceImpl implements SaveLoadService {
       excluded: 'boolean',
       reassigned: 'boolean'
     };
+    
+    // Store original CSV header names for dynamic axis labels
+    if (params.satisfactionHeaderName) {
+      headers.satisfactionHeaderName = params.satisfactionHeaderName;
+    }
+    if (params.loyaltyHeaderName) {
+      headers.loyaltyHeaderName = params.loyaltyHeaderName;
+    }
 
     // Add optional headers if they exist in the data
     const samplePoint = params.data[0];

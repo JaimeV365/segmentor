@@ -11,6 +11,7 @@ import FilterPanel from '../../../visualization/filters/FilterPanel';
 import { useFilterContextSafe } from '../../../visualization/context/FilterContext';
 import { ReportFilter } from '../../filters/ReportFilterPanel';
 import { useNotification } from '../../../data-entry/hooks/useNotification';
+import { useAxisLabels } from '../../../visualization/context/AxisLabelsContext';
 import '../../../visualization/controls/UnifiedChartControls.css';
 
 interface DataReportProps {
@@ -49,6 +50,7 @@ export const DataReport: React.FC<DataReportProps> = ({
   // Filter system state
   const filterContext = useFilterContextSafe();
   const { showNotification } = useNotification();
+  const { labels } = useAxisLabels();
   const REPORT_ID = useMemo(() => 'dataReportStatistics', []);
   const [activeFilters, setActiveFilters] = useState<ReportFilter[]>([]);
   const [filteredDataFromPanel, setFilteredDataFromPanel] = useState<DataPoint[] | null>(null);

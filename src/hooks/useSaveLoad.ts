@@ -11,6 +11,8 @@ export interface UseSaveLoadParams {
   data: any[];
   satisfactionScale: string;
   loyaltyScale: string;
+  satisfactionHeaderName?: string; // Original CSV header name for dynamic labels
+  loyaltyHeaderName?: string; // Original CSV header name for dynamic labels
   
   // UI State (from App.tsx)
   showGrid: boolean;
@@ -36,7 +38,7 @@ export interface UseSaveLoadParams {
   originalPremiumData?: { effects: string[]; brandPlusUser: boolean } | null;
   
   // Callbacks for loading
-  onDataLoad?: (data: any[], scales: { satisfaction: string; loyalty: string }) => void;
+  onDataLoad?: (data: any[], scales: { satisfaction: string; loyalty: string; satisfactionHeaderName?: string; loyaltyHeaderName?: string }) => void;
   onSettingsLoad?: (settings: any) => void;
 }
 
@@ -232,6 +234,8 @@ export const useSaveLoad = (params: UseSaveLoadParams) => {
         manualAssignments,
         satisfactionScale,
         loyaltyScale,
+        satisfactionHeaderName: params.satisfactionHeaderName,
+        loyaltyHeaderName: params.loyaltyHeaderName,
         
         // Chart Configuration
         midpoint,
@@ -360,7 +364,9 @@ export const useSaveLoad = (params: UseSaveLoadParams) => {
         if (params.onDataLoad) {
           params.onDataLoad(dataPoints, {
             satisfaction: saveData.dataTable.headers.satisfaction,
-            loyalty: saveData.dataTable.headers.loyalty
+            loyalty: saveData.dataTable.headers.loyalty,
+            satisfactionHeaderName: saveData.dataTable.headers.satisfactionHeaderName,
+            loyaltyHeaderName: saveData.dataTable.headers.loyaltyHeaderName
           });
         }
         

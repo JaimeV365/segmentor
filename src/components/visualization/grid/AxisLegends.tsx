@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScaleFormat } from '../../../types/base';
+import { useAxisLabels } from '../context/AxisLabelsContext';
 
 interface AxisLegendsProps {
   satisfactionScale: ScaleFormat;
@@ -14,6 +15,7 @@ const AxisLegends: React.FC<AxisLegendsProps> = ({
   showLegends,
   showScaleNumbers
 }) => {
+  const { labels } = useAxisLabels();
   if (!showLegends) return null;
 
   // Extract scale ranges (both min and max)
@@ -73,7 +75,7 @@ const AxisLegends: React.FC<AxisLegendsProps> = ({
         }}
       >
         <span style={textStyles}>
-          Satisfaction
+          {labels.satisfaction}
         </span>
         <span style={rangeStyles}>
           {satMin} - {satMax}
@@ -93,7 +95,7 @@ const AxisLegends: React.FC<AxisLegendsProps> = ({
         }}
       >
         <span style={textStyles}>
-          Loyalty
+          {labels.loyalty}
         </span>
         <span style={rangeStyles}>
           {loyMin} - {loyMax}

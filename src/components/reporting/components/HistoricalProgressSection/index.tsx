@@ -6,6 +6,7 @@ import type { QuadrantType } from '../../../visualization/context/QuadrantAssign
 import { useFilterContextSafe } from '../../../visualization/context/FilterContext';
 import { useNotification } from '../../../data-entry/hooks/useNotification';
 import FilterPanel from '../../../visualization/filters/FilterPanel';
+import { useAxisLabels } from '../../../visualization/context/AxisLabelsContext';
 import { 
   calculateTrendData, 
   calculateQuadrantMovements, 
@@ -33,6 +34,7 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
   isPremium = false,
   isClassicModel = false
 }) => {
+  const { labels } = useAxisLabels();
   // Get quadrant assignment function from context
   const { getQuadrantForPoint } = useQuadrantAssignment();
   const filterContext = useFilterContextSafe();
@@ -254,7 +256,7 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
 
       const headers: string[] = ['Identifier Type', 'Email', 'ID', 'Name', 'Group'];
       for (let i = 1; i <= maxDates; i += 1) {
-        headers.push(`Date ${i}`, `Quadrant ${i}`, `Satisfaction ${i}`, `Loyalty ${i}`);
+        headers.push(`Date ${i}`, `Quadrant ${i}`, `${labels.satisfaction} ${i}`, `${labels.loyalty} ${i}`);
       }
       headers.push('Total Dates', 'Movement Count', 'Distinct Quadrants', 'Quadrant Path');
 
@@ -445,13 +447,13 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
             {periodComparison && (
               <>
                 <div className="report-stat-item">
-                  <span className="report-stat-label">Satisfaction Change</span>
+                  <span className="report-stat-label">{labels.satisfaction} Change</span>
                   <span className={`report-stat-value ${periodComparison.satisfactionChange >= 0 ? 'positive' : 'negative'}`}>
                     {periodComparison.satisfactionChange >= 0 ? '+' : ''}{periodComparison.satisfactionChange}
                   </span>
                 </div>
                 <div className="report-stat-item">
-                  <span className="report-stat-label">Loyalty Change</span>
+                  <span className="report-stat-label">{labels.loyalty} Change</span>
                   <span className={`report-stat-value ${periodComparison.loyaltyChange >= 0 ? 'positive' : 'negative'}`}>
                     {periodComparison.loyaltyChange >= 0 ? '+' : ''}{periodComparison.loyaltyChange}
                   </span>
@@ -469,7 +471,7 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
                   timelines={timelines}
                   scale={satisfactionScale}
                   metric="satisfaction"
-                  title="Satisfaction Trend Over Time"
+                  title={`${labels.satisfaction} Trend Over Time`}
                   dateFormat={dateFormat}
                 />
                 <TrendChart
@@ -477,7 +479,7 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
                   timelines={timelines}
                   scale={loyaltyScale}
                   metric="loyalty"
-                  title="Loyalty Trend Over Time"
+                  title={`${labels.loyalty} Trend Over Time`}
                   dateFormat={dateFormat}
                 />
               </div>
@@ -487,7 +489,7 @@ export const HistoricalProgressSection: React.FC<HistoricalProgressSectionProps>
                 timelines={timelines}
                 scale={satisfactionScale}
                 metric="both"
-                title="Combined Satisfaction & Loyalty Trends"
+                title={`Combined ${labels.satisfaction} & ${labels.loyalty} Trends`}
                 dateFormat={dateFormat}
               />
             </div>
