@@ -1,4 +1,4 @@
-import { DataPoint, Midpoint, ScaleFormat, getScaleMinValue } from '@/types/base';
+import { DataPoint, Midpoint, ScaleFormat, getScaleMinValue } from '../../../types/base';
 import { QuadrantType } from '../context/DataProcessingContext';
 import { calculateSpecialZoneBoundaries } from '../utils/zoneCalculator';
 
