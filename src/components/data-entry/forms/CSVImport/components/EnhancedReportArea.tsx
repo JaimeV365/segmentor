@@ -3,6 +3,24 @@ import { AlertTriangle, AlertCircle, Download } from 'lucide-react';
 import { DuplicateReport, DateIssueReport, ValidationErrorData } from '../types';
 import './EnhancedReportArea.css';
 
+/** Categorize rejected items by scanning their reason strings. */
+function summarizeRejections(items: DateIssueReport['items']): string {
+  let sat = 0, loy = 0, date = 0, other = 0;
+  for (const item of items) {
+    const r = item.reason.toLowerCase();
+    if (r.includes('satisfaction')) sat++;
+    else if (r.includes('loyalty')) loy++;
+    else if (r.includes('date')) date++;
+    else other++;
+  }
+  const parts: string[] = [];
+  if (sat > 0) parts.push(`${sat} with invalid satisfaction values`);
+  if (loy > 0) parts.push(`${loy} with invalid loyalty values`);
+  if (date > 0) parts.push(`${date} with date errors`);
+  if (other > 0) parts.push(`${other} with other issues`);
+  return parts.join(', ');
+}
+
 interface EnhancedReportAreaProps {
   errorReports?: DateIssueReport | null;
   validationErrors?: ValidationErrorData | null;
@@ -65,9 +83,10 @@ export const EnhancedReportArea: React.FC<EnhancedReportAreaProps> = ({
                   </div>
                   <p className="report-item__message">
                     {errorReports.count === 1 
-                      ? 'An entry was skipped due to invalid data. ' 
-                      : `${errorReports.count} entries were skipped due to invalid data (e.g. out-of-range values, date errors). `} 
-                    Download the report for details.
+                      ? 'An entry was skipped: ' 
+                      : `${errorReports.count} entries were skipped: `}
+                    {summarizeRejections(errorReports.items)}.
+                    {' '}Download the report for details.
                   </p>
                 </div>
                 <button 
