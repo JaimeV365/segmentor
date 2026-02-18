@@ -11,6 +11,12 @@
   justify-content: space-between;
   align-items: center;
   gap: var(--space-4, 16px);
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-secondary, #6b7280);
+}
+
+.footer-content p {
+  margin: 0;
 }
 
 .footer-nav {

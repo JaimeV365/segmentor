@@ -12,7 +12,7 @@
     {
       "id": "high-sample",
       "type": "High Sample",
-      "template": "We've got a good sample of {number} customers that should be a good representation of your customer base. However, far from making assumptions, you should make sure that this sample is representative enough for the personas, the moments of truth covered, the possible customer journeys covered, and whatever else applies to consider different representations.",
+      "template": "We've got a good sample of {number} customers that should be a good representation of your customer base. However, far from making assumptions, it may be worth checking that this sample is representative enough for the personas, the moments of truth covered, the possible customer journeys covered, and whatever else applies to consider different representations.",
       "placeholders": [
         "number"
       ],
@@ -56,7 +56,7 @@
     {
       "id": "wrong-customers-warning",
       "type": "Wrong Customers Warning",
-      "template": "Within the Defectors group, it's worth considering whether some of these are 'wrong customers' - customers who constantly complain, return products, or require excessive service. These customers may not align with your company's core value proposition and can consume disproportionate resources, negatively impact team morale, potentially damage your reputation through persistent complaints, and create operational inefficiencies. You should invest in preventing this from the very first steps of the customer journey by clearly communicating what your products/services do and don't do, setting proper expectations upfront, having clear terms and conditions, screening customers where appropriate, and providing self-service resources to help customers determine if you're the right fit.",
+      "template": "Within the Defectors group, it's worth considering whether some of these are 'wrong customers' - customers who constantly complain, return products, or require excessive service. These customers may not align with your company's core value proposition and can consume disproportionate resources, negatively impact team morale, potentially damage your reputation through persistent complaints, and create operational inefficiencies. It may be worth investing in preventing this from the very first steps of the customer journey by clearly communicating what your products/services do and don't do, setting proper expectations upfront, having clear terms and conditions, screening customers where appropriate, and providing self-service resources to help customers determine if you're the right fit.",
       "placeholders": [],
       "category": "findings"
     },
@@ -99,7 +99,7 @@
     {
       "id": "neutral-customers",
       "type": "Neutral Customers",
-      "template": "You have {count} Neutral customer{plural} ({percentage}% of your total) who {is/are} exactly at the midpoint - neither satisfied nor dissatisfied, neither loyal nor disloyal. These customers are at a critical transition point where they could move in literally any direction. This represents both a significant opportunity and a potential risk. With the right engagement, they could easily become Loyalists or even Apostles, but without attention, they could drift toward Hostages or Defectors. Their neutral position suggests they haven't formed strong opinions yet, making them more receptive to positive experiences. You should engage with them immediately to understand their experience, create positive moments that will tip them toward satisfaction and loyalty, and monitor their movement closely to prevent drift toward negative quadrants.",
+      "template": "You have {count} Neutral customer{plural} ({percentage}% of your total) who {is/are} exactly at the midpoint - neither satisfied nor dissatisfied, neither loyal nor disloyal. These customers are at a critical transition point where they could move in literally any direction. This represents both a significant opportunity and a potential risk. With the right engagement, they could easily become Loyalists or even Apostles, but without attention, they could drift toward Hostages or Defectors. Their neutral position suggests they haven't formed strong opinions yet, making them more receptive to positive experiences. It may be valuable to engage with them promptly to understand their experience, create positive moments that could tip them toward satisfaction and loyalty, and monitor their movement closely to help prevent drift toward negative quadrants.",
       "placeholders": [
         "count",
         "plural",
@@ -118,7 +118,7 @@
     {
       "id": "low-neutral-count",
       "type": "Low Neutral Count",
-      "template": "Whilst the number of Neutral customers is small, each one represents a critical opportunity. Don't overlook them - targeted engagement could quickly convert them into Loyalists.",
+      "template": "Whilst the number of Neutral customers is small, each one represents a critical opportunity. It may be worth not overlooking them - targeted engagement could quickly convert them into Loyalists.",
       "placeholders": [],
       "category": "findings"
     },
@@ -194,7 +194,7 @@
     {
       "id": "opening-statement-loyalists",
       "type": "Opening Statement - loyalists",
-      "template": "Loyalists is the most popular segment with {count} customers, representing {percentage}% of the total. This is excellent news - Loyalists are the reason why your business is still alive. They are happy customers who are also willing to come back to you. They're the foundation of your business's stability and growth. However, remember that loyalty is fragile and competition is fierce, so you should not take their loyalty for granted.",
+      "template": "Loyalists is the most popular segment with {count} customers, representing {percentage}% of the total. This is excellent news - Loyalists are the reason why your business is still alive. They are happy customers who are also willing to come back to you. They're the foundation of your business's stability and growth. However, it is worth remembering that loyalty is fragile and competition is fierce, so it may be wise not to take their loyalty for granted.",
       "placeholders": [
         "count",
         "percentage"
@@ -205,7 +205,7 @@
     {
       "id": "opening-statement-mercenaries",
       "type": "Opening Statement - mercenaries",
-      "template": "Mercenaries is the most popular segment with {count} customers, representing {percentage}% of the total. This group represents satisfied customers who know you, like you, and trust you - but they also shop with competitors. Rather than seeing this as a problem, recognise it as a massive opportunity. These are returning customers who are happy with your offering. Your goal should be to keep your products and services in their top suppliers to buy from as frequently as possible, rather than trying to make them exclusively loyal (which is often unrealistic in today's competitive landscape).",
+      "template": "Mercenaries is the most popular segment with {count} customers, representing {percentage}% of the total. This group represents satisfied customers who know you, like you, and trust you - but they also shop with competitors. Rather than seeing this as a problem, recognise it as a massive opportunity. These are returning customers who are happy with your offering. A good goal might be to keep your products and services in their top suppliers to buy from as frequently as possible, rather than trying to make them exclusively loyal (which is often unrealistic in today's competitive landscape).",
       "placeholders": [
         "count",
         "percentage"
@@ -216,7 +216,7 @@
     {
       "id": "opening-statement-hostages",
       "type": "Opening Statement - hostages",
-      "template": "Hostages is the most popular segment with {count} customers, representing {percentage}% of the total. This is a serious concern that requires immediate attention. Hostages are customers who continue to buy from you despite being dissatisfied - they're staying out of necessity rather than choice. This means a significant portion of your customer base is unhappy with your products or services, and they will churn as soon as a better option becomes available. Additionally, they could already be damaging your reputation through negative feedback. You need to urgently investigate why they're not satisfied and address the underlying issues before competitors provide alternatives.",
+      "template": "Hostages is the most popular segment with {count} customers, representing {percentage}% of the total. This is a serious concern that may require immediate attention. Hostages are customers who continue to buy from you despite being dissatisfied - they're staying out of necessity rather than choice. This means a significant portion of your customer base is unhappy with your products or services, and they may churn as soon as a better option becomes available. Additionally, they could already be damaging your reputation through negative feedback. It may be important to investigate why they're not satisfied and address the underlying issues before competitors provide alternatives.",
       "placeholders": [
         "count",
         "percentage"
@@ -227,7 +227,7 @@
     {
       "id": "opening-statement-defectors",
       "type": "Opening Statement - defectors",
-      "template": "Defectors is the most popular segment with {count} customers, representing {percentage}% of the total. This is a critical situation that demands immediate action. Defectors are customers who are both dissatisfied and disloyal - they've either already left you or are on the brink of doing so. Having this as your largest segment indicates serious problems with your products, services, or customer experience. These customers are likely sharing negative feedback and may be actively harming your reputation. You need to urgently investigate what went wrong, address the root causes, and implement recovery strategies before this situation worsens.",
+      "template": "Defectors is the most popular segment with {count} customers, representing {percentage}% of the total. This is a critical situation that may warrant immediate attention. Defectors are customers who are both dissatisfied and disloyal - they've either already left you or are on the brink of doing so. Having this as your largest segment indicates serious problems with your products, services, or customer experience. These customers are likely sharing negative feedback and may be actively harming your reputation. It may be important to investigate what went wrong, address the root causes, and implement recovery strategies before this situation worsens.",
       "placeholders": [
         "count",
         "percentage"
@@ -238,7 +238,7 @@
     {
       "id": "opening-statement-near_apostles",
       "type": "Opening Statement - near_apostles",
-      "template": "Near-Apostles is the most popular segment with {count} customers, representing {percentage}% of the total. This is excellent news - Near-Apostles are Loyalists who are on the verge of becoming full advocates. They love your brand and are loyal, but haven't yet actively promoted or recommended you to others. Your priority should be promoting them into full Apostles by activating their advocacy potential, ensuring they don't lose their connection with your brand, and giving them the tools and incentives to become your brand ambassadors.",
+      "template": "Near-Apostles is the most popular segment with {count} customers, representing {percentage}% of the total. This is excellent news - Near-Apostles are Loyalists who are on the verge of becoming full advocates. They love your brand and are loyal, but haven't yet actively promoted or recommended you to others. A key priority could be promoting them into full Apostles by activating their advocacy potential, helping ensure they don't lose their connection with your brand, and giving them the tools and incentives to become your brand ambassadors.",
       "placeholders": [
         "count",
         "percentage"
@@ -249,7 +249,7 @@
     {
       "id": "opening-statement-terrorists",
       "type": "Opening Statement - terrorists",
-      "template": "Terrorists/Near-Terrorists is the most popular segment with {count} customers, representing {percentage}% of the total. This is a serious concern that requires immediate attention. These customers are extremely dissatisfied and disloyal, and they may actively discourage others from buying and could damage your reputation. You need to investigate why such a large portion of your customer base falls into this category and take urgent action to address the underlying issues.",
+      "template": "Terrorists/Near-Terrorists is the most popular segment with {count} customers, representing {percentage}% of the total. This is a serious concern that may require immediate attention. These customers are extremely dissatisfied and disloyal, and they may actively discourage others from buying and could damage your reputation. It may be worth investigating why such a large portion of your customer base falls into this category and taking action to address the underlying issues.",
       "placeholders": [
         "count",
         "percentage"
@@ -260,7 +260,7 @@
     {
       "id": "neutral-customers-statement",
       "type": "Neutral Customers Statement",
-      "template": "You have {count} Neutral customer{plural} ({percentage}% of your total) who {is/are} exactly at the midpoint - neither satisfied nor dissatisfied, neither loyal nor disloyal. These customers are at a critical transition point where they could move in literally any direction. This represents both a significant opportunity and a potential risk. With the right engagement, they could easily become Loyalists or even Apostles, but without attention, they could drift toward Hostages or Defectors. Their neutral position suggests they haven't formed strong opinions yet, making them more receptive to positive experiences. You should engage with them immediately to understand their experience, create positive moments that will tip them toward satisfaction and loyalty, and monitor their movement closely to prevent drift toward negative quadrants.",
+      "template": "You have {count} Neutral customer{plural} ({percentage}% of your total) who {is/are} exactly at the midpoint - neither satisfied nor dissatisfied, neither loyal nor disloyal. These customers are at a critical transition point where they could move in literally any direction. This represents both a significant opportunity and a potential risk. With the right engagement, they could easily become Loyalists or even Apostles, but without attention, they could drift toward Hostages or Defectors. Their neutral position suggests they haven't formed strong opinions yet, making them more receptive to positive experiences. It may be valuable to engage with them promptly to understand their experience, create positive moments that could tip them toward satisfaction and loyalty, and monitor their movement closely to help prevent drift toward negative quadrants.",
       "placeholders": [
         "count",
         "plural",
@@ -279,7 +279,7 @@
     {
       "id": "neutral-customers-low",
       "type": "Neutral Customers - Low Count",
-      "template": "Whilst the number of Neutral customers is small, each one represents a critical opportunity. Don't overlook them - targeted engagement could quickly convert them into Loyalists.",
+      "template": "Whilst the number of Neutral customers is small, each one represents a critical opportunity. It may be worth not overlooking them - targeted engagement could quickly convert them into Loyalists.",
       "placeholders": [],
       "category": "findings"
     },
@@ -295,7 +295,7 @@
     {
       "id": "sample-size-high",
       "type": "Sample Size - High",
-      "template": "We've got a good sample of {number} customers that should be a good representation of your customer base. However, far from making assumptions, you should make sure that this sample is representative enough for the personas, the moments of truth covered, the possible customer journeys covered, and whatever else applies to consider different representations.",
+      "template": "We've got a good sample of {number} customers that should be a good representation of your customer base. However, far from making assumptions, it may be worth checking that this sample is representative enough for the personas, the moments of truth covered, the possible customer journeys covered, and whatever else applies to consider different representations.",
       "placeholders": [
         "number"
       ],
@@ -311,7 +311,7 @@
     {
       "id": "sample-size-poor-representation",
       "type": "Sample Size - Poor Representation",
-      "template": "In addition to the somewhat small group of customers to analyse, it should be noted that not all groups have sufficient representation, with only a few or no customers at all in some quadrants. This might mean that we don't have sufficient representation of customers, and any analysis on this data might be incomplete, if not potentially misleading. You should segment the customer data and determine whether the small sample is representative enough for the personas, the moments of truth covered, the possible customer journeys covered, and whatever else applies to consider different representations. If it is concluded that the current data is not representative enough, it is strongly suggested to find ways to add customer data to this analysis or alternatively find alternatives to analyse customer data.",
+      "template": "In addition to the somewhat small group of customers to analyse, it should be noted that not all groups have sufficient representation, with only a few or no customers at all in some quadrants. This might mean that we don't have sufficient representation of customers, and any analysis on this data might be incomplete, if not potentially misleading. It may be worth segmenting the customer data and determining whether the small sample is representative enough for the personas, the moments of truth covered, the possible customer journeys covered, and whatever else applies to consider different representations. If it is concluded that the current data is not representative enough, it is strongly suggested to find ways to add customer data to this analysis or alternatively find alternatives to analyse customer data.",
       "placeholders": [],
       "category": "findings"
     }
@@ -458,7 +458,7 @@
     {
       "id": "action-unknown-dont-ignore-them",
       "type": "Don't ignore them",
-      "template": "Remember they are active customers! You don't need to invest in expensive Marketing campaigns to attract them because they are already doing so. Then, you must focus on meeting their expectations by understanding their motivations and needs.",
+      "template": "Remember they are active customers who are already buying from you, so there may be no need to invest in expensive marketing campaigns to acquire them. Instead, you might focus on meeting their expectations by understanding their motivations and needs.",
       "placeholders": [],
       "category": "actions",
       "quadrant": "unknown",
@@ -467,7 +467,7 @@
     {
       "id": "action-unknown-understand-reasons",
       "type": "Understand reasons",
-      "template": "The first thing you need to do is understand why they are not satisfied with your products and services. You may be tempted to investigate why they are forced to buy from you, but your real interest should be on their lack of satisfaction, rather than their forced loyalty.",
+      "template": "A good starting point may be to understand why they are not satisfied with your products and services. You may be tempted to investigate why they are forced to buy from you, but the real interest might be on their lack of satisfaction, rather than their forced loyalty.",
       "placeholders": [],
       "category": "actions",
       "quadrant": "unknown",
@@ -476,7 +476,7 @@
     {
       "id": "action-unknown-address-dissatisfaction",
       "type": "Address dissatisfaction",
-      "template": "If you know why you are not meeting Hostages' needs, you may be uncovering pain points that potentially affect other segments in your customer base. Tackling those issues will help to turn their dissatisfaction and others'. Address their concerns promptly and transparently to build trust.",
+      "template": "If you know why you are not meeting Hostages' needs, you may be uncovering pain points that potentially affect other segments in your customer base. Tackling those issues could help to turn their dissatisfaction and others'. Addressing their concerns promptly and transparently may help build trust.",
       "placeholders": [],
       "category": "actions",
       "quadrant": "unknown",
@@ -494,7 +494,7 @@
     {
       "id": "action-unknown-offer-them-support",
       "type": "Offer them support",
-      "template": "In today's world personalisation is key. Your Customer Success strategy should count on special measures for this group, such as a dedicated account manager, direct support line, dedicated communications, documentation or more approachable channels.",
+      "template": "In today's world personalisation is key. Your Customer Success strategy might benefit from special measures for this group, such as a dedicated account manager, direct support line, dedicated communications, documentation or more approachable channels.",
       "placeholders": [],
       "category": "actions",
       "quadrant": "unknown",
@@ -548,7 +548,7 @@
     {
       "id": "action-unknown-know-your-customers",
       "type": "Know your customers",
-      "template": "The first question you should have an answer to is why they buy from you and what they like from your offering. Make sure you keep that, and improve it when possible.",
+      "template": "A good first question to consider is why they buy from you and what they like from your offering. It may be worth making sure you keep that, and improve it when possible.",
       "placeholders": [],
       "category": "actions",
       "quadrant": "unknown",
@@ -557,7 +557,7 @@
     {
       "id": "action-unknown-know-your-competitors",
       "type": "Know your competitors",
-      "template": "The second question would be what are others offering that you don't. You may find some easy wins and good ideas to implement in your brand. If the industry is progressing but you are not, you need to keep up.",
+      "template": "The second question might be what are others offering that you don't. You may find some easy wins and good ideas to implement in your brand. If the industry is progressing but you are not, it could be important to keep up.",
       "placeholders": [],
       "category": "actions",
       "quadrant": "unknown",
@@ -575,7 +575,7 @@
     {
       "id": "action-unknown-reward-loyalty",
       "type": "Reward loyalty",
-      "template": "You should celebrate when a Mercenary is making a purchase. Recognise their value with thank-you notes, anniversary discounts, or early access to new products. You want to create a sense of connection with the brand through personalised communications, loyalty programmes, or customer communities.",
+      "template": "It could be worth celebrating when a Mercenary is making a purchase. Recognising their value with thank-you notes, anniversary discounts, or early access to new products may help. Creating a sense of connection with the brand through personalised communications, loyalty programmes, or customer communities could also be effective.",
       "placeholders": [],
       "category": "actions",
       "quadrant": "unknown",
@@ -638,7 +638,7 @@
     {
       "id": "action-unknown-celebrate-and-amplify",
       "type": "Celebrate and amplify",
-      "template": "Publicly acknowledge and reward Apostles for their advocacy through exclusive benefits, recognition programmes, or personalised thank-you notes. Advocates who praise your brand on social media will appreciate your engagement, such as comments or likes on their posts. You should always amplify positivity and expand it as much as possible so it can influence others.",
+      "template": "Publicly acknowledging and rewarding Apostles for their advocacy through exclusive benefits, recognition programmes, or personalised thank-you notes could be very effective. Advocates who praise your brand on social media may appreciate your engagement, such as comments or likes on their posts. Amplifying positivity and expanding it as much as possible could help influence others.",
       "placeholders": [],
       "category": "actions",
       "quadrant": "unknown",
@@ -647,7 +647,7 @@
     {
       "id": "action-unknown-leverage-their-voice",
       "type": "Leverage their voice",
-      "template": "Invite them to become part of referral programmes, co-creation initiatives (e.g., helping to design new products), or ambassador programmes. Share their testimonials and stories across your marketing channels. Give them a voice to inspire others.",
+      "template": "You might invite them to become part of referral programmes, co-creation initiatives (e.g., helping to design new products), or ambassador programmes. Sharing their testimonials and stories across your marketing channels could be powerful. Giving them a voice may help inspire others.",
       "placeholders": [],
       "category": "actions",
       "quadrant": "unknown",
@@ -656,7 +656,7 @@
     {
       "id": "action-unknown-maintain-satisfaction",
       "type": "Maintain satisfaction",
-      "template": "Continue delivering exceptional service and experiences to ensure they remain loyal and satisfied. Be proactive in gathering their feedback and addressing any potential issues.",
+      "template": "Continuing to deliver exceptional service and experiences could help ensure they remain loyal and satisfied. Being proactive in gathering their feedback and addressing any potential issues may also be beneficial.",
       "placeholders": [],
       "category": "actions",
       "quadrant": "unknown",
@@ -701,7 +701,7 @@
     {
       "id": "action-unknown-engage-immediately",
       "type": "Engage immediately",
-      "template": "Don't let them remain neutral - reach out to understand their experience and expectations",
+      "template": "You may want to reach out before they settle into neutrality - understanding their experience and expectations could reveal valuable insights",
       "placeholders": [],
       "category": "actions",
       "quadrant": "unknown",
@@ -746,7 +746,7 @@
     {
       "id": "action-unknown-prevent-drift",
       "type": "Prevent drift",
-      "template": "Act before they become Hostages or Defectors\r\n\r\n**When to Mention Neutrals**:\r\n- Always mention if there are any Neutral customers (count > 0)\r\n- Emphasise their critical transition point status\r\n- Highlight the opportunity and risk they represent\r\n- Provide actionable guidance on how to engage with them",
+      "template": "You may want to consider acting before they become Hostages or Defectors\r\n\r\n**When to Mention Neutrals**:\r\n- Always mention if there are any Neutral customers (count > 0)\r\n- Emphasise their critical transition point status\r\n- Highlight the opportunity and risk they represent\r\n- Provide actionable guidance on how to engage with them",
       "placeholders": [],
       "category": "actions",
       "quadrant": "unknown",

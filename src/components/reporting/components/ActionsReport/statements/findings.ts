@@ -123,7 +123,7 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
       findings.push({
         id: 'sample-high-poor-representation',
         category: 'data',
-        statement: `Despite having a good sample size of ${evaluators.sampleSize.total} customers, it should be noted that not all groups have sufficient representation, with only a few or no customers at all in some quadrants (${missingQuadrantsList}). This might mean that we don't have sufficient representation of customers in these specific segments, and any analysis on these underrepresented groups might be incomplete, if not potentially misleading. You should segment the customer data and determine whether the current distribution is representative enough for the personas, the moments of truth covered, the possible customer journeys covered, and whatever else applies to consider different representations.`,
+        statement: `Despite having a good sample size of ${evaluators.sampleSize.total} customers, it should be noted that not all groups have sufficient representation, with only a few or no customers at all in some quadrants (${missingQuadrantsList}). This might mean that we don't have sufficient representation of customers in these specific segments, and any analysis on these underrepresented groups might be incomplete, if not potentially misleading. It may be worth segmenting the customer data and determining whether the current distribution is representative enough for the personas, the moments of truth covered, the possible customer journeys covered, and whatever else applies to consider different representations.`,
         supportingData: { 
           total: evaluators.sampleSize.total,
           missingQuadrants: evaluators.sampleSize.missingQuadrants
@@ -144,37 +144,37 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
       key: 'loyalists', 
       name: 'Loyalists',
       group: 'loyalists-group',
-      description: 'Loyalists are the reason why your business is still alive. They are happy customers who are also willing to come back to you. They\'re the foundation of your business\'s stability and growth. However, loyalty is fragile and competition is fierce, so you should not take their loyalty for granted. Your focus should be to keep them engaged and satisfied, attract more customers from other segments, and work towards upgrading them to apostles.'
+      description: 'Loyalists are the reason why your business is still alive. They are happy customers who are also willing to come back to you. They\'re the foundation of your business\'s stability and growth. However, loyalty is fragile and competition is fierce, so it may be wise not to take their loyalty for granted. The focus could be on keeping them engaged and satisfied, attracting more customers from other segments, and working towards upgrading them to apostles.'
     },
     { 
       key: 'apostles', 
       name: 'Apostles',
       group: 'loyalists-group',
-      description: 'Apostles are your most valuable customers - they are both highly satisfied and highly loyal, and they actively promote and recommend your brand to others. They are your brand advocates and represent a strong foundation for growth through word-of-mouth and referrals. These customers should be nurtured and given opportunities to become ambassadors, influencers, or part of VIP referral programmes.'
+      description: 'Apostles are your most valuable customers - they are both highly satisfied and highly loyal, and they actively promote and recommend your brand to others. They are your brand advocates and represent a strong foundation for growth through word-of-mouth and referrals. These customers could benefit from being nurtured and given opportunities to become ambassadors, influencers, or part of VIP referral programmes.'
     },
     ...(showNearApostles ? [{
       key: 'nearApostles' as const, 
       name: 'Near-Apostles',
       group: 'loyalists-group' as const,
-      description: 'Near-Apostles are Loyalists who are on the verge of becoming full advocates. They love your brand and are loyal, but haven\'t yet actively promoted or recommended you to others. Your priority should be promoting them into full Apostles by activating their advocacy potential, ensuring they don\'t lose their connection with your brand, and giving them the tools and incentives to become your brand ambassadors.'
+      description: 'Near-Apostles are Loyalists who are on the verge of becoming full advocates. They love your brand and are loyal, but haven\'t yet actively promoted or recommended you to others. A priority could be promoting them into full Apostles by activating their advocacy potential, helping ensure they don\'t lose their connection with your brand, and giving them the tools and incentives to become your brand ambassadors.'
     }] : []),
     { 
       key: 'mercenaries', 
       name: 'Mercenaries',
       group: 'mercenaries',
-      description: 'Mercenaries are satisfied customers who know you, like you, and trust you - but they also shop with competitors. Rather than seeing this as a problem, recognise it as a massive opportunity. These are returning customers who are happy with your offering. Your goal should be to keep your products and services in their top suppliers to buy from as frequently as possible, rather than trying to make them exclusively loyal (which is often unrealistic in today\'s competitive landscape). Most importantly, you need to be present in their minds when they\'re ready to make a purchase decision.'
+      description: 'Mercenaries are satisfied customers who know you, like you, and trust you - but they also shop with competitors. Rather than seeing this as a problem, it could be recognised as a massive opportunity. These are returning customers who are happy with your offering. A good goal might be to keep your products and services in their top suppliers to buy from as frequently as possible, rather than trying to make them exclusively loyal (which is often unrealistic in today\'s competitive landscape). Most importantly, it may help to be present in their minds when they\'re ready to make a purchase decision.'
     },
     { 
       key: 'hostages', 
       name: 'Hostages',
       group: 'hostages',
-      description: 'Hostages are customers who continue to buy from you despite being dissatisfied - they\'re staying out of necessity rather than choice. This could be due to legal requirements, contracts, lack of alternatives, or other constraints. They will churn as soon as a better option becomes available, and they could already be damaging your reputation through negative feedback. You need to urgently investigate why they\'re not satisfied and address the underlying issues before competitors provide alternatives.'
+      description: 'Hostages are customers who continue to buy from you despite being dissatisfied - they\'re staying out of necessity rather than choice. This could be due to legal requirements, contracts, lack of alternatives, or other constraints. They may churn as soon as a better option becomes available, and they could already be damaging your reputation through negative feedback. It may be important to investigate why they\'re not satisfied and address the underlying issues before competitors provide alternatives.'
     },
     { 
       key: 'defectors', 
       name: 'Defectors',
       group: 'defectors',
-      description: 'Defectors are customers who are both dissatisfied and disloyal - they\'ve either already left you or are on the brink of doing so. These customers are likely sharing negative feedback and may be actively harming your reputation. You need to urgently investigate what went wrong, address the root causes, and implement recovery strategies. However, before getting obsessed with this group, consider that some customers may have made one-off purchases or bought from you in error - this isn\'t necessarily a problem depending on your industry.'
+      description: 'Defectors are customers who are both dissatisfied and disloyal - they\'ve either already left you or are on the brink of doing so. These customers are likely sharing negative feedback and may be actively harming your reputation. It may be worth investigating what went wrong, addressing the root causes, and implementing recovery strategies. However, before getting too focused on this group, consider that some customers may have made one-off purchases or bought from you in error - this isn\'t necessarily a problem depending on your industry.'
     }
   ];
 
@@ -297,9 +297,9 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
       } else if (largestQuadrant === 'defectors') {
         followUpStatement = `The situation is particularly alarming as ${followedNames} ${evaluators.distribution.closelyFollowed.length === 1 ? 'is' : 'are'} not far behind, suggesting systemic issues affecting a large portion of your customer base.`;
       } else if (largestQuadrantKey === 'near_apostles' || largestQuadrantKey === 'nearApostles') {
-        followUpStatement = `However, you shouldn't be tempted to rest on your laurels, as although Near-Apostles is your most popular group, ${followedNames} ${evaluators.distribution.closelyFollowed.length === 1 ? 'is' : 'are'} not far behind. Focus on converting these Near-Apostles into full advocates while maintaining your position.`;
+        followUpStatement = `However, it may be wise not to rest on your laurels, as although Near-Apostles is your most popular group, ${followedNames} ${evaluators.distribution.closelyFollowed.length === 1 ? 'is' : 'are'} not far behind. You might consider focusing on converting these Near-Apostles into full advocates while maintaining your position.`;
       } else {
-        followUpStatement = `However, you shouldn't be tempted to rest on your laurels, as although ${getQuadrantDisplayName(largestQuadrant, isClassicModel)} is your most popular group, ${followedNames} ${evaluators.distribution.closelyFollowed.length === 1 ? 'is' : 'are'} not far behind.`;
+        followUpStatement = `However, it may be wise not to rest on your laurels, as although ${getQuadrantDisplayName(largestQuadrant, isClassicModel)} is your most popular group, ${followedNames} ${evaluators.distribution.closelyFollowed.length === 1 ? 'is' : 'are'} not far behind.`;
       }
       
       findings.push({
@@ -319,9 +319,9 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
       } else if (largestQuadrant === 'defectors') {
         followUpStatement = `This concentration of defectors represents an urgent crisis that requires immediate intervention to prevent further customer loss and reputational damage.`;
       } else if (largestQuadrantKey === 'near_apostles' || largestQuadrantKey === 'nearApostles') {
-        followUpStatement = `However, you shouldn't be tempted to rest on your laurels, as these customers might move to other groups if you don't take good care of them. Act now to activate their advocacy potential.`;
+        followUpStatement = `However, it may be wise not to rest on your laurels, as these customers might move to other groups if they don't receive good care. Acting soon to activate their advocacy potential could be very beneficial.`;
       } else {
-        followUpStatement = `However, you shouldn't be tempted to rest on your laurels, as these customers might move to other groups if you don't take good care of them.`;
+        followUpStatement = `However, it may be wise not to rest on your laurels, as these customers might move to other groups if they don't receive good care.`;
       }
       
       findings.push({

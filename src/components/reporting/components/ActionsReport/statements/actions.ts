@@ -77,7 +77,7 @@ function determineActionability(averageChances: number): 'easy' | 'medium' | 'ha
 function generateConversionStatement(conv: Conversion, isClassicModel: boolean): string {
   const fromName = getQuadrantDisplayName(conv.from, isClassicModel);
   const toName = getQuadrantDisplayName(conv.to, isClassicModel);
-  return `Focus on converting ${conv.total} customer${conv.total !== 1 ? 's' : ''} from ${fromName} to ${toName}. Average chances of movement: ${conv.averageChances.toFixed(1)}%.`;
+  return `You might consider focusing on converting ${conv.total} customer${conv.total !== 1 ? 's' : ''} from ${fromName} to ${toName}. Average chances of movement: ${conv.averageChances.toFixed(1)}%.`;
 }
 
 /**
@@ -347,7 +347,7 @@ export function generateActions(
     
     actions.push({
       id: 'action-hostages-dont-ignore',
-      statement: `Don't ignore ${hostageName}${hostagesCount === 1 ? '' : 's'}. Remember ${hostagesCount === 1 ? 'this Hostage is' : 'they are'} active customer${hostagesCount === 1 ? '' : 's'}! You don't need to invest in expensive Marketing campaigns to attract ${hostagesCount === 1 ? 'them' : 'them'} because ${hostagesCount === 1 ? 'they are' : 'they are'} already doing so. Then, you must focus on meeting their expectations by understanding their motivations and needs.`,
+      statement: `It may be important not to overlook ${hostageName}${hostagesCount === 1 ? '' : 's'}. Remember ${hostagesCount === 1 ? 'this Hostage is' : 'they are'} active customer${hostagesCount === 1 ? '' : 's'} who ${hostagesCount === 1 ? 'is' : 'are'} already buying from you, so there may be no need to invest in expensive marketing campaigns to acquire ${hostagesCount === 1 ? 'them' : 'them'}. Instead, you might focus on meeting their expectations by understanding their motivations and needs.`,
       quadrant: 'hostages',
       priority: 1,
       actionability: 'easy',
@@ -454,7 +454,7 @@ export function generateActions(
     // We only show it in the first action (highest priority) as a reference
     actions.push({
       id: 'action-defectors-prevent',
-      statement: `Prevent future defections. ${defectorsCount === 1 ? 'A' : 'A'} ${defectorName}${defectorsCount === 1 ? ' is' : ' are'} by definition ${defectorsCount === 1 ? 'someone' : 'people'} disappointed. ${defectorsCount === 1 ? 'This person' : 'These people'} used to buy from you (or considered doing so), but at some point, ${defectorsCount === 1 ? 'they changed' : 'they changed'} their mind${defectorsCount === 1 ? '' : 's'}. Running research to understand those frustrations will allow you to do something to prevent those situations from affecting other customers.`,
+      statement: `You may want to consider preventing future defections. ${defectorsCount === 1 ? 'A' : 'A'} ${defectorName}${defectorsCount === 1 ? ' is' : ' are'} by definition ${defectorsCount === 1 ? 'someone' : 'people'} disappointed. ${defectorsCount === 1 ? 'This person' : 'These people'} used to buy from you (or considered doing so), but at some point, ${defectorsCount === 1 ? 'they changed' : 'they changed'} their mind${defectorsCount === 1 ? '' : 's'}. Running research to understand those frustrations could allow you to prevent those situations from affecting other customers.`,
       quadrant: 'defectors',
       priority: 1,
       actionability: 'medium',
@@ -518,7 +518,7 @@ export function generateActions(
   if (neutralCount > 0) {
     actions.push({
       id: 'action-neutral-engage',
-      statement: 'Engage immediately with Neutral customers. Don\'t let them remain neutral - reach out to understand their experience and expectations. Their neutral position suggests they haven\'t formed strong opinions yet, making them more receptive to positive experiences than customers with strong opinions.',
+      statement: 'You may want to engage with Neutral customers promptly. It could be valuable to reach out to understand their experience and expectations before they drift in either direction. Their neutral position suggests they haven\'t formed strong opinions yet, making them potentially more receptive to positive experiences than customers with strong opinions.',
       quadrant: undefined,
       priority: 1,
       actionability: 'easy',
@@ -529,7 +529,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-neutral-create-moments',
-      statement: 'Create positive moments for Neutral customers. Design experiences that will tip them toward satisfaction and loyalty. Since they\'re at a critical transition point, small improvements can dramatically shift their trajectory toward positive quadrants.',
+      statement: 'You could create positive moments for Neutral customers by designing experiences that may tip them toward satisfaction and loyalty. Since they\'re at a critical transition point, even small improvements could dramatically shift their trajectory toward positive quadrants.',
       quadrant: undefined,
       priority: 2,
       actionability: 'medium',
@@ -540,7 +540,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-neutral-gather-feedback',
-      statement: 'Gather feedback from Neutral customers. Use their neutral position as an opportunity to understand what would make them more satisfied and loyal. Their responses are likely to be more honest and less biased than customers with strong opinions.',
+      statement: 'You might consider gathering feedback from Neutral customers. Their neutral position could be an opportunity to understand what would make them more satisfied and loyal. Their responses may be more honest and less biased than those of customers with strong opinions.',
       quadrant: undefined,
       priority: 3,
       actionability: 'easy',
@@ -551,7 +551,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-neutral-personalised',
-      statement: 'Provide personalised outreach to Neutral customers. Since they\'re not strongly committed, personalised attention can have a significant impact. Make them feel valued and understood.',
+      statement: 'You could provide personalised outreach to Neutral customers. Since they\'re not strongly committed, personalised attention may have a significant impact and could help them feel valued and understood.',
       quadrant: undefined,
       priority: 4,
       actionability: 'medium',
@@ -562,7 +562,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-neutral-monitor',
-      statement: 'Monitor Neutral customers closely. Track their movement - are they trending toward positive or negative quadrants? Act before they become Hostages or Defectors. Their neutral position makes them a high-priority segment for intervention.',
+      statement: 'You may want to monitor Neutral customers closely. Tracking their movement could reveal whether they are trending toward positive or negative quadrants. Early intervention, before they drift toward Hostages or Defectors, could make a significant difference.',
       quadrant: undefined,
       priority: 5,
       actionability: 'easy',
@@ -603,7 +603,7 @@ export function generateActions(
     
     actions.push({
       id: 'action-apostles-celebrate',
-      statement: `Celebrate and amplify. Publicly acknowledge and reward ${apostleName}${apostlesCount === 1 ? '' : 's'} for their advocacy through exclusive benefits, recognition programmes, or personalised thank-you notes. ${isClassicModel ? 'Apostles' : 'Advocates'} who praise your brand on social media will appreciate your engagement, such as comments or likes on their posts. You should always amplify positivity and expand it as much as possible so it can influence others.`,
+      statement: `You might celebrate and amplify. Publicly acknowledging and rewarding ${apostleName}${apostlesCount === 1 ? '' : 's'} for their advocacy through exclusive benefits, recognition programmes, or personalised thank-you notes could be very effective. ${isClassicModel ? 'Apostles' : 'Advocates'} who praise your brand on social media may appreciate your engagement, such as comments or likes on their posts. Amplifying positivity and expanding it as much as possible could help influence others.`,
       quadrant: 'apostles',
       priority: 1,
       actionability: 'easy',
