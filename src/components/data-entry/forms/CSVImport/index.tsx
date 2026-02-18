@@ -201,31 +201,38 @@ export const CSVImport: React.FC<CSVImportProps> = ({
     
     // Validation based on mode
     if (!forceOverwrite) {
-      // Append mode - check for conflicts with existing data
-      console.log("Append mode - checking conflicts with existing data");
+      // Append mode - check for TRUE duplicates with existing data (same ID + same date)
+      console.log("Append mode - checking for true duplicates with existing data");
       
-      // Find IDs that exist in both datasets
-      const conflictingIds = validatedData
-        .map(item => item.id)
-        .filter(id => existingIds.includes(id));
+      // Build a set of existing id|date keys for fast lookup
+      const existingIdDateKeys = new Set<string>();
+      existingData.forEach(item => {
+        const key = `${item.id}|${(item.date || '').trim()}`;
+        existingIdDateKeys.add(key);
+      });
       
-      console.log("Conflicting IDs:", conflictingIds);
+      const crossFileDuplicates = validatedData.filter(item => {
+        const key = `${item.id}|${(item.date || '').trim()}`;
+        return existingIdDateKeys.has(key);
+      });
       
-      if (conflictingIds.length > 0) {
-        console.log("Found conflicts with existing data");
-        // Create unique list of conflicting IDs
-        const uniqueConflictIds = Array.from(new Set(conflictingIds));
-        
-        if (uniqueConflictIds.length > 0) {
-          setError({
-            title: 'Duplicate entries detected',
-            message: `${uniqueConflictIds.length} entries in your CSV already exist in the system.`,
-            details: 'Duplicate IDs: ' + uniqueConflictIds.join(', '),
-            fix: 'Please use unique IDs or choose to replace all data instead.'
-          });
-          setProgressRef.current?.(null); // Clear progress to unblock the upload area
-          return false;
-        }
+      if (crossFileDuplicates.length > 0) {
+        const uniqueDupIds = Array.from(new Set(crossFileDuplicates.map(d => d.id)));
+        console.log("True cross-file duplicates (same ID + same date):", uniqueDupIds);
+        setError({
+          title: 'Duplicate entries detected',
+          message: `${crossFileDuplicates.length} entries in your CSV have the same ID and date as entries already in the system.`,
+          details: 'Duplicate IDs: ' + uniqueDupIds.join(', '),
+          fix: 'Same IDs with different dates are allowed (historical tracking). These entries share both the same ID and date. Remove them or choose "Replace All" to overwrite.'
+        });
+        setProgressRef.current?.(null);
+        return false;
+      }
+      
+      // Log how many entries share IDs but have different dates (informational, not an error)
+      const sharedIds = validatedData.filter(item => existingIds.includes(item.id));
+      if (sharedIds.length > 0) {
+        console.log(`${sharedIds.length} entries share IDs with existing data but have different dates — allowed for historical tracking`);
       }
       
       // Validate scales if existing data is present (only in append mode)

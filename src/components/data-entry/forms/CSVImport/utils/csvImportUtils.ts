@@ -61,47 +61,53 @@ export const validateFile = (file: File): { isValid: boolean; error: ValidationE
   return { isValid: true, error: null };
 };
 
-export const detectDuplicates = (newData: any[], existingIds: string[]): DuplicateReport => {
-  // Create a map to track all reasons for each row by ID
+export const detectDuplicates = (newData: any[], existingData: DataPoint[]): DuplicateReport => {
   const duplicateMap = new Map<string, { item: any, reasons: Set<string> }>();
   
-  // Check for duplicate IDs within the file
-  const idsInFile = newData.filter(row => row.id).map(row => row.id);
-  const uniqueIds = new Set<string>();
-  const duplicateIds = new Set<string>();
+  // Check for duplicate IDs within the file (same ID + same date = true duplicate)
+  const idDateSeen = new Map<string, Set<string>>(); // id -> set of dates
+  const internalDupIds = new Set<string>();
   
-  // Find duplicated IDs
-  idsInFile.forEach(id => {
-    if (uniqueIds.has(id)) {
-      duplicateIds.add(id);
+  newData.forEach(row => {
+    if (!row.id) return;
+    const date = (row.date || '').trim();
+    if (!idDateSeen.has(row.id)) {
+      idDateSeen.set(row.id, new Set());
+    }
+    const dateSet = idDateSeen.get(row.id)!;
+    if (dateSet.has(date)) {
+      internalDupIds.add(row.id);
     } else {
-      uniqueIds.add(id);
+      dateSet.add(date);
     }
   });
   
-  // Add all instances of duplicated IDs to the map
-  duplicateIds.forEach(dupId => {
+  internalDupIds.forEach(dupId => {
     const items = newData.filter(row => row.id === dupId);
     items.forEach(item => {
       const id = item.id || `noID-${Math.random().toString(36).substring(2, 9)}`;
       if (!duplicateMap.has(id)) {
         duplicateMap.set(id, { item, reasons: new Set() });
       }
-      duplicateMap.get(id)?.reasons.add('Duplicate ID within imported file');
+      duplicateMap.get(id)?.reasons.add('Duplicate ID + same date within imported file');
     });
   });
   
-  // Check for IDs that already exist in the system
-  const conflictingIds = idsInFile.filter(id => existingIds.includes(id));
+  // Check for entries that match existing data on BOTH id AND date (true duplicates)
+  const existingIdDateKeys = new Set<string>();
+  existingData.forEach(item => {
+    existingIdDateKeys.add(`${item.id}|${(item.date || '').trim()}`);
+  });
   
-  conflictingIds.forEach(id => {
-    const item = newData.find(row => row.id === id);
-    if (item) {
+  newData.forEach(item => {
+    if (!item.id) return;
+    const key = `${item.id}|${(item.date || '').trim()}`;
+    if (existingIdDateKeys.has(key)) {
       const itemId = item.id || `noID-${Math.random().toString(36).substring(2, 9)}`;
       if (!duplicateMap.has(itemId)) {
         duplicateMap.set(itemId, { item, reasons: new Set() });
       }
-      duplicateMap.get(itemId)?.reasons.add('ID already exists in system');
+      duplicateMap.get(itemId)?.reasons.add('Same ID and date already exists in system');
     }
   });
   
