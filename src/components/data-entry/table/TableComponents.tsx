@@ -92,7 +92,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
         zIndex: 1
       }}
     >
-      <div style={{ flex: 0.5 }}>
+      <div style={{ flex: 0.5, minWidth: 0, overflow: 'hidden' }}>
         <SortableHeader 
           field="id" 
           label="ID" 
@@ -101,7 +101,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           onSort={handleSort} 
         />
       </div>
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
         <SortableHeader 
           field="name" 
           label="Name" 
@@ -110,7 +110,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           onSort={handleSort} 
         />
       </div>
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
         <SortableHeader 
           field="email" 
           label="Email" 
@@ -119,7 +119,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           onSort={handleSort} 
         />
       </div>
-      <div style={{ flex: 0.7, textAlign: 'center' }}>
+      <div style={{ flex: 0.7, textAlign: 'center', minWidth: 0 }}>
         <SortableHeader 
           field="satisfaction" 
           label={`${labels.satisfaction.length <= 4 ? labels.satisfaction : labels.satisfaction.substring(0, 3)} (${satisfactionScale})`} 
@@ -128,7 +128,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           onSort={handleSort} 
         />
       </div>
-      <div style={{ flex: 0.7, textAlign: 'center' }}>
+      <div style={{ flex: 0.7, textAlign: 'center', minWidth: 0 }}>
         <SortableHeader 
           field="loyalty" 
           label={`${labels.loyalty.length <= 4 ? labels.loyalty : labels.loyalty.substring(0, 3)} (${loyaltyScale})`} 
@@ -137,7 +137,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           onSort={handleSort} 
         />
       </div>
-      <div style={{ flex: 0.8 }}>
+      <div style={{ flex: 0.8, minWidth: 0, overflow: 'hidden' }}>
         <SortableHeader 
           field="date" 
           label="Date" 
@@ -146,7 +146,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
           onSort={handleSort} 
         />
       </div>
-      <div style={{ flex: 0.8, padding: '8px', textAlign: 'center' }}>Actions</div>
+      <div style={{ flex: 0.8, padding: '8px', textAlign: 'center', minWidth: 0 }}>Actions</div>
     </div>
   );
 };
@@ -176,12 +176,12 @@ export const TableRow: React.FC<RowProps> = ({
         textDecoration: data.excluded ? 'line-through' : 'none'
       }}
     >
-      <div style={{ flex: 0.5, padding: '8px' }}>{data.id}</div>
-      <div style={{ flex: 1, padding: '8px' }}>{data.name}</div>
-      <div style={{ flex: 1, padding: '8px' }}>{data.email || '-'}</div>
-      <div style={{ flex: 0.7, padding: '8px', textAlign: 'center' }}>{data.satisfaction}</div>
-      <div style={{ flex: 0.7, padding: '8px', textAlign: 'center' }}>{data.loyalty}</div>
-      <div style={{ flex: 0.8, padding: '8px' }}>{data.date || '-'}</div>
+      <div style={{ flex: 0.5, padding: '8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }} title={data.id}>{data.id}</div>
+      <div style={{ flex: 1, padding: '8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }} title={data.name}>{data.name}</div>
+      <div style={{ flex: 1, padding: '8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }} title={data.email || ''}>{data.email || '-'}</div>
+      <div style={{ flex: 0.7, padding: '8px', textAlign: 'center', minWidth: 0 }}>{data.satisfaction}</div>
+      <div style={{ flex: 0.7, padding: '8px', textAlign: 'center', minWidth: 0 }}>{data.loyalty}</div>
+      <div style={{ flex: 0.8, padding: '8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>{data.date || '-'}</div>
       <div style={{ 
         flex: 0.8, 
         padding: '8px', 
@@ -274,19 +274,19 @@ export const TableFooter: React.FC<TableFooterProps> = ({ totals, footerHeight }
         zIndex: 1
       }}
     >
-      <div style={{ flex: 0.5, padding: '8px' }}>
+      <div style={{ flex: 0.5, padding: '8px', minWidth: 0 }}>
         <strong>Total:</strong> {totals.count}
       </div>
-      <div style={{ flex: 1, padding: '8px' }}></div>
-      <div style={{ flex: 1, padding: '8px' }}></div>
-      <div style={{ flex: 0.7, padding: '8px', textAlign: 'center' }}>
+      <div style={{ flex: 1, padding: '8px', minWidth: 0 }}></div>
+      <div style={{ flex: 1, padding: '8px', minWidth: 0 }}></div>
+      <div style={{ flex: 0.7, padding: '8px', textAlign: 'center', minWidth: 0 }}>
         <strong>Avg:</strong> {averages.satisfaction}
       </div>
-      <div style={{ flex: 0.7, padding: '8px', textAlign: 'center' }}>
+      <div style={{ flex: 0.7, padding: '8px', textAlign: 'center', minWidth: 0 }}>
         <strong>Avg:</strong> {averages.loyalty}
       </div>
-      <div style={{ flex: 0.8, padding: '8px' }}></div>
-      <div style={{ flex: 0.8, padding: '8px' }}></div>
+      <div style={{ flex: 0.8, padding: '8px', minWidth: 0 }}></div>
+      <div style={{ flex: 0.8, padding: '8px', minWidth: 0 }}></div>
     </div>
   );
 };

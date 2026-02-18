@@ -126,7 +126,7 @@ export const RecommendationScoreSection: React.FC<RecommendationScoreSectionProp
   loyaltyScale,
   isPremium = false,
   gaugeColors,
-  decimalPrecision: initialDecimalPrecision = 0,
+  decimalPrecision: initialDecimalPrecision = 1,
   categoryChartType: initialCategoryChartType = 'bar',
   displayFormat: initialDisplayFormat = 'both',
   autoOpenPanel = false,
@@ -546,20 +546,18 @@ export const RecommendationScoreSection: React.FC<RecommendationScoreSectionProp
             {activeTab === 'settings' && (
               <div className="unified-tab-content">
                 <div className="unified-tab-body">
-                  {isPremium && (
-                    <div className="recommendation-score-settings-group">
-                      <label className="recommendation-score-settings-label">Decimal Precision</label>
-                      <select
-                        className="recommendation-score-settings-select"
-                        value={decimalPrecision}
-                        onChange={(e) => setDecimalPrecision(Number(e.target.value) as 0 | 1 | 2)}
-                      >
-                        <option value={0}>Whole numbers</option>
-                        <option value={1}>1 decimal</option>
-                        <option value={2}>2 decimals</option>
-                      </select>
-                    </div>
-                  )}
+                  <div className="recommendation-score-settings-group">
+                    <label className="recommendation-score-settings-label">Decimal Precision</label>
+                    <select
+                      className="recommendation-score-settings-select"
+                      value={decimalPrecision}
+                      onChange={(e) => setDecimalPrecision(Number(e.target.value) as 0 | 1 | 2)}
+                    >
+                      <option value={0}>Whole numbers</option>
+                      <option value={1}>1 decimal</option>
+                      <option value={2}>2 decimals</option>
+                    </select>
+                  </div>
                   
                   <div className="recommendation-score-settings-group">
                     <label className="recommendation-score-settings-label">Display Format</label>
