@@ -424,17 +424,44 @@ export const processHeaders = (headers: string[]): HeaderProcessingResult => {
 
 
 /**
- * Check if a row appears to be a metadata row (containing REQUIRED/Optional tags)
+ * Check if a row appears to be a metadata or descriptive-header row.
+ * Catches:
+ *  - REQUIRED / OPTIONAL tags (e.g. SurveyMonkey templates)
+ *  - Qualtrics "full question text" rows where many values echo their column name
+ *  - Qualtrics import-ID rows containing {"ImportId":"QID..."}
  */
 export const isMetadataRow = (row: Record<string, any>): boolean => {
-  const values = Object.values(row)
-    .filter(v => v !== null && v !== undefined)
-    .map(v => String(v).trim().toUpperCase());
-  
+  const entries = Object.entries(row).filter(
+    ([, v]) => v !== null && v !== undefined && String(v).trim() !== ''
+  );
+
+  if (entries.length === 0) return false;
+
+  const upperValues = entries.map(([, v]) => String(v).trim().toUpperCase());
+
+  // 1. REQUIRED / OPTIONAL metadata tags
   const metadataTerms = ['OPTIONAL', 'REQUIRED'];
-  
-  // If any value contains metadata terms, it's a metadata row
-  return values.some(v => metadataTerms.includes(v));
+  if (upperValues.some(v => metadataTerms.includes(v))) return true;
+
+  // 2. Qualtrics import-ID row
+  if (entries.some(([, v]) => {
+    const s = String(v);
+    return s.includes('"ImportId"') || s.startsWith('{"ImportId');
+  })) return true;
+
+  // 3. Descriptive-header row: many cell values exactly match their column name
+  let exactMatches = 0;
+  for (const [key, val] of entries) {
+    if (String(val).trim().toLowerCase() === key.trim().toLowerCase()) exactMatches++;
+  }
+  if (entries.length >= 3 && exactMatches >= 3) return true;
+  if (entries.length >= 3 && exactMatches / entries.length >= 0.4) return true;
+
+  // 4. Question-text row: values contain '?' (question descriptions)
+  const questionValues = entries.filter(([, v]) => String(v).includes('?'));
+  if (questionValues.length >= 2) return true;
+
+  return false;
 };
 
 /**

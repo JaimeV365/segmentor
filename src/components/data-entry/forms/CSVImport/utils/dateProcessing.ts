@@ -111,6 +111,27 @@ export const getDateFormatFromHeader = (header: string): string => {
   return 'dd/MM/yyyy';
 };
 
+/**
+ * Try to interpret a pure number as an Excel serial date.
+ * Excel epoch: 1 = Jan 1 1900, with the Lotus-1-2-3 leap-year bug (day 60 = Feb 29 1900).
+ */
+const tryExcelSerialDate = (value: string): ParsedDateResult | null => {
+  const trimmed = value.trim();
+  const num = Number(trimmed);
+  if (!Number.isFinite(num) || num < 1 || num > 100000) return null;
+  if (String(Math.floor(num)) !== trimmed && trimmed !== String(num)) return null;
+
+  const excelEpoch = Date.UTC(1899, 11, 30); // Dec 30 1899
+  const ms = excelEpoch + Math.floor(num) * 86_400_000;
+  const d = new Date(ms);
+  const day = d.getUTCDate();
+  const month = d.getUTCMonth() + 1;
+  const year = d.getUTCFullYear();
+
+  if (year < 1900 || year > 2100) return null;
+  return { isValid: true, day, month, year };
+};
+
 // Parse and validate a date string
 export const parseDateString = (dateStr: string, format: string): ParsedDateResult => {
   // Normalize separators to '/'
@@ -118,6 +139,10 @@ export const parseDateString = (dateStr: string, format: string): ParsedDateResu
   const parts = normalizedDate.split('/');
   
   if (parts.length !== 3) {
+    // Before failing, check if this is an Excel serial date number
+    const excelResult = tryExcelSerialDate(dateStr);
+    if (excelResult) return excelResult;
+
     return { 
       isValid: false, 
       error: `Date "${dateStr}" does not have three parts (day, month, year)` 

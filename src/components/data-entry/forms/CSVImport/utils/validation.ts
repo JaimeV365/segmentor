@@ -1,6 +1,7 @@
 // import { ValidationResult } from '../types';
 import { ScaleFormat, DataPoint } from '@/types/base';
 import { parseDateString, formatDate, getDateFormatFromHeader } from './dateProcessing';
+import { isMetadataRow } from './headerProcessing';
 import { idCounter } from '../../../utils/idCounter';
 
 // The ValidationResult interface seems to be missing the isValid property
@@ -131,14 +132,7 @@ export const validateDataRows = (
   
   const processedData = data
     .filter(row => Object.values(row).some(value => value))
-    // Filter out metadata rows like OPTIONAL/REQUIRED
-    .filter(row => {
-      // Check if row appears to be metadata
-      const values = Object.values(row).map(v => String(v || '').trim().toUpperCase());
-      const metadataTerms = ['OPTIONAL', 'REQUIRED'];
-      // If all values are either empty or metadata terms, skip the row
-      return !values.every(v => v === '' || metadataTerms.includes(v));
-    })
+    .filter(row => !isMetadataRow(row))
     .map((row, index) => {
       try {
         // Extract all values we'll need
