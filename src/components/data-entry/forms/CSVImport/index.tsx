@@ -151,8 +151,9 @@ export const CSVImport: React.FC<CSVImportProps> = ({
     fileName: string,
     forceOverwrite: boolean = false
   ) => {
+    let dataToProcess = validatedData;
     console.log("processParsedData called:", {
-      dataLength: validatedData.length,
+      dataLength: dataToProcess.length,
       headerScales,
       fileName,
       forceOverwrite
@@ -163,10 +164,9 @@ export const CSVImport: React.FC<CSVImportProps> = ({
     const idDateMap = new Map<string, Set<string>>(); // Map<id, Set<dates>>
     const trueDuplicates: Array<{id: string, date: string}> = [];
     
-    validatedData.forEach(item => {
+    dataToProcess.forEach(item => {
       if (item.id) {
         const normalizedDate = (item.date || '').trim();
-        const idDateKey = `${item.id}|${normalizedDate}`;
         
         if (!idDateMap.has(item.id)) {
           idDateMap.set(item.id, new Set());
@@ -174,7 +174,6 @@ export const CSVImport: React.FC<CSVImportProps> = ({
         
         const dateSet = idDateMap.get(item.id)!;
         if (dateSet.has(normalizedDate)) {
-          // Same ID + same date = duplicate
           trueDuplicates.push({ id: item.id, date: normalizedDate || 'no date' });
         } else {
           dateSet.add(normalizedDate);
@@ -211,28 +210,34 @@ export const CSVImport: React.FC<CSVImportProps> = ({
         existingIdDateKeys.add(key);
       });
       
-      const crossFileDuplicates = validatedData.filter(item => {
+      // Filter out true duplicates (same ID + same date) — don't block the import, just skip them
+      const newEntries = validatedData.filter(item => {
         const key = `${item.id}|${(item.date || '').trim()}`;
-        return existingIdDateKeys.has(key);
+        return !existingIdDateKeys.has(key);
       });
       
-      if (crossFileDuplicates.length > 0) {
-        const uniqueDupIds = Array.from(new Set(crossFileDuplicates.map(d => d.id)));
-        console.log("True cross-file duplicates (same ID + same date):", uniqueDupIds);
+      const skippedCount = validatedData.length - newEntries.length;
+      if (skippedCount > 0) {
+        console.log(`Skipped ${skippedCount} true duplicates (same ID + same date already in system)`);
+      }
+      
+      // Log how many entries share IDs but have different dates (informational)
+      const sharedIds = newEntries.filter(item => existingIds.includes(item.id));
+      if (sharedIds.length > 0) {
+        console.log(`${sharedIds.length} entries share IDs with existing data but have different dates — allowed for historical tracking`);
+      }
+      
+      // Use the filtered set for the rest of the pipeline
+      dataToProcess = newEntries;
+      
+      if (dataToProcess.length === 0) {
         setError({
-          title: 'Duplicate entries detected',
-          message: `${crossFileDuplicates.length} entries in your CSV have the same ID and date as entries already in the system.`,
-          details: 'Duplicate IDs: ' + uniqueDupIds.join(', '),
-          fix: 'Same IDs with different dates are allowed (historical tracking). These entries share both the same ID and date. Remove them or choose "Replace All" to overwrite.'
+          title: 'No new entries to import',
+          message: 'All entries in your CSV already exist in the system (same ID and date).',
+          fix: 'Upload a file with new data or choose "Replace All" to overwrite.'
         });
         setProgressRef.current?.(null);
         return false;
-      }
-      
-      // Log how many entries share IDs but have different dates (informational, not an error)
-      const sharedIds = validatedData.filter(item => existingIds.includes(item.id));
-      if (sharedIds.length > 0) {
-        console.log(`${sharedIds.length} entries share IDs with existing data but have different dates — allowed for historical tracking`);
       }
       
       // Validate scales if existing data is present (only in append mode)
@@ -268,26 +273,24 @@ export const CSVImport: React.FC<CSVImportProps> = ({
       console.log("All checks passed, calling onImport");
       
       // Apply demo limitation if in demo mode
-      let dataToImport = validatedData;
+      let dataToImport = dataToProcess;
       let truncatedCount = 0;
       
       console.log("Demo mode check:", {
         isDemoMode,
         forceOverwrite,
-        validatedDataLength: validatedData.length,
+        dataToProcessLength: dataToProcess.length,
         existingDataLength: existingData.length
       });
       
       if (isDemoMode) {
         if (forceOverwrite) {
-          // For overwrite mode, limit to demo max entries (don't check against existing data)
           console.log("Overwrite mode: limiting new data to", DEMO_MAX_ENTRIES, "entries");
-          if (validatedData.length > DEMO_MAX_ENTRIES) {
-            dataToImport = validatedData.slice(0, DEMO_MAX_ENTRIES);
-            truncatedCount = validatedData.length - DEMO_MAX_ENTRIES;
+          if (dataToProcess.length > DEMO_MAX_ENTRIES) {
+            dataToImport = dataToProcess.slice(0, DEMO_MAX_ENTRIES);
+            truncatedCount = dataToProcess.length - DEMO_MAX_ENTRIES;
           }
         } else {
-          // For add mode, check if adding would exceed limit
           const currentCount = existingData.length;
           const availableSlots = DEMO_MAX_ENTRIES - currentCount;
           
@@ -304,9 +307,9 @@ export const CSVImport: React.FC<CSVImportProps> = ({
             return false;
           }
           
-          if (validatedData.length > availableSlots) {
-            dataToImport = validatedData.slice(0, availableSlots);
-            truncatedCount = validatedData.length - availableSlots;
+          if (dataToProcess.length > availableSlots) {
+            dataToImport = dataToProcess.slice(0, availableSlots);
+            truncatedCount = dataToProcess.length - availableSlots;
           }
         }
       }
