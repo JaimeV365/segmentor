@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Move } from 'lucide-react';
-import { Position, GridDimensions, Midpoint, ScaleFormat, isZeroBasedScale } from '@/types/base';
+import { Position, GridDimensions, Midpoint, ScaleFormat, isZeroBasedScale } from '../../../../types/base';
 import { isDraggingNearHalfCell } from '../../utils/positionCalculator';
 import { UnifiedLoadingPopup } from '../../../ui/UnifiedLoadingPopup';
 import './MidpointHandle.css';
