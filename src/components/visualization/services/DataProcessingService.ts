@@ -1,4 +1,4 @@
-import { DataPoint, Midpoint, ScaleFormat } from '@/types/base';
+import { DataPoint, Midpoint, ScaleFormat, getScaleMinValue } from '@/types/base';
 import { QuadrantType } from '../context/DataProcessingContext';
 import { calculateSpecialZoneBoundaries } from '../utils/zoneCalculator';
 
@@ -222,14 +222,16 @@ export class DataProcessingService {
     const errors: string[] = [];
     
     // Validate coordinates
+    const satMin = getScaleMinValue(config.satisfactionScale);
     const satMax = parseInt(config.satisfactionScale.split('-')[1]);
+    const loyMin = getScaleMinValue(config.loyaltyScale);
     const loyMax = parseInt(config.loyaltyScale.split('-')[1]);
     
-    if (point.satisfaction < 1 || point.satisfaction > satMax) {
+    if (point.satisfaction < satMin || point.satisfaction > satMax) {
       errors.push(`Satisfaction value ${point.satisfaction} out of range for scale ${config.satisfactionScale}`);
     }
     
-    if (point.loyalty < 1 || point.loyalty > loyMax) {
+    if (point.loyalty < loyMin || point.loyalty > loyMax) {
       errors.push(`Loyalty value ${point.loyalty} out of range for scale ${config.loyaltyScale}`);
     }
     

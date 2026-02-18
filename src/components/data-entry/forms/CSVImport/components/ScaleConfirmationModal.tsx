@@ -99,26 +99,30 @@ export const ScaleConfirmationModal: React.FC<ScaleConfirmationModalProps> = ({
               <p>Data range: {scaleDetection.satisfaction!.dataRange.min} - {scaleDetection.satisfaction!.dataRange.max}</p>
               
               <div className="scale-choice-buttons">
-                {scaleDetection.satisfaction!.possibleScales.map(scale => (
-                  <div 
-                    key={scale}
-                    className={`scale-choice-button ${selectedScales.satisfaction === scale ? 'scale-choice-button--selected' : ''}`}
-                    onClick={() => setSelectedScales(prev => ({
-                      ...prev,
-                      satisfaction: scale
-                    }))}
-                  >
-                    <div className="scale-choice-button-icon">
-                      {scale.startsWith('0-') ? '0—·—·—10' : '1—·—·—10'}
+                {scaleDetection.satisfaction!.possibleScales.map(scale => {
+                  const scaleMax = scale.split('-')[1];
+                  const scaleMin = scale.split('-')[0];
+                  return (
+                    <div 
+                      key={scale}
+                      className={`scale-choice-button ${selectedScales.satisfaction === scale ? 'scale-choice-button--selected' : ''}`}
+                      onClick={() => setSelectedScales(prev => ({
+                        ...prev,
+                        satisfaction: scale
+                      }))}
+                    >
+                      <div className="scale-choice-button-icon">
+                        {scaleMin}—·—·—{scaleMax}
+                      </div>
+                      <div className="scale-choice-button-title">
+                        {scale} Scale
+                      </div>
+                      <div className="scale-choice-button-description">
+                        {scale.startsWith('0-') ? 'Starts from 0 (lowest)' : 'Starts from 1 (lowest)'}
+                      </div>
                     </div>
-                    <div className="scale-choice-button-title">
-                      {scale} Scale
-                    </div>
-                    <div className="scale-choice-button-description">
-                      {scale.startsWith('0-') ? 'Starts from 0 (lowest)' : 'Starts from 1 (lowest)'}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
@@ -129,26 +133,30 @@ export const ScaleConfirmationModal: React.FC<ScaleConfirmationModalProps> = ({
               <p>Data range: {scaleDetection.loyalty!.dataRange.min} - {scaleDetection.loyalty!.dataRange.max}</p>
               
               <div className="scale-choice-buttons">
-                {scaleDetection.loyalty!.possibleScales.map(scale => (
-                  <div 
-                    key={scale}
-                    className={`scale-choice-button ${selectedScales.loyalty === scale ? 'scale-choice-button--selected' : ''}`}
-                    onClick={() => setSelectedScales(prev => ({
-                      ...prev,
-                      loyalty: scale
-                    }))}
-                  >
-                    <div className="scale-choice-button-icon">
-                      {scale.startsWith('0-') ? '0—·—·—10' : '1—·—·—10'}
+                {scaleDetection.loyalty!.possibleScales.map(scale => {
+                  const scaleMax = scale.split('-')[1];
+                  const scaleMin = scale.split('-')[0];
+                  return (
+                    <div 
+                      key={scale}
+                      className={`scale-choice-button ${selectedScales.loyalty === scale ? 'scale-choice-button--selected' : ''}`}
+                      onClick={() => setSelectedScales(prev => ({
+                        ...prev,
+                        loyalty: scale
+                      }))}
+                    >
+                      <div className="scale-choice-button-icon">
+                        {scaleMin}—·—·—{scaleMax}
+                      </div>
+                      <div className="scale-choice-button-title">
+                        {scale} Scale
+                      </div>
+                      <div className="scale-choice-button-description">
+                        {scale.startsWith('0-') ? 'Starts from 0 (lowest)' : 'Starts from 1 (lowest)'}
+                      </div>
                     </div>
-                    <div className="scale-choice-button-title">
-                      {scale} Scale
-                    </div>
-                    <div className="scale-choice-button-description">
-                      {scale.startsWith('0-') ? 'Starts from 0 (lowest)' : 'Starts from 1 (lowest)'}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

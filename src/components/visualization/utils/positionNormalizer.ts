@@ -1,8 +1,8 @@
-import { ScaleFormat, GridDimensions, Midpoint } from '../../../types/base';
+import { ScaleFormat, GridDimensions, Midpoint, getScaleMinValue } from '../../../types/base';
 
-// Helper functions for 0-10 scale support
+// Helper functions for zero-based scale support (0-5, 0-7, 0-10, etc.)
 function getScaleMin(scale: ScaleFormat): number {
-  return scale === '0-10' ? 0 : 1;
+  return getScaleMinValue(scale);
 }
 
 function getScaleMax(scale: ScaleFormat): number {

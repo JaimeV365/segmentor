@@ -7,7 +7,22 @@ export const STANDARD_LOY_OPTIONS = ['1-5', '1-7', '1-10'] as const;
 export const PREMIUM_LOY_OPTIONS = ['1-5', '1-7', '1-10', '0-10'] as const;
 
 // Combined type for all possible scale formats
-export type ScaleFormat = '1-3' | '1-5' | '1-7' | '1-10' | '0-10';
+export type ScaleFormat = '1-3' | '1-5' | '1-7' | '1-10' | '0-5' | '0-7' | '0-10';
+
+// Helper to detect any zero-based scale (0-5, 0-7, 0-10, etc.)
+export function isZeroBasedScale(scale: ScaleFormat | string): boolean {
+  return scale.startsWith('0-');
+}
+
+// Helper to get the minimum value of a scale
+export function getScaleMinValue(scale: ScaleFormat | string): number {
+  return scale.startsWith('0-') ? 0 : 1;
+}
+
+// Helper to get the maximum value of a scale
+export function getScaleMaxValue(scale: ScaleFormat | string): number {
+  return parseInt(scale.split('-')[1]);
+}
 export type Scale = ScaleFormat; // Alias for compatibility
 
 export interface ScaleState {

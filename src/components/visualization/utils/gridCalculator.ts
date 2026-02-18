@@ -3,7 +3,8 @@ import {
   GridConfig, 
   QuadrantLayout, 
   Midpoint, 
-  ScaleFormat 
+  ScaleFormat,
+  getScaleMinValue
 } from '../../../types/base';
 
 export interface GridStyle {
@@ -35,8 +36,8 @@ export function validateMidpoint(
 }
 
 export function calculateGrid(config: GridConfig): GridDimensions {
-  const satMin = config.satisfactionScale === '0-10' ? 0 : 1;
-  const loyMin = config.loyaltyScale === '0-10' ? 0 : 1;
+  const satMin = getScaleMinValue(config.satisfactionScale);
+  const loyMin = getScaleMinValue(config.loyaltyScale);
   const satMax = parseInt(config.satisfactionScale.split('-')[1]);
   const loyMax = parseInt(config.loyaltyScale.split('-')[1]);
   

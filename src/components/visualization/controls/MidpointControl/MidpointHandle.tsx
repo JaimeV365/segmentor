@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Move } from 'lucide-react';
-import { Position, GridDimensions, Midpoint, ScaleFormat } from '@/types/base';
+import { Position, GridDimensions, Midpoint, ScaleFormat, isZeroBasedScale } from '@/types/base';
 import { isDraggingNearHalfCell } from '../../utils/positionCalculator';
 import { UnifiedLoadingPopup } from '../../../ui/UnifiedLoadingPopup';
 import './MidpointHandle.css';
@@ -91,9 +91,9 @@ const MidpointHandle: React.FC<MidpointHandleProps> = ({
       const minSat = effectiveTerroristsSize + 1;
       let maxSat = dimensions.totalCols - effectiveApostlesSize;
       
-      // Special handling for 0-10 loyalty scale
+      // Special handling for zero-based loyalty scales (0-5, 0-7, 0-10)
       let minLoy, maxLoy;
-      if (loyaltyScale === '0-10') {
+      if (isZeroBasedScale(loyaltyScale)) {
         minLoy = effectiveTerroristsSize;  // For 0-10: 1 (not +1)
         maxLoy = dimensions.totalRows - effectiveApostlesSize - 1;  // For 0-10: should be 9, not 10
       } else {

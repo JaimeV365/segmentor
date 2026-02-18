@@ -1,4 +1,4 @@
-import { GridDimensions, Midpoint, ScaleFormat } from '../../../types/base';
+import { GridDimensions, Midpoint, ScaleFormat, getScaleMinValue } from '../../../types/base';
 
 export interface Position {
   x: number;
@@ -7,13 +7,13 @@ export interface Position {
 
 // Value normalization functions
 export function normalizeToPercentage(value: number, scale: ScaleFormat): number {
-  const minValue = scale === '0-10' ? 0 : 1;
+  const minValue = getScaleMinValue(scale);
   const maxValue = parseInt(scale.split('-')[1]);
   return ((value - minValue) / (maxValue - minValue)) * 100;
 }
 
 export function denormalizeFromPercentage(percentage: number, scale: ScaleFormat): number {
-  const minValue = scale === '0-10' ? 0 : 1;
+  const minValue = getScaleMinValue(scale);
   const maxValue = parseInt(scale.split('-')[1]);
   return minValue + (percentage / 100) * (maxValue - minValue);
 }
@@ -113,7 +113,7 @@ export function calculateScaleMarkers(
   scale: ScaleFormat,
   isHorizontal: boolean = true
 ): Array<{ position: string; value: number }> {
-  const minValue = scale === '0-10' ? 0 : 1;
+  const minValue = getScaleMinValue(scale);
   const maxValue = parseInt(scale.split('-')[1]);
   const totalMarkers = maxValue - minValue + 1;
   
@@ -143,8 +143,8 @@ export function getValidMidpoint(
   const x = clientX - containerRect.left;
   const y = containerRect.bottom - clientY;
   
-  const minSat = satisfactionScale === '0-10' ? 0 : 1;
-  const minLoy = loyaltyScale === '0-10' ? 0 : 1;
+  const minSat = getScaleMinValue(satisfactionScale);
+  const minLoy = getScaleMinValue(loyaltyScale);
   let newSat = minSat + ((x / containerRect.width) * (maxSat - minSat));
   let newLoy = minLoy + ((y / containerRect.height) * (maxLoy - minLoy));
   

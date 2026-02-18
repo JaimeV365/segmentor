@@ -1,4 +1,4 @@
-import { GridDimensions, Scale, Position } from '../../../types/base';
+import { GridDimensions, Scale, Position, getScaleMinValue } from '../../../types/base';
 
 interface MidpointConfig {
   scale: {
@@ -19,8 +19,8 @@ export function calculateMidpointSnaps(config: MidpointConfig) {
 
   if (satMax === loyMax) {
     // Symmetric scales only snap to grid intersections
-    const satMin = scale.satisfaction === '0-10' ? 0 : 1;
-    const loyMin = scale.loyalty === '0-10' ? 0 : 1;
+    const satMin = getScaleMinValue(scale.satisfaction);
+    const loyMin = getScaleMinValue(scale.loyalty);
     for (let i = Math.max(satMin, loyMin) + 1; i < Math.min(satMax, loyMax); i++) {
       xSnaps.push(i * dimensions.cellWidth);
       ySnaps.push(i * dimensions.cellHeight);
@@ -33,8 +33,8 @@ export function calculateMidpointSnaps(config: MidpointConfig) {
         xSnaps.push((i * dimensions.cellWidth) + (dimensions.cellWidth / 2));
       }
     }
-    const loyMin = scale.loyalty === '0-10' ? 0 : 1;
-    for (let i = loyMin + 1; i < loyMax; i++) {
+    const loyMin2 = getScaleMinValue(scale.loyalty);
+    for (let i = loyMin2 + 1; i < loyMax; i++) {
       ySnaps.push(i * dimensions.cellHeight);
       if (i < loyMax - 1) {
         ySnaps.push((i * dimensions.cellHeight) + (dimensions.cellHeight / 2));

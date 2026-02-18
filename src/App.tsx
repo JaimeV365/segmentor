@@ -693,7 +693,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
           loyalty: headerScales.loyaltyHeaderName
         });
         // Default "Show Recommendation Score" from loyalty scale (CSV/demo/manual). .seg load overwrites this in onSettingsLoad.
-        const showRec = headerScales.loyalty === '0-10';
+        const showRec = headerScales.loyalty.startsWith('0-');
         localStorage.setItem('showRecommendationScore', String(showRec));
         document.dispatchEvent(new CustomEvent('segFileLoaded'));
       } else {

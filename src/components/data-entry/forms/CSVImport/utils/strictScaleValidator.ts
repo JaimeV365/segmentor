@@ -3,7 +3,7 @@
 import { ScaleFormat } from "@/types/base";
 
 // Valid scale formats supported by the system
-const VALID_SAT_SCALES: ScaleFormat[] = ['1-3', '1-5', '1-7'];
+const VALID_SAT_SCALES: ScaleFormat[] = ['1-3', '1-5', '1-7', '0-5', '0-7'];
 const VALID_LOY_SCALES: ScaleFormat[] = ['1-5', '1-7', '1-10', '0-10'];
 
 // Function to strictly validate scale format

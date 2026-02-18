@@ -142,8 +142,8 @@ export const extractScaleFromHeader = (header: string): ScaleFormat | null => {
 export const validateScale = (scale: string | null, type: 'satisfaction' | 'loyalty'): boolean => {
   if (!scale) return false;
   
-  // Valid scales
-  const satisfactionScales: ScaleFormat[] = ['1-3', '1-5', '1-7'];
+  // Valid scales (includes zero-based scales for data that starts from 0)
+  const satisfactionScales: ScaleFormat[] = ['1-3', '1-5', '1-7', '0-5', '0-7'];
   const loyaltyScales: ScaleFormat[] = ['1-5', '1-7', '1-10', '0-10'];
   
   return type === 'satisfaction' 
@@ -196,42 +196,49 @@ export const detectPossibleScales = (
   if (isPlainHeader) {
     
     if (type === 'satisfaction') {
-      // Satisfaction valid scales: 1-3, 1-5, 1-7
+      // Satisfaction valid scales: 1-3, 1-5, 1-7, 0-5, 0-7
+      const hasZero = actualMin < 1;
+      
       if (actualMax > 7) {
-        // Data exceeds max valid satisfaction scale — error
         return { definitive: null, possibleScales: [], needsUserInput: false, dataRange, headerName: header };
       }
+      if (hasZero) {
+        // Data contains values below 1 → must be a zero-based scale
+        if (actualMax > 5) {
+          // max is 6 or 7, has zeros → definitive: 0-7
+          return { definitive: '0-7' as ScaleFormat, possibleScales: [], needsUserInput: false, dataRange, headerName: header };
+        }
+        if (actualMax > 3) {
+          // max is 4 or 5, has zeros → could be 0-5 or 0-7 → ask user
+          return { definitive: null, possibleScales: ['0-5', '0-7'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
+        }
+        // max <= 3, has zeros → could be 0-5 or 0-7 → ask user
+        return { definitive: null, possibleScales: ['0-5', '0-7'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
+      }
+      // No zeros in data (min >= 1)
       if (actualMax > 5) {
-        // max is 6 or 7 → definitive: 1-7
         return { definitive: '1-7' as ScaleFormat, possibleScales: [], needsUserInput: false, dataRange, headerName: header };
       }
       if (actualMax > 3) {
-        // max is 4 or 5 → could be 1-5 or 1-7 → ask user
         return { definitive: null, possibleScales: ['1-5', '1-7'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
       }
-      // max <= 3 → could be 1-3, 1-5, or 1-7 → ask user
       return { definitive: null, possibleScales: ['1-3', '1-5', '1-7'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
     }
     
     if (type === 'loyalty') {
       // Loyalty valid scales: 1-5, 1-7, 1-10, 0-10
       if (actualMax > 10) {
-        // Data exceeds max valid loyalty scale — error
         return { definitive: null, possibleScales: [], needsUserInput: false, dataRange, headerName: header };
       }
       if (actualMin === 0) {
-        // Data contains 0 → definitive: 0-10
         return { definitive: '0-10' as ScaleFormat, possibleScales: [], needsUserInput: false, dataRange, headerName: header };
       }
       if (actualMax > 7) {
-        // max is 8, 9, or 10 (min >= 1) → could be 1-10 or 0-10 → ask user
         return { definitive: null, possibleScales: ['1-10', '0-10'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
       }
       if (actualMax > 5) {
-        // max is 6 or 7 → could be 1-7, 1-10, or 0-10 → ask user
         return { definitive: null, possibleScales: ['1-7', '1-10', '0-10'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
       }
-      // max <= 5 → could be 1-5, 1-7, 1-10, or 0-10 → ask user
       return { definitive: null, possibleScales: ['1-5', '1-7', '1-10', '0-10'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
     }
   }
@@ -239,15 +246,34 @@ export const detectPossibleScales = (
   // --- HEADER WITH NUMBER SUFFIX: use header max + data analysis ---
   console.log(`📈 Header has max=${maxFromHeader}, analyzing data`);
   
-  // Data contains 0 → definitely 0-X scale
-  if (actualMin === 0) {
-    return { 
-      definitive: `0-${maxFromHeader}` as ScaleFormat, 
-      possibleScales: [], 
-      needsUserInput: false,
-      dataRange,
-      headerName: header
-    };
+  // Data contains 0 → need a zero-based scale, but validate it exists
+  if (actualMin < 1) {
+    const zeroScale = `0-${maxFromHeader}` as ScaleFormat;
+    if (validateScale(zeroScale, type)) {
+      return { 
+        definitive: zeroScale, 
+        possibleScales: [], 
+        needsUserInput: false,
+        dataRange,
+        headerName: header
+      };
+    }
+    // Zero-based scale not valid for this type — offer valid alternatives
+    // For satisfaction with header max like 5: offer 0-5, 0-7
+    // For loyalty: 0-10 is the only zero-based option
+    if (type === 'satisfaction') {
+      const possibleScales: ScaleFormat[] = [];
+      if (maxFromHeader! <= 5) possibleScales.push('0-5' as ScaleFormat);
+      if (maxFromHeader! <= 7) possibleScales.push('0-7' as ScaleFormat);
+      if (possibleScales.length === 1) {
+        return { definitive: possibleScales[0], possibleScales: [], needsUserInput: false, dataRange, headerName: header };
+      }
+      if (possibleScales.length > 1) {
+        return { definitive: null, possibleScales, needsUserInput: true, dataRange, headerName: header };
+      }
+    }
+    // Fallback: no valid zero-based scale available
+    return { definitive: null, possibleScales: [], needsUserInput: false, dataRange, headerName: header };
   }
   
   // Header max is 10 → could be 1-10 or 0-10, ask user
@@ -261,9 +287,21 @@ export const detectPossibleScales = (
     };
   }
   
-  // Default: use 1-X scale from header
+  // Default: use 1-X scale from header, but validate it
+  const oneBasedScale = `1-${maxFromHeader}` as ScaleFormat;
+  if (validateScale(oneBasedScale, type)) {
+    return { 
+      definitive: oneBasedScale, 
+      possibleScales: [], 
+      needsUserInput: false,
+      dataRange,
+      headerName: header
+    };
+  }
+  
+  // Scale from header not valid — return empty for error handling
   return { 
-    definitive: `1-${maxFromHeader}` as ScaleFormat, 
+    definitive: null, 
     possibleScales: [], 
     needsUserInput: false,
     dataRange,
@@ -348,7 +386,7 @@ export const processHeaders = (headers: string[]): HeaderProcessingResult => {
     if (scale && validateScale(scale, 'satisfaction')) {
       result.scales.satisfaction = scale;
     } else if (scale) {
-      result.errors.push(`Invalid satisfaction scale: ${scale}. Allowed scales are: 1-3, 1-5, 1-7`);
+      result.errors.push(`Invalid satisfaction scale: ${scale}. Allowed scales are: 0-5, 0-7, 1-3, 1-5, 1-7`);
       result.isValid = false;
     } else {
       // No scale in header (e.g., plain "CES", "Sat", "CSAT") — defer to enhanced detection
@@ -504,7 +542,7 @@ export const applyConfirmedScales = (
  * Get user-friendly description for scale formats
  */
 export const getScaleDescription = (scale: ScaleFormat): string => {
-  if (scale.startsWith('0-')) return '(0-10 scale: 0=lowest)';
+  if (scale.startsWith('0-')) return `(${scale} scale: 0=lowest)`;
   if (scale.startsWith('1-')) return '(Traditional: 1=lowest)';
   return '';
 };
@@ -585,7 +623,7 @@ export const analyzeColumnsForMapping = (
     const max = Math.max(...values);
 
     // Satisfaction eligibility: values must fit 1-3, 1-5, or 1-7 (min ≥ 1, max ≤ 7)
-    const eligibleForSatisfaction = min >= 1 && max <= 7;
+    const eligibleForSatisfaction = min >= 0 && max <= 7;
     // Loyalty eligibility: values must fit 0-10 or 1-X scales (min ≥ 0, max ≤ 10)
     const eligibleForLoyalty = min >= 0 && max <= 10;
 

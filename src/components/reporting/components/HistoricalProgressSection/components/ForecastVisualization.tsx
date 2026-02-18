@@ -49,13 +49,8 @@ export const ForecastVisualization: React.FC<ForecastVisualizationProps> = ({
 
   // Determine Y-axis domain
   const getYAxisDomain = (scale: ScaleFormat): [number, number] => {
-    if (scale === '1-10' || scale === '0-10') {
-      return [0, 10];
-    } else if (scale === '1-7') {
-      return [0, 7];
-    } else {
-      return [0, 5];
-    }
+    const max = parseInt(scale.split('-')[1]);
+    return [0, max];
   };
 
   const [satYMin, satYMax] = getYAxisDomain(satisfactionScale);
