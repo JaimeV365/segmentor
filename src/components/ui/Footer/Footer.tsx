@@ -12,7 +12,7 @@ export const Footer: React.FC = () => {
     <footer className="site-footer">
       <div className="app-content">
         <div className="footer-content">
-          <p>&copy; 2025 <span translate="no">segmentor.app</span>. All rights reserved.</p>
+          <p>&copy; 2026 <span translate="no">segmentor.app</span>. All rights reserved.</p>
           <nav className="footer-nav">
             <a href="/privacy.html" onClick={(e) => handleLinkClick(e, '/privacy.html')}>Privacy Policy</a>
             <a href="/terms.html" onClick={(e) => handleLinkClick(e, '/terms.html')}>Terms of Service</a>

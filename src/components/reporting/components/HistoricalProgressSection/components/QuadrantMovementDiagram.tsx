@@ -107,15 +107,15 @@ export const QuadrantMovementDiagram: React.FC<QuadrantMovementDiagramProps> = (
   });
   const [mergeAdvocatesIntoLoyalists, setMergeAdvocatesIntoLoyalists] = useState(() => {
     const saved = readDiagramSettings().mergeAdvocatesIntoLoyalists;
-    return typeof saved === 'boolean' ? saved : false;
+    return typeof saved === 'boolean' ? saved : true;
   });
   const [mergeNearAdvocatesIntoLoyalists, setMergeNearAdvocatesIntoLoyalists] = useState(() => {
     const saved = readDiagramSettings().mergeNearAdvocatesIntoLoyalists;
-    return typeof saved === 'boolean' ? saved : false;
+    return typeof saved === 'boolean' ? saved : true;
   });
   const [mergeTrollsIntoDefectors, setMergeTrollsIntoDefectors] = useState(() => {
     const saved = readDiagramSettings().mergeTrollsIntoDefectors;
-    return typeof saved === 'boolean' ? saved : false;
+    return typeof saved === 'boolean' ? saved : true;
   });
   const settingsButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
