@@ -193,7 +193,7 @@ export const useCSVParser = ({
             let hasDateWarnings = false;
             
             if (validationResult.rejectedReport.count > 0) {
-              console.log("Date issues found:", validationResult.rejectedReport.count);
+              console.log("Rejected entries found:", validationResult.rejectedReport.count);
               setDateIssuesReport(validationResult.rejectedReport);
               hasDateIssues = true;
             }

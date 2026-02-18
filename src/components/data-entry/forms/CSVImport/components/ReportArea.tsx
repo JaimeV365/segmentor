@@ -64,12 +64,12 @@ const ReportArea: React.FC<ReportAreaProps> = ({
           {errorReports && errorReports.count > 0 && (
             <div className="csv-import__report-item">
               <div className="csv-import__report-details">
-                <span className="csv-import__report-title">Date Issues:</span>
+                <span className="csv-import__report-title">Rejected Entries:</span>
                 <span className="csv-import__report-count">{errorReports.count} {errorReports.count === 1 ? 'entry' : 'entries'}</span>
                 <p className="csv-import__report-message">
                   {errorReports.count === 1 
-                    ? 'An entry was skipped due to invalid date format. ' 
-                    : `${errorReports.count} entries were skipped due to invalid date formats. `} 
+                    ? 'An entry was skipped due to invalid data. ' 
+                    : `${errorReports.count} entries were skipped due to invalid data (e.g. out-of-range values, date errors). `} 
                   Download the report for details.
                 </p>
               </div>

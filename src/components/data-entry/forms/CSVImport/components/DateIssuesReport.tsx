@@ -20,7 +20,7 @@ export const DateIssuesReport: React.FC<DateIssuesReportProps> = ({
   report, 
   onDownload,
   className = "csv-import__date-issues",
-  title = "Date Issues Detected",
+  title = "Rejected Entries",
   icon = <AlertTriangle size={16} />,
   iconClassName = "csv-import__date-issues-icon",
   buttonClassName = "csv-import__download-report",
@@ -32,8 +32,8 @@ export const DateIssuesReport: React.FC<DateIssuesReportProps> = ({
   // Default messages based on whether this is an error or warning
   const defaultMessage = isError
     ? `${report.count === 1 
-        ? 'A row was skipped due to date issues.' 
-        : `${report.count} rows were skipped due to date issues.`} 
+        ? 'A row was skipped due to invalid data.' 
+        : `${report.count} rows were skipped due to invalid data (e.g. out-of-range values, date errors).`} 
       Download the report for details.`
     : `${report.count === 1 
         ? 'One row contains an unusual date (e.g., very far in the future or past).' 

@@ -61,12 +61,12 @@ export const EnhancedReportArea: React.FC<EnhancedReportAreaProps> = ({
               <div className="report-item report-item--with-action">
                 <div className="report-item__content">
                   <div className="report-item__title">
-                    Date Issues: <span className="report-item__count">{errorReports.count}</span>
+                    Rejected Entries: <span className="report-item__count">{errorReports.count}</span>
                   </div>
                   <p className="report-item__message">
                     {errorReports.count === 1 
-                      ? 'An entry was skipped due to invalid date format. ' 
-                      : `${errorReports.count} entries were skipped due to invalid date formats. `} 
+                      ? 'An entry was skipped due to invalid data. ' 
+                      : `${errorReports.count} entries were skipped due to invalid data (e.g. out-of-range values, date errors). `} 
                     Download the report for details.
                   </p>
                 </div>
