@@ -97,6 +97,11 @@ export const ScaleConfirmationModal: React.FC<ScaleConfirmationModalProps> = ({
             <div className="scale-choice-section">
               <h4>{getSectionLabel(scaleDetection.satisfaction, 'Satisfaction')}</h4>
               <p>Data range: {scaleDetection.satisfaction!.dataRange.min} - {scaleDetection.satisfaction!.dataRange.max}</p>
+              {scaleDetection.satisfaction!.dataRange.min < 1 && (
+                <p className="scale-zero-warning">
+                  Your data contains values below 1. If your scale starts from 1, those records will be excluded as invalid (e.g. non-responses).
+                </p>
+              )}
               
               <div className="scale-choice-buttons">
                 {scaleDetection.satisfaction!.possibleScales.map(scale => {
@@ -118,7 +123,7 @@ export const ScaleConfirmationModal: React.FC<ScaleConfirmationModalProps> = ({
                         {scale} Scale
                       </div>
                       <div className="scale-choice-button-description">
-                        {scale.startsWith('0-') ? 'Starts from 0 (lowest)' : 'Starts from 1 (lowest)'}
+                        {scale.startsWith('0-') ? 'Starts from 0 (lowest score)' : 'Starts from 1 (lowest score)'}
                       </div>
                     </div>
                   );

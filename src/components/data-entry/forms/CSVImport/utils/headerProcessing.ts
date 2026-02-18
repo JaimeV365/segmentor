@@ -203,17 +203,18 @@ export const detectPossibleScales = (
         return { definitive: null, possibleScales: [], needsUserInput: false, dataRange, headerName: header };
       }
       if (hasZero) {
-        // Data contains values below 1 → must be a zero-based scale
+        // Data contains values below 1 → could be a genuine 0-based scale,
+        // OR could be non-responses/missing values on a 1-based scale → ask user
         if (actualMax > 5) {
-          // max is 6 or 7, has zeros → definitive: 0-7
-          return { definitive: '0-7' as ScaleFormat, possibleScales: [], needsUserInput: false, dataRange, headerName: header };
+          // max is 6 or 7, has zeros → 0-7 or 1-7 (with invalid zeros) → ask user
+          return { definitive: null, possibleScales: ['1-7', '0-7'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
         }
         if (actualMax > 3) {
-          // max is 4 or 5, has zeros → could be 0-5 or 0-7 → ask user
-          return { definitive: null, possibleScales: ['0-5', '0-7'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
+          // max is 4 or 5, has zeros → 1-5, 1-7, 0-5, or 0-7 → ask user
+          return { definitive: null, possibleScales: ['1-5', '1-7', '0-5', '0-7'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
         }
-        // max <= 3, has zeros → could be 0-5 or 0-7 → ask user
-        return { definitive: null, possibleScales: ['0-5', '0-7'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
+        // max <= 3, has zeros → many options → ask user
+        return { definitive: null, possibleScales: ['1-3', '1-5', '0-5'] as ScaleFormat[], needsUserInput: true, dataRange, headerName: header };
       }
       // No zeros in data (min >= 1)
       if (actualMax > 5) {
@@ -246,33 +247,24 @@ export const detectPossibleScales = (
   // --- HEADER WITH NUMBER SUFFIX: use header max + data analysis ---
   console.log(`📈 Header has max=${maxFromHeader}, analyzing data`);
   
-  // Data contains 0 → need a zero-based scale, but validate it exists
+  // Data contains values below 1 → could be genuine 0-based scale OR non-responses → ask user
   if (actualMin < 1) {
+    const oneScale = `1-${maxFromHeader}` as ScaleFormat;
     const zeroScale = `0-${maxFromHeader}` as ScaleFormat;
-    if (validateScale(zeroScale, type)) {
-      return { 
-        definitive: zeroScale, 
-        possibleScales: [], 
-        needsUserInput: false,
-        dataRange,
-        headerName: header
-      };
+    const possibleScales: ScaleFormat[] = [];
+    
+    // Offer the 1-based scale (zeros would be treated as out-of-range / non-responses)
+    if (validateScale(oneScale, type)) possibleScales.push(oneScale);
+    // Offer the 0-based scale (zeros are valid lowest scores)
+    if (validateScale(zeroScale, type)) possibleScales.push(zeroScale);
+    
+    if (possibleScales.length === 1) {
+      return { definitive: possibleScales[0], possibleScales: [], needsUserInput: false, dataRange, headerName: header };
     }
-    // Zero-based scale not valid for this type — offer valid alternatives
-    // For satisfaction with header max like 5: offer 0-5, 0-7
-    // For loyalty: 0-10 is the only zero-based option
-    if (type === 'satisfaction') {
-      const possibleScales: ScaleFormat[] = [];
-      if (maxFromHeader! <= 5) possibleScales.push('0-5' as ScaleFormat);
-      if (maxFromHeader! <= 7) possibleScales.push('0-7' as ScaleFormat);
-      if (possibleScales.length === 1) {
-        return { definitive: possibleScales[0], possibleScales: [], needsUserInput: false, dataRange, headerName: header };
-      }
-      if (possibleScales.length > 1) {
-        return { definitive: null, possibleScales, needsUserInput: true, dataRange, headerName: header };
-      }
+    if (possibleScales.length > 1) {
+      return { definitive: null, possibleScales, needsUserInput: true, dataRange, headerName: header };
     }
-    // Fallback: no valid zero-based scale available
+    // No valid scales for this header max → error
     return { definitive: null, possibleScales: [], needsUserInput: false, dataRange, headerName: header };
   }
   

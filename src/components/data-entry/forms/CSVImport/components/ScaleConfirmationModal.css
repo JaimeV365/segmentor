@@ -95,6 +95,16 @@
   color: #6b7280;
 }
 
+.scale-zero-warning {
+  background-color: #fffbeb;
+  border-left: 4px solid #f59e0b;
+  border-radius: 0 4px 4px 0;
+  padding: 8px 12px;
+  color: #92400e;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
 .scale-choice-buttons {
   display: flex;
   gap: 16px;
