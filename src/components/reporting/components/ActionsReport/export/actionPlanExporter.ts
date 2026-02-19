@@ -1113,23 +1113,30 @@ function addPageWatermarkAndFooter(
   const pageNumberY = pageHeight - 10; // 10mm from bottom
   pdf.text(`Page ${pageNumber} of ${totalPages}`, pageWidth - 20, pageNumberY, { align: 'right' });
   
-  // Add footer with disclaimer (below page number)
   pdf.setFontSize(7);
   pdf.setFont('helvetica', 'italic');
-  const footerLines = pdf.splitTextToSize(DISCLAIMER_TEXT, pageWidth - 40);
-  const disclaimerStartY = pageNumberY - (footerLines.length * 3); // Start above, accounting for all lines
-  // Render lines in correct order (top to bottom, first line at top)
-  footerLines.forEach((line: string, index: number) => {
-    pdf.text(line, 20, disclaimerStartY + (index * 3));
-  });
-  
-  // TM staff see branding text; non-TM users see the expert review CTA
-  const secondaryText = isTMStaff ? TM_STAFF_BRANDING_TEXT : EXPERT_REVIEW_TEXT;
-  const secondaryLines = pdf.splitTextToSize(secondaryText, pageWidth - 40);
-  const secondaryStartY = disclaimerStartY - (secondaryLines.length * 3) - 2;
-  secondaryLines.forEach((line: string, index: number) => {
-    pdf.text(line, 20, secondaryStartY + (index * 3));
-  });
+
+  if (isTMStaff) {
+    // TM staff: just the branding line, no "generated automatically" disclaimer
+    const brandingLines = pdf.splitTextToSize(TM_STAFF_BRANDING_TEXT, pageWidth - 40);
+    const brandingStartY = pageNumberY - (brandingLines.length * 3);
+    brandingLines.forEach((line: string, index: number) => {
+      pdf.text(line, 20, brandingStartY + (index * 3));
+    });
+  } else {
+    // Non-TM: general disclaimer + expert review CTA
+    const footerLines = pdf.splitTextToSize(DISCLAIMER_TEXT, pageWidth - 40);
+    const disclaimerStartY = pageNumberY - (footerLines.length * 3);
+    footerLines.forEach((line: string, index: number) => {
+      pdf.text(line, 20, disclaimerStartY + (index * 3));
+    });
+    
+    const expertLines = pdf.splitTextToSize(EXPERT_REVIEW_TEXT, pageWidth - 40);
+    const expertStartY = disclaimerStartY - (expertLines.length * 3) - 2;
+    expertLines.forEach((line: string, index: number) => {
+      pdf.text(line, 20, expertStartY + (index * 3));
+    });
+  }
   
   // Reset text color
   pdf.setTextColor(0, 0, 0);
