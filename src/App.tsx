@@ -731,7 +731,7 @@ const handleTerroristsZoneSizeChange = (size: number) => {
         p.loyalty >= loyMin && p.loyalty <= loyMax
       );
       console.warn(`⚠️ Removed ${outOfRange.length} data points outside scale range (Sat ${effectiveSatScale}, Loy ${effectiveLoyScale})`);
-      showNotification({
+      notification.showNotification({
         title: 'Out-of-range data removed',
         message: `${outOfRange.length} data point(s) had values outside the active scales (Satisfaction ${effectiveSatScale}, Loyalty ${effectiveLoyScale}) and were excluded.`,
         type: 'warning'
