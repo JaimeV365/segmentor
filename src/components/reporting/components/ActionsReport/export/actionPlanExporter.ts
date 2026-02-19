@@ -222,20 +222,14 @@ async function loadLogoForPDF(logoUrl: string): Promise<{ dataUrl: string; width
   const directResult = await fetchAndRasterize(logoUrl, 'direct fetch');
   if (directResult) return directResult;
 
-  // Method 4: Use CORS proxy — Pages Function at /api/proxy-image fetches the image
-  // server-side and returns it with CORS headers. This handles servers that block
-  // direct browser fetches (403, no CORS headers, etc.).
+  // Method 4: Use wsrv.nl image proxy (images.weserv.nl) to bypass CORS / 403.
+  // This is a well-established open-source image CDN that fetches images server-side
+  // and returns them with CORS headers + optional format conversion.
   if (logoUrl.startsWith('http')) {
-    // Same-origin Pages Function (deployed automatically with the site)
-    const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(logoUrl)}`;
-    console.log('Trying CORS proxy for logo:', proxyUrl);
-    const proxyResult = await fetchAndRasterize(proxyUrl, 'Pages proxy');
+    const wsrvUrl = `https://wsrv.nl/?url=${encodeURIComponent(logoUrl)}&output=png&n=-1`;
+    console.log('Trying wsrv.nl proxy for logo:', wsrvUrl);
+    const proxyResult = await fetchAndRasterize(wsrvUrl, 'wsrv.nl proxy');
     if (proxyResult) return proxyResult;
-
-    // Fallback: external Worker proxy (requires separate worker deployment)
-    const workerProxyUrl = `https://segmentor.jaime-f57.workers.dev/api/proxy-image?url=${encodeURIComponent(logoUrl)}`;
-    const workerResult = await fetchAndRasterize(workerProxyUrl, 'Worker proxy');
-    if (workerResult) return workerResult;
   }
 
   console.warn('Failed to load logo for PDF watermark (all methods failed):', logoUrl);
