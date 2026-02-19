@@ -226,7 +226,7 @@ async function loadLogoForPDF(logoUrl: string): Promise<{ dataUrl: string; width
   // This is a well-established open-source image CDN that fetches images server-side
   // and returns them with CORS headers + optional format conversion.
   if (logoUrl.startsWith('http')) {
-    const wsrvUrl = `https://wsrv.nl/?url=${encodeURIComponent(logoUrl)}&output=png&n=-1`;
+    const wsrvUrl = `https://wsrv.nl/?url=${encodeURIComponent(logoUrl)}&output=png&w=800&n=-1`;
     console.log('Trying wsrv.nl proxy for logo:', wsrvUrl);
     const proxyResult = await fetchAndRasterize(wsrvUrl, 'wsrv.nl proxy');
     if (proxyResult) return proxyResult;
@@ -448,72 +448,61 @@ function getMainChartWatermarkLogoUrl(): string {
  */
 function getMainChartWatermarkRotation(): number {
   try {
-    const watermarkElement = document.querySelector('.chart-container .watermark-layer');
-    if (watermarkElement) {
-      const transform = window.getComputedStyle(watermarkElement).transform;
-      const style = watermarkElement.getAttribute('style') || '';
-      
-      // First, check for explicit rotate() function in style attribute
+    // The rotation is on the <img> INSIDE .watermark-layer, not the layer itself.
+    // Watermark.tsx: <img style={{ transform: rotation }}> where rotation = 'none' | 'rotate(-90deg)'
+    const watermarkLayer = document.querySelector('.chart-container .watermark-layer');
+    if (watermarkLayer) {
+      const img = watermarkLayer.querySelector('img') as HTMLImageElement | null;
+      const targetEl = img || watermarkLayer;
+      const style = targetEl.getAttribute('style') || '';
+      const computedTransform = window.getComputedStyle(targetEl).transform;
+
+      // Check inline style for rotate()
       const rotateMatch = style.match(/rotate\(([^)]+)\)/);
       if (rotateMatch) {
-        const rotateValue = rotateMatch[1].trim();
-        if (rotateValue === '0deg' || rotateValue === '0') {
-          console.log('Detected watermark rotation from rotate(): 0 degrees (flat)');
-          return 0; // Flat
-        } else if (rotateValue === '-90deg' || rotateValue === '-90') {
-          console.log('Detected watermark rotation from rotate(): -90 degrees (vertical)');
-          return -90; // Vertical
+        const val = rotateMatch[1].trim();
+        if (val === '0deg' || val === '0' || val === 'none') {
+          console.log('Detected watermark rotation from img style: 0 degrees (flat)');
+          return 0;
+        } else if (val === '-90deg' || val === '-90') {
+          console.log('Detected watermark rotation from img style: -90 degrees (vertical)');
+          return -90;
         }
       }
-      
-      // Also check computed transform
-      if (transform && transform !== 'none') {
-        // Parse transform matrix to get rotation
-        // For -90deg rotation: matrix(0, 1, -1, 0, x, y)
-        // For 0deg rotation: matrix(1, 0, 0, 1, x, y)
-        const matrixMatch = transform.match(/matrix\(([^)]+)\)/);
+
+      // If transform is 'none' or absent on the img, it's flat
+      if (!style.includes('rotate') || style.includes('transform: none') || style.includes("transform':'none")) {
+        console.log('Detected watermark rotation: 0 degrees (flat) - no rotate in img style');
+        return 0;
+      }
+
+      // Check computed transform matrix as fallback
+      if (computedTransform && computedTransform !== 'none') {
+        const matrixMatch = computedTransform.match(/matrix\(([^)]+)\)/);
         if (matrixMatch) {
-          const values = matrixMatch[1].split(',').map(v => parseFloat(v.trim()));
-          if (values.length >= 4) {
-            // Check if it's rotated (values[0] is close to 0 and values[1] is close to 1)
-            if (Math.abs(values[0]) < 0.1 && Math.abs(values[1] - 1) < 0.1) {
+          const v = matrixMatch[1].split(',').map(s => parseFloat(s.trim()));
+          if (v.length >= 4) {
+            if (Math.abs(v[0]) < 0.1 && Math.abs(v[1] - 1) < 0.1) {
               console.log('Detected watermark rotation from matrix: -90 degrees (vertical)');
-              return -90; // Vertical/rotated
+              return -90;
             }
-            // Check if it's flat (values[0] is close to 1 and values[1] is close to 0)
-            if (Math.abs(values[0] - 1) < 0.1 && Math.abs(values[1]) < 0.1) {
+            if (Math.abs(v[0] - 1) < 0.1 && Math.abs(v[1]) < 0.1) {
               console.log('Detected watermark rotation from matrix: 0 degrees (flat)');
-              return 0; // Flat/not rotated
+              return 0;
             }
-            // If neither pattern matches, log for debugging
-            console.log('Watermark transform values:', values, 'transform:', transform);
           }
-        }
-      }
-      
-      // Check if transform is 'none' - this could mean flat (0 degrees) OR it hasn't been set yet
-      // We need to check the actual style attribute to see if rotation is explicitly set
-      if (transform === 'none' || !transform) {
-        // Check the inline style for explicit rotation
-        const inlineStyle = watermarkElement.getAttribute('style') || '';
-        // If style contains rotate(0deg) or no rotation at all, it's flat
-        if (inlineStyle.includes('rotate(0deg)') || inlineStyle.includes('rotate(0)') || 
-            (!inlineStyle.includes('rotate') && !inlineStyle.includes('transform'))) {
-          console.log('Detected watermark rotation: 0 degrees (flat) - no transform in style');
-          return 0; // Flat
         }
       }
     }
     
-    // Default: check localStorage for LOGO_FLAT effect
+    // Fallback: check localStorage for LOGO_FLAT effect
     try {
-      // Check if there's a stored preference for flat watermark
       const storedEffects = localStorage.getItem('watermarkEffects');
       if (storedEffects) {
         const effects = JSON.parse(storedEffects);
         if (Array.isArray(effects) && effects.includes('LOGO_FLAT')) {
           console.log('Detected watermark rotation from localStorage: 0 degrees (flat)');
-          return 0; // Flat
+          return 0;
         }
       }
     } catch (e) {
@@ -521,11 +510,10 @@ function getMainChartWatermarkRotation(): number {
     }
     
     console.log('Using default watermark rotation: -90 degrees (vertical)');
-    // Default to -90 (vertical) as that's the default in Watermark.tsx
     return -90;
   } catch (error) {
     console.warn('Failed to detect watermark rotation:', error);
-    return -90; // Default to vertical
+    return -90;
   }
 }
 
