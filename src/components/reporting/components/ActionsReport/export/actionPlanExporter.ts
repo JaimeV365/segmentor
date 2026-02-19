@@ -177,11 +177,13 @@ async function loadLogoForPDF(logoUrl: string): Promise<{ dataUrl: string; width
     console.warn('Image element CORS loading failed:', error);
   }
 
-  // Method 3: Fall back to fetch (may fail with CSP connect-src restrictions)
+  // Method 3: Fall back to fetch + rasterize via canvas
+  // This is critical for SVG logos: jsPDF cannot handle SVG data URLs directly,
+  // so we must draw into a canvas and export as PNG.
   try {
     const response = await fetch(logoUrl);
     const blob = await response.blob();
-    const dataUrl = await new Promise<string>((resolve, reject) => {
+    const rawDataUrl = await new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => resolve(reader.result as string);
       reader.onerror = reject;
@@ -189,7 +191,7 @@ async function loadLogoForPDF(logoUrl: string): Promise<{ dataUrl: string; width
     });
     
     const img = new Image();
-    img.src = dataUrl;
+    img.src = rawDataUrl;
     await new Promise<void>((resolve, reject) => {
       if (img.complete) {
         resolve();
@@ -199,7 +201,21 @@ async function loadLogoForPDF(logoUrl: string): Promise<{ dataUrl: string; width
       }
     });
     
-    return { dataUrl, width: img.width, height: img.height };
+    // Rasterize to canvas → PNG (handles SVG, WebP, and any other format)
+    const w = img.naturalWidth || img.width || 300;
+    const h = img.naturalHeight || img.height || 100;
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.drawImage(img, 0, 0, w, h);
+      const pngDataUrl = canvas.toDataURL('image/png');
+      console.log('Loaded and rasterized logo via fetch:', logoUrl, `${w}x${h}`);
+      return { dataUrl: pngDataUrl, width: w, height: h };
+    }
+    
+    return { dataUrl: rawDataUrl, width: w, height: h };
   } catch (error) {
     console.warn('Failed to load logo for PDF watermark (all methods failed):', error);
     return null;
@@ -1392,9 +1408,9 @@ export async function exportActionPlanToPDF(
                                      finding.chartSelector === '.chart-container';
           
           if (isMainVisualization) {
-            // Main visualization: Always scale to fill at least 80% of page width
-            const targetWidth = contentWidth * 0.85;
-            const maxHeight = Math.min(160, availableHeight);
+            // Main visualization: fill the full content width (80%+ of the A4 page)
+            const targetWidth = contentWidth;
+            const maxHeight = Math.min(180, availableHeight);
             
             const widthScale = targetWidth / imgWidth;
             imgWidth = targetWidth;
