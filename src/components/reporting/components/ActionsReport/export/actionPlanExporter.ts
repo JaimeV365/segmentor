@@ -180,46 +180,59 @@ async function loadLogoForPDF(logoUrl: string): Promise<{ dataUrl: string; width
   // Method 3: Fall back to fetch + rasterize via canvas
   // This is critical for SVG logos: jsPDF cannot handle SVG data URLs directly,
   // so we must draw into a canvas and export as PNG.
-  try {
-    const response = await fetch(logoUrl);
-    const blob = await response.blob();
-    const rawDataUrl = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-    
-    const img = new Image();
-    img.src = rawDataUrl;
-    await new Promise<void>((resolve, reject) => {
-      if (img.complete) {
-        resolve();
-      } else {
-        img.onload = () => resolve();
-        img.onerror = reject;
+  const fetchAndRasterize = async (url: string, label: string): Promise<{ dataUrl: string; width: number; height: number } | null> => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const blob = await response.blob();
+      const rawDataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+      
+      const img = new Image();
+      img.src = rawDataUrl;
+      await new Promise<void>((resolve, reject) => {
+        if (img.complete && img.naturalWidth > 0) { resolve(); }
+        else { img.onload = () => resolve(); img.onerror = reject; }
+      });
+      
+      const w = img.naturalWidth || img.width || 300;
+      const h = img.naturalHeight || img.height || 100;
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(img, 0, 0, w, h);
+        const pngDataUrl = canvas.toDataURL('image/png');
+        console.log(`Loaded and rasterized logo via ${label}:`, logoUrl, `${w}x${h}`);
+        return { dataUrl: pngDataUrl, width: w, height: h };
       }
-    });
-    
-    // Rasterize to canvas → PNG (handles SVG, WebP, and any other format)
-    const w = img.naturalWidth || img.width || 300;
-    const h = img.naturalHeight || img.height || 100;
-    const canvas = document.createElement('canvas');
-    canvas.width = w;
-    canvas.height = h;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.drawImage(img, 0, 0, w, h);
-      const pngDataUrl = canvas.toDataURL('image/png');
-      console.log('Loaded and rasterized logo via fetch:', logoUrl, `${w}x${h}`);
-      return { dataUrl: pngDataUrl, width: w, height: h };
+      return { dataUrl: rawDataUrl, width: w, height: h };
+    } catch (error) {
+      console.warn(`Logo fetch via ${label} failed:`, error);
+      return null;
     }
-    
-    return { dataUrl: rawDataUrl, width: w, height: h };
-  } catch (error) {
-    console.warn('Failed to load logo for PDF watermark (all methods failed):', error);
-    return null;
+  };
+
+  // Try direct fetch first
+  const directResult = await fetchAndRasterize(logoUrl, 'direct fetch');
+  if (directResult) return directResult;
+
+  // Method 4: Use CORS proxy through the Cloudflare Worker
+  // Servers that block direct fetches (403, no CORS) are proxied through our worker
+  // which adds proper CORS headers and fetches server-side.
+  if (logoUrl.startsWith('http')) {
+    const proxyUrl = `https://segmentor.jaime-f57.workers.dev/api/proxy-image?url=${encodeURIComponent(logoUrl)}`;
+    const proxyResult = await fetchAndRasterize(proxyUrl, 'CORS proxy');
+    if (proxyResult) return proxyResult;
   }
+
+  console.warn('Failed to load logo for PDF watermark (all methods failed):', logoUrl);
+  return null;
 }
 
 /**
@@ -1384,10 +1397,14 @@ export async function exportActionPlanToPDF(
                                        chartImage.selector?.includes('recommendation-score-widgets') ||
                                        chartImage.selector?.includes('recommendation-score-section');
           
-          // Calculate dimensions to fit page
-          // For Historical Progress, prefer giving it a fresh page so it can be rendered large and readable.
-          if (isHistoricalProgress) {
-            // If we're not near the top of a page, start a new page to maximise space.
+          // Detect chart type early so we can decide whether to start a fresh page
+          const isMainVisualization = chartImage.chartType === 'main' ||
+                                     finding.id === 'chart-main-visualisation' || 
+                                     finding.chartSelector === '.chart-container';
+
+          // For large charts (main visualization, historical progress), start on a fresh page
+          // so they get maximum available height instead of being constrained by prior content.
+          if (isMainVisualization || isHistoricalProgress) {
             if (yPosition > margin + 15) {
               pdf.addPage();
               yPosition = margin + 10;
@@ -1401,11 +1418,6 @@ export async function exportActionPlanToPDF(
           const captureScale = 2; // html2canvas scale factor
           let imgWidth = (img.width / captureScale) * 0.264583;
           let imgHeight = (img.height / captureScale) * 0.264583;
-          
-          // Check if this is the main visualization chart (for sizing purposes)
-          const isMainVisualization = chartImage.chartType === 'main' ||
-                                     finding.id === 'chart-main-visualisation' || 
-                                     finding.chartSelector === '.chart-container';
           
           if (isMainVisualization) {
             // Main visualization: fill the full content width (80%+ of the A4 page)

@@ -74,6 +74,46 @@ export default {
       });
     }
 
+    const url = new URL(request.url);
+
+    // Route: /api/proxy-image — fetches an image from an external URL and returns it
+    // with CORS headers, allowing the browser to use it in canvas/PDF generation.
+    if (url.pathname === '/api/proxy-image') {
+      const imageUrl = url.searchParams.get('url');
+      if (!imageUrl) {
+        return new Response(JSON.stringify({ error: 'Missing url parameter' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': allowOrigin },
+        });
+      }
+      try {
+        const imgResponse = await fetch(imageUrl, {
+          headers: { 'Accept': 'image/*,*/*', 'User-Agent': 'Mozilla/5.0' },
+        });
+        if (!imgResponse.ok) {
+          return new Response(JSON.stringify({ error: `Upstream returned ${imgResponse.status}` }), {
+            status: 502,
+            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': allowOrigin },
+          });
+        }
+        const contentType = imgResponse.headers.get('Content-Type') || 'application/octet-stream';
+        const body = await imgResponse.arrayBuffer();
+        return new Response(body, {
+          headers: {
+            'Content-Type': contentType,
+            'Access-Control-Allow-Origin': allowOrigin,
+            'Access-Control-Allow-Credentials': 'true',
+            'Cache-Control': 'public, max-age=86400',
+          },
+        });
+      } catch (error) {
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 502,
+          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': allowOrigin },
+        });
+      }
+    }
+
     try {
       // Get Cloudflare Access headers (if route is protected by Access)
       let email = request.headers.get('Cf-Access-Authenticated-User-Email');

@@ -292,6 +292,7 @@ export const Watermark: React.FC<WatermarkProps> = ({
         <img 
           key={logoUrl} 
           src={logoUrl} 
+          crossOrigin="anonymous"
           alt="Logo" 
           style={{
             width: '100%',
@@ -308,12 +309,20 @@ export const Watermark: React.FC<WatermarkProps> = ({
             console.log('✅ Image loaded successfully from:', logoUrl);
           }}
           onError={(e) => {
-            console.error('❌ Error loading logo from URL:', logoUrl, 'Current src:', e.currentTarget.src);
-            // Use local fallback to prevent infinite loop
+            const target = e.currentTarget;
+            console.error('❌ Error loading logo from URL:', logoUrl, 'Current src:', target.src);
+            // If CORS loading failed, retry without crossorigin attribute
+            if (target.crossOrigin) {
+              console.warn('⚠️ CORS load failed, retrying without crossorigin for display');
+              target.crossOrigin = '';
+              target.removeAttribute('crossorigin');
+              target.src = logoUrl;
+              return;
+            }
             const fallbackLogo = '/segmentor-logo.png';
-            if (e.currentTarget.src !== fallbackLogo && !e.currentTarget.src.includes(fallbackLogo)) {
+            if (target.src !== fallbackLogo && !target.src.includes(fallbackLogo)) {
               console.warn('⚠️ Falling back to default logo');
-              e.currentTarget.src = fallbackLogo;
+              target.src = fallbackLogo;
             } else {
               // If fallback also fails, hide the image to stop the loop
               console.error('❌ Fallback logo also failed, hiding image');
