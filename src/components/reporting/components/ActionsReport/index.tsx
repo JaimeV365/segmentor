@@ -87,12 +87,12 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
       const saved = localStorage.getItem('actionReportsPdfExportOptions');
       if (saved) {
         const options = JSON.parse(saved);
-        return options.showImageWatermarks !== undefined ? options.showImageWatermarks : true;
+        return options.showImageWatermarks !== undefined ? options.showImageWatermarks : false;
       }
     } catch (e) {
       console.warn('Failed to load PDF export options from localStorage:', e);
     }
-    return true;
+    return false;
   });
   const [pdfShowPageWatermarks, setPdfShowPageWatermarks] = useState<boolean>(() => {
     try {
@@ -106,15 +106,26 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
     }
     return true;
   });
+  const [pdfHeaderLogoSize, setPdfHeaderLogoSize] = useState<'large' | 'medium' | 'small'>(() => {
+    try {
+      const saved = localStorage.getItem('actionReportsPdfExportOptions');
+      if (saved) {
+        const options = JSON.parse(saved);
+        if (options.headerLogoSize) return options.headerLogoSize;
+      }
+    } catch (e) { /* ignore */ }
+    return 'large';
+  });
   
   // Persist PDF export options to localStorage when they change
   useEffect(() => {
     localStorage.setItem('actionReportsPdfExportOptions', JSON.stringify({
       fontFamily: pdfFontFamily,
       showImageWatermarks: pdfShowImageWatermarks,
-      showPageWatermarks: pdfShowPageWatermarks
+      showPageWatermarks: pdfShowPageWatermarks,
+      headerLogoSize: pdfHeaderLogoSize
     }));
-  }, [pdfFontFamily, pdfShowImageWatermarks, pdfShowPageWatermarks]);
+  }, [pdfFontFamily, pdfShowImageWatermarks, pdfShowPageWatermarks, pdfHeaderLogoSize]);
   const [selectedExportOption, setSelectedExportOption] = useState<string | null>(null);
   const exportPanelRef = useRef<HTMLDivElement>(null);
   const calculationStartTime = React.useRef<number>(0);
@@ -437,7 +448,9 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
         fontFamily: pdfFontFamily as 'montserrat' | 'lato' | 'arial' | 'helvetica' | 'times',
         showImageWatermarks: pdfShowImageWatermarks,
         showPageWatermarks: pdfShowPageWatermarks,
-        axisLabels: labels
+        axisLabels: labels,
+        isTMStaff: isPremium,
+        headerLogoSize: pdfHeaderLogoSize
       });
       setShowExportPanel(false);
       setShowPDFCustomizeOptions(false);
@@ -1922,6 +1935,31 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                           />
                           <span style={{ fontSize: '14px', color: '#6b7280' }}>Show watermarks on page headers</span>
                         </label>
+                        {pdfShowPageWatermarks && (
+                          <div style={{ marginLeft: 26, display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ fontSize: '13px', color: '#9ca3af' }}>Logo size:</span>
+                            {(['large', 'medium', 'small'] as const).map((size) => (
+                              <button
+                                key={size}
+                                type="button"
+                                onClick={() => setPdfHeaderLogoSize(size)}
+                                style={{
+                                  padding: '3px 10px',
+                                  fontSize: '12px',
+                                  borderRadius: 4,
+                                  border: pdfHeaderLogoSize === size ? '1px solid #3a863e' : '1px solid #d1d5db',
+                                  background: pdfHeaderLogoSize === size ? '#e8f5e9' : 'white',
+                                  color: pdfHeaderLogoSize === size ? '#2e7d32' : '#6b7280',
+                                  fontWeight: pdfHeaderLogoSize === size ? 600 : 400,
+                                  cursor: 'pointer',
+                                  transition: 'all 0.15s ease'
+                                }}
+                              >
+                                {size.charAt(0).toUpperCase() + size.slice(1)}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
 
                       {/* Export PDF Button */}
