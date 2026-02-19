@@ -154,7 +154,8 @@ export const useCSVParser = ({
           }
           
           // Check if enhanced scale detection needs user confirmation
-          if (headerResult.needsUserConfirmation) {
+          if (headerResult.needsUserConfirmation && !scalesLocked) {
+            // First file or Replace mode: ask the user to choose scales
             console.log("Scale confirmation needed, storing pending data");
             setPendingFileData({
               file,
@@ -166,13 +167,20 @@ export const useCSVParser = ({
             return;
           }
 
-          // Use detected scales and include original header names
-          const headerScales: HeaderScales = {
-            ...headerResult.scales,
-            satisfactionHeaderName: headerResult.satisfactionHeader || undefined,
-            loyaltyHeaderName: headerResult.loyaltyHeader || undefined
-          };
-          console.log("Detected scales:", headerScales);
+          // Use locked scales when appending, or detected scales for first import
+          const headerScales: HeaderScales = scalesLocked
+            ? {
+                satisfaction: satisfactionScale as any,
+                loyalty: loyaltyScale as any,
+                satisfactionHeaderName: headerResult.satisfactionHeader || undefined,
+                loyaltyHeaderName: headerResult.loyaltyHeader || undefined
+              }
+            : {
+                ...headerResult.scales,
+                satisfactionHeaderName: headerResult.satisfactionHeader || undefined,
+                loyaltyHeaderName: headerResult.loyaltyHeader || undefined
+              };
+          console.log("Using scales:", headerScales, scalesLocked ? "(locked)" : "(detected)");
 
           // Process data rows
           try {
@@ -270,7 +278,10 @@ export const useCSVParser = ({
     onComplete, 
     onError,
     setPendingFileData,
-    onMappingNeeded
+    onMappingNeeded,
+    scalesLocked,
+    satisfactionScale,
+    loyaltyScale
   ]);
 
   return {

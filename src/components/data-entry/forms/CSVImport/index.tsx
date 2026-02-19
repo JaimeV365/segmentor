@@ -653,7 +653,8 @@ export const CSVImport: React.FC<CSVImportProps> = ({
       needsUserConfirmation: needsScaleConfirmation,
     };
 
-    if (needsScaleConfirmation) {
+    if (needsScaleConfirmation && !scalesLocked) {
+      // First file or Replace mode: ask the user to choose scales
       console.log("Post-mapping: scale confirmation needed");
       setPendingFileData({
         file,
@@ -666,15 +667,20 @@ export const CSVImport: React.FC<CSVImportProps> = ({
       return;
     }
 
-    // No scale confirmation needed — validate and import directly
-    console.log("Post-mapping: proceeding to validation with scales:", headerResult.scales);
+    // When scales are locked, use them instead of detected ones
+    const effectiveScales = scalesLocked
+      ? { ...headerResult.scales, satisfaction: satisfactionScale, loyalty: loyaltyScale }
+      : headerResult.scales;
+
+    // Validate and import directly
+    console.log("Post-mapping: proceeding to validation with scales:", effectiveScales, scalesLocked ? "(locked)" : "(detected)");
     try {
       const validationResult = validateDataRows(
         cleanedData,
         selection.satisfactionHeader,
         selection.loyaltyHeader,
-        headerResult.scales.satisfaction,
-        headerResult.scales.loyalty,
+        effectiveScales.satisfaction,
+        effectiveScales.loyalty,
         existingData
       );
 
@@ -690,7 +696,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
 
       const success = handleCompleteImport(
         validatedData,
-        headerResult.scales,
+        effectiveScales,
         file.name,
         validationResult.rejectedReport.count > 0,
         validationResult.warningReport.count > 0
@@ -710,7 +716,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
     }
 
     setPendingMappingData(null);
-  }, [pendingMappingData, handleCompleteImport, setError, setDateIssuesReport, setDateWarningsReport, existingData]);
+  }, [pendingMappingData, handleCompleteImport, setError, setDateIssuesReport, setDateWarningsReport, existingData, scalesLocked, satisfactionScale, loyaltyScale]);
 
   const handleMappingCancel = useCallback(() => {
     console.log("Mapping card cancelled");
@@ -926,6 +932,7 @@ export const CSVImport: React.FC<CSVImportProps> = ({
         onCancel={handleScaleConfirmationCancel}
         scaleDetection={pendingFileData?.headerResult?.scaleDetection || {}}
         basicScales={pendingFileData?.headerScales || { satisfaction: '1-5', loyalty: '1-5' }}
+        lockedScales={scalesLocked ? { satisfaction: satisfactionScale, loyalty: loyaltyScale } : null}
       />
 
       {mappingAnalysis && (

@@ -16,7 +16,7 @@ export function normalizeToPercentage(
   const minValue = getScaleMin(scale);
   const maxValue = getScaleMax(scale);
   const normalized = ((value - minValue) / (maxValue - minValue)) * 100;
-  return normalized;
+  return Math.max(0, Math.min(100, normalized));
 }
 
 export function denormalizeFromPercentage(

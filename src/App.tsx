@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircleQuestion } from 'lucide-react';
 import DataEntryModule from './components/data-entry/DataEntryModule';
 import DataDisplay from './components/data-entry/table/DataDisplay';
-import { DataPoint, ScaleFormat, ScaleState } from './types/base';
+import { DataPoint, ScaleFormat, ScaleState, getScaleMinValue, getScaleMaxValue } from './types/base';
 import { QuadrantAssignmentProvider } from './components/visualization/context/QuadrantAssignmentContext';
 import { FilterProvider } from './components/visualization/context/FilterContext';
 import { AxisLabelsProvider } from './components/visualization/context/AxisLabelsContext';
@@ -712,7 +712,34 @@ const handleTerroristsZoneSizeChange = (size: number) => {
         document.dispatchEvent(new CustomEvent('segFileLoaded'));
       }
     }
-    setData(processedData);
+    // Validate all data points against the effective scales and filter out-of-range ones
+    const effectiveSatScale = (headerScales?.satisfaction || scales.satisfactionScale) as ScaleFormat;
+    const effectiveLoyScale = (headerScales?.loyalty || scales.loyaltyScale) as ScaleFormat;
+    const satMin = getScaleMinValue(effectiveSatScale);
+    const satMax = getScaleMaxValue(effectiveSatScale);
+    const loyMin = getScaleMinValue(effectiveLoyScale);
+    const loyMax = getScaleMaxValue(effectiveLoyScale);
+
+    const outOfRange = processedData.filter(p =>
+      p.satisfaction < satMin || p.satisfaction > satMax ||
+      p.loyalty < loyMin || p.loyalty > loyMax
+    );
+
+    if (outOfRange.length > 0) {
+      const validData = processedData.filter(p =>
+        p.satisfaction >= satMin && p.satisfaction <= satMax &&
+        p.loyalty >= loyMin && p.loyalty <= loyMax
+      );
+      console.warn(`⚠️ Removed ${outOfRange.length} data points outside scale range (Sat ${effectiveSatScale}, Loy ${effectiveLoyScale})`);
+      showNotification({
+        title: 'Out-of-range data removed',
+        message: `${outOfRange.length} data point(s) had values outside the active scales (Satisfaction ${effectiveSatScale}, Loyalty ${effectiveLoyScale}) and were excluded.`,
+        type: 'warning'
+      });
+      setData(validData);
+    } else {
+      setData(processedData);
+    }
   };
 
   const handleDeleteDataPoint = (id: string) => {

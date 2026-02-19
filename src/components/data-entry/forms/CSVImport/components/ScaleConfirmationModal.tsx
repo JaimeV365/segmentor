@@ -15,6 +15,10 @@ interface ScaleConfirmationModalProps {
     satisfaction: ScaleFormat;
     loyalty: ScaleFormat;
   };
+  lockedScales?: {
+    satisfaction: ScaleFormat;
+    loyalty: ScaleFormat;
+  } | null;
 }
 
 /**
@@ -49,7 +53,8 @@ export const ScaleConfirmationModal: React.FC<ScaleConfirmationModalProps> = ({
   onConfirm,
   onCancel,
   scaleDetection,
-  basicScales
+  basicScales,
+  lockedScales
 }) => {
   const [selectedScales, setSelectedScales] = React.useState<{
     satisfaction?: ScaleFormat;
@@ -58,10 +63,18 @@ export const ScaleConfirmationModal: React.FC<ScaleConfirmationModalProps> = ({
 
   React.useEffect(() => {
     if (isOpen) {
-      // Reset selections when modal opens
-      setSelectedScales({});
+      // When scales are locked (appending data), pre-select the locked scales
+      // so the user doesn't accidentally choose a conflicting scale
+      if (lockedScales) {
+        setSelectedScales({
+          satisfaction: lockedScales.satisfaction,
+          loyalty: lockedScales.loyalty
+        });
+      } else {
+        setSelectedScales({});
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, lockedScales]);
 
   if (!isOpen) return null;
 
@@ -89,6 +102,26 @@ export const ScaleConfirmationModal: React.FC<ScaleConfirmationModalProps> = ({
         </div>
 
         <div className="scale-confirmation-content">
+          {lockedScales && (
+            <div className="scale-locked-warning" style={{
+              backgroundColor: '#fffbeb',
+              border: '1px solid #f59e0b',
+              borderRadius: '6px',
+              padding: '10px 14px',
+              marginBottom: '12px',
+              fontSize: '13px',
+              color: '#92400e',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '8px'
+            }}>
+              <span style={{ fontSize: '16px', flexShrink: 0 }}>⚠️</span>
+              <span>
+                You already have data loaded with <strong>Satisfaction {lockedScales.satisfaction}</strong> and <strong>Loyalty {lockedScales.loyalty}</strong>.
+                To append data, the scales must match. If you need a different scale, use "Replace All" instead.
+              </span>
+            </div>
+          )}
           <p className="scale-confirmation-explanation">
             We detected a scale that could be interpreted in different ways. Please choose which scale format you want to use:
           </p>

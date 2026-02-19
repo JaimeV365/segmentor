@@ -9,7 +9,8 @@ export interface Position {
 export function normalizeToPercentage(value: number, scale: ScaleFormat): number {
   const minValue = getScaleMinValue(scale);
   const maxValue = parseInt(scale.split('-')[1]);
-  return ((value - minValue) / (maxValue - minValue)) * 100;
+  const pct = ((value - minValue) / (maxValue - minValue)) * 100;
+  return Math.max(0, Math.min(100, pct));
 }
 
 export function denormalizeFromPercentage(percentage: number, scale: ScaleFormat): number {
