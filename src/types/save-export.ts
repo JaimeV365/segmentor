@@ -183,6 +183,8 @@ export interface ApostlesSaveData {
           fontFamily: 'montserrat' | 'lato' | 'arial' | 'helvetica' | 'times';
           showImageWatermarks: boolean;
           showPageWatermarks: boolean;
+          headerLogoSize?: 'large' | 'medium' | 'small';
+          consultantName?: string;
         };
 
         // Saved/generated Action Plan snapshot (so saved files can restore the final Actions Report)

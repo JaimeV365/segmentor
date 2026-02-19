@@ -108,6 +108,8 @@ export interface CreateSaveDataParams {
         fontFamily: 'montserrat' | 'lato' | 'arial' | 'helvetica' | 'times';
         showImageWatermarks: boolean;
         showPageWatermarks: boolean;
+        headerLogoSize?: 'large' | 'medium' | 'small';
+        consultantName?: string;
       };
 
       // Saved/generated Action Plan snapshot (so Save includes the final Actions Report)
