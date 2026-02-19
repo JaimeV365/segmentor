@@ -116,6 +116,16 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
     } catch (e) { /* ignore */ }
     return 'large';
   });
+  const [pdfConsultantName, setPdfConsultantName] = useState<string>(() => {
+    try {
+      const saved = localStorage.getItem('actionReportsPdfExportOptions');
+      if (saved) {
+        const options = JSON.parse(saved);
+        return options.consultantName || '';
+      }
+    } catch (e) { /* ignore */ }
+    return '';
+  });
   
   // Persist PDF export options to localStorage when they change
   useEffect(() => {
@@ -123,9 +133,10 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
       fontFamily: pdfFontFamily,
       showImageWatermarks: pdfShowImageWatermarks,
       showPageWatermarks: pdfShowPageWatermarks,
-      headerLogoSize: pdfHeaderLogoSize
+      headerLogoSize: pdfHeaderLogoSize,
+      consultantName: pdfConsultantName
     }));
-  }, [pdfFontFamily, pdfShowImageWatermarks, pdfShowPageWatermarks, pdfHeaderLogoSize]);
+  }, [pdfFontFamily, pdfShowImageWatermarks, pdfShowPageWatermarks, pdfHeaderLogoSize, pdfConsultantName]);
   const [selectedExportOption, setSelectedExportOption] = useState<string | null>(null);
   const exportPanelRef = useRef<HTMLDivElement>(null);
   const calculationStartTime = React.useRef<number>(0);
@@ -450,7 +461,8 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
         showPageWatermarks: pdfShowPageWatermarks,
         axisLabels: labels,
         isTMStaff: isPremium,
-        headerLogoSize: pdfHeaderLogoSize
+        headerLogoSize: pdfHeaderLogoSize,
+        consultantName: pdfConsultantName.trim()
       });
       setShowExportPanel(false);
       setShowPDFCustomizeOptions(false);
@@ -1911,6 +1923,36 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                           Applies to body text only. Titles and headers use Montserrat.
                         </p>
                       </div>
+
+                      {/* Consultant Name - TM staff only */}
+                      {isPremium && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                          <label style={{ fontSize: '14px', fontWeight: 600, color: '#374151', marginBottom: 4 }}>
+                            Consultant Name
+                          </label>
+                          <input
+                            type="text"
+                            value={pdfConsultantName}
+                            onChange={(e) => setPdfConsultantName(e.target.value)}
+                            placeholder="Optional — e.g. Jane Smith"
+                            style={{
+                              width: '100%',
+                              padding: '10px 12px',
+                              border: '1px solid #d1d5db',
+                              borderRadius: 6,
+                              fontSize: '14px',
+                              color: '#374151',
+                              backgroundColor: 'white',
+                              boxSizing: 'border-box'
+                            }}
+                          />
+                          <p style={{ fontSize: '12px', color: '#9ca3af', marginTop: 2, marginBottom: 0 }}>
+                            {pdfConsultantName.trim()
+                              ? `Footer will read: "by ${pdfConsultantName.trim()} at Teresa Monroe"`
+                              : 'Leave blank to show "by Teresa Monroe"'}
+                          </p>
+                        </div>
+                      )}
 
                       {/* Watermark Toggles - PDF only */}
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
