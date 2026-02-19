@@ -222,13 +222,20 @@ async function loadLogoForPDF(logoUrl: string): Promise<{ dataUrl: string; width
   const directResult = await fetchAndRasterize(logoUrl, 'direct fetch');
   if (directResult) return directResult;
 
-  // Method 4: Use CORS proxy through the Cloudflare Worker
-  // Servers that block direct fetches (403, no CORS) are proxied through our worker
-  // which adds proper CORS headers and fetches server-side.
+  // Method 4: Use CORS proxy — Pages Function at /api/proxy-image fetches the image
+  // server-side and returns it with CORS headers. This handles servers that block
+  // direct browser fetches (403, no CORS headers, etc.).
   if (logoUrl.startsWith('http')) {
-    const proxyUrl = `https://segmentor.jaime-f57.workers.dev/api/proxy-image?url=${encodeURIComponent(logoUrl)}`;
-    const proxyResult = await fetchAndRasterize(proxyUrl, 'CORS proxy');
+    // Same-origin Pages Function (deployed automatically with the site)
+    const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(logoUrl)}`;
+    console.log('Trying CORS proxy for logo:', proxyUrl);
+    const proxyResult = await fetchAndRasterize(proxyUrl, 'Pages proxy');
     if (proxyResult) return proxyResult;
+
+    // Fallback: external Worker proxy (requires separate worker deployment)
+    const workerProxyUrl = `https://segmentor.jaime-f57.workers.dev/api/proxy-image?url=${encodeURIComponent(logoUrl)}`;
+    const workerResult = await fetchAndRasterize(workerProxyUrl, 'Worker proxy');
+    if (workerResult) return workerResult;
   }
 
   console.warn('Failed to load logo for PDF watermark (all methods failed):', logoUrl);
