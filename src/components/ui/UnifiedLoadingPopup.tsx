@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 // Inline SegmentingLoadingIndicator component
 const SegmentingLoadingIndicator: React.FC<{ size?: 'small' | 'medium' }> = ({ size = 'small' }) => {
@@ -107,16 +107,39 @@ const CustomLoadingText: React.FC<{ text: string; size?: 'small' | 'medium' }> =
 
 interface UnifiedLoadingPopupProps {
   isVisible: boolean;
-  text?: string; // Custom text, defaults to "segmenting"
+  text?: string;
   size?: 'small' | 'medium';
+  minDisplayMs?: number;
 }
+
+const MIN_DISPLAY_MS_DEFAULT = 800;
 
 export const UnifiedLoadingPopup: React.FC<UnifiedLoadingPopupProps> = ({ 
   isVisible, 
   text = 'segmenting',
-  size = 'medium' 
+  size = 'medium',
+  minDisplayMs = MIN_DISPLAY_MS_DEFAULT
 }) => {
-  if (!isVisible) return null;
+  const [showPopup, setShowPopup] = useState(false);
+  const shownAtRef = useRef<number>(0);
+
+  useEffect(() => {
+    if (isVisible) {
+      shownAtRef.current = Date.now();
+      setShowPopup(true);
+    } else if (showPopup) {
+      const elapsed = Date.now() - shownAtRef.current;
+      const remaining = Math.max(0, minDisplayMs - elapsed);
+      if (remaining > 0) {
+        const timer = setTimeout(() => setShowPopup(false), remaining);
+        return () => clearTimeout(timer);
+      } else {
+        setShowPopup(false);
+      }
+    }
+  }, [isVisible, minDisplayMs]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!showPopup) return null;
   
   return (
     <>
