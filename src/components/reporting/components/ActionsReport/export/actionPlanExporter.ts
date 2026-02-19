@@ -112,9 +112,72 @@ async function ensureFontsLoaded(pdf: jsPDF, bodyFont?: string): Promise<void> {
 }
 
 /**
- * Loads logo image and returns as data URL with dimensions
+ * Extracts an image from the DOM by finding an already-loaded img element
+ * that matches the given URL. Uses canvas to convert to data URL.
+ * This bypasses connect-src CSP restrictions since the image is already loaded.
+ */
+function extractImageFromDOM(logoUrl: string): { dataUrl: string; width: number; height: number } | null {
+  try {
+    const imgs = document.querySelectorAll('img');
+    for (const img of Array.from(imgs)) {
+      if ((img.src === logoUrl || img.src.includes(logoUrl.replace(/^https?:\/\//, ''))) && 
+          img.complete && img.naturalWidth > 0) {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) continue;
+        ctx.drawImage(img, 0, 0);
+        const dataUrl = canvas.toDataURL('image/png');
+        console.log('Extracted logo from DOM element:', logoUrl);
+        return { dataUrl, width: img.naturalWidth, height: img.naturalHeight };
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to extract image from DOM (CORS or tainted canvas):', error);
+  }
+  return null;
+}
+
+/**
+ * Loads logo image and returns as data URL with dimensions.
+ * Tries DOM extraction first (bypasses CSP), then falls back to fetch.
  */
 async function loadLogoForPDF(logoUrl: string): Promise<{ dataUrl: string; width: number; height: number } | null> {
+  // Method 1: Try to extract from an already-loaded DOM img element
+  const domResult = extractImageFromDOM(logoUrl);
+  if (domResult) return domResult;
+
+  // Method 2: Try loading via Image element with CORS (uses img-src CSP, not connect-src)
+  try {
+    const result = await new Promise<{ dataUrl: string; width: number; height: number } | null>((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth || 300;
+          canvas.height = img.naturalHeight || 100;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) { resolve(null); return; }
+          ctx.drawImage(img, 0, 0);
+          const dataUrl = canvas.toDataURL('image/png');
+          console.log('Loaded logo via Image element with CORS:', logoUrl);
+          resolve({ dataUrl, width: canvas.width, height: canvas.height });
+        } catch (e) {
+          console.warn('Canvas tainted after drawing logo:', e);
+          resolve(null);
+        }
+      };
+      img.onerror = () => resolve(null);
+      img.src = logoUrl;
+    });
+    if (result) return result;
+  } catch (error) {
+    console.warn('Image element CORS loading failed:', error);
+  }
+
+  // Method 3: Fall back to fetch (may fail with CSP connect-src restrictions)
   try {
     const response = await fetch(logoUrl);
     const blob = await response.blob();
@@ -125,7 +188,6 @@ async function loadLogoForPDF(logoUrl: string): Promise<{ dataUrl: string; width
       reader.readAsDataURL(blob);
     });
     
-    // Get image dimensions
     const img = new Image();
     img.src = dataUrl;
     await new Promise<void>((resolve, reject) => {
@@ -139,7 +201,7 @@ async function loadLogoForPDF(logoUrl: string): Promise<{ dataUrl: string; width
     
     return { dataUrl, width: img.width, height: img.height };
   } catch (error) {
-    console.warn('Failed to load logo for PDF watermark:', error);
+    console.warn('Failed to load logo for PDF watermark (all methods failed):', error);
     return null;
   }
 }
@@ -461,18 +523,14 @@ async function addWatermarkToChartImage(
       }
     });
 
-    // Load the logo
-    const logoResponse = await fetch(logoUrl);
-    const logoBlob = await logoResponse.blob();
-    const logoDataUrl = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(logoBlob);
-    });
+    // Load the logo (reuse the robust multi-method loader)
+    const logoData = await loadLogoForPDF(logoUrl);
+    if (!logoData) {
+      throw new Error('Could not load logo via any method');
+    }
 
     const logoImg = new Image();
-    logoImg.src = logoDataUrl;
+    logoImg.src = logoData.dataUrl;
     await new Promise<void>((resolve, reject) => {
       if (logoImg.complete) {
         resolve();
@@ -705,6 +763,25 @@ async function addWatermarkToChartImage(
 }
 
 /**
+ * Truncates text to fit within a given width (in mm) at the current font size.
+ * Appends an ellipsis if truncated.
+ */
+function truncateTextToWidth(pdf: jsPDF, text: string, maxWidthMm: number): string {
+  if (!text) return '—';
+  const textWidth = pdf.getTextWidth(text);
+  if (textWidth <= maxWidthMm) return text;
+  const ellipsis = '…';
+  let truncated = text;
+  while (truncated.length > 1) {
+    truncated = truncated.slice(0, -1);
+    if (pdf.getTextWidth(truncated + ellipsis) <= maxWidthMm) {
+      return truncated + ellipsis;
+    }
+  }
+  return ellipsis;
+}
+
+/**
  * Adds a customer table to the PDF
  * Returns the new yPosition after the table
  * Note: yPosition is passed by reference through a getter/setter to allow checkPageBreak to update it
@@ -740,27 +817,42 @@ function addCustomerTable(
   const rowHeight = 6; // mm per row
   const headerHeight = 8; // mm for header
   const tableMargin = 2; // mm margin around table
-  const cellPadding = 2; // mm padding in cells
   
-  // Determine columns based on data
+  // Determine which columns to show
   const hasEmail = customers.some(c => c.email);
   const hasPosition = customers.some(c => c.position);
   const showDistance = hasDistance && customers.some(c => c.distance !== undefined);
   const showChances = hasChances && customers.some(c => c.chances !== undefined);
   const showSatisfactionLoyalty = isQuadrantBased && customers.some(c => c.satisfaction !== undefined && c.loyalty !== undefined);
   
-  // Calculate column widths
-  const idWidth = 15;
-  const nameWidth = 30;
-  const emailWidth = hasEmail ? 35 : 0;
-  const positionWidth = hasPosition ? 25 : 0;
-  const distanceWidth = showDistance ? 20 : 0;
-  const chancesWidth = showChances ? 20 : 0;
-  const satisfactionWidth = showSatisfactionLoyalty ? 20 : 0;
-  const loyaltyWidth = showSatisfactionLoyalty ? 20 : 0;
+  // Count active columns and allocate widths proportionally to fill contentWidth
+  const numericColWidth = 14; // Fixed width for narrow numeric columns (sat, loy, distance, chances)
+  let fixedWidth = 0;
+  if (showDistance) fixedWidth += numericColWidth;
+  if (showChances) fixedWidth += numericColWidth;
+  if (showSatisfactionLoyalty) fixedWidth += numericColWidth * 2;
+  if (hasPosition) fixedWidth += 22;
+
+  // Remaining space split among ID, Name, Email
+  const flexSpace = contentWidth - fixedWidth - (tableMargin * 2);
+  let idWidth: number, nameWidth: number, emailWidth: number;
+  if (hasEmail) {
+    idWidth = Math.floor(flexSpace * 0.28);
+    nameWidth = Math.floor(flexSpace * 0.32);
+    emailWidth = flexSpace - idWidth - nameWidth;
+  } else {
+    idWidth = Math.floor(flexSpace * 0.40);
+    nameWidth = flexSpace - idWidth;
+    emailWidth = 0;
+  }
+  const positionWidth = hasPosition ? 22 : 0;
+  const distanceWidth = showDistance ? numericColWidth : 0;
+  const chancesWidth = showChances ? numericColWidth : 0;
+  const satisfactionWidth = showSatisfactionLoyalty ? numericColWidth : 0;
+  const loyaltyWidth = showSatisfactionLoyalty ? numericColWidth : 0;
   
   const totalWidth = idWidth + nameWidth + emailWidth + positionWidth + distanceWidth + chancesWidth + satisfactionWidth + loyaltyWidth;
-  const tableStartX = margin + (contentWidth - totalWidth) / 2; // Center the table
+  const tableStartX = margin + (contentWidth - totalWidth) / 2;
   
   // Check if we need a new page - this will update yPositionRef.value if a new page is added
   const estimatedHeight = headerHeight + (customers.length * rowHeight) + (tableMargin * 2);
@@ -790,7 +882,7 @@ function addCustomerTable(
     xPos += positionWidth;
   }
   if (showDistance) {
-    pdf.text('Distance', xPos, yPosition + 5);
+    pdf.text('Dist.', xPos, yPosition + 5);
     xPos += distanceWidth;
   }
   if (showChances) {
@@ -798,8 +890,8 @@ function addCustomerTable(
     xPos += chancesWidth;
   }
   if (showSatisfactionLoyalty) {
-    const satisfactionLabel = axisLabels?.satisfaction || 'Satisfaction';
-    const loyaltyLabel = axisLabels?.loyalty || 'Loyalty';
+    const satisfactionLabel = truncateTextToWidth(pdf, axisLabels?.satisfaction || 'Sat.', satisfactionWidth - 1);
+    const loyaltyLabel = truncateTextToWidth(pdf, axisLabels?.loyalty || 'Loy.', loyaltyWidth - 1);
     pdf.text(satisfactionLabel, xPos, yPosition + 5);
     xPos += satisfactionWidth;
     pdf.text(loyaltyLabel, xPos, yPosition + 5);
@@ -851,7 +943,7 @@ function addCustomerTable(
         xPos += positionWidth;
       }
       if (showDistance) {
-        pdf.text('Distance', xPos, yPosition + 5);
+        pdf.text('Dist.', xPos, yPosition + 5);
         xPos += distanceWidth;
       }
       if (showChances) {
@@ -859,8 +951,8 @@ function addCustomerTable(
         xPos += chancesWidth;
       }
       if (showSatisfactionLoyalty) {
-        const satisfactionLabel = axisLabels?.satisfaction || 'Satisfaction';
-        const loyaltyLabel = axisLabels?.loyalty || 'Loyalty';
+        const satisfactionLabel = truncateTextToWidth(pdf, axisLabels?.satisfaction || 'Sat.', satisfactionWidth - 1);
+        const loyaltyLabel = truncateTextToWidth(pdf, axisLabels?.loyalty || 'Loy.', loyaltyWidth - 1);
         pdf.text(satisfactionLabel, xPos, yPosition + 5);
         xPos += satisfactionWidth;
         pdf.text(loyaltyLabel, xPos, yPosition + 5);
@@ -888,18 +980,19 @@ function addCustomerTable(
     pdf.setDrawColor(200, 200, 200);
     pdf.setLineWidth(0.1);
     
-    // Draw row data
+    // Draw row data (truncated to fit column widths)
+    const cellPad = 1; // 1mm padding so text doesn't touch the next column
     xPos = tableStartX;
-    pdf.text(customer.id || '—', xPos, yPosition + 4);
+    pdf.text(truncateTextToWidth(pdf, customer.id || '', idWidth - cellPad), xPos, yPosition + 4);
     xPos += idWidth;
-    pdf.text(customer.name || '—', xPos, yPosition + 4);
+    pdf.text(truncateTextToWidth(pdf, customer.name || '', nameWidth - cellPad), xPos, yPosition + 4);
     xPos += nameWidth;
     if (hasEmail) {
-      pdf.text(customer.email || '—', xPos, yPosition + 4);
+      pdf.text(truncateTextToWidth(pdf, customer.email || '', emailWidth - cellPad), xPos, yPosition + 4);
       xPos += emailWidth;
     }
     if (hasPosition) {
-      pdf.text(customer.position || '—', xPos, yPosition + 4);
+      pdf.text(truncateTextToWidth(pdf, customer.position || '', positionWidth - cellPad), xPos, yPosition + 4);
       xPos += positionWidth;
     }
     if (showDistance) {
@@ -1299,21 +1392,14 @@ export async function exportActionPlanToPDF(
                                      finding.chartSelector === '.chart-container';
           
           if (isMainVisualization) {
-            // Main visualization: Scale to fit width while preserving aspect ratio
-            // Use 85% of content width to ensure labels and scales are fully visible (not zoomed in)
-            // The image capture includes extra padding for data points, so we need to account for that
-            const maxWidth = contentWidth * 0.85; // 85% of content width (~144mm) to show full chart
-            const maxHeight = Math.min(140, availableHeight); // Allow up to 140mm height
+            // Main visualization: Always scale to fill at least 80% of page width
+            const targetWidth = contentWidth * 0.85;
+            const maxHeight = Math.min(160, availableHeight);
             
-            // Scale proportionally to fit width, but don't force exact width
-            // This ensures the entire chart (including labels) is visible
-            if (imgWidth > maxWidth) {
-              const widthScale = maxWidth / imgWidth;
-              imgWidth = maxWidth;
-              imgHeight *= widthScale;
-            }
+            const widthScale = targetWidth / imgWidth;
+            imgWidth = targetWidth;
+            imgHeight *= widthScale;
             
-            // If height still exceeds max, scale down proportionally
             if (imgHeight > maxHeight) {
               const heightScale = maxHeight / imgHeight;
               imgWidth *= heightScale;
@@ -1353,47 +1439,36 @@ export async function exportActionPlanToPDF(
               imgHeight *= heightScale;
             }
           } else if (isRecommendationScore) {
-            // Recommendation Score: Make it much larger (use 95% of content width for maximum visibility)
-            // Always scale to use full width to ensure it's visible and readable
-            const maxWidth = contentWidth * 0.95; // 95% of content width (~161mm) - larger than other charts
-            const maxHeight = Math.min(140, availableHeight); // Allow up to 140mm height (more than Response Concentration)
+            // Recommendation Score: use 95% width for maximum visibility
+            const maxWidth = contentWidth * 0.95;
+            const maxHeight = Math.min(140, availableHeight);
             
-            // Always scale to maxWidth (scale up if smaller, scale down if larger)
-            // This ensures Recommendation Score charts are always large and readable
             const widthScale = maxWidth / imgWidth;
             imgWidth = maxWidth;
             imgHeight *= widthScale;
             
-            // If height exceeds max after scaling, scale down proportionally
             if (imgHeight > maxHeight) {
               const heightScale = maxHeight / imgHeight;
               imgWidth *= heightScale;
               imgHeight *= heightScale;
             }
             
-            // Ensure minimum size - if still too small after scaling, scale up further
-            const minWidth = contentWidth * 0.85; // At least 85% of content width (higher minimum)
+            const minWidth = contentWidth * 0.85;
             if (imgWidth < minWidth) {
               const minScale = minWidth / imgWidth;
               imgWidth = minWidth;
               imgHeight *= minScale;
             }
           } else {
-            // Other charts: Use smaller max width (70% of content width) for better proportions
-            const otherMaxWidth = contentWidth * 0.7; // 70% of content width (~119mm)
-            const maxHeight = Math.min(100, availableHeight);
-            let scale = 1;
+            // All other charts (proximity, distribution, actionable conversions, etc.)
+            // Always scale to at least 80% of content width so they're clearly readable
+            const targetWidth = contentWidth * 0.85;
+            const maxHeight = Math.min(130, availableHeight);
             
-            // Scale to fit the smaller width if image is larger
-            if (imgWidth > otherMaxWidth) {
-              scale = otherMaxWidth / imgWidth;
-            }
+            const widthScale = targetWidth / imgWidth;
+            imgWidth = targetWidth;
+            imgHeight *= widthScale;
             
-            // Apply scale
-            imgWidth *= scale;
-            imgHeight *= scale;
-            
-            // If height exceeds max after scaling, scale down proportionally
             if (imgHeight > maxHeight) {
               const heightScale = maxHeight / imgHeight;
               imgWidth *= heightScale;
