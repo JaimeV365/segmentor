@@ -1276,12 +1276,9 @@ export async function exportActionPlanToPDF(
   });
 
   if (validFindings.length > 0) {
-    // Estimate content height for Findings section (title + description + first finding)
-    // Title: 10mm, description: 8mm, first finding estimate: 30mm
-    const findingsEstimate = 10 + 8 + 30;
-    smartPageBreak(findingsEstimate);
+    pdf.addPage();
+    yPosition = margin + 10;
     
-    // Use styled section header
     yPosition = addSimpleSectionHeader(pdf, 'Findings', yPosition, margin);
 
     pdf.setFontSize(10);
@@ -1560,11 +1557,9 @@ export async function exportActionPlanToPDF(
 
   // Opportunities & Risks Section
   if (actionPlan.opportunities.length > 0 || actionPlan.risks.length > 0) {
-    // Estimate content height: title (10mm) + description (8mm) + first item (30mm)
-    const oppRisksEstimate = 10 + 8 + 30;
-    smartPageBreak(oppRisksEstimate);
+    pdf.addPage();
+    yPosition = margin + 10;
     
-    // Use styled section header
     yPosition = addSimpleSectionHeader(pdf, 'Opportunities & Risks', yPosition, margin);
 
     pdf.setFontSize(10);
@@ -1680,11 +1675,9 @@ export async function exportActionPlanToPDF(
 
   // Actions Section
   if (actionPlan.actions.length > 0) {
-    // Estimate content height: title (10mm) + first action (30mm)
-    const actionsEstimate = 10 + 30;
-    smartPageBreak(actionsEstimate);
+    pdf.addPage();
+    yPosition = margin + 10;
     
-    // Use styled section header
     yPosition = addSimpleSectionHeader(pdf, 'Actions', yPosition, margin);
 
     pdf.setFontSize(10);
