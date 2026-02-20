@@ -473,7 +473,7 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
       setIsExporting(false);
       setSelectedExportOption(null);
     }
-  }, [actionPlan, pdfFontFamily, pdfShowImageWatermarks, pdfShowPageWatermarks]);
+  }, [actionPlan, pdfFontFamily, pdfShowImageWatermarks, pdfShowPageWatermarks, pdfHeaderLogoSize, pdfConsultantName, isPremium, labels]);
 
   const handleExportPPTX = useCallback(async () => {
     if (!actionPlan) return;
