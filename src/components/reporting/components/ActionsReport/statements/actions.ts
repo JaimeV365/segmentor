@@ -163,13 +163,13 @@ export function generateActions(
         // Update statements to mention Loyalists explicitly and avoid imperative tense
         let statement = template.template;
         if (type === 'Strengthen loyalty') {
-          statement = `You might implement retention strategies for ${loyalistName}${loyalistsCount === 1 ? '' : 's'} such as personalised offers, loyalty programmes, and exclusive perks.`;
+          statement = `You might implement retention strategies for ${loyalistName} such as personalised offers, loyalty programmes, and exclusive perks.`;
         } else if (type === 'Encourage advocacy') {
-          statement = `You could encourage advocacy among ${loyalistName}${loyalistsCount === 1 ? '' : 's'}. You might invite ${loyalistsCount === 1 ? 'them' : 'them'} to share their positive experiences and become brand ambassadors.`;
+          statement = `You could encourage advocacy among ${loyalistName}. You might invite ${loyalistsCount === 1 ? 'them' : 'them'} to share their positive experiences and become brand ambassadors.`;
         } else if (type === 'Reward loyalty') {
-          statement = `You might reward ${loyalistName}${loyalistsCount === 1 ? '' : 's'} for their loyalty through exclusive benefits, early access to new products, or special recognition programmes.`;
+          statement = `You might reward ${loyalistName} for their loyalty through exclusive benefits, early access to new products, or special recognition programmes.`;
         } else if (type === 'Involve them in your success') {
-          statement = `You could involve ${loyalistName}${loyalistsCount === 1 ? '' : 's'} in your success by seeking their feedback, inviting ${loyalistsCount === 1 ? 'them' : 'them'} to beta test new products, or including ${loyalistsCount === 1 ? 'them' : 'them'} in co-creation initiatives.`;
+          statement = `You could involve ${loyalistName} in your success by seeking their feedback, inviting ${loyalistsCount === 1 ? 'them' : 'them'} to beta test new products, or including ${loyalistsCount === 1 ? 'them' : 'them'} in co-creation initiatives.`;
         }
         
         const supportingData: any = { 
@@ -227,7 +227,7 @@ export function generateActions(
     // Note: Customer list is shown in 'opportunity-mercenaries' to avoid duplication
     actions.push({
       id: 'action-mercenaries-know-customers',
-      statement: `You might consider knowing your ${mercenaryName}${mercenariesCount === 1 ? '' : 's'}. The first question you could have an answer to is why ${mercenariesCount === 1 ? 'they buy' : 'they buy'} from you and what ${mercenariesCount === 1 ? 'they like' : 'they like'} from your offering. You might make sure you keep that, and improve it when possible.`,
+      statement: `You might consider knowing your ${mercenaryName}. The first question you could have an answer to is why ${mercenariesCount === 1 ? 'they buy' : 'they buy'} from you and what ${mercenariesCount === 1 ? 'they like' : 'they like'} from your offering. You might make sure you keep that, and improve it when possible.`,
       quadrant: 'mercenaries',
       priority: 1,
       actionability: 'medium',
@@ -242,7 +242,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-mercenaries-know-competitors',
-      statement: `For ${mercenaryName}${mercenariesCount === 1 ? '' : 's'}, you might consider understanding your competitors. The second question could be what others are offering that you don't. You may find some easy wins and good ideas to implement in your brand. If the industry is progressing but you are not, you might need to keep up.`,
+      statement: `For ${mercenaryName}, you might consider understanding your competitors. The second question could be what others are offering that you don't. You may find some easy wins and good ideas to implement in your brand. If the industry is progressing but you are not, you might need to keep up.`,
       quadrant: 'mercenaries',
       priority: 2,
       actionability: 'medium',
@@ -257,7 +257,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-mercenaries-build-relationships',
-      statement: `You could build relationships with ${mercenaryName}${mercenariesCount === 1 ? '' : 's'} by creating a sense of connection with the brand through personalised communications, loyalty programmes, or customer communities.`,
+      statement: `You could build relationships with ${mercenaryName} by creating a sense of connection with the brand through personalised communications, loyalty programmes, or customer communities.`,
       quadrant: 'mercenaries',
       priority: 3,
       actionability: 'medium',
@@ -272,7 +272,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-mercenaries-reward',
-      statement: `You might consider rewarding ${mercenaryName}${mercenariesCount === 1 ? '' : 's'} by celebrating when ${mercenariesCount === 1 ? 'they make' : 'they make'} a purchase. You could recognise their value with thank-you notes, anniversary discounts, or early access to new products.`,
+      statement: `You might consider rewarding ${mercenaryName} by celebrating when ${mercenariesCount === 1 ? 'they make' : 'they make'} a purchase. You could recognise their value with thank-you notes, anniversary discounts, or early access to new products.`,
       quadrant: 'mercenaries',
       priority: 4,
       actionability: 'easy',
@@ -287,7 +287,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-mercenaries-differentiate',
-      statement: `For ${mercenaryName}${mercenariesCount === 1 ? '' : 's'}, you might differentiate beyond price by emphasising unique value propositions like quality, convenience, or user experience that competitors can't easily replicate.`,
+      statement: `For ${mercenaryName}, you might differentiate beyond price by emphasising unique value propositions like quality, convenience, or user experience that competitors can't easily replicate.`,
       quadrant: 'mercenaries',
       priority: 5,
       actionability: 'hard',
@@ -302,7 +302,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-mercenaries-simplify',
-      statement: `You could simplify repurchasing for ${mercenaryName}${mercenariesCount === 1 ? '' : 's'} by eliminating friction in the purchasing process, from easy online checkouts to convenient delivery options.`,
+      statement: `You could simplify repurchasing for ${mercenaryName} by eliminating friction in the purchasing process, from easy online checkouts to convenient delivery options.`,
       quadrant: 'mercenaries',
       priority: 6,
       actionability: 'medium',
@@ -347,7 +347,7 @@ export function generateActions(
     
     actions.push({
       id: 'action-hostages-dont-ignore',
-      statement: `It may be important not to overlook ${hostageName}${hostagesCount === 1 ? '' : 's'}. Remember ${hostagesCount === 1 ? 'this Hostage is' : 'they are'} active customer${hostagesCount === 1 ? '' : 's'} who ${hostagesCount === 1 ? 'is' : 'are'} already buying from you, so there may be no need to invest in expensive marketing campaigns to acquire ${hostagesCount === 1 ? 'them' : 'them'}. Instead, you might focus on meeting their expectations by understanding their motivations and needs.`,
+      statement: `It may be important not to overlook ${hostageName}. Remember ${hostagesCount === 1 ? 'this Hostage is' : 'they are'} active customer${hostagesCount === 1 ? '' : 's'} who ${hostagesCount === 1 ? 'is' : 'are'} already buying from you, so there may be no need to invest in expensive marketing campaigns to acquire ${hostagesCount === 1 ? 'them' : 'them'}. Instead, you might focus on meeting their expectations by understanding their motivations and needs.`,
       quadrant: 'hostages',
       priority: 1,
       actionability: 'easy',
@@ -362,7 +362,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-hostages-understand',
-      statement: `For ${hostageName}${hostagesCount === 1 ? '' : 's'}, you might consider understanding why ${hostagesCount === 1 ? 'they are' : 'they are'} not satisfied with your products and services. You may be tempted to investigate why ${hostagesCount === 1 ? 'they are' : 'they are'} forced to buy from you, but your real interest might be on their lack of satisfaction, rather than their forced loyalty.`,
+      statement: `For ${hostageName}, you might consider understanding why ${hostagesCount === 1 ? 'they are' : 'they are'} not satisfied with your products and services. You may be tempted to investigate why ${hostagesCount === 1 ? 'they are' : 'they are'} forced to buy from you, but your real interest might be on their lack of satisfaction, rather than their forced loyalty.`,
       quadrant: 'hostages',
       priority: 2,
       actionability: 'medium',
@@ -377,7 +377,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-hostages-address',
-      statement: `You could address dissatisfaction among ${hostageName}${hostagesCount === 1 ? '' : 's'}. If you know why you are not meeting ${hostageName}${hostagesCount === 1 ? '' : 's'}' needs, you may be uncovering pain points that potentially affect other segments in your customer base. Tackling those issues might help to turn their dissatisfaction and others'. You could address their concerns promptly and transparently to build trust.`,
+      statement: `You could address dissatisfaction among ${hostageName}. If you know why you are not meeting ${hostageName}' needs, you may be uncovering pain points that potentially affect other segments in your customer base. Tackling those issues might help to turn their dissatisfaction and others'. You could address their concerns promptly and transparently to build trust.`,
       quadrant: 'hostages',
       priority: 3,
       actionability: 'medium',
@@ -392,7 +392,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-hostages-create-path',
-      statement: `You might create a path to satisfaction for ${hostageName}${hostagesCount === 1 ? '' : 's'} by transitioning ${hostagesCount === 1 ? 'them' : 'them'} into Loyalists through offering improved service, personalised solutions, or tailored engagement.`,
+      statement: `You might create a path to satisfaction for ${hostageName} by transitioning ${hostagesCount === 1 ? 'them' : 'them'} into Loyalists through offering improved service, personalised solutions, or tailored engagement.`,
       quadrant: 'hostages',
       priority: 4,
       actionability: 'hard',
@@ -407,7 +407,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-hostages-support',
-      statement: `You could offer support to ${hostageName}${hostagesCount === 1 ? '' : 's'}. In today's world personalisation is key. Your Customer Success strategy might count on special measures for this group, such as a dedicated account manager, direct support line, dedicated communications, documentation or more approachable channels.`,
+      statement: `You could offer support to ${hostageName}. In today's world personalisation is key. Your Customer Success strategy might count on special measures for this group, such as a dedicated account manager, direct support line, dedicated communications, documentation or more approachable channels.`,
       quadrant: 'hostages',
       priority: 5,
       actionability: 'medium',
@@ -469,7 +469,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-defectors-damage-control',
-      statement: `For ${defectorName}${defectorsCount === 1 ? '' : 's'}, you might consider damage control. You could identify ${defectorName}${defectorsCount === 1 ? '' : 's'} as early as possible and address their dissatisfaction proactively. You might use your data to find their emails and chat interactions if they exist. Reading their reviews, or customer support interactions could help you understand their grievances. They most likely already gave up on you, so you might not need to waste your time sending them surveys that they are very likely to ignore.`,
+      statement: `For ${defectorName}, you might consider damage control. You could identify ${defectorName} as early as possible and address their dissatisfaction proactively. You might use your data to find their emails and chat interactions if they exist. Reading their reviews, or customer support interactions could help you understand their grievances. They most likely already gave up on you, so you might not need to waste your time sending them surveys that they are very likely to ignore.`,
       quadrant: 'defectors',
       priority: 2,
       actionability: 'easy',
@@ -484,7 +484,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-defectors-win-back',
-      statement: `You might consider winning ${defectorName}${defectorsCount === 1 ? '' : 's'} back. It may not be too late and you may have some chances to win ${defectorsCount === 1 ? 'them' : 'them'} back. You could offer a personalised resolution or incentive to regain their trust. You might not want to think about discounts as an immediate reaction, or free services. The first action could be the acknowledgment of mistakes, apologising for any wrongdoing and resolving issues. Once the air is clear you might think about promotions and gestures of goodwill.`,
+      statement: `You might consider winning ${defectorName} back. It may not be too late and you may have some chances to win ${defectorsCount === 1 ? 'them' : 'them'} back. You could offer a personalised resolution or incentive to regain their trust. You might not want to think about discounts as an immediate reaction, or free services. The first action could be the acknowledgment of mistakes, apologising for any wrongdoing and resolving issues. Once the air is clear you might think about promotions and gestures of goodwill.`,
       quadrant: 'defectors',
       priority: 3,
       actionability: 'hard',
@@ -499,7 +499,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-defectors-learn',
-      statement: `You could learn from ${defectorName}${defectorsCount === 1 ? '' : 's'}. Prevention again. Analysing ${defectorName}${defectorsCount === 1 ? '' : 's'}' feedback might help you uncover systemic issues and prevent future churn.`,
+      statement: `You could learn from ${defectorName}. Prevention again. Analysing ${defectorName}' feedback might help you uncover systemic issues and prevent future churn.`,
       quadrant: 'defectors',
       priority: 4,
       actionability: 'easy',
@@ -603,7 +603,7 @@ export function generateActions(
     
     actions.push({
       id: 'action-apostles-celebrate',
-      statement: `You might celebrate and amplify. Publicly acknowledging and rewarding ${apostleName}${apostlesCount === 1 ? '' : 's'} for their advocacy through exclusive benefits, recognition programmes, or personalised thank-you notes could be very effective. ${isClassicModel ? 'Apostles' : 'Advocates'} who praise your brand on social media may appreciate your engagement, such as comments or likes on their posts. Amplifying positivity and expanding it as much as possible could help influence others.`,
+      statement: `You might celebrate and amplify. Publicly acknowledging and rewarding ${apostleName} for their advocacy through exclusive benefits, recognition programmes, or personalised thank-you notes could be very effective. ${isClassicModel ? 'Apostles' : 'Advocates'} who praise your brand on social media may appreciate your engagement, such as comments or likes on their posts. Amplifying positivity and expanding it as much as possible could help influence others.`,
       quadrant: 'apostles',
       priority: 1,
       actionability: 'easy',
@@ -618,7 +618,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-apostles-leverage',
-      statement: `You might leverage ${apostleName}${apostlesCount === 1 ? '' : 's'}' voice. You could invite ${apostlesCount === 1 ? 'them' : 'them'} to become part of referral programmes, co-creation initiatives (e.g., helping to design new products), or ambassador programmes. You might share their testimonials and stories across your marketing channels. Giving ${apostlesCount === 1 ? 'them' : 'them'} a voice could inspire others.`,
+      statement: `You might leverage ${apostleName}' voice. You could invite ${apostlesCount === 1 ? 'them' : 'them'} to become part of referral programmes, co-creation initiatives (e.g., helping to design new products), or ambassador programmes. You might share their testimonials and stories across your marketing channels. Giving ${apostlesCount === 1 ? 'them' : 'them'} a voice could inspire others.`,
       quadrant: 'apostles',
       priority: 2,
       actionability: 'medium',
@@ -633,7 +633,7 @@ export function generateActions(
 
     actions.push({
       id: 'action-apostles-maintain',
-      statement: `You might maintain satisfaction for ${apostleName}${apostlesCount === 1 ? '' : 's'}. You could continue delivering exceptional service and experiences to ensure ${apostlesCount === 1 ? 'they remain' : 'they remain'} loyal and satisfied. You might be proactive in gathering their feedback and addressing any potential issues.`,
+      statement: `You might maintain satisfaction for ${apostleName}. You could continue delivering exceptional service and experiences to ensure ${apostlesCount === 1 ? 'they remain' : 'they remain'} loyal and satisfied. You might be proactive in gathering their feedback and addressing any potential issues.`,
       quadrant: 'apostles',
       priority: 3,
       actionability: 'medium',
@@ -688,7 +688,7 @@ export function generateActions(
     
     actions.push({
       id: 'action-crisis-prevention',
-      statement: `${crisisRisk.count} ${loyalistName}${crisisRisk.count === 1 ? ' is' : ' are'} at risk of becoming ${defectorName}${crisisRisk.count === 1 ? '' : 's'}. This may require attention. You might consider reaching out to understand their concerns and could take action to address issues before they churn.`,
+      statement: `${crisisRisk.count} ${getQuadrantName(crisisRisk.count, 'loyalists', isClassicModel)}${crisisRisk.count === 1 ? ' is' : ' are'} at risk of becoming ${getQuadrantName(crisisRisk.count, 'defectors', isClassicModel)}. This may require attention. You might consider reaching out to understand their concerns and could take action to address issues before they churn.`,
       quadrant: 'loyalists',
       priority: 0, // Highest priority
       actionability: 'hard',
@@ -742,7 +742,7 @@ export function generateActions(
     
     actions.push({
       id: 'action-redemption',
-      statement: `${redemptionOpp.count} ${defectorName}${redemptionOpp.count === 1 ? ' is' : ' are'} close to becoming ${loyalistName}${redemptionOpp.count === 1 ? '' : 's'}. This could represent a high-value redemption opportunity. You might consider engaging them personally, addressing their past concerns, and demonstrating that you've learned from their feedback.`,
+      statement: `${redemptionOpp.count} ${getQuadrantName(redemptionOpp.count, 'defectors', isClassicModel)}${redemptionOpp.count === 1 ? ' is' : ' are'} close to becoming ${getQuadrantName(redemptionOpp.count, 'loyalists', isClassicModel)}. This could represent a high-value redemption opportunity. You might consider engaging them personally, addressing their past concerns, and demonstrating that you've learned from their feedback.`,
       quadrant: 'defectors',
       priority: 1,
       actionability: 'hard',
