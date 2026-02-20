@@ -67,6 +67,7 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
+  const [showRegenerateWarning, setShowRegenerateWarning] = useState(false);
   const [showExportPanel, setShowExportPanel] = useState(false);
   const [showPDFCustomizeOptions, setShowPDFCustomizeOptions] = useState(false);
   // PDF Export options - try to load from localStorage
@@ -179,7 +180,6 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
   
   // Helper function to clear all editable-text localStorage items
   const clearEditableTextStorage = useCallback(() => {
-    // Clear all localStorage items that start with 'editable-text-'
     const keysToRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -188,6 +188,14 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
       }
     }
     keysToRemove.forEach(key => localStorage.removeItem(key));
+  }, []);
+
+  const hasEditableTextEdits = useCallback((): boolean => {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('editable-text-')) return true;
+    }
+    return false;
   }, []);
   
   // Clear localStorage on component mount to reset edits on page refresh
@@ -362,28 +370,18 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
     }, 50); // Same delay as midpoint movement - ensures popup renders first
   }, [onGenerateActionPlan, clearEditableTextStorage]);
 
-  // Handle Regenerate button click - regenerate directly since user already accepted
-  const handleRegenerate = useCallback(async () => {
+  // Performs the actual regeneration (called directly or after user confirms the warning)
+  const executeRegenerate = useCallback(async () => {
     if (!onGenerateActionPlan) return;
     
-    // Ensure disclaimer modal is closed
     setShowDisclaimerModal(false);
-    
-    // Clear captured charts so they'll be recaptured with new data
+    setShowRegenerateWarning(false);
     setCapturedCharts(new Map());
-    
-    // Clear all editable text storage before regenerating
     clearEditableTextStorage();
-    
-    // Reset actionPlan state to null to force a fresh load when report regenerates
     setActionPlan(null);
-    
-    // Set loading state IMMEDIATELY (synchronously) - this triggers immediate UI update
     setIsGenerating(true);
     calculationStartTime.current = Date.now();
     
-    // Don't scroll here - let the useEffect handle it after actionPlan is set and content is rendered
-    // Just trigger navigation update
     requestAnimationFrame(() => {
       const navUpdateEvent = new CustomEvent('update-active-section', { 
         detail: { sectionId: 'report-actions' } 
@@ -391,15 +389,11 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
       document.dispatchEvent(navUpdateEvent);
     });
     
-    // Use setTimeout (like midpoint) to ensure popup renders before heavy work starts
     setTimeout(async () => {
       try {
         await onGenerateActionPlan();
-        
-        // Ensure loading shows for at least 1 second
         const elapsedTime = Date.now() - calculationStartTime.current;
         const remainingTime = Math.max(0, 1000 - elapsedTime);
-        
         setTimeout(() => {
           setIsGenerating(false);
         }, remainingTime);
@@ -407,8 +401,18 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
         console.error('Failed to regenerate actions report:', error);
         setIsGenerating(false);
       }
-    }, 50); // Same delay as midpoint movement - ensures popup renders first
+    }, 50);
   }, [onGenerateActionPlan, clearEditableTextStorage]);
+
+  // Handle Regenerate button click — warn if edits exist, otherwise regenerate directly
+  const handleRegenerate = useCallback(async () => {
+    if (!onGenerateActionPlan) return;
+    if (hasEditableTextEdits()) {
+      setShowRegenerateWarning(true);
+    } else {
+      executeRegenerate();
+    }
+  }, [onGenerateActionPlan, hasEditableTextEdits, executeRegenerate]);
 
   // Capture chart on demand
   const handleCaptureChart = useCallback(async (selector: string, caption: string) => {
@@ -544,11 +548,60 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
     document.body
   ) : null;
 
+  const regenerateWarningJSX = showRegenerateWarning && typeof document !== 'undefined' ? createPortal(
+    <div className="disclaimer-modal-overlay" onClick={() => setShowRegenerateWarning(false)}>
+      <div className="disclaimer-modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
+        <div className="disclaimer-modal-header" style={{ borderBottom: '2px solid #f59e0b' }}>
+          <h3 style={{ color: '#92400e', fontSize: '16px' }}>Unsaved Report Edits</h3>
+          <button 
+            className="disclaimer-modal-close"
+            onClick={() => setShowRegenerateWarning(false)}
+            aria-label="Close warning"
+          >
+            ×
+          </button>
+        </div>
+        <div className="disclaimer-modal-body" style={{ padding: '20px 24px' }}>
+          <p style={{ margin: '0 0 12px', fontSize: '14px', color: '#374151', lineHeight: 1.6 }}>
+            You have made edits to this report. Regenerating will <strong>replace all current content</strong> with
+            a freshly generated report, and your text changes will be lost.
+          </p>
+          <p style={{ margin: 0, fontSize: '14px', color: '#6b7280', lineHeight: 1.6 }}>
+            If you'd like to keep your edits, close this dialog and <strong>save your project first</strong> using
+            the save button, then regenerate.
+          </p>
+        </div>
+        <div className="disclaimer-modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, padding: '12px 24px' }}>
+          <button
+            onClick={() => setShowRegenerateWarning(false)}
+            style={{
+              padding: '8px 20px', borderRadius: 6, border: '1px solid #d1d5db',
+              background: 'white', color: '#374151', fontSize: '14px', fontWeight: 500, cursor: 'pointer'
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={executeRegenerate}
+            style={{
+              padding: '8px 20px', borderRadius: 6, border: 'none',
+              background: '#dc2626', color: 'white', fontSize: '14px', fontWeight: 600, cursor: 'pointer'
+            }}
+          >
+            Regenerate Anyway
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  ) : null;
+
   // Show loading popup
   if (isGenerating) {
     return (
       <>
         {disclaimerModalJSX}
+        {regenerateWarningJSX}
         <UnifiedLoadingPopup isVisible={true} text="segmenting" size="medium" />
         <div className="report-card action-plan-container" data-section-id="report-actions" style={{ minHeight: '400px' }}>
           <div className="report-title-wrapper">
@@ -566,6 +619,7 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
     return (
       <>
         {disclaimerModalJSX}
+        {regenerateWarningJSX}
         <div className="report-card action-plan-container" data-section-id="report-actions">
         <div className="report-title-wrapper">
           <h3 className="report-title">Actions Report</h3>
@@ -647,6 +701,7 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
   return (
     <>
       {disclaimerModalJSX}
+      {regenerateWarningJSX}
 
       <div className="report-card action-plan-container" data-section-id="report-actions">
         <div className="report-title-wrapper" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
