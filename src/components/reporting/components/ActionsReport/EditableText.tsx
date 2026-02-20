@@ -83,17 +83,6 @@ export const EditableText: React.FC<EditableTextProps> = ({
     setParagraphs(parsed.length > 0 ? parsed : [contentToUse]);
   }, [id, content]);
 
-  // Update editedContent when content prop changes
-  useEffect(() => {
-    if (!isEditing) {
-      const saved = localStorage.getItem(`editable-text-${id}`);
-      if (!saved) {
-        setEditedContent(content);
-        setOriginalContent(content);
-      }
-    }
-  }, [content, id, isEditing]);
-
   // Ensure edit mode is disabled if user is not premium
   useEffect(() => {
     if (isEditing && !isPremium) {
@@ -141,6 +130,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
       htmlContent = editorRef.current?.innerHTML || '';
     }
     setEditedContent(htmlContent);
+    setParagraphs(splitIntoParagraphs(htmlContent));
     onSave(id, htmlContent);
     setIsEditing(false);
     setHexTextColor('');
