@@ -321,6 +321,67 @@
   box-shadow: none;
 }
 
+.audience-context-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.audience-context-label-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.audience-context-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.audience-context-help {
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.audience-context-segment {
+  display: inline-flex;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.audience-option-button {
+  border: none;
+  background: #ffffff;
+  color: #374151;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.audience-option-button:not(.active):hover {
+  background: #f3f4f6;
+}
+
+.audience-option-button.active {
+  background: #3a863e;
+  color: #ffffff;
+}
+
+.audience-context-warning {
+  color: #9a3412;
+  font-weight: 600;
+}
+
 /* Section Styling */
 .action-plan-section {
   margin-bottom: 2rem;

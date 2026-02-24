@@ -91,6 +91,7 @@ export interface ReportMetadata {
     satisfaction: string;
     loyalty: string;
   };
+  audienceContext?: 'b2c' | 'b2b';
 }
 
 /**

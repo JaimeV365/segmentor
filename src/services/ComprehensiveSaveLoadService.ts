@@ -114,6 +114,8 @@ export interface CreateSaveDataParams {
 
       // Saved/generated Action Plan snapshot (so Save includes the final Actions Report)
       savedActionPlanSnapshot?: any;
+      // Audience wording mode for Actions Report (default to b2c when missing).
+      audienceContext?: 'b2c' | 'b2b';
     };
 
     // Historical Progress preferences (diagram/journeys UI settings)

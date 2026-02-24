@@ -540,6 +540,11 @@ useEffect(() => {
                 JSON.stringify((context.reportSettings.actionReports as any).savedActionPlanSnapshot)
               );
             }
+            // Restore audience context for Actions Report wording
+            if ((context.reportSettings.actionReports as any).audienceContext) {
+              const restoredAudienceContext = (context.reportSettings.actionReports as any).audienceContext;
+              localStorage.setItem('actionReportsAudienceContext', restoredAudienceContext === 'b2b' ? 'b2b' : 'b2c');
+            }
           }
 
           // Restore Historical Progress UI preferences

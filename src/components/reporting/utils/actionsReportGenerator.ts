@@ -7,6 +7,7 @@ import type { QuadrantType as VisualizationQuadrantType } from '../../visualizat
 
 // Note: This generator calculates proximity analysis and recommendation score.
 // In a future optimization, these could be passed from components that already calculate them.
+type AudienceContext = 'b2c' | 'b2b';
 
 export const generateActionsReport = async (
   data: DataPoint[],
@@ -22,7 +23,8 @@ export const generateActionsReport = async (
   apostlesZoneSize: number = 1,
   terroristsZoneSize: number = 1,
   contextDistribution?: Record<string, number> | null,
-  axisLabels?: { satisfaction: string; loyalty: string }
+  axisLabels?: { satisfaction: string; loyalty: string },
+  audienceContext: AudienceContext = 'b2c'
 ): Promise<ActionsReport> => {
   // If no data report or scales, return empty
   if (!dataReport || !satisfactionScale || !loyaltyScale) {
@@ -88,7 +90,8 @@ export const generateActionsReport = async (
       midpoint, // Pass the actual user-adjusted midpoint
       data.filter(d => !d.excluded), // Pass the original data with emails
       isPremium, // For Brand+ users, hide watermark in main chart capture
-      axisLabels
+      axisLabels,
+      audienceContext
     );
 
     // Convert Action Plan to ActionsReport format (for backward compatibility)

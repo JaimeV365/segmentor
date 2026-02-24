@@ -51,6 +51,8 @@ interface ActionsReportProps {
   isPremium?: boolean;
 }
 
+type AudienceContext = 'b2c' | 'b2b';
+
 export const ActionsReport: React.FC<ActionsReportProps> = ({
   report,
   onCustomize,
@@ -177,6 +179,14 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
 
   const actionPlanBase = report?.actionPlan as ActionPlanReport | undefined;
   const [actionPlan, setActionPlan] = useState<ActionPlanReport | null>(actionPlanBase || null);
+  const [audienceContext, setAudienceContext] = useState<AudienceContext>(() => {
+    const savedAudienceContext = localStorage.getItem('actionReportsAudienceContext');
+    return savedAudienceContext === 'b2b' ? 'b2b' : 'b2c';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('actionReportsAudienceContext', audienceContext);
+  }, [audienceContext]);
   
   // Helper function to clear all editable-text localStorage items
   const clearEditableTextStorage = useCallback(() => {
@@ -291,6 +301,9 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
 
   // Check if sections are visible
   const [missingSections, setMissingSections] = useState<string[]>([]);
+  const generatedAudienceContext: AudienceContext = actionPlan?.metadata?.audienceContext === 'b2b' ? 'b2b' : 'b2c';
+  const hasAudienceChangePending = !!actionPlan && generatedAudienceContext !== audienceContext;
+  const audienceLabel = audienceContext === 'b2b' ? 'B2B' : 'B2C';
   
   useEffect(() => {
     const sections: string[] = [];
@@ -682,6 +695,31 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
           </div>
         </div>
 
+        <div className="audience-context-row">
+          <div className="audience-context-label-group">
+            <span className="audience-context-label">Audience context</span>
+            <span className="audience-context-help">Tailors actions for consumer (B2C) or business (B2B) environments.</span>
+          </div>
+          <div className="audience-context-segment" role="group" aria-label="Audience context">
+            <button
+              type="button"
+              className={`audience-option-button ${audienceContext === 'b2c' ? 'active' : ''}`}
+              onClick={() => setAudienceContext('b2c')}
+              aria-pressed={audienceContext === 'b2c'}
+            >
+              B2C
+            </button>
+            <button
+              type="button"
+              className={`audience-option-button ${audienceContext === 'b2b' ? 'active' : ''}`}
+              onClick={() => setAudienceContext('b2b')}
+              aria-pressed={audienceContext === 'b2b'}
+            >
+              B2B
+            </button>
+          </div>
+        </div>
+
         {/* Accept Button */}
         <div className="action-plan-accept-section">
           <button 
@@ -766,6 +804,16 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                   <strong> {missingSections.join(' and ')}</strong>. To include them, expand or enable these sections above and click "Regenerate Report" below.
                 </>
               )}
+              <br /><br />
+              <strong>Audience context:</strong> {generatedAudienceContext === 'b2b' ? 'B2B' : 'B2C'}.
+              {hasAudienceChangePending && (
+                <>
+                  <br />
+                  <span className="audience-context-warning">
+                    You changed this to {audienceLabel}. Regenerate the report to apply updated wording.
+                  </span>
+                </>
+              )}
               <div style={{ textAlign: 'right', marginTop: '12px' }}>
                 <button
                   onClick={handleRegenerate}
@@ -777,6 +825,31 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                 </button>
               </div>
             </p>
+          </div>
+        </div>
+
+        <div className="audience-context-row">
+          <div className="audience-context-label-group">
+            <span className="audience-context-label">Audience context</span>
+            <span className="audience-context-help">Current selection: {audienceLabel}. Regenerate to apply changes.</span>
+          </div>
+          <div className="audience-context-segment" role="group" aria-label="Audience context">
+            <button
+              type="button"
+              className={`audience-option-button ${audienceContext === 'b2c' ? 'active' : ''}`}
+              onClick={() => setAudienceContext('b2c')}
+              aria-pressed={audienceContext === 'b2c'}
+            >
+              B2C
+            </button>
+            <button
+              type="button"
+              className={`audience-option-button ${audienceContext === 'b2b' ? 'active' : ''}`}
+              onClick={() => setAudienceContext('b2b')}
+              aria-pressed={audienceContext === 'b2b'}
+            >
+              B2B
+            </button>
           </div>
         </div>
 

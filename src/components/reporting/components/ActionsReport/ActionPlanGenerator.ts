@@ -36,6 +36,8 @@ interface Conversion {
   }>;
 }
 
+type AudienceContext = 'b2c' | 'b2b';
+
 /**
  * Generates a complete Action Plan report
  */
@@ -52,7 +54,8 @@ export async function generateActionPlan(
   midpoint?: { sat: number; loy: number },
   originalData?: DataPoint[], // Original data with all fields including email
   isPremium: boolean = false, // For Brand+ users, hide watermark in main chart capture
-  axisLabels?: { satisfaction: string; loyalty: string }
+  axisLabels?: { satisfaction: string; loyalty: string },
+  audienceContext: AudienceContext = 'b2c'
 ): Promise<ActionPlanReport> {
   // 1. Aggregate all report data
   const aggregated = aggregateReportData(dataReport, proximityAnalysis, recommendationScore, contextDistribution);
@@ -350,7 +353,15 @@ export async function generateActionPlan(
   const opportunities = generateOpportunities(evaluators, isClassicModel, proximityAnalysis, dataForConversions, getQuadrantForPoint);
   const risks = generateRisks(evaluators, isClassicModel, proximityAnalysis, dataForConversions, getQuadrantForPoint, loyaltyScale);
   
-  const actions = generateActions(evaluators, isClassicModel, actionableConversions, proximityAnalysis, dataForConversions, getQuadrantForPoint);
+  const actions = generateActions(
+    evaluators,
+    isClassicModel,
+    actionableConversions,
+    proximityAnalysis,
+    dataForConversions,
+    getQuadrantForPoint,
+    audienceContext
+  );
 
   // ===== HISTORICAL PROGRESS (Ops & Risks + Actions) =====
   // Add cadence-aware statements derived from Historical Progress insights (per internal guide).
@@ -797,7 +808,8 @@ export async function generateActionPlan(
     scales: {
       satisfaction: satisfactionScale,
       loyalty: loyaltyScale
-    }
+    },
+    audienceContext
   };
 
   return {

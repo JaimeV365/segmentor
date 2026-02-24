@@ -173,6 +173,10 @@ export const useSaveLoad = (params: UseSaveLoadParams) => {
           pdfExportOptions = JSON.parse(savedPdfExportOptions);
         }
 
+        // Collect audience context for Actions Report wording mode
+        const savedAudienceContext = localStorage.getItem('actionReportsAudienceContext');
+        const audienceContext = savedAudienceContext === 'b2b' ? 'b2b' : (savedAudienceContext === 'b2c' ? 'b2c' : undefined);
+
         // Collect saved/generated Action Plan snapshot (so Save includes the final Actions Report)
         const savedActionPlanSnapshotRaw = localStorage.getItem('savedActionsReportSnapshot');
         let savedActionPlanSnapshot: any = undefined;
@@ -184,12 +188,13 @@ export const useSaveLoad = (params: UseSaveLoadParams) => {
           }
         }
         
-        if (Object.keys(editableTexts).length > 0 || expandedSections || pdfExportOptions || savedActionPlanSnapshot) {
+        if (Object.keys(editableTexts).length > 0 || expandedSections || pdfExportOptions || savedActionPlanSnapshot || audienceContext) {
           actionReportsSettings = {
             editableTexts: Object.keys(editableTexts).length > 0 ? editableTexts : undefined,
             expandedSections: expandedSections,
             pdfExportOptions: pdfExportOptions,
-            savedActionPlanSnapshot: savedActionPlanSnapshot
+            savedActionPlanSnapshot: savedActionPlanSnapshot,
+            audienceContext
           };
         }
       } catch (e) {

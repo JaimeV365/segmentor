@@ -52,6 +52,8 @@ interface Conversion {
   }>;
 }
 
+type AudienceContext = 'b2c' | 'b2b';
+
 /**
  * Determines impact level based on customer count and average chances
  */
@@ -115,7 +117,8 @@ export function generateActions(
   actionableConversions?: { opportunities: Conversion[]; warnings: Conversion[] },
   proximityAnalysis?: ProximityAnalysisResult | null,
   originalData?: Array<{ id: string; name?: string; email?: string; satisfaction: number; loyalty: number; excluded?: boolean }>,
-  getQuadrantForPoint?: (point: { satisfaction: number; loyalty: number }) => string
+  getQuadrantForPoint?: (point: { satisfaction: number; loyalty: number }) => string,
+  audienceContext: AudienceContext = 'b2c'
 ): Action[] {
   const actions: Action[] = [];
 
@@ -163,13 +166,17 @@ export function generateActions(
         // Update statements to mention Loyalists explicitly and avoid imperative tense
         let statement = template.template;
         if (type === 'Strengthen loyalty') {
-          statement = `You might implement retention strategies for ${loyalistName} such as personalised offers, loyalty programmes, and exclusive perks.`;
+          statement = audienceContext === 'b2b'
+            ? `You might implement retention strategies for ${loyalistName} such as account-based success plans, renewal workshops, and executive relationship mapping.`
+            : `You might implement retention strategies for ${loyalistName} such as personalised offers, loyalty programmes, and exclusive perks.`;
         } else if (type === 'Encourage advocacy') {
           statement = `You could encourage advocacy among ${loyalistName}. You might invite ${loyalistsCount === 1 ? 'them' : 'them'} to share their positive experiences and become brand ambassadors.`;
         } else if (type === 'Reward loyalty') {
           statement = `You might reward ${loyalistName} for their loyalty through exclusive benefits, early access to new products, or special recognition programmes.`;
         } else if (type === 'Involve them in your success') {
-          statement = `You could involve ${loyalistName} in your success by seeking their feedback, inviting ${loyalistsCount === 1 ? 'them' : 'them'} to beta test new products, or including ${loyalistsCount === 1 ? 'them' : 'them'} in co-creation initiatives.`;
+          statement = audienceContext === 'b2b'
+            ? `You could involve ${loyalistName} in your success by running joint roadmap reviews, inviting ${loyalistsCount === 1 ? 'them' : 'them'} to pilot features in production contexts, or including ${loyalistsCount === 1 ? 'them' : 'them'} in customer advisory boards.`
+            : `You could involve ${loyalistName} in your success by seeking their feedback, inviting ${loyalistsCount === 1 ? 'them' : 'them'} to beta test new products, or including ${loyalistsCount === 1 ? 'them' : 'them'} in co-creation initiatives.`;
         }
         
         const supportingData: any = { 
@@ -257,7 +264,9 @@ export function generateActions(
 
     actions.push({
       id: 'action-mercenaries-build-relationships',
-      statement: `You could build relationships with ${mercenaryName} by creating a sense of connection with the brand through personalised communications, loyalty programmes, or customer communities.`,
+      statement: audienceContext === 'b2b'
+        ? `You could build relationships with ${mercenaryName} by strengthening stakeholder trust through account reviews, success governance, and role-specific enablement.`
+        : `You could build relationships with ${mercenaryName} by creating a sense of connection with the brand through personalised communications, loyalty programmes, or customer communities.`,
       quadrant: 'mercenaries',
       priority: 3,
       actionability: 'medium',
@@ -272,7 +281,9 @@ export function generateActions(
 
     actions.push({
       id: 'action-mercenaries-reward',
-      statement: `You might consider rewarding ${mercenaryName} by celebrating when ${mercenariesCount === 1 ? 'they make' : 'they make'} a purchase. You could recognise their value with thank-you notes, anniversary discounts, or early access to new products.`,
+      statement: audienceContext === 'b2b'
+        ? `You might consider rewarding ${mercenaryName} by recognising expansion milestones, successful renewals, or adoption growth across teams. You could recognise their value with executive thank-you outreach, commercial flexibility where appropriate, or priority access to roadmap features.`
+        : `You might consider rewarding ${mercenaryName} by celebrating when ${mercenariesCount === 1 ? 'they make' : 'they make'} a purchase. You could recognise their value with thank-you notes, anniversary discounts, or early access to new products.`,
       quadrant: 'mercenaries',
       priority: 4,
       actionability: 'easy',
@@ -302,7 +313,9 @@ export function generateActions(
 
     actions.push({
       id: 'action-mercenaries-simplify',
-      statement: `You could simplify repurchasing for ${mercenaryName} by eliminating friction in the purchasing process, from easy online checkouts to convenient delivery options.`,
+      statement: audienceContext === 'b2b'
+        ? `You could simplify renewals and expansion for ${mercenaryName} by reducing procurement friction, streamlining legal and security steps, and clarifying implementation ownership.`
+        : `You could simplify repurchasing for ${mercenaryName} by eliminating friction in the purchasing process, from easy online checkouts to convenient delivery options.`,
       quadrant: 'mercenaries',
       priority: 6,
       actionability: 'medium',
@@ -603,7 +616,9 @@ export function generateActions(
     
     actions.push({
       id: 'action-apostles-celebrate',
-      statement: `You might celebrate and amplify. Publicly acknowledging and rewarding ${apostleName} for their advocacy through exclusive benefits, recognition programmes, or personalised thank-you notes could be very effective. ${isClassicModel ? 'Apostles' : 'Advocates'} who praise your brand on social media may appreciate your engagement, such as comments or likes on their posts. Amplifying positivity and expanding it as much as possible could help influence others.`,
+      statement: audienceContext === 'b2b'
+        ? `You might celebrate and amplify. Publicly acknowledging and rewarding ${apostleName} for their advocacy through exclusive benefits, recognition programmes, or personalised thank-you notes could be very effective. Champions who advocate for your company in professional channels may appreciate your support through co-authored case studies, webinar participation, or recognition in industry communities. Publishing those outcomes can help influence peers and new prospects.`
+        : `You might celebrate and amplify. Publicly acknowledging and rewarding ${apostleName} for their advocacy through exclusive benefits, recognition programmes, or personalised thank-you notes could be very effective. ${isClassicModel ? 'Apostles' : 'Advocates'} who praise your brand on social media may appreciate your engagement, such as comments or likes on their posts. Amplifying positivity and expanding it as much as possible could help influence others.`,
       quadrant: 'apostles',
       priority: 1,
       actionability: 'easy',
@@ -618,7 +633,9 @@ export function generateActions(
 
     actions.push({
       id: 'action-apostles-leverage',
-      statement: `You might leverage ${apostleName}' voice. You could invite ${apostlesCount === 1 ? 'them' : 'them'} to become part of referral programmes, co-creation initiatives (e.g., helping to design new products), or ambassador programmes. You might share their testimonials and stories across your marketing channels. Giving ${apostlesCount === 1 ? 'them' : 'them'} a voice could inspire others.`,
+      statement: audienceContext === 'b2b'
+        ? `You might leverage ${apostleName}' voice. You could invite ${apostlesCount === 1 ? 'them' : 'them'} to participate in reference programmes, product councils, joint success stories, or peer-to-peer customer sessions. You might publish joint case studies, quantified outcomes, and implementation stories across sales enablement and demand-generation channels. Giving ${apostlesCount === 1 ? 'them' : 'them'} a voice could inspire others.`
+        : `You might leverage ${apostleName}' voice. You could invite ${apostlesCount === 1 ? 'them' : 'them'} to become part of referral programmes, co-creation initiatives (e.g., helping to design new products), or ambassador programmes. You might share their testimonials and stories across your marketing channels. Giving ${apostlesCount === 1 ? 'them' : 'them'} a voice could inspire others.`,
       quadrant: 'apostles',
       priority: 2,
       actionability: 'medium',

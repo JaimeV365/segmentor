@@ -7,6 +7,8 @@ import { formatDataReportForExport, formatActionsReportForExport, downloadAsFile
 import { useQuadrantAssignment } from '../../visualization/context/QuadrantAssignmentContext';
 import { useAxisLabels } from '../../visualization/context/AxisLabelsContext';
 
+type AudienceContext = 'b2c' | 'b2b';
+
 interface UseReportGeneratorProps {
   data: DataPoint[];
   satisfactionScale: ScaleFormat;
@@ -33,6 +35,11 @@ export const useReportGenerator = ({
   const [isOutOfSync, setIsOutOfSync] = useState(false);
   const [lastGeneratedHash, setLastGeneratedHash] = useState<string>('');
 
+  const getAudienceContext = useCallback((): AudienceContext => {
+    const savedAudienceContext = localStorage.getItem('actionReportsAudienceContext');
+    return savedAudienceContext === 'b2b' ? 'b2b' : 'b2c';
+  }, []);
+
   const getCurrentStateHash = useCallback(() => {
     // Create a comprehensive hash that includes actual data content
     // This ensures Actions Report is invalidated when data is added, edited, deleted, or substituted
@@ -48,9 +55,10 @@ export const useReportGenerator = ({
       dataLength: data.length,
       excluded: data.filter(d => d.excluded).length,
       scales: `${satisfactionScale}-${loyaltyScale}`,
-      effects: Array.from(activeEffects).sort().join(',')
+      effects: Array.from(activeEffects).sort().join(','),
+      audienceContext: getAudienceContext()
     });
-  }, [data, satisfactionScale, loyaltyScale, activeEffects]);
+  }, [data, satisfactionScale, loyaltyScale, activeEffects, getAudienceContext]);
 
   // Restore a previously generated Actions Report (including captured images) if it matches this dataset.
   useEffect(() => {
@@ -100,6 +108,7 @@ export const useReportGenerator = ({
 
     // Determine isPremium from activeEffects
     const isPremium = activeEffects.has('premium') || activeEffects.has('PREMIUM');
+    const audienceContext = getAudienceContext();
     console.log('🔍 useReportGenerator: isPremium =', isPremium, 'activeEffects:', Array.from(activeEffects));
 
     if (!dataReport) {
@@ -121,7 +130,8 @@ export const useReportGenerator = ({
         1, // apostlesZoneSize
         1, // terroristsZoneSize
         contextDist,
-        axisLabels
+        axisLabels,
+        audienceContext
       );
       setActionsReport(actionsReportContent);
       try {
@@ -148,7 +158,8 @@ export const useReportGenerator = ({
         1, // apostlesZoneSize
         1, // terroristsZoneSize
         contextDist,
-        axisLabels
+        axisLabels,
+        audienceContext
       );
       setActionsReport(actionsReportContent);
       try {
@@ -161,7 +172,7 @@ export const useReportGenerator = ({
       setLastGeneratedHash(getCurrentStateHash());
       setIsOutOfSync(false);
     }
-  }, [data, activeEffects, dataReport, satisfactionScale, loyaltyScale, contextDistribution, getCurrentStateHash, midpoint, showNearApostles]);
+  }, [data, activeEffects, dataReport, satisfactionScale, loyaltyScale, contextDistribution, getCurrentStateHash, midpoint, showNearApostles, getAudienceContext]);
 
   // Auto-regenerate data report when data changes (but not action plan)
   useEffect(() => {

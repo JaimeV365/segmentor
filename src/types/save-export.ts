@@ -190,6 +190,8 @@ export interface ApostlesSaveData {
         // Saved/generated Action Plan snapshot (so saved files can restore the final Actions Report)
         // Shape: { hash: string, report: ActionsReport } (kept as `any` to avoid cross-module type coupling).
         savedActionPlanSnapshot?: any;
+        // Audience wording mode for Actions Report (default to b2c when missing).
+        audienceContext?: 'b2c' | 'b2b';
       };
 
       // Historical Progress preferences (diagram/journeys UI settings)

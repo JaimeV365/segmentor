@@ -160,7 +160,8 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
       // Action Reports settings
       const actionReportsExpandedSections = localStorage.getItem('actionReportsExpandedSections');
       const actionReportsPdfExportOptions = localStorage.getItem('actionReportsPdfExportOptions');
-      if (actionReportsExpandedSections || actionReportsPdfExportOptions) {
+      const actionReportsAudienceContext = localStorage.getItem('actionReportsAudienceContext');
+      if (actionReportsExpandedSections || actionReportsPdfExportOptions || actionReportsAudienceContext) {
         settings.actionReports = {};
         if (actionReportsExpandedSections) {
           try {
@@ -175,6 +176,9 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
           } catch (e) {
             // Ignore parse errors
           }
+        }
+        if (actionReportsAudienceContext) {
+          settings.actionReports.audienceContext = actionReportsAudienceContext === 'b2b' ? 'b2b' : 'b2c';
         }
       }
       
@@ -358,6 +362,7 @@ export const useUnsavedChanges = (options: UseUnsavedChangesOptions) => {
       'proximityDisplaySettings',
       'actionReportsExpandedSections',
       'actionReportsPdfExportOptions',
+      'actionReportsAudienceContext',
       'historicalProgressDiagramSettings',
       'historicalProgressJourneysSettings'
     ];
