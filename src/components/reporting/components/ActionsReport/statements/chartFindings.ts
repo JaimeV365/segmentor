@@ -97,7 +97,7 @@ export function generateChartFindings(evaluators: EvaluatorResults, isClassicMod
   if (evaluators.sampleSize.total > 0 && isProximityAvailable) {
     const proximityCommentary = evaluators.proximity.hasRisks || evaluators.proximity.hasOpportunities
       ? generateProximityChartCommentary(evaluators)
-      : 'The proximity analysis visualisation shows customers positioned near quadrant boundaries. This helps identify both risks (customers at risk of moving to less favourable quadrants) and opportunities (customers close to moving to more positive segments).';
+      : 'The proximity analysis visualisation shows customers positioned near quadrant boundaries. This helps identify both risks (customers at risk of moving to less strategic quadrants for retention) and opportunities (customers close to moving to stronger segments).';
     
     chartFindings.push({
       id: 'chart-proximity',
@@ -117,7 +117,7 @@ export function generateChartFindings(evaluators: EvaluatorResults, isClassicMod
     
     // Add Actionable Conversions chart if proximity analysis is available
     // This will automatically switch to the conversions tab during capture
-    const actionableConversionsCommentary = 'The Actionable Conversions view shows high-priority customer movements grouped by conversion type. Opportunities represent positive movements towards better segments, while warnings indicate risks of customers moving to less favourable quadrants. Each conversion shows the number of customers, average chances of movement, and specific customer details when expanded.';
+    const actionableConversionsCommentary = 'The Actionable Conversions view shows high-priority customer movements grouped by conversion type. Opportunities represent movements towards stronger segments, while warnings indicate risks of customers moving to less strategic segments for retention. Each conversion shows the number of customers, average chances of movement, and specific customer details when expanded.';
     
     chartFindings.push({
       id: 'chart-proximity-actionable-conversions',
@@ -428,14 +428,14 @@ function generateProximityChartCommentary(evaluators: EvaluatorResults): string 
   let commentary = `The proximity analysis identifies customers who are close to quadrant boundaries, revealing both risks and opportunities. `;
 
   if (proximity.hasRisks && proximity.hasOpportunities) {
-    commentary += `The analysis shows ${proximity.highRiskCount} high-risk relationships and ${proximity.highOpportunityCount} high-opportunity relationships. `;
-    commentary += `Customers near boundaries are particularly important to monitor, as they may be at risk of moving to less desirable quadrants, or have the potential to move to more positive segments with the right engagement.`;
+    commentary += `The analysis shows ${proximity.highRiskCount} high-risk relationships and ${proximity.topOpportunities.length} opportunity relationships (${proximity.highOpportunityCount} high-opportunity). `;
+    commentary += `Customers near boundaries are particularly important to monitor, as they may be at risk of moving to less strategic quadrants for retention, or have the potential to move to stronger segments with the right engagement.`;
   } else if (proximity.hasRisks) {
-    commentary += `The analysis identifies ${proximity.highRiskCount} high-risk relationships where customers are close to moving to less desirable quadrants. `;
+    commentary += `The analysis identifies ${proximity.highRiskCount} high-risk relationships where customers are close to moving to less strategic quadrants for retention. `;
     commentary += `These boundary customers require immediate attention to prevent negative movement.`;
   } else if (proximity.hasOpportunities) {
-    commentary += `The analysis reveals ${proximity.highOpportunityCount} high-opportunity relationships where customers are close to moving to more positive quadrants. `;
-    commentary += `These customers represent potential for growth and should be prioritised for targeted engagement.`;
+    commentary += `The analysis reveals ${proximity.topOpportunities.length} opportunity relationships (${proximity.highOpportunityCount} high-opportunity) where customers are close to moving across nearby segment boundaries. `;
+    commentary += `These customers represent targeted movement potential and should be prioritised for focused engagement.`;
   } else {
     commentary += `The analysis shows that most customers are well-positioned within their quadrants, with fewer boundary cases requiring immediate attention.`;
   }

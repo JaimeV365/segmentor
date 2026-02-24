@@ -45,6 +45,10 @@ function getProximityDisplayName(relationship: string, isClassicModel: boolean =
   return names[relationship] || relationship.replace(/_/g, ' ');
 }
 
+function isPositiveTargetQuadrant(quadrant: string): boolean {
+  return ['loyalists', 'apostles', 'near_apostles', 'nearApostles'].includes(quadrant);
+}
+
 /**
  * Generates Findings statements based on evaluator results
  */
@@ -150,19 +154,19 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
       key: 'apostles', 
       name: 'Apostles',
       group: 'loyalists-group',
-      description: 'Apostles are your most valuable customers - they are both highly satisfied and highly loyal, and they actively promote and recommend your brand to others. They are your brand advocates and represent a strong foundation for growth through word-of-mouth and referrals. These customers could benefit from being nurtured and given opportunities to become ambassadors, influencers, or part of VIP referral programmes.'
+      description: 'Apostles are your most valuable customers - they are both highly satisfied and highly loyal, and they actively promote and recommend your brand to others. They are your brand advocates and represent a strong foundation for growth through peer recommendations and references. These customers could benefit from being nurtured and given opportunities to become recognised advocates, influencers, or part of VIP referral programmes.'
     },
     ...(showNearApostles ? [{
       key: 'nearApostles' as const, 
       name: 'Near-Apostles',
       group: 'loyalists-group' as const,
-      description: 'Near-Apostles are Loyalists who are on the verge of becoming full advocates. They love your brand and are loyal, but haven\'t yet actively promoted or recommended you to others. A priority could be promoting them into full Apostles by activating their advocacy potential, helping ensure they don\'t lose their connection with your brand, and giving them the tools and incentives to become your brand ambassadors.'
+      description: 'Near-Apostles are Loyalists who are on the verge of becoming full advocates. They love your brand and are loyal, but haven\'t yet actively promoted or recommended you to others. A priority could be promoting them into full Apostles by activating their advocacy potential, helping ensure they don\'t lose their connection with your brand, and giving them the tools and incentives to become trusted advocates.'
     }] : []),
     { 
       key: 'mercenaries', 
       name: 'Mercenaries',
       group: 'mercenaries',
-      description: 'Mercenaries are satisfied customers who know you, like you, and trust you - but they also shop with competitors. Rather than seeing this as a problem, it could be recognised as a massive opportunity. These are returning customers who are happy with your offering. A good goal might be to keep your products and services in their top suppliers to buy from as frequently as possible, rather than trying to make them exclusively loyal (which is often unrealistic in today\'s competitive landscape). Most importantly, it may help to be present in their minds when they\'re ready to make a purchase decision.'
+      description: 'Mercenaries are satisfied customers who know you, like you, and trust you - but they also shop with competitors. Rather than seeing this as a problem, it could be recognised as a meaningful strategic opportunity. These are returning customers who are happy with your offering. A good goal might be to keep your products and services in their top suppliers to buy from as frequently as possible, rather than trying to make them exclusively loyal (which is often unrealistic in today\'s competitive landscape). Most importantly, it may help to be present in their minds when they\'re ready to make a purchase decision.'
     },
     { 
       key: 'hostages', 
@@ -662,12 +666,12 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
     // Overview finding with context from distribution
     let overviewStatement = '';
     if (evaluators.proximity.hasRisks && evaluators.proximity.hasOpportunities) {
-      overviewStatement = `The proximity analysis reveals ${evaluators.proximity.highRiskCount} high-risk relationships and ${evaluators.proximity.highOpportunityCount} high-opportunity relationships. `;
+      overviewStatement = `The proximity analysis reveals ${evaluators.proximity.highRiskCount} high-risk relationships and ${evaluators.proximity.topOpportunities.length} opportunity relationships (${evaluators.proximity.highOpportunityCount} high-opportunity). `;
       
       // Link to distribution if largest quadrant is mentioned
       if (largestQuadrant && largestQuadrantName && quadrantWithMostRisks === largestQuadrant) {
         overviewStatement += `Notably, ${largestQuadrantName} is your largest segment (${largestCount} customers), and it's also the group with the most customers at risk (${mostRisksCount} customers). `;
-        overviewStatement += `This means you need to be particularly careful, as out of your ${largestCount} ${largestQuadrantName.toLowerCase()}, you're at risk of losing ${mostRisksCount} customers to less favourable quadrants. `;
+        overviewStatement += `This means you need to be particularly careful, as out of your ${largestCount} ${largestQuadrantName.toLowerCase()}, you're at risk of losing ${mostRisksCount} customers to less strategic quadrants for retention. `;
       } else if (largestQuadrant && largestQuadrantName && quadrantWithMostOpportunities === largestQuadrant) {
         overviewStatement += `Notably, ${largestQuadrantName} is your largest segment (${largestCount} customers), and it's also the group with the most potential for growth. `;
         overviewStatement += `You could potentially gain ${mostOpportunitiesCount} more ${largestQuadrantName.toLowerCase()} from other groups, totalling ${largestCount + mostOpportunitiesCount} customers in this segment. `;
@@ -680,10 +684,14 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
       
       if (quadrantWithMostOpportunities && quadrantWithMostOpportunities !== largestQuadrant) {
         const oppQuadrantName = getQuadrantDisplayName(quadrantWithMostOpportunities, isClassicModel);
-        overviewStatement += `The ${oppQuadrantName} segment has the most potential for positive movement, with ${mostOpportunitiesCount} customers close to moving into it. `;
+        if (isPositiveTargetQuadrant(quadrantWithMostOpportunities)) {
+          overviewStatement += `The ${oppQuadrantName} segment has the most potential for positive movement, with ${mostOpportunitiesCount} customers close to moving into it. `;
+        } else {
+          overviewStatement += `The ${oppQuadrantName} segment has the most inbound movement potential, with ${mostOpportunitiesCount} customers close to moving into it. `;
+        }
       }
       
-      overviewStatement += `Customers near quadrant boundaries are particularly important to monitor, as they may be at risk of moving to less desirable quadrants, or have the potential to move to more positive segments with the right engagement.`;
+      overviewStatement += `Customers near quadrant boundaries are particularly important to monitor, as they may be at risk of moving to less strategic quadrants for retention, or have the potential to move to stronger segments with the right engagement.`;
       
       findings.push({
         id: 'proximity-overview',
@@ -703,11 +711,11 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
         priority: priority++,
       });
     } else if (evaluators.proximity.hasRisks) {
-      let riskStatement = `The proximity analysis identifies ${evaluators.proximity.highRiskCount} high-risk relationships where customers are close to moving to less desirable quadrants. `;
+      let riskStatement = `The proximity analysis identifies ${evaluators.proximity.highRiskCount} high-risk relationships where customers are close to moving to less strategic quadrants for retention. `;
       
       if (largestQuadrant && largestQuadrantName && quadrantWithMostRisks === largestQuadrant) {
         riskStatement += `Notably, ${largestQuadrantName} is your largest segment (${largestCount} customers), and it's also the group with the most customers at risk. `;
-        riskStatement += `This means you need to be particularly careful, as out of your ${largestCount} ${largestQuadrantName.toLowerCase()}, you're at risk of losing ${mostRisksCount} customers to less favourable quadrants. `;
+        riskStatement += `This means you need to be particularly careful, as out of your ${largestCount} ${largestQuadrantName.toLowerCase()}, you're at risk of losing ${mostRisksCount} customers to less strategic quadrants for retention. `;
       } else if (quadrantWithMostRisks) {
         const riskQuadrantName = getQuadrantDisplayName(quadrantWithMostRisks, isClassicModel);
         riskStatement += `The ${riskQuadrantName} segment has the most customers at risk of negative movement (${mostRisksCount} customers). `;
@@ -729,17 +737,21 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
         priority: priority++,
       });
     } else if (evaluators.proximity.hasOpportunities) {
-      let oppStatement = `The proximity analysis reveals ${evaluators.proximity.highOpportunityCount} high-opportunity relationships where customers are close to moving to more positive quadrants. `;
+      let oppStatement = `The proximity analysis reveals ${evaluators.proximity.topOpportunities.length} opportunity relationships (${evaluators.proximity.highOpportunityCount} high-opportunity) where customers are close to moving across nearby segment boundaries. `;
       
       if (largestQuadrant && largestQuadrantName && quadrantWithMostOpportunities === largestQuadrant) {
         oppStatement += `Notably, ${largestQuadrantName} is your largest segment (${largestCount} customers), and it's also the group with the most potential for growth. `;
         oppStatement += `You could potentially gain ${mostOpportunitiesCount} more ${largestQuadrantName.toLowerCase()} from other groups, totalling ${largestCount + mostOpportunitiesCount} customers in this segment. `;
       } else if (quadrantWithMostOpportunities) {
         const oppQuadrantName = getQuadrantDisplayName(quadrantWithMostOpportunities, isClassicModel);
-        oppStatement += `The ${oppQuadrantName} segment has the most potential for positive movement, with ${mostOpportunitiesCount} customers close to moving into it. `;
+        if (isPositiveTargetQuadrant(quadrantWithMostOpportunities)) {
+          oppStatement += `The ${oppQuadrantName} segment has the most potential for positive movement, with ${mostOpportunitiesCount} customers close to moving into it. `;
+        } else {
+          oppStatement += `The ${oppQuadrantName} segment has the most inbound movement potential, with ${mostOpportunitiesCount} customers close to moving into it. `;
+        }
       }
       
-      oppStatement += `These customers represent potential for growth and should be prioritised for targeted engagement.`;
+      oppStatement += `These customers represent targeted movement potential and should be prioritised for focused engagement.`;
       
       findings.push({
         id: 'proximity-opportunities-only',
@@ -771,7 +783,7 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
           riskStatement += `Since ${sourceQuadrantName} is your largest segment, this represents a particularly concerning risk to your customer base. `;
         }
         
-        riskStatement += `These customers are at risk of moving to a less favourable quadrant and require immediate intervention.`;
+        riskStatement += `These customers are at risk of moving to a less strategic quadrant for retention and require immediate intervention.`;
         
         findings.push({
           id: 'proximity-top-risk',
@@ -803,7 +815,12 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
           oppStatement += `Since ${targetQuadrantName} is already your largest segment, this represents a valuable opportunity to further strengthen your position. `;
         }
         
-        oppStatement += `These customers are close to moving to a more positive quadrant and represent a high-value opportunity for targeted engagement.`;
+        const targetIsPositive = targetQuadrant ? isPositiveTargetQuadrant(targetQuadrant) : false;
+        if (targetIsPositive) {
+          oppStatement += `These customers are close to moving to a stronger quadrant and represent a high-value opportunity for targeted engagement.`;
+        } else {
+          oppStatement += `These customers are close to moving to an adjacent segment and represent a meaningful opportunity for targeted engagement.`;
+        }
         
         findings.push({
           id: 'proximity-top-opportunity',
@@ -827,7 +844,7 @@ export function generateFindings(evaluators: EvaluatorResults, showNearApostles:
     const largestCount = largestQuadrant ? evaluators.distribution.counts[largestQuadrant] || 0 : 0;
     const largestPercent = largestQuadrant ? evaluators.distribution.percentages[largestQuadrant] || 0 : 0;
     
-    let proximityStatement = `The proximity analysis examines customers who are positioned near quadrant boundaries, which helps identify both risks (customers at risk of moving to less favourable quadrants) and opportunities (customers close to moving to more positive segments). `;
+    let proximityStatement = `The proximity analysis examines customers who are positioned near quadrant boundaries, which helps identify both risks (customers at risk of moving to less strategic quadrants for retention) and opportunities (customers close to moving to stronger segments). `;
     
     if (largestQuadrant && largestQuadrantName) {
       proximityStatement += `In your case, the analysis shows that most customers are well-positioned within their quadrants, with fewer boundary cases requiring immediate attention. `;

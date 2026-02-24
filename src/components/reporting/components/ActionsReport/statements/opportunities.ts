@@ -25,6 +25,15 @@ function getProximityDisplayName(relationship: string, isClassicModel: boolean =
   return names[relationship] || relationship.replace(/_/g, ' ');
 }
 
+function getTargetQuadrantFromRelationship(relationship: string): string | null {
+  const parts = relationship.split('_close_to_');
+  return parts.length === 2 ? parts[1] : null;
+}
+
+function isPositiveTargetQuadrant(quadrant: string | null): boolean {
+  return quadrant === 'loyalists' || quadrant === 'apostles' || quadrant === 'near_apostles';
+}
+
 /**
  * Generates Opportunities statements based on evaluator results
  */
@@ -72,9 +81,12 @@ export function generateOpportunities(
         });
       }
       
+      const targetQuadrant = getTargetQuadrantFromRelationship(topOpp.type);
+      const targetDescription = isPositiveTargetQuadrant(targetQuadrant) ? 'a stronger segment' : 'a more stable segment';
+
       opportunities.push({
         id: `opportunity-${topOpp.type}`,
-        statement: `You have ${topOpp.count} customers in the ${getProximityDisplayName(topOpp.type, isClassicModel)} relationship, representing a significant opportunity to move these customers into a more positive quadrant through targeted engagement.`,
+        statement: `You have ${topOpp.count} customers in the ${getProximityDisplayName(topOpp.type, isClassicModel)} relationship, representing a significant opportunity to move these customers into ${targetDescription} through targeted engagement.`,
         source: 'proximity',
         impact: topOpp.impact,
         supportingData: {

@@ -862,6 +862,7 @@ function calculateActionableConversions(
     distanceFromBoundary: number;
     riskScore: number;
   }> = [];
+  const seenCustomerMoves = new Set<string>();
 
   Object.entries(proximityAnalysis.analysis).forEach(([key, detail]: [string, any]) => {
     if (detail?.customers && Array.isArray(detail.customers) && detail.customers.length > 0) {
@@ -869,6 +870,9 @@ function calculateActionableConversions(
       const targetQuadrant = key.split('_close_to_')[1];
       console.log(`[calculateActionableConversions] Processing ${key}: ${detail.customers.length} customers`);
       detail.customers.forEach((customer: any) => {
+        const uniqueMoveKey = `${customer.id}::${baseQuadrant}::${targetQuadrant}`;
+        if (seenCustomerMoves.has(uniqueMoveKey)) return;
+        seenCustomerMoves.add(uniqueMoveKey);
         // Get email from original data if available
         const originalCustomer = originalData.find(d => d.id === customer.id);
         getAllProximityCustomers.push({
