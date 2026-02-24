@@ -34,6 +34,49 @@ function isPositiveTargetQuadrant(quadrant: string | null): boolean {
   return quadrant === 'loyalists' || quadrant === 'apostles' || quadrant === 'near_apostles';
 }
 
+function mapUniqueProximityCustomers(
+  rawCustomers: any[] | undefined,
+  originalData?: Array<{ id: string; name?: string; email?: string }>
+): Array<{
+  id: string;
+  name?: string;
+  email?: string;
+  satisfaction: number;
+  loyalty: number;
+  position: string;
+  distance: number;
+}> {
+  if (!Array.isArray(rawCustomers) || rawCustomers.length === 0) {
+    return [];
+  }
+
+  // Keep one row per customer ID, preferring the closest boundary distance.
+  const byId = new Map<string, any>();
+  rawCustomers.forEach((c: any) => {
+    if (!c?.id || typeof c.id !== 'string') return;
+    const existing = byId.get(c.id);
+    const nextDistance = c.distanceFromBoundary ?? Number.POSITIVE_INFINITY;
+    const existingDistance = existing?.distanceFromBoundary ?? Number.POSITIVE_INFINITY;
+    if (!existing || nextDistance < existingDistance) {
+      byId.set(c.id, c);
+    }
+  });
+
+  return Array.from(byId.values()).map((c: any) => {
+    const originalCustomer = originalData?.find(d => d.id === c.id);
+    return {
+      id: c.id,
+      name: c.name || originalCustomer?.name || '',
+      email: originalCustomer?.email || '',
+      satisfaction: c.satisfaction,
+      loyalty: c.loyalty,
+      position: `(${c.satisfaction}, ${c.loyalty})`,
+      distance: c.distanceFromBoundary || 0,
+      ...(originalCustomer || {})
+    };
+  });
+}
+
 /**
  * Generates Opportunities statements based on evaluator results
  */
@@ -66,32 +109,21 @@ export function generateOpportunities(
       
       if (proximityAnalysis?.analysis?.[topOpp.type as keyof typeof proximityAnalysis.analysis]?.customers) {
         const detail = proximityAnalysis.analysis[topOpp.type as keyof typeof proximityAnalysis.analysis];
-        customers = detail.customers.map((c: any) => {
-          const originalCustomer = originalData?.find(d => d.id === c.id);
-          return {
-            id: c.id,
-            name: c.name || originalCustomer?.name || '',
-            email: originalCustomer?.email || '',
-            satisfaction: c.satisfaction,
-            loyalty: c.loyalty,
-            position: `(${c.satisfaction}, ${c.loyalty})`,
-            distance: c.distanceFromBoundary || 0,
-            ...(originalCustomer || {}) // Spread all additional properties from original data
-          };
-        });
+        customers = mapUniqueProximityCustomers(detail.customers, originalData);
       }
       
       const targetQuadrant = getTargetQuadrantFromRelationship(topOpp.type);
       const targetDescription = isPositiveTargetQuadrant(targetQuadrant) ? 'a stronger segment' : 'a more stable segment';
+      const opportunityCount = customers.length > 0 ? customers.length : topOpp.count;
 
       opportunities.push({
         id: `opportunity-${topOpp.type}`,
-        statement: `You have ${topOpp.count} customers in the ${getProximityDisplayName(topOpp.type, isClassicModel)} relationship, representing a significant opportunity to move these customers into ${targetDescription} through targeted engagement.`,
+        statement: `You have ${opportunityCount} customers in the ${getProximityDisplayName(topOpp.type, isClassicModel)} relationship, representing a significant opportunity to move these customers into ${targetDescription} through targeted engagement.`,
         source: 'proximity',
         impact: topOpp.impact,
         supportingData: {
           relationship: topOpp.type,
-          count: topOpp.count,
+          count: opportunityCount,
           impact: topOpp.impact,
           customers: customers
         },
@@ -117,28 +149,17 @@ export function generateOpportunities(
       
       if (proximityAnalysis?.analysis?.defectors_close_to_loyalists?.customers) {
         const detail = proximityAnalysis.analysis.defectors_close_to_loyalists;
-        customers = detail.customers.map((c: any) => {
-          const originalCustomer = originalData?.find(d => d.id === c.id);
-          return {
-            id: c.id,
-            name: c.name || originalCustomer?.name || '',
-            email: originalCustomer?.email || '',
-            satisfaction: c.satisfaction,
-            loyalty: c.loyalty,
-            position: `(${c.satisfaction}, ${c.loyalty})`,
-            distance: c.distanceFromBoundary || 0,
-            ...(originalCustomer || {}) // Spread all additional properties from original data
-          };
-        });
+        customers = mapUniqueProximityCustomers(detail.customers, originalData);
       }
+      const redemptionCount = customers.length > 0 ? customers.length : redemptionOpp.count;
       
       opportunities.push({
         id: 'opportunity-redemption',
-        statement: `There's a particularly valuable opportunity with ${redemptionOpp.count} Defectors who are close to becoming Loyalists. These customers represent a redemption opportunity - they've been disappointed but are still within reach of becoming your strongest advocates.`,
+        statement: `There's a particularly valuable opportunity with ${redemptionCount} Defectors who are close to becoming Loyalists. These customers represent a redemption opportunity - they've been disappointed but are still within reach of becoming your strongest advocates.`,
         source: 'proximity',
         impact: 'high',
         supportingData: {
-          count: redemptionOpp.count,
+          count: redemptionCount,
           relationship: 'defectors_close_to_loyalists',
           customers: customers
         },
@@ -164,28 +185,17 @@ export function generateOpportunities(
       
       if (proximityAnalysis?.analysis?.[apostlesOpp.type as keyof typeof proximityAnalysis.analysis]?.customers) {
         const detail = proximityAnalysis.analysis[apostlesOpp.type as keyof typeof proximityAnalysis.analysis];
-        customers = detail.customers.map((c: any) => {
-          const originalCustomer = originalData?.find(d => d.id === c.id);
-          return {
-            id: c.id,
-            name: c.name || originalCustomer?.name || '',
-            email: originalCustomer?.email || '',
-            satisfaction: c.satisfaction,
-            loyalty: c.loyalty,
-            position: `(${c.satisfaction}, ${c.loyalty})`,
-            distance: c.distanceFromBoundary || 0,
-            ...(originalCustomer || {}) // Spread all additional properties from original data
-          };
-        });
+        customers = mapUniqueProximityCustomers(detail.customers, originalData);
       }
+      const apostlesCount = customers.length > 0 ? customers.length : apostlesOpp.count;
       
       opportunities.push({
         id: 'opportunity-apostles',
-        statement: `You have ${apostlesOpp.count} customers who are close to becoming ${apostlesTerm} - your strongest brand advocates. With the right engagement, these customers could become powerful advocates for your brand.`,
+        statement: `You have ${apostlesCount} customers who are close to becoming ${apostlesTerm} - your strongest brand advocates. With the right engagement, these customers could become powerful advocates for your brand.`,
         source: 'proximity',
         impact: 'high',
         supportingData: {
-          count: apostlesOpp.count,
+          count: apostlesCount,
           relationship: apostlesOpp.type,
           customers: customers
         },

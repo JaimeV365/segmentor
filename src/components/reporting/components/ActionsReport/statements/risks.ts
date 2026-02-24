@@ -25,6 +25,47 @@ function getProximityDisplayName(relationship: string, isClassicModel: boolean =
   return names[relationship] || relationship.replace(/_/g, ' ');
 }
 
+function mapUniqueProximityCustomers(
+  rawCustomers: any[] | undefined,
+  originalData?: Array<{ id: string; name?: string; email?: string }>
+): Array<{
+  id: string;
+  name?: string;
+  email?: string;
+  satisfaction: number;
+  loyalty: number;
+  position: string;
+  distance: number;
+}> {
+  if (!Array.isArray(rawCustomers) || rawCustomers.length === 0) {
+    return [];
+  }
+
+  const byId = new Map<string, any>();
+  rawCustomers.forEach((c: any) => {
+    if (!c?.id || typeof c.id !== 'string') return;
+    const existing = byId.get(c.id);
+    const nextDistance = c.distanceFromBoundary ?? Number.POSITIVE_INFINITY;
+    const existingDistance = existing?.distanceFromBoundary ?? Number.POSITIVE_INFINITY;
+    if (!existing || nextDistance < existingDistance) {
+      byId.set(c.id, c);
+    }
+  });
+
+  return Array.from(byId.values()).map((c: any) => {
+    const originalCustomer = originalData?.find(d => d.id === c.id);
+    return {
+      id: c.id,
+      name: c.name || originalCustomer?.name || '',
+      email: originalCustomer?.email || '',
+      satisfaction: c.satisfaction,
+      loyalty: c.loyalty,
+      position: `(${c.satisfaction}, ${c.loyalty})`,
+      distance: c.distanceFromBoundary || 0
+    };
+  });
+}
+
 /**
  * Generates Risks statements based on evaluator results
  */
@@ -57,28 +98,18 @@ export function generateRisks(
       
       if (proximityAnalysis?.analysis?.[topRisk.type as keyof typeof proximityAnalysis.analysis]?.customers) {
         const detail = proximityAnalysis.analysis[topRisk.type as keyof typeof proximityAnalysis.analysis];
-        customers = detail.customers.map((c: any) => {
-          const originalCustomer = originalData?.find(d => d.id === c.id);
-          return {
-            id: c.id,
-            name: c.name || originalCustomer?.name || '',
-            email: originalCustomer?.email || '',
-            satisfaction: c.satisfaction,
-            loyalty: c.loyalty,
-            position: `(${c.satisfaction}, ${c.loyalty})`,
-            distance: c.distanceFromBoundary || 0
-          };
-        });
+        customers = mapUniqueProximityCustomers(detail.customers, originalData);
       }
+      const riskCount = customers.length > 0 ? customers.length : topRisk.count;
       
       risks.push({
         id: `risk-${topRisk.type}`,
-        statement: `You have ${topRisk.count} customers in the ${getProximityDisplayName(topRisk.type, isClassicModel)} relationship, which represents a significant risk of these customers moving to a less strategic quadrant for retention.`,
+        statement: `You have ${riskCount} customers in the ${getProximityDisplayName(topRisk.type, isClassicModel)} relationship, which represents a significant risk of these customers moving to a less strategic quadrant for retention.`,
         source: 'proximity',
         severity: topRisk.severity,
         supportingData: {
           relationship: topRisk.type,
-          count: topRisk.count,
+          count: riskCount,
           severity: topRisk.severity,
           customers: customers
         },
@@ -104,27 +135,17 @@ export function generateRisks(
       
       if (proximityAnalysis?.analysis?.loyalists_close_to_defectors?.customers) {
         const detail = proximityAnalysis.analysis.loyalists_close_to_defectors;
-        customers = detail.customers.map((c: any) => {
-          const originalCustomer = originalData?.find(d => d.id === c.id);
-          return {
-            id: c.id,
-            name: c.name || originalCustomer?.name || '',
-            email: originalCustomer?.email || '',
-            satisfaction: c.satisfaction,
-            loyalty: c.loyalty,
-            position: `(${c.satisfaction}, ${c.loyalty})`,
-            distance: c.distanceFromBoundary || 0
-          };
-        });
+        customers = mapUniqueProximityCustomers(detail.customers, originalData);
       }
+      const crisisCount = customers.length > 0 ? customers.length : crisisRisk.count;
       
       risks.push({
         id: 'risk-crisis',
-        statement: `There's a critical risk with ${crisisRisk.count} Loyalists who are close to becoming Defectors. This represents a crisis situation - your best customers are at risk of becoming your worst. Immediate action is required to prevent this catastrophic shift.`,
+        statement: `There's a critical risk with ${crisisCount} Loyalists who are close to becoming Defectors. This represents a crisis situation - your best customers are at risk of becoming your worst. Immediate action is required to prevent this catastrophic shift.`,
         source: 'proximity',
         severity: 'high',
         supportingData: {
-          count: crisisRisk.count,
+          count: crisisCount,
           relationship: 'loyalists_close_to_defectors',
           customers: customers
         },
@@ -150,27 +171,17 @@ export function generateRisks(
       
       if (proximityAnalysis?.analysis?.loyalists_close_to_mercenaries?.customers) {
         const detail = proximityAnalysis.analysis.loyalists_close_to_mercenaries;
-        customers = detail.customers.map((c: any) => {
-          const originalCustomer = originalData?.find(d => d.id === c.id);
-          return {
-            id: c.id,
-            name: c.name || originalCustomer?.name || '',
-            email: originalCustomer?.email || '',
-            satisfaction: c.satisfaction,
-            loyalty: c.loyalty,
-            position: `(${c.satisfaction}, ${c.loyalty})`,
-            distance: c.distanceFromBoundary || 0
-          };
-        });
+        customers = mapUniqueProximityCustomers(detail.customers, originalData);
       }
+      const loyalistsRiskCount = customers.length > 0 ? customers.length : loyalistsRisk.count;
       
       risks.push({
         id: 'risk-loyalists-losing-loyalty',
-        statement: `You have ${loyalistsRisk.count} Loyalists who are close to becoming Mercenaries. These customers are satisfied but their loyalty is wavering - they're at risk of becoming price-sensitive and switching to competitors.`,
+        statement: `You have ${loyalistsRiskCount} Loyalists who are close to becoming Mercenaries. These customers are satisfied but their loyalty is wavering - they're at risk of becoming price-sensitive and switching to competitors.`,
         source: 'proximity',
         severity: 'high',
         supportingData: {
-          count: loyalistsRisk.count,
+          count: loyalistsRiskCount,
           relationship: 'loyalists_close_to_mercenaries',
           customers: customers
         },

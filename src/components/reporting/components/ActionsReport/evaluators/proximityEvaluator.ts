@@ -22,6 +22,20 @@ export function evaluateProximity(
 
   const { analysis, summary } = proximityAnalysis;
 
+  const getUniqueCustomerCount = (detail: any): number => {
+    if (Array.isArray(detail?.customers) && detail.customers.length > 0) {
+      const uniqueIds = new Set(
+        detail.customers
+          .map((c: any) => c?.id)
+          .filter((id: unknown): id is string => typeof id === 'string' && id.length > 0)
+      );
+      if (uniqueIds.size > 0) {
+        return uniqueIds.size;
+      }
+    }
+    return detail?.customerCount ?? 0;
+  };
+
   // Define warning (risk) relationships
   const warningRelationships = [
     'loyalists_close_to_mercenaries',
@@ -50,12 +64,13 @@ export function evaluateProximity(
   const risks: Array<{ type: string; count: number; severity: 'high' | 'medium' | 'low' }> = [];
   warningRelationships.forEach(rel => {
     const detail = analysis[rel as keyof typeof analysis];
-    if (detail && detail.customerCount > 0) {
+    const uniqueCount = getUniqueCustomerCount(detail);
+    if (detail && uniqueCount > 0) {
       const severity = detail.riskLevel === 'HIGH' ? 'high' :
                       detail.riskLevel === 'MODERATE' ? 'medium' : 'low';
       risks.push({
         type: rel,
-        count: detail.customerCount,
+        count: uniqueCount,
         severity
       });
     }
@@ -65,14 +80,15 @@ export function evaluateProximity(
   const opportunities: Array<{ type: string; count: number; impact: 'high' | 'medium' | 'low' }> = [];
   opportunityRelationships.forEach(rel => {
     const detail = analysis[rel as keyof typeof analysis];
-    if (detail && detail.customerCount > 0) {
+    const uniqueCount = getUniqueCustomerCount(detail);
+    if (detail && uniqueCount > 0) {
       // For opportunities, use risk level as inverse impact indicator
       // Low risk = high opportunity impact
       const impact = detail.riskLevel === 'LOW' ? 'high' :
                      detail.riskLevel === 'MODERATE' ? 'medium' : 'low';
       opportunities.push({
         type: rel,
-        count: detail.customerCount,
+        count: uniqueCount,
         impact
       });
     }
