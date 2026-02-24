@@ -170,7 +170,9 @@ export function generateActions(
             ? `You might implement retention strategies for ${loyalistName} such as account-based success plans, renewal workshops, and executive relationship mapping.`
             : `You might implement retention strategies for ${loyalistName} such as personalised offers, loyalty programmes, and exclusive perks.`;
         } else if (type === 'Encourage advocacy') {
-          statement = `You could encourage advocacy among ${loyalistName}. You might invite ${loyalistsCount === 1 ? 'them' : 'them'} to share their positive experiences and become brand ambassadors.`;
+          statement = audienceContext === 'b2b'
+            ? `You could encourage advocacy among ${loyalistName}. You might invite ${loyalistsCount === 1 ? 'them' : 'them'} to share measurable outcomes and become references in case studies, webinars, or peer customer communities.`
+            : `You could encourage advocacy among ${loyalistName}. You might invite ${loyalistsCount === 1 ? 'them' : 'them'} to share their positive experiences and become brand ambassadors.`;
         } else if (type === 'Reward loyalty') {
           statement = `You might reward ${loyalistName} for their loyalty through exclusive benefits, early access to new products, or special recognition programmes.`;
         } else if (type === 'Involve them in your success') {
@@ -467,7 +469,7 @@ export function generateActions(
     // We only show it in the first action (highest priority) as a reference
     actions.push({
       id: 'action-defectors-prevent',
-      statement: `You may want to consider preventing future defections. ${defectorsCount === 1 ? 'A' : 'A'} ${defectorName}${defectorsCount === 1 ? ' is' : ' are'} by definition ${defectorsCount === 1 ? 'someone' : 'people'} disappointed. ${defectorsCount === 1 ? 'This person' : 'These people'} used to buy from you (or considered doing so), but at some point, ${defectorsCount === 1 ? 'they changed' : 'they changed'} their mind${defectorsCount === 1 ? '' : 's'}. Running research to understand those frustrations could allow you to prevent those situations from affecting other customers.`,
+      statement: `You may want to consider preventing future defections. ${defectorsCount === 1 ? 'A Defector is' : 'Defectors are'} by definition ${defectorsCount === 1 ? 'someone' : 'people'} disappointed. ${defectorsCount === 1 ? 'This person' : 'These people'} used to buy from you (or considered doing so), but at some point, they changed their mind${defectorsCount === 1 ? '' : 's'}. Running research to understand those frustrations could allow you to prevent those situations from affecting other customers.`,
       quadrant: 'defectors',
       priority: 1,
       actionability: 'medium',

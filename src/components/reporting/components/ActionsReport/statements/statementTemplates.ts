@@ -232,7 +232,7 @@ const statementTemplates: StatementTemplates = {
     {
       "id": "opening-statement-mercenaries",
       "type": "Opening Statement - mercenaries",
-      "template": "Mercenaries is the most popular segment with {count} customers, representing {percentage}% of the total. This group represents satisfied customers who know you, like you, and trust you - but they also shop with competitors. Rather than seeing this as a problem, it could be recognised as a massive opportunity. These are returning customers who are happy with your offering. A good goal might be to keep your products and services in their top suppliers to buy from as frequently as possible, rather than trying to make them exclusively loyal (which is often unrealistic in today's competitive landscape).",
+      "template": "Mercenaries is the most popular segment with {count} customers, representing {percentage}% of the total. This group represents satisfied customers who know you, like you, and trust you - but they also shop with competitors. Rather than seeing this as a problem, it could be recognised as a meaningful strategic opportunity. These are returning customers who are happy with your offering. A good goal might be to keep your products and services in their top suppliers to buy from as frequently as possible, rather than trying to make them exclusively loyal (which is often unrealistic in today's competitive landscape).",
       "placeholders": [
         "count",
         "percentage"
@@ -265,7 +265,7 @@ const statementTemplates: StatementTemplates = {
     {
       "id": "opening-statement-near_apostles",
       "type": "Opening Statement - near_apostles",
-      "template": "Near-Apostles is the most popular segment with {count} customers, representing {percentage}% of the total. This is excellent news - Near-Apostles are Loyalists who are on the verge of becoming full advocates. They love your brand and are loyal, but haven't yet actively promoted or recommended you to others. A key priority could be promoting them into full Apostles by activating their advocacy potential, helping ensure they don't lose their connection with your brand, and giving them the tools and incentives to become your brand ambassadors.",
+      "template": "Near-Apostles is the most popular segment with {count} customers, representing {percentage}% of the total. This is excellent news - Near-Apostles are Loyalists who are on the verge of becoming full advocates. They love your brand and are loyal, but haven't yet actively promoted or recommended you to others. A key priority could be promoting them into full Apostles by activating their advocacy potential, helping ensure they don't lose their connection with your brand, and giving them the tools and incentives to become trusted advocates.",
       "placeholders": [
         "count",
         "percentage"
@@ -347,7 +347,7 @@ const statementTemplates: StatementTemplates = {
     {
       "id": "high-promoters-opportunity",
       "type": "High Promoters Opportunity",
-      "template": "You have {count} Promoters ({percentage}% of your customers), which is excellent. These customers are your brand advocates and represent a strong foundation for growth through word-of-mouth and referrals.",
+      "template": "You have {count} Promoters ({percentage}% of your customers), which is excellent. These customers are your brand advocates and represent a strong foundation for growth through peer recommendations and references.",
       "placeholders": [
         "count",
         "percentage"
@@ -377,7 +377,7 @@ const statementTemplates: StatementTemplates = {
     {
       "id": "opportunity-promoters-high",
       "type": "High Promoters Opportunity",
-      "template": "You have {count} Promoters ({percentage}% of your customers), which is excellent. These customers are your brand advocates and represent a strong foundation for growth through word-of-mouth and referrals.",
+      "template": "You have {count} Promoters ({percentage}% of your customers), which is excellent. These customers are your brand advocates and represent a strong foundation for growth through peer recommendations and references.",
       "placeholders": [
         "count",
         "percentage"

@@ -73,7 +73,7 @@ export function generateRisks(
       
       risks.push({
         id: `risk-${topRisk.type}`,
-        statement: `You have ${topRisk.count} customers in the ${getProximityDisplayName(topRisk.type, isClassicModel)} relationship, which represents a significant risk of these customers moving to a less favourable quadrant.`,
+        statement: `You have ${topRisk.count} customers in the ${getProximityDisplayName(topRisk.type, isClassicModel)} relationship, which represents a significant risk of these customers moving to a less strategic quadrant for retention.`,
         source: 'proximity',
         severity: topRisk.severity,
         supportingData: {
