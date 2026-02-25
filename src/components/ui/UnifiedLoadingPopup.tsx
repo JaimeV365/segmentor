@@ -122,8 +122,14 @@ export const UnifiedLoadingPopup: React.FC<UnifiedLoadingPopupProps> = ({
 }) => {
   const [showPopup, setShowPopup] = useState(false);
   const shownAtRef = useRef<number>(0);
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = null;
+    }
+
     if (isVisible) {
       shownAtRef.current = Date.now();
       setShowPopup(true);
@@ -131,13 +137,23 @@ export const UnifiedLoadingPopup: React.FC<UnifiedLoadingPopupProps> = ({
       const elapsed = Date.now() - shownAtRef.current;
       const remaining = Math.max(0, minDisplayMs - elapsed);
       if (remaining > 0) {
-        const timer = setTimeout(() => setShowPopup(false), remaining);
-        return () => clearTimeout(timer);
+        hideTimerRef.current = setTimeout(() => {
+          setShowPopup(false);
+          hideTimerRef.current = null;
+        }, remaining);
       } else {
         setShowPopup(false);
       }
     }
-  }, [isVisible, minDisplayMs]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isVisible, minDisplayMs, showPopup]);
+
+  useEffect(() => {
+    return () => {
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+      }
+    };
+  }, []);
 
   if (!showPopup) return null;
   
