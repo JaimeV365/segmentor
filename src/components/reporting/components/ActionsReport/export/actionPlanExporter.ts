@@ -1486,6 +1486,14 @@ export async function exportActionPlanToPDF(
             }
           }
           let availableHeight = pageHeight - margin - footerHeight - yPosition - 15; // Leave 15mm buffer
+
+          // Response Concentration can appear tiny when rendered near the page bottom.
+          // If remaining space is tight, move it to a fresh page before computing scale.
+          if (isResponseConcentration && availableHeight < 90 && yPosition > margin + 15) {
+            pdf.addPage();
+            yPosition = margin + 10;
+            availableHeight = pageHeight - margin - footerHeight - yPosition - 15;
+          }
           
           // Convert pixels to mm
           // Images are captured at scale: 2 (2x resolution), so we need to divide by 2
