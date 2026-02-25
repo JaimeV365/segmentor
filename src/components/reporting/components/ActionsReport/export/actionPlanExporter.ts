@@ -1276,8 +1276,9 @@ export async function exportActionPlanToPDF(
   });
 
   if (validFindings.length > 0) {
-    pdf.addPage();
-    yPosition = margin + 10;
+    // Keep Findings on page 1 when possible; only break if the opening block won't fit.
+    const findingsIntroEstimate = 26; // Section title + description + spacing
+    smartPageBreak(findingsIntroEstimate);
     
     yPosition = addSimpleSectionHeader(pdf, 'Findings', yPosition, margin);
 
