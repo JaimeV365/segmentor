@@ -2,13 +2,17 @@ import React, { useCallback, useRef, useState } from 'react';
 import { UploadCloud } from 'lucide-react';
 import { useNotification } from '../../NotificationSystem';
 import { UnifiedLoadingPopup } from '../../../ui/UnifiedLoadingPopup';
+import { UploadHistory } from '../CSVImport/components/UploadHistory';
+import type { UploadHistoryItem } from '../../types';
 import './SegFileLoader.css';
 
 interface SegFileLoaderProps {
-  onSegFileLoad?: (file: File) => Promise<void>;
+  onSegFileLoad?: (file: File) => Promise<{ count: number; ids: string[] } | void>;
+  uploadHistory?: UploadHistoryItem[];
+  onUploadSuccess?: (fileName: string, count: number, ids: string[]) => void;
 }
 
-const SegFileLoader: React.FC<SegFileLoaderProps> = ({ onSegFileLoad }) => {
+const SegFileLoader: React.FC<SegFileLoaderProps> = ({ onSegFileLoad, uploadHistory = [], onUploadSuccess }) => {
   const { showNotification } = useNotification();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,7 +38,19 @@ const SegFileLoader: React.FC<SegFileLoaderProps> = ({ onSegFileLoad }) => {
 
     try {
       setIsLoading(true);
-      await onSegFileLoad(file);
+      const loadResult = await onSegFileLoad(file);
+      const loadedCount = loadResult?.count ?? 0;
+      const loadedIds = loadResult?.ids ?? [];
+
+      onUploadSuccess?.(file.name, loadedCount, loadedIds);
+
+      showNotification({
+        title: 'Success',
+        message: loadedCount > 0
+          ? `Project loaded successfully from ${file.name} (${loadedCount} entries).`
+          : `Project loaded successfully from ${file.name}.`,
+        type: 'success'
+      });
     } catch (error) {
       console.error('Failed to load .seg file:', error);
       showNotification({
@@ -104,6 +120,8 @@ const SegFileLoader: React.FC<SegFileLoaderProps> = ({ onSegFileLoad }) => {
           disabled={isLoading}
         />
       </div>
+
+      <UploadHistory history={uploadHistory} />
       
       <UnifiedLoadingPopup 
         isVisible={isLoading} 

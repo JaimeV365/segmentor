@@ -30,6 +30,7 @@ const DataEntryModule: React.FC<DataEntryModuleProps> = ({
   const [editingData, setEditingData] = useState<DataPoint | null>(null);
   const [data, setData] = useState<DataPoint[]>([]);
   const [uploadHistory, setUploadHistory] = useState<UploadHistoryItem[]>([]);
+  const [segUploadHistory, setSegUploadHistory] = useState<UploadHistoryItem[]>([]);
   const [lastManualEntryTimestamp, setLastManualEntryTimestamp] = useState(0);
   const [activeTab, setActiveTab] = useState('csv-upload');
   const inputSectionRef = useRef<HTMLDivElement>(null);
@@ -417,7 +418,19 @@ if (editingData) {
       label: 'Load Project',
       icon: <FolderOpen size={16} />,
       content: (
-        <SegFileLoader onSegFileLoad={onSegFileLoad} />
+        <SegFileLoader
+          onSegFileLoad={onSegFileLoad}
+          uploadHistory={segUploadHistory}
+          onUploadSuccess={(fileName: string, count: number, ids: string[]) => {
+            setSegUploadHistory(prev => [...prev, {
+              fileName,
+              timestamp: new Date(),
+              count,
+              remainingCount: count,
+              associatedIds: ids
+            }]);
+          }}
+        />
       )
     }
   ];

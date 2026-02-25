@@ -54,7 +54,7 @@ interface CSVImportProps {
   uploadHistory: UploadHistoryItem[];
   onUploadSuccess: (fileName: string, count: number, ids: string[], wasOverwrite?: boolean) => void;
   lastManualEntryTimestamp?: number; // New prop to track manual entries
-  onSegFileLoad?: (file: File) => Promise<void>;
+  onSegFileLoad?: (file: File) => Promise<{ count: number; ids: string[] } | void>;
   isDemoMode?: boolean; // New prop to detect demo mode
 }
 

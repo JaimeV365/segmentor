@@ -359,7 +359,7 @@ useEffect(() => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   // Load progress handler
-  const handleLoadProgress = async (file: File) => {
+  const handleLoadProgress = async (file: File): Promise<{ count: number; ids: string[] }> => {
     console.log('Loading progress from file:', file.name);
     isFileUploadRef.current = true; // Mark as file upload (.seg file)
     try {
@@ -372,6 +372,8 @@ useEffect(() => {
       // Note: If this is a TM file loaded by a free user, we'll load it directly
       // Premium features won't be restored (handled below in the premium restoration logic)
       
+      let finalDataPoints: DataPoint[] = [];
+
       // Handle both old and new format
       if (saveData.version === '2.0.0' && saveData.dataTable) {
         // New format: Load from dataTable
@@ -406,7 +408,7 @@ useEffect(() => {
         });
         
         // Apply demo limitation if in demo mode
-        let finalDataPoints = dataPoints;
+        finalDataPoints = dataPoints;
         if (isDemoMode && dataPoints.length > 100) {
           finalDataPoints = dataPoints.slice(0, 100);
           notification.showNotification({
@@ -574,7 +576,7 @@ useEffect(() => {
         })) || [];
         
         // Apply demo limitation if in demo mode
-        let finalDataPoints = dataPoints;
+        finalDataPoints = dataPoints;
         if (isDemoMode && dataPoints.length > 100) {
           finalDataPoints = dataPoints.slice(0, 100);
           notification.showNotification({
@@ -636,9 +638,12 @@ useEffect(() => {
       }
       
       console.log('Progress loaded successfully:', saveData);
+
+      const uniqueIds = Array.from(new Set(finalDataPoints.map((point: DataPoint) => point.id)));
+      return { count: finalDataPoints.length, ids: uniqueIds };
     } catch (error) {
       console.error('Failed to load progress:', error);
-      // You might want to show a notification here
+      throw error;
     }
   };
 

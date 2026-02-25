@@ -54,7 +54,7 @@ export interface DataEntryModuleProps {
   satisfactionScale: ScaleFormat;
   loyaltyScale: ScaleFormat;
   data: DataPoint[];
-  onSegFileLoad?: (file: File) => Promise<void>;
+  onSegFileLoad?: (file: File) => Promise<{ count: number; ids: string[] } | void>;
   onDemoDataLoad?: () => void;
   isDemoMode?: boolean;
 }
