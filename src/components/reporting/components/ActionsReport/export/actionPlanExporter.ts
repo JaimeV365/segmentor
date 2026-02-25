@@ -1124,10 +1124,11 @@ function addPageWatermarkAndFooter(
     const byLine = consultantName?.trim()
       ? `by ${consultantName.trim()} at Teresa Monroe`
       : 'by Teresa Monroe';
-    const tmBrandingText = `This report was generated ${byLine} using Segmentor. For more information, visit `;
+    const tmBrandingText = `This report was generated ${byLine} using Segmentor. For more information, visit`;
     const lineHeight = 3;
     const maxWidth = pageWidth - 40;
-    const singleLineFits = pdf.getTextWidth(tmBrandingText) + pdf.getTextWidth(ABOUT_LINK_LABEL) <= maxWidth;
+    const inlineSpaceWidth = pdf.getTextWidth(' ');
+    const singleLineFits = pdf.getTextWidth(tmBrandingText) + inlineSpaceWidth + pdf.getTextWidth(ABOUT_LINK_LABEL) <= maxWidth;
     const brandingLines = singleLineFits ? [tmBrandingText] : pdf.splitTextToSize(tmBrandingText.trim(), maxWidth);
     const totalLines = singleLineFits ? 1 : brandingLines.length + 1;
     const brandingStartY = pageNumberY - (totalLines * lineHeight);
@@ -1137,7 +1138,7 @@ function addPageWatermarkAndFooter(
       const textX = 20;
       pdf.setTextColor(100, 100, 100);
       pdf.text(tmBrandingText, textX, textY);
-      const linkX = textX + pdf.getTextWidth(tmBrandingText);
+      const linkX = textX + pdf.getTextWidth(tmBrandingText) + inlineSpaceWidth;
       pdf.setTextColor(brandGreen.r, brandGreen.g, brandGreen.b);
       pdf.textWithLink(ABOUT_LINK_LABEL, linkX, textY, { url: ABOUT_LINK_URL });
       const linkWidth = pdf.getTextWidth(ABOUT_LINK_LABEL);
@@ -1163,8 +1164,9 @@ function addPageWatermarkAndFooter(
     const lineHeight = 3;
     const maxWidth = pageWidth - 40;
     const disclaimerLines = pdf.splitTextToSize(DISCLAIMER_TEXT, maxWidth);
-    const disclaimerLinkText = `${DISCLAIMER_LINK_PREFIX} `;
-    const disclaimerLinkFits = pdf.getTextWidth(disclaimerLinkText) + pdf.getTextWidth(ABOUT_LINK_LABEL) <= maxWidth;
+    const inlineSpaceWidth = pdf.getTextWidth(' ');
+    const disclaimerLinkText = DISCLAIMER_LINK_PREFIX;
+    const disclaimerLinkFits = pdf.getTextWidth(disclaimerLinkText) + inlineSpaceWidth + pdf.getTextWidth(ABOUT_LINK_LABEL) <= maxWidth;
     const disclaimerLinkLines = disclaimerLinkFits ? 1 : (pdf.splitTextToSize(DISCLAIMER_LINK_PREFIX, maxWidth).length + 1);
     const totalDisclaimerLines = disclaimerLines.length + disclaimerLinkLines;
     const disclaimerStartY = pageNumberY - (totalDisclaimerLines * lineHeight);
@@ -1179,7 +1181,7 @@ function addPageWatermarkAndFooter(
       const textX = 20;
       pdf.setTextColor(100, 100, 100);
       pdf.text(disclaimerLinkText, textX, linkLineY);
-      const linkX = textX + pdf.getTextWidth(disclaimerLinkText);
+      const linkX = textX + pdf.getTextWidth(disclaimerLinkText) + inlineSpaceWidth;
       pdf.setTextColor(brandGreen.r, brandGreen.g, brandGreen.b);
       pdf.textWithLink(ABOUT_LINK_LABEL, linkX, linkLineY, { url: ABOUT_LINK_URL });
       const linkWidth = pdf.getTextWidth(ABOUT_LINK_LABEL);
