@@ -508,6 +508,13 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
   const handleExportXLSX = useCallback(async () => {
     if (!actionPlan) return;
     setIsExporting(true);
+    let exportSettled = false;
+    const safetyTimeout = window.setTimeout(() => {
+      if (!exportSettled) {
+        // Safety net: never leave the export spinner stuck.
+        setIsExporting(false);
+      }
+    }, 15000);
     try {
       // Try to get raw data and quadrant function from report if available
       // The report may have been extended with these properties
@@ -526,6 +533,8 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
       console.error('Failed to export XLSX:', error);
       alert('Failed to export to Excel. Please try again.');
     } finally {
+      exportSettled = true;
+      window.clearTimeout(safetyTimeout);
       setIsExporting(false);
     }
   }, [actionPlan, report]);
