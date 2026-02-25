@@ -508,13 +508,8 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
   const handleExportXLSX = useCallback(async () => {
     if (!actionPlan) return;
     setIsExporting(true);
-    let exportSettled = false;
-    const safetyTimeout = window.setTimeout(() => {
-      if (!exportSettled) {
-        // Safety net: never leave the export spinner stuck.
-        setIsExporting(false);
-      }
-    }, 15000);
+    const EXPORT_TIMEOUT_MS = 15000;
+    let timeoutId: number | null = null;
     try {
       // Try to get raw data and quadrant function from report if available
       // The report may have been extended with these properties
@@ -528,14 +523,28 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
         hasComputeSegment: !!computeSegment
       });
       
-      await exportActionPlanToXLSX(actionPlan, rawData, computeSegment);
+      await Promise.race([
+        exportActionPlanToXLSX(actionPlan, rawData, computeSegment),
+        new Promise<never>((_, reject) => {
+          timeoutId = window.setTimeout(() => {
+            reject(new Error('XLSX_EXPORT_TIMEOUT'));
+          }, EXPORT_TIMEOUT_MS);
+        })
+      ]);
     } catch (error) {
-      console.error('Failed to export XLSX:', error);
-      alert('Failed to export to Excel. Please try again.');
+      if (error instanceof Error && error.message === 'XLSX_EXPORT_TIMEOUT') {
+        console.warn('Excel export timed out after 15 seconds.');
+        alert('Excel export is taking longer than expected. Please try again. If this keeps happening, reload the page and retry.');
+      } else {
+        console.error('Failed to export XLSX:', error);
+        alert('Failed to export to Excel. Please try again.');
+      }
     } finally {
-      exportSettled = true;
-      window.clearTimeout(safetyTimeout);
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId);
+      }
       setIsExporting(false);
+      setSelectedExportOption(null);
     }
   }, [actionPlan, report]);
 
