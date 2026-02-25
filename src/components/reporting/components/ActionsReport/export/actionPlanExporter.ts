@@ -1471,6 +1471,11 @@ export async function exportActionPlanToPDF(
                                        chartImage.selector?.includes('recommendation') ||
                                        chartImage.selector?.includes('recommendation-score-widgets') ||
                                        chartImage.selector?.includes('recommendation-score-section');
+
+          const isDistribution = chartImage.chartType === 'distribution' ||
+                                 finding.category === 'distribution' ||
+                                 finding.chartSelector?.includes('distribution') ||
+                                 chartImage.selector?.includes('distribution');
           
           // Detect chart type early so we can decide whether to start a fresh page
           const isMainVisualization = chartImage.chartType === 'main' ||
@@ -1499,92 +1504,94 @@ export async function exportActionPlanToPDF(
           // Images are captured at scale: 2 (2x resolution), so we need to divide by 2
           // to get back to CSS pixels, then convert to mm (0.264583 mm per CSS pixel at 96 DPI)
           const captureScale = 2; // html2canvas scale factor
-          let imgWidth = (img.width / captureScale) * 0.264583;
-          let imgHeight = (img.height / captureScale) * 0.264583;
-          
-          if (isMainVisualization) {
-            // Main visualization: fill the full content width (80%+ of the A4 page)
-            const targetWidth = contentWidth;
-            const maxHeight = Math.min(180, availableHeight);
-            
-            const widthScale = targetWidth / imgWidth;
-            imgWidth = targetWidth;
-            imgHeight *= widthScale;
-            
-            if (imgHeight > maxHeight) {
-              const heightScale = maxHeight / imgHeight;
-              imgWidth *= heightScale;
-              imgHeight *= heightScale;
-            }
-          } else if (isResponseConcentration) {
-            // Response Concentration: Make it much bigger (use 90% of content width)
-            const maxWidth = contentWidth * 0.9; // 90% of content width (~153mm)
-            const maxHeight = Math.min(120, availableHeight); // Allow up to 120mm height
-            
-            // Scale to fit width first
-            const widthScale = maxWidth / imgWidth;
-            imgWidth = maxWidth;
-            imgHeight *= widthScale;
-            
-            // If height exceeds max after scaling, scale down proportionally
-            if (imgHeight > maxHeight) {
-              const heightScale = maxHeight / imgHeight;
-              imgWidth *= heightScale;
-              imgHeight *= heightScale;
-            }
-          } else if (isHistoricalProgress) {
-            // Historical Progress (Movement Flow): use normal chart sizing (large enough to be readable)
-            // Make it noticeably larger for readability
-            // Increase ~20% vs content width by allowing it into the margins (near full A4 width).
-            const maxWidth = Math.min(pageWidth - 10, contentWidth * 1.2);
-            const maxHeight = Math.min(260, availableHeight);
+          const originalImgWidth = (img.width / captureScale) * 0.264583;
+          const originalImgHeight = (img.height / captureScale) * 0.264583;
 
-            // Always scale to maxWidth so it doesn't end up tiny
-            const widthScale = maxWidth / imgWidth;
-            imgWidth = maxWidth;
-            imgHeight *= widthScale;
+          const scaleChartImage = (heightLimit: number): { width: number; height: number } => {
+            let width = originalImgWidth;
+            let height = originalImgHeight;
 
-            if (imgHeight > maxHeight) {
-              const heightScale = maxHeight / imgHeight;
-              imgWidth *= heightScale;
-              imgHeight *= heightScale;
+            if (isMainVisualization) {
+              const targetWidth = contentWidth;
+              const maxHeight = Math.min(180, heightLimit);
+              const widthScale = targetWidth / width;
+              width = targetWidth;
+              height *= widthScale;
+              if (height > maxHeight) {
+                const heightScale = maxHeight / height;
+                width *= heightScale;
+                height *= heightScale;
+              }
+            } else if (isResponseConcentration) {
+              const maxWidth = contentWidth * 0.9;
+              const maxHeight = Math.min(120, heightLimit);
+              const widthScale = maxWidth / width;
+              width = maxWidth;
+              height *= widthScale;
+              if (height > maxHeight) {
+                const heightScale = maxHeight / height;
+                width *= heightScale;
+                height *= heightScale;
+              }
+            } else if (isHistoricalProgress) {
+              const maxWidth = Math.min(pageWidth - 10, contentWidth * 1.2);
+              const maxHeight = Math.min(260, heightLimit);
+              const widthScale = maxWidth / width;
+              width = maxWidth;
+              height *= widthScale;
+              if (height > maxHeight) {
+                const heightScale = maxHeight / height;
+                width *= heightScale;
+                height *= heightScale;
+              }
+            } else if (isRecommendationScore) {
+              const maxWidth = contentWidth * 0.95;
+              const maxHeight = Math.min(140, heightLimit);
+              const widthScale = maxWidth / width;
+              width = maxWidth;
+              height *= widthScale;
+              if (height > maxHeight) {
+                const heightScale = maxHeight / height;
+                width *= heightScale;
+                height *= heightScale;
+              }
+              const minWidth = contentWidth * 0.85;
+              if (width < minWidth) {
+                const minScale = minWidth / width;
+                width = minWidth;
+                height *= minScale;
+              }
+            } else {
+              const targetWidth = contentWidth * 0.85;
+              const maxHeight = Math.min(130, heightLimit);
+              const widthScale = targetWidth / width;
+              width = targetWidth;
+              height *= widthScale;
+              if (height > maxHeight) {
+                const heightScale = maxHeight / height;
+                width *= heightScale;
+                height *= heightScale;
+              }
             }
-          } else if (isRecommendationScore) {
-            // Recommendation Score: use 95% width for maximum visibility
-            const maxWidth = contentWidth * 0.95;
-            const maxHeight = Math.min(140, availableHeight);
-            
-            const widthScale = maxWidth / imgWidth;
-            imgWidth = maxWidth;
-            imgHeight *= widthScale;
-            
-            if (imgHeight > maxHeight) {
-              const heightScale = maxHeight / imgHeight;
-              imgWidth *= heightScale;
-              imgHeight *= heightScale;
-            }
-            
-            const minWidth = contentWidth * 0.85;
-            if (imgWidth < minWidth) {
-              const minScale = minWidth / imgWidth;
-              imgWidth = minWidth;
-              imgHeight *= minScale;
-            }
-          } else {
-            // All other charts (proximity, distribution, actionable conversions, etc.)
-            // Always scale to at least 80% of content width so they're clearly readable
-            const targetWidth = contentWidth * 0.85;
-            const maxHeight = Math.min(130, availableHeight);
-            
-            const widthScale = targetWidth / imgWidth;
-            imgWidth = targetWidth;
-            imgHeight *= widthScale;
-            
-            if (imgHeight > maxHeight) {
-              const heightScale = maxHeight / imgHeight;
-              imgWidth *= heightScale;
-              imgHeight *= heightScale;
-            }
+
+            return { width, height };
+          };
+
+          let { width: imgWidth, height: imgHeight } = scaleChartImage(availableHeight);
+
+          const minReadableWidth = isMainVisualization
+            ? contentWidth * 0.9
+            : isResponseConcentration || isDistribution
+              ? contentWidth * 0.8
+              : isHistoricalProgress || isRecommendationScore
+                ? contentWidth * 0.85
+                : contentWidth * 0.7;
+
+          if (imgWidth < minReadableWidth && yPosition > margin + 15) {
+            pdf.addPage();
+            yPosition = margin + 10;
+            availableHeight = pageHeight - margin - footerHeight - yPosition - 15;
+            ({ width: imgWidth, height: imgHeight } = scaleChartImage(availableHeight));
           }
           
           // Ensure we have space for the image and caption (10mm for caption)
