@@ -3,7 +3,7 @@ import * as XLSX from 'xlsx';
 import type { ActionPlanReport, ChartImage } from '../types';
 
 const DEFAULT_LOGO = '/segmentor-logo.png';
-const DISCLAIMER_TEXT = 'This report is generated automatically and is provided for general informational purposes only. It is NOT professional advice and must not be relied upon as such. See full disclaimer at segmentor.app';
+const DISCLAIMER_TEXT = 'This report is generated automatically and is provided for general informational purposes only. It is NOT professional advice and must not be relied upon as such. See full disclaimer at segmentor.app/about';
 const EXPERT_REVIEW_TEXT = 'The conclusions and actions in this report can be reviewed by experts from Teresa Monroe. For professional consultation, visit segmentor.app/contact.html';
 // TM staff branding text is built dynamically in addPageWatermarkAndFooter to include consultant name
 
@@ -1121,12 +1121,25 @@ function addPageWatermarkAndFooter(
     const byLine = consultantName?.trim()
       ? `by ${consultantName.trim()} at Teresa Monroe`
       : 'by Teresa Monroe';
-    const tmBrandingText = `This report was generated ${byLine} using Segmentor. For more information, visit segmentor.app`;
+    const tmBrandingText = `This report was generated ${byLine} using Segmentor. For more information, visit`;
+    const aboutLinkLabel = 'segmentor.app/about';
+    const aboutLinkUrl = 'https://segmentor.app/about';
+    const lineHeight = 3;
     const brandingLines = pdf.splitTextToSize(tmBrandingText, pageWidth - 40);
-    const brandingStartY = pageNumberY - (brandingLines.length * 3);
+    const brandingStartY = pageNumberY - ((brandingLines.length + 1) * lineHeight);
     brandingLines.forEach((line: string, index: number) => {
-      pdf.text(line, 20, brandingStartY + (index * 3));
+      pdf.text(line, 20, brandingStartY + (index * lineHeight));
     });
+
+    const linkX = 20;
+    const linkY = brandingStartY + (brandingLines.length * lineHeight);
+    const brandGreen = { r: 58, g: 134, b: 62 };
+    pdf.setTextColor(brandGreen.r, brandGreen.g, brandGreen.b);
+    pdf.textWithLink(aboutLinkLabel, linkX, linkY, { url: aboutLinkUrl });
+    const linkWidth = pdf.getTextWidth(aboutLinkLabel);
+    pdf.setDrawColor(brandGreen.r, brandGreen.g, brandGreen.b);
+    pdf.setLineWidth(0.2);
+    pdf.line(linkX, linkY + 0.4, linkX + linkWidth, linkY + 0.4);
   } else {
     // Non-TM: general disclaimer + expert review CTA
     const footerLines = pdf.splitTextToSize(DISCLAIMER_TEXT, pageWidth - 40);
@@ -2046,7 +2059,7 @@ export async function exportActionPlanToXLSX(
       ['For professional consultation, please visit:'],
       ['https://segmentor.app/contact.html'],
       [''],
-      ['See full disclaimer at: https://segmentor.app']
+      ['See full disclaimer at: https://segmentor.app/about']
     ];
     const disclaimerSheet = XLSX.utils.aoa_to_sheet(disclaimerData);
     disclaimerSheet['!cols'] = [{ wch: 80 }]; // Wide column for disclaimer text
@@ -2058,17 +2071,9 @@ export async function exportActionPlanToXLSX(
       return;
     }
 
-    // Generate Excel file and download
-    const excelBuffer = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' });
-    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `segmentor-actions-report-${new Date().toISOString().split('T')[0]}.xlsx`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    // Generate Excel file and delegate save flow to SheetJS to avoid premature/empty downloads.
+    const fileName = `segmentor-actions-report-${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(workbook, fileName, { compression: true });
   } catch (error) {
     console.error('Failed to export to Excel:', error);
     alert('Failed to export to Excel. Please try again.');
