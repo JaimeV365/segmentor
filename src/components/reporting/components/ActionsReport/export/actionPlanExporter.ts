@@ -3,7 +3,10 @@ import * as XLSX from 'xlsx';
 import type { ActionPlanReport, ChartImage } from '../types';
 
 const DEFAULT_LOGO = '/segmentor-logo.png';
-const DISCLAIMER_TEXT = 'This report is generated automatically and is provided for general informational purposes only. It is NOT professional advice and must not be relied upon as such. See full disclaimer at segmentor.app/about';
+const DISCLAIMER_TEXT = 'This report is generated automatically and is provided for general informational purposes only. It is NOT professional advice and must not be relied upon as such.';
+const DISCLAIMER_LINK_PREFIX = 'See full disclaimer at';
+const ABOUT_LINK_LABEL = 'segmentor.app/about';
+const ABOUT_LINK_URL = 'https://segmentor.app/about';
 const EXPERT_REVIEW_TEXT = 'The conclusions and actions in this report can be reviewed by experts from Teresa Monroe. For professional consultation, visit segmentor.app/contact.html';
 // TM staff branding text is built dynamically in addPageWatermarkAndFooter to include consultant name
 
@@ -1121,37 +1124,89 @@ function addPageWatermarkAndFooter(
     const byLine = consultantName?.trim()
       ? `by ${consultantName.trim()} at Teresa Monroe`
       : 'by Teresa Monroe';
-    const tmBrandingText = `This report was generated ${byLine} using Segmentor. For more information, visit`;
-    const aboutLinkLabel = 'segmentor.app/about';
-    const aboutLinkUrl = 'https://segmentor.app/about';
+    const tmBrandingText = `This report was generated ${byLine} using Segmentor. For more information, visit `;
     const lineHeight = 3;
-    const brandingLines = pdf.splitTextToSize(tmBrandingText, pageWidth - 40);
-    const brandingStartY = pageNumberY - ((brandingLines.length + 1) * lineHeight);
-    brandingLines.forEach((line: string, index: number) => {
-      pdf.text(line, 20, brandingStartY + (index * lineHeight));
-    });
-
-    const linkX = 20;
-    const linkY = brandingStartY + (brandingLines.length * lineHeight);
+    const maxWidth = pageWidth - 40;
+    const singleLineFits = pdf.getTextWidth(tmBrandingText) + pdf.getTextWidth(ABOUT_LINK_LABEL) <= maxWidth;
+    const brandingLines = singleLineFits ? [tmBrandingText] : pdf.splitTextToSize(tmBrandingText.trim(), maxWidth);
+    const totalLines = singleLineFits ? 1 : brandingLines.length + 1;
+    const brandingStartY = pageNumberY - (totalLines * lineHeight);
     const brandGreen = { r: 58, g: 134, b: 62 };
-    pdf.setTextColor(brandGreen.r, brandGreen.g, brandGreen.b);
-    pdf.textWithLink(aboutLinkLabel, linkX, linkY, { url: aboutLinkUrl });
-    const linkWidth = pdf.getTextWidth(aboutLinkLabel);
-    pdf.setDrawColor(brandGreen.r, brandGreen.g, brandGreen.b);
-    pdf.setLineWidth(0.2);
-    pdf.line(linkX, linkY + 0.4, linkX + linkWidth, linkY + 0.4);
+    if (singleLineFits) {
+      const textY = brandingStartY;
+      const textX = 20;
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(tmBrandingText, textX, textY);
+      const linkX = textX + pdf.getTextWidth(tmBrandingText);
+      pdf.setTextColor(brandGreen.r, brandGreen.g, brandGreen.b);
+      pdf.textWithLink(ABOUT_LINK_LABEL, linkX, textY, { url: ABOUT_LINK_URL });
+      const linkWidth = pdf.getTextWidth(ABOUT_LINK_LABEL);
+      pdf.setDrawColor(brandGreen.r, brandGreen.g, brandGreen.b);
+      pdf.setLineWidth(0.2);
+      pdf.line(linkX, textY + 0.4, linkX + linkWidth, textY + 0.4);
+    } else {
+      brandingLines.forEach((line: string, index: number) => {
+        pdf.setTextColor(100, 100, 100);
+        pdf.text(line, 20, brandingStartY + (index * lineHeight));
+      });
+      const linkX = 20;
+      const linkY = brandingStartY + (brandingLines.length * lineHeight);
+      pdf.setTextColor(brandGreen.r, brandGreen.g, brandGreen.b);
+      pdf.textWithLink(ABOUT_LINK_LABEL, linkX, linkY, { url: ABOUT_LINK_URL });
+      const linkWidth = pdf.getTextWidth(ABOUT_LINK_LABEL);
+      pdf.setDrawColor(brandGreen.r, brandGreen.g, brandGreen.b);
+      pdf.setLineWidth(0.2);
+      pdf.line(linkX, linkY + 0.4, linkX + linkWidth, linkY + 0.4);
+    }
   } else {
     // Non-TM: general disclaimer + expert review CTA
-    const footerLines = pdf.splitTextToSize(DISCLAIMER_TEXT, pageWidth - 40);
-    const disclaimerStartY = pageNumberY - (footerLines.length * 3);
-    footerLines.forEach((line: string, index: number) => {
-      pdf.text(line, 20, disclaimerStartY + (index * 3));
+    const lineHeight = 3;
+    const maxWidth = pageWidth - 40;
+    const disclaimerLines = pdf.splitTextToSize(DISCLAIMER_TEXT, maxWidth);
+    const disclaimerLinkText = `${DISCLAIMER_LINK_PREFIX} `;
+    const disclaimerLinkFits = pdf.getTextWidth(disclaimerLinkText) + pdf.getTextWidth(ABOUT_LINK_LABEL) <= maxWidth;
+    const disclaimerLinkLines = disclaimerLinkFits ? 1 : (pdf.splitTextToSize(DISCLAIMER_LINK_PREFIX, maxWidth).length + 1);
+    const totalDisclaimerLines = disclaimerLines.length + disclaimerLinkLines;
+    const disclaimerStartY = pageNumberY - (totalDisclaimerLines * lineHeight);
+    disclaimerLines.forEach((line: string, index: number) => {
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(line, 20, disclaimerStartY + (index * lineHeight));
     });
-    
+
+    const linkLineY = disclaimerStartY + (disclaimerLines.length * lineHeight);
+    const brandGreen = { r: 58, g: 134, b: 62 };
+    if (disclaimerLinkFits) {
+      const textX = 20;
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(disclaimerLinkText, textX, linkLineY);
+      const linkX = textX + pdf.getTextWidth(disclaimerLinkText);
+      pdf.setTextColor(brandGreen.r, brandGreen.g, brandGreen.b);
+      pdf.textWithLink(ABOUT_LINK_LABEL, linkX, linkLineY, { url: ABOUT_LINK_URL });
+      const linkWidth = pdf.getTextWidth(ABOUT_LINK_LABEL);
+      pdf.setDrawColor(brandGreen.r, brandGreen.g, brandGreen.b);
+      pdf.setLineWidth(0.2);
+      pdf.line(linkX, linkLineY + 0.4, linkX + linkWidth, linkLineY + 0.4);
+    } else {
+      const prefixLines = pdf.splitTextToSize(DISCLAIMER_LINK_PREFIX, maxWidth);
+      prefixLines.forEach((line: string, index: number) => {
+        pdf.setTextColor(100, 100, 100);
+        pdf.text(line, 20, linkLineY + (index * lineHeight));
+      });
+      const linkX = 20;
+      const wrappedLinkY = linkLineY + (prefixLines.length * lineHeight);
+      pdf.setTextColor(brandGreen.r, brandGreen.g, brandGreen.b);
+      pdf.textWithLink(ABOUT_LINK_LABEL, linkX, wrappedLinkY, { url: ABOUT_LINK_URL });
+      const linkWidth = pdf.getTextWidth(ABOUT_LINK_LABEL);
+      pdf.setDrawColor(brandGreen.r, brandGreen.g, brandGreen.b);
+      pdf.setLineWidth(0.2);
+      pdf.line(linkX, wrappedLinkY + 0.4, linkX + linkWidth, wrappedLinkY + 0.4);
+    }
+
     const expertLines = pdf.splitTextToSize(EXPERT_REVIEW_TEXT, pageWidth - 40);
-    const expertStartY = disclaimerStartY - (expertLines.length * 3) - 2;
+    const expertStartY = disclaimerStartY - (expertLines.length * lineHeight) - 2;
     expertLines.forEach((line: string, index: number) => {
-      pdf.text(line, 20, expertStartY + (index * 3));
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(line, 20, expertStartY + (index * lineHeight));
     });
   }
   
