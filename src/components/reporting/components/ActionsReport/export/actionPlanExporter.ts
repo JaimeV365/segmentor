@@ -5,7 +5,7 @@ import type { ActionPlanReport, ChartImage } from '../types';
 const DEFAULT_LOGO = '/segmentor-logo.png';
 const DISCLAIMER_TEXT = 'This report is generated automatically and is provided for general informational purposes only. It is NOT professional advice and must not be relied upon as such.';
 const DISCLAIMER_LINK_PREFIX = 'See full disclaimer at';
-const ABOUT_LINK_LABEL = 'segmentor.app/about';
+const ABOUT_LINK_LABEL = 'segmentor';
 const ABOUT_LINK_URL = 'https://segmentor.app/about';
 const EXPERT_REVIEW_TEXT = 'The conclusions and actions in this report can be reviewed by experts from Teresa Monroe. For professional consultation, visit segmentor.app/contact.html';
 // TM staff branding text is built dynamically in addPageWatermarkAndFooter to include consultant name
