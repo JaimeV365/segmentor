@@ -715,10 +715,10 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
 
         <div className="audience-context-row">
           <div className="audience-context-label-group">
-            <span className="audience-context-label">Audience context</span>
-            <span className="audience-context-help">Tailors actions for consumer (B2C) or business (B2B) environments.</span>
+            <span className="audience-context-label">Business context</span>
+            <span className="audience-context-help">Choose whether your company mainly serves businesses (B2B) or consumers (B2C).</span>
           </div>
-          <div className="audience-context-segment" role="group" aria-label="Audience context">
+          <div className="audience-context-segment" role="group" aria-label="Business context">
             <button
               type="button"
               className={`audience-option-button ${audienceContext === 'b2c' ? 'active' : ''}`}
@@ -823,12 +823,12 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
                 </>
               )}
               <br /><br />
-              <strong>Audience context:</strong> {generatedAudienceContext === 'b2b' ? 'B2B' : 'B2C'}.
+              <strong>Business context:</strong> {generatedAudienceContext === 'b2b' ? 'B2B' : 'B2C'}.
               {hasAudienceChangePending && (
                 <>
                   <br />
                   <span className="audience-context-warning">
-                    You changed this to {audienceLabel}. Regenerate the report to apply updated wording.
+                    You changed the business context to {audienceLabel}. Regenerate the report to apply updated wording.
                   </span>
                 </>
               )}
@@ -848,10 +848,10 @@ export const ActionsReport: React.FC<ActionsReportProps> = ({
 
         <div className="audience-context-row">
           <div className="audience-context-label-group">
-            <span className="audience-context-label">Audience context</span>
-            <span className="audience-context-help">Current selection: {audienceLabel}. Regenerate to apply changes.</span>
+            <span className="audience-context-label">Business context</span>
+            <span className="audience-context-help">Current setting: {audienceLabel}. Regenerate the report to apply this context.</span>
           </div>
-          <div className="audience-context-segment" role="group" aria-label="Audience context">
+          <div className="audience-context-segment" role="group" aria-label="Business context">
             <button
               type="button"
               className={`audience-option-button ${audienceContext === 'b2c' ? 'active' : ''}`}
